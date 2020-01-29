@@ -33,7 +33,7 @@ for index, row in beerProducts.iterrows():
 
 chunk_list = []
 for data_chunk in movements:
-    filtered_chunk = data_chunk[int(data_chunk["upc"]) in beer_UPCs]
+    filtered_chunk = data_chunk[data_chunk.apply(lambda x: x['upc'] in beer_UPCs, axis=1)]
     chunk_list.append(filtered_chunk)
 
 upc_movements = pd.concat(chunk_list)
