@@ -23,8 +23,8 @@ beerProducts = products[(products['product_group_descr'].notnull()) & (products[
 # size1_change_flag_uc                         0
 
 movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_5006.tsv"
-movements = pd.read_csv(products_path, delimiter = "\t", iterator = True, chunksize = 10000)
+movements = pd.read_csv(movements_path, delimiter = "\t", iterator = True, chunksize = 10000)
 chunk = movements.get_chunk(1)
 print(chunk.iloc[0])
-upc = beerProducts.iloc[0][upc]
+upc = beerProducts.iloc[0]["upc"]
 print(upc)
