@@ -23,7 +23,7 @@ beerProducts = products[(products['product_group_descr'].notnull()) & (products[
 # size1_change_flag_uc                         0
 
 movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_2006.tsv"
-movements = pd.read_csv(movements_path, delimiter = "\t", chunksize = 10000)
+movements = pd.read_csv(movements_path, delimiter = "\t", chunksize = 1000)
 upc = beerProducts.iloc[0]["upc"]
 
 beer_UPCs = {}
@@ -31,6 +31,7 @@ for index, row in beerProducts.iterrows():
     upc = row['upc']
     beer_UPCs[upc] = 0
 
+print("hello")
 chunk_list = []
 for data_chunk in movements:
     filtered_chunk = data_chunk[data_chunk.apply(lambda x: x['upc'] in beer_UPCs, axis=1)]
