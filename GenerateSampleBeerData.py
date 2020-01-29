@@ -34,10 +34,10 @@ beer_UPCs = {}
 for index, row in beerProducts.iterrows():
     upc = row['upc']
     beer_UPCs[upc] = 0
-    if len(beer_UPCs) > 10:
+    # for purpose of running quickly
+    if len(beer_UPCs) >= 10:
         break
 print("hello")
-print(len(beer_UPCs))
 
 # find data corresponding to beer upcs
 # data too large so slice to chunks
@@ -45,7 +45,12 @@ chunk_list = []
 for data_chunk in movements:
     filtered_chunk = data_chunk[data_chunk['upc'].isin(beer_UPCs)]
     chunk_list.append(filtered_chunk)
-print("hello")
-upc_movements = pd.concat(chunk_list)
+store_week_upc = pd.concat(chunk_list)
 print(upc_movements.iloc[0])
 print(upc_movements.shape)
+
+# group data by month
+store_week_upc['month'] = store_week_upc['week']/100
+store_month_upc = store_week_upc.groupby(['month'])
+
+print(store_month_upc)
