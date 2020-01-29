@@ -27,7 +27,7 @@ movements = pd.read_csv(movements_path, delimiter = "\t", chunksize = 10000)
 upc = beerProducts.iloc[0]["upc"]
 
 beer_UPCs = {}
-for index, row in beerProducts.iterrow():
+for index, row in beerProducts.iterrows():
     beer_UPCs[int(row['upc'])] = 0
 
 chunk_list = []
