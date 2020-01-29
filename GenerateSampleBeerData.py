@@ -28,7 +28,7 @@ upc = beerProducts.iloc[0]["upc"]
 
 beer_UPCs = {}
 for index, row in beerProducts.iterrows():
-    beer_UPCs[int(row['upc'])] = 0
+    beer_UPCs[row['upc'].int] = 0
 
 chunk_list = []
 for data_chunk in movements:
