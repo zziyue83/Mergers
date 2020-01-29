@@ -1,9 +1,11 @@
 import pandas as pd
 import os
 
+# load products data and find the beer entries
 products_path = "../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
 products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0)
 beerProducts = products[(products['product_group_descr'].notnull()) & (products['product_group_descr'].str.contains("BEER"))]
+
 # upc                                   15000004
 # upc_ver_uc                                   1
 # upc_descr               SIERRA NEVADA W BR NRB
@@ -22,21 +24,26 @@ beerProducts = products[(products['product_group_descr'].notnull()) & (products[
 # dataset_found_uc                           ALL
 # size1_change_flag_uc                         0
 
+#load movements data
 movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_2006.tsv"
 movements = pd.read_csv(movements_path, delimiter = "\t", chunksize = 1000)
 upc = beerProducts.iloc[0]["upc"]
 
+# record beer upcs
 beer_UPCs = {}
 for index, row in beerProducts.iterrows():
     upc = row['upc']
     beer_UPCs[upc] = 0
     if index > 10:
         break
-
 print("hello")
+print(len(beer_UPCs))
+
+# find data corresponding to beer upcs
+# data too large so slice to chunks
 chunk_list = []
 for data_chunk in movements:
-    filtered_chunk = data_chunk[data_chunk.apply(lambda x: x['upc'] in beer_UPCs, axis=1)]
+    filtered_chunk = data_chunk[data_chunk['upc'].isin(beer_UPCs)]
     chunk_list.append(filtered_chunk)
 print("hello")
 upc_movements = pd.concat(chunk_list)
