@@ -36,7 +36,7 @@ chunk_list = []
 for data_chunk in movements:
     filtered_chunk = data_chunk[data_chunk.apply(lambda x: x['upc'] in beer_UPCs, axis=1)]
     chunk_list.append(filtered_chunk)
-
+print("hello")
 upc_movements = pd.concat(chunk_list)
 print(upc_movements.iloc[0])
 print(upc_movements.shape)
