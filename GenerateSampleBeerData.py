@@ -32,7 +32,7 @@ for index, row in beer.iterrow():
 
 chunk_list = []
 for data_chunk in movements:
-    filtered_chunk = data_chunk[data_chunk["upc"] in beer_UPCs]
+    filtered_chunk = data_chunk[int(data_chunk["upc"]) in beer_UPCs]
     chunk_list.append(filtered_chunk)
 
 upc_movements = pd.concat(chunk_list)
