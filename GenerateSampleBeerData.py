@@ -35,7 +35,7 @@ for index, row in beerProducts.iterrows():
     upc = row['upc']
     beer_UPCs[upc] = 0
     # for purpose of running quickly
-    if len(beer_UPCs) >= 10:
+    if len(beer_UPCs) >= 5:
         break
 print("hello")
 
@@ -46,11 +46,16 @@ for data_chunk in movements:
     filtered_chunk = data_chunk[data_chunk['upc'].isin(beer_UPCs)]
     chunk_list.append(filtered_chunk)
 store_week_upc = pd.concat(chunk_list)
-print(upc_movements.iloc[0])
-print(upc_movements.shape)
+print(store_week_upc.shape)
 
 # group data by month
-store_week_upc['month'] = store_week_upc['week']/100
-store_month_upc = store_week_upc.groupby(['month'])
-
+store_week_upc['month'] = store_week_upc['week_end']/100
+store_week_upc['month'] = store_week_upc['month'].astype(int)
+print(store_week_upc['month'])
+aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'sum', 'price':'mean', 'feature': 'first','display':'first'}
+store_month_upc = store_week_upc.groupby(['month', 'upc','store_code_uc'], as_index = False).aggregate(aggregation_function).reindex(columns = store_week_upc.columns)
+print(store_month_upc.iloc[0])
+print(store_month_upc.iloc[0]['month'])
+print(store_month_upc.iloc[10]['month'])
 print(store_month_upc)
+
