@@ -28,11 +28,12 @@ upc = beerProducts.iloc[0]["upc"]
 
 beer_UPCs = {}
 for index, row in beerProducts.iterrows():
-    beer_UPCs[row['upc'].int] = 0
+    upc = row['upc'].astype(int)
+    beer_UPCs[upc] = 0
 
 chunk_list = []
 for data_chunk in movements:
-    filtered_chunk = data_chunk[int(data_chunk["upc"]) in beer_UPCs]
+    filtered_chunk = data_chunk[data_chunk["upc"].astype(int) in beer_UPCs]
     chunk_list.append(filtered_chunk)
 
 upc_movements = pd.concat(chunk_list)
