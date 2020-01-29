@@ -34,7 +34,7 @@ beer_UPCs = {}
 for index, row in beerProducts.iterrows():
     upc = row['upc']
     beer_UPCs[upc] = 0
-    if index > 10:
+    if len(beer_UPCs) > 10:
         break
 print("hello")
 print(len(beer_UPCs))
