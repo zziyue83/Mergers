@@ -25,14 +25,14 @@ beerProducts = products[(products['product_group_descr'].notnull()) & (products[
 movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_2006.tsv"
 movements = pd.read_csv(movements_path, delimiter = "\t", chunksize = 10000)
 upc = beerProducts.iloc[0]["upc"]
-print(beerProducts.columns)
-# weekend = beerProducts.iloc[0]["week_end"]
-print(upc)
-# print(weekend)
+
+beer_UPCs = {}
+for index, row in beer.iterrow():
+    beer_UPCs[int(row['upc'])] = 0
 
 chunk_list = []
 for data_chunk in movements:
-    filtered_chunk = data_chunk[data_chunk["upc"] == upc]
+    filtered_chunk = data_chunk[data_chunk["upc"] in beer_UPCs]
     chunk_list.append(filtered_chunk)
 
 upc_movements = pd.concat(chunk_list)
