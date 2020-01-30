@@ -31,7 +31,7 @@ for index, row in beerProducts.iterrows():
     upc = row['upc']
     beer_UPCs[upc] = 0
     # for purpose of running quickly
-    if len(beer_UPCs) >= 5:
+    if len(beer_UPCs) >= 10:
         break
 print("Finished recording beer UPCs")
 
@@ -56,13 +56,14 @@ for year in years:
     # group data by month, upc, store_code_uc
     store_week_upc['month'] = store_week_upc['week_end']/100
     store_week_upc['month'] = store_week_upc['month'].astype(int)
-    aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'sum', 'price':'mean', 'feature': 'first','display':'first'}
+    aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first'}
     store_month_upc = store_week_upc.groupby(['month', 'upc','store_code_uc'], as_index = False).aggregate(aggregation_function).reindex(columns = store_week_upc.columns)
     store_month_upc_Year.append(store_month_upc)
     print(store_month_upc)
 
 #aggregate yearly result and save as csv file
 store_month_upc = pd.concat(store_month_upc_Year)
+df.drop('week_end', axis=1, inplace=True)
 store_month_upc.to_csv("../../GeneratedData/BEER_store_month_upc.tsv", sep = '\t', encoding = 'utf-8')
 
     # Example:
