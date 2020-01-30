@@ -6,6 +6,7 @@ products_path = "../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.ts
 products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0)
 beerProducts = products[(products['product_group_descr'].notnull()) & (products['product_group_descr'].str.contains("BEER"))]
 
+#Example:
 # upc                                   15000004
 # upc_ver_uc                                   1
 # upc_descr               SIERRA NEVADA W BR NRB
@@ -24,11 +25,6 @@ beerProducts = products[(products['product_group_descr'].notnull()) & (products[
 # dataset_found_uc                           ALL
 # size1_change_flag_uc                         0
 
-#load movements data
-movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_2006.tsv"
-movements = pd.read_csv(movements_path, delimiter = "\t", chunksize = 1000)
-upc = beerProducts.iloc[0]["upc"]
-
 # record beer upcs
 beer_UPCs = {}
 for index, row in beerProducts.iterrows():
@@ -37,25 +33,45 @@ for index, row in beerProducts.iterrows():
     # for purpose of running quickly
     if len(beer_UPCs) >= 5:
         break
-print("hello")
+print("Finished recording beer UPCs")
 
-# find data corresponding to beer upcs
-# data too large so slice to chunks
-chunk_list = []
-for data_chunk in movements:
-    filtered_chunk = data_chunk[data_chunk['upc'].isin(beer_UPCs)]
-    chunk_list.append(filtered_chunk)
-store_week_upc = pd.concat(chunk_list)
-print(store_week_upc.shape)
+#process movement files by year
+years = ['2006','2007','2008','2009']
+store_month_upc_Year = []
+for year in years:
+    #load movements data
+    # movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_2006.tsv"
+    movements_path = "../../Data/nielsen_extracts/RMS/"+year+"/Movement_Files/5001_"+year+"/5000_"+year+".tsv"
+    movements = pd.read_csv(movements_path, delimiter = "\t", chunksize = 1000)
 
-# group data by month
-store_week_upc['month'] = store_week_upc['week_end']/100
-store_week_upc['month'] = store_week_upc['month'].astype(int)
-print(store_week_upc['month'])
-aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'sum', 'price':'mean', 'feature': 'first','display':'first'}
-store_month_upc = store_week_upc.groupby(['month', 'upc','store_code_uc'], as_index = False).aggregate(aggregation_function).reindex(columns = store_week_upc.columns)
-print(store_month_upc.iloc[0])
-print(store_month_upc.iloc[0]['month'])
-print(store_month_upc.iloc[10]['month'])
-print(store_month_upc)
+    # find data corresponding to beer upcs
+    # data too large so slice to chunks
+    chunk_list = []
+    for data_chunk in movements:
+        filtered_chunk = data_chunk[data_chunk['upc'].isin(beer_UPCs)]
+        chunk_list.append(filtered_chunk)
+    store_week_upc = pd.concat(chunk_list)
+    print(store_week_upc.shape)
 
+    # group data by month, upc, store_code_uc
+    store_week_upc['month'] = store_week_upc['week_end']/100
+    store_week_upc['month'] = store_week_upc['month'].astype(int)
+    aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'sum', 'price':'mean', 'feature': 'first','display':'first'}
+    store_month_upc = store_week_upc.groupby(['month', 'upc','store_code_uc'], as_index = False).aggregate(aggregation_function).reindex(columns = store_week_upc.columns)
+    store_month_upc_Year.append(store_month_upc)
+    print(store_month_upc)
+
+#aggregate yearly result and save as csv file
+store_month_upc = pd.concat(store_month_upc_Year)
+store_month_upc.to_csv("../../GeneratedData/BEER_store_month_upc.tsv", sep = '\t', encoding = 'utf-8')
+
+    # Example:
+    # store_code_uc      738532.0
+    # upc              15000004.0
+    # week_end         20060107.0
+    # units                   2.0
+    # prmult                  1.0
+    # price                   1.5
+    # feature                 NaN
+    # display                 NaN
+    # month              200601.0
