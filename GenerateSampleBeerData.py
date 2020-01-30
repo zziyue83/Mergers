@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import productModuleMap from ProductModuleMap
 
 # load products data and find the beer entries
 products_path = "../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
