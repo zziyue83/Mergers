@@ -64,7 +64,7 @@ for year in years:
 
 #aggregate yearly result and save as csv file
 store_month_upc = pd.concat(store_month_upc_Year)
-df.drop('week_end', axis=1, inplace=True)
+store_month_upc.drop('week_end', axis=1, inplace=True)
 store_month_upc.to_csv("../../GeneratedData/BEER_store_month_upc.tsv", sep = '\t', encoding = 'utf-8')
 
     # Example:
