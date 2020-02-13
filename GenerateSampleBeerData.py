@@ -69,14 +69,9 @@ for year in years:
             for data_chunk in movementTable:
                 data_chunk['month'] = data_chunk['week_end']/100
                 data_chunk['month'] = data_chunk['month'].astype(int)
-                print(data_chunk.iloc[0])
-                print(data_chunk.iloc[0].store_code_uc)
-                data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[int(x['store_code_uc'])].fips_state_code)
-                data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[int(x['store_code_uc'])].fips_county_code)
-                # data_chunk['fips_state_code'] = storeTable.loc[storeTable['store_code_uc']].fips_state_code
-                # data_chunk['fips_county_code'] = storeTable.loc[storeTable['store_code_uc']].fips_county_code
-                # data_chunk['fips_state_code'] = 1
-                # data_chunk['fips_county_code'] = 2
+                data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
+                data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
+                print("added store info to movement file of "+year+", group: "+str(group)+", module: "+str(module))
 
     # #load movements data
     # # movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_2006.tsv"
