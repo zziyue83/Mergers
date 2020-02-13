@@ -13,7 +13,7 @@ def LoadWantedProduct(product):
     print(wantedProducts.iloc[500])
     print(wantedProducts.iloc[2000])
     print("Loaded "+product+" products")
-    return WantedProducts
+    return wantedProducts
 
 #Example:
 # upc                                   15000004
