@@ -61,10 +61,17 @@ groups = [5001]
 modules = [5000,5001,5005,5010,5015,5020]
 store_month_upc_Year = []
 for year in years:
+    storeTable = LoadStoreTable(year)
     for group in groups:
         for module in modules:
             movementTable = LoadChunkedYearModuleMovementTable(year, group, module)
             print("loaded movement file of "+year+", group: "+str(group)+", module: "+str(module))
+            for data_chunk in movementTable:
+                data_chunk['month'] = store_week_upc['week_end']/100
+                data_chunk['month'] = store_week_upc['month'].astype(int)
+                data_chunk['fips_state_code'] = storeTable.loc[data_chunk['store_code_uc']].fips_state_code
+                data_chunk['fips_county_code'] = storeTable.loc[data_chunk['store_code_uc']].fips_county_code
+
     # #load movements data
     # # movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_2006.tsv"
     # movements_path = "../../Data/nielsen_extracts/RMS/"+year+"/Movement_Files/5001_"+year+"/5000_"+year+".tsv"
