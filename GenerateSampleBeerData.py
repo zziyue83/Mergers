@@ -6,6 +6,11 @@ from ProductModuleMap import productModuleMap
 products_path = "../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
 products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0)
 beerProducts = products[(products['product_group_descr'].notnull()) & (products['product_group_descr'].str.contains("BEER"))]
+print(beerProducts.iloc[0])
+print(beerProducts.iloc[5])
+print(beerProducts.iloc[50])
+print(beerProducts.iloc[500])
+print(beerProducts.iloc[2000])
 
 #Example:
 # upc                                   15000004
