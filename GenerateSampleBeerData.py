@@ -37,7 +37,7 @@ def LoadStoreTable(year):
 
 def LoadChunkedYearModuleMovementTable(year, group, module):
     movement_path = "../../Data/nielsen_extracts/RMS/"+str(year)+"/Movement_Files/"+str(group)+"_"+str(year)+"/"+str(module)+"_"+str(year)+".tsv"
-    movementTable = pd.read_csv(movement_path, delimiter = "\t",chunksize = 1000)
+    movementTable = pd.read_csv(movement_path, delimiter = "\t",chunksize = 4000)
     return movementTable
 
 
