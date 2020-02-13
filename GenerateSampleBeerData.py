@@ -36,7 +36,7 @@ def LoadWantedProduct(product):
 
 def LoadStoreTable(year):
     store_path = "../../Data/nielsen_extracts/RMS/"+year+"/Annual_Files/stores_"+year+".tsv"
-    storeTable = pd.read_csv(products_path, delimiter = "\t", index_col = "store_code_uc")
+    storeTable = pd.read_csv(store_path, delimiter = "\t", index_col = "store_code_uc")
     print("Loaded store file of "+ year)
     return storeTable
 
