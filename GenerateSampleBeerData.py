@@ -62,9 +62,9 @@ modules = [5000,5001,5005,5010,5015,5020]
 store_month_upc_Year = []
 for year in years:
     for group in groups:
-        for module modules:
+        for module in modules:
             movementTable = LoadChunkedYearModuleMovementTable(year, group, module)
-            print("loaded movement file of "+year + ", group: "+ str(group) + ", module: "+stre(module))
+            print("loaded movement file of "+year + ", group: "+ str(group) + ", module: "+str(module))
     # #load movements data
     # # movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_2006.tsv"
     # movements_path = "../../Data/nielsen_extracts/RMS/"+year+"/Movement_Files/5001_"+year+"/5000_"+year+".tsv"
