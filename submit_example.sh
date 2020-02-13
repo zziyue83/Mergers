@@ -10,5 +10,5 @@
 #SBATCH --mem=4G
 
 module load python/anaconda3.6
-cd [[//projects/b1048/gillanes/Mergers/Codes/Mergers]]
+cd /projects/b1048/gillanes/Mergers/Codes/Mergers
 python [[GenerateSampleBeerData.py]]
