@@ -33,6 +33,7 @@ def LoadStoreTable(year):
     store_path = "../../Data/nielsen_extracts/RMS/"+year+"/Annual_Files/stores_"+year+".tsv"
     storeTable = pd.read_csv(store_path, delimiter = "\t", index_col = "store_code_uc")
     print("Loaded store file of "+ year)
+    print(df[df.index.duplicated()])
     return storeTable
 
 def LoadChunkedYearModuleMovementTable(year, group, module):
