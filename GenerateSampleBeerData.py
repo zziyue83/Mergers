@@ -38,7 +38,7 @@ def LoadStoreTable(year):
 
 def LoadChunkedYearModuleMovementTable(year, group, module):
     movement_path = "../../Data/nielsen_extracts/RMS/"+str(year)+"/Movement_Files/"+str(group)+"_"+str(year)+"/"+str(module)+"_"+str(year)+".tsv"
-    movementTable = pd.read_csv(movement_path, delimiter = "\t",chunksize = 10000)
+    movementTable = pd.read_csv(movement_path, delimiter = "\t",chunksize = 100000)
     return movementTable
 
 
@@ -77,7 +77,7 @@ for year in years:
                 data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
                 print(data_chunk.iloc[0])
             # print(i)
-            print("added store info to movement file of "+year+", group: "+str(group)+", module: "+str(module))
+            print("added store and month info to movement file of "+year+", group: "+str(group)+", module: "+str(module))
 
     # #load movements data
     # # movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_2006.tsv"
