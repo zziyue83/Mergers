@@ -61,7 +61,7 @@ years = ['2006','2007','2008','2009']
 groups = [5001]
 # modules = [5000,5001,5005,5010,5015,5020]
 modules = [5020]
-store_month_upc_list = []
+area_month_upc_list = []
 aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first'}
 for year in years:
     storeTable = LoadStoreTable(year)
@@ -76,15 +76,15 @@ for year in years:
                 data_chunk['month'] = data_chunk['month'].astype(int)
                 data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
                 data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
-                area_month_upc = area_week_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_week_upc.columns)
+                area_month_upc = data_chunk.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
                 area_month_upc_list.append(area_month_upc)
                 print(area_month_upc.iloc[0])
             # print(i)
             print("added store and month info to movement file of "+year+", group: "+str(group)+", module: "+str(module))
 
 #aggregate yearly result and save as csv file
-area_month_upc = pd.concat(store_month_upc_list)
-area_month_upc = store_week_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_week_upc.columns)
+area_month_upc = pd.concat(area_month_upc_list)
+area_month_upc = store_month_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
 area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
 store_month_upc.to_csv("../../GeneratedData/BEER_area_month_upc_5020.tsv", sep = '\t', encoding = 'utf-8')
 
