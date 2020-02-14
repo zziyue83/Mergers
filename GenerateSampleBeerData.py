@@ -8,6 +8,7 @@ def LoadWantedProduct(product):
     products_path = "../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
     products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0)
     wantedProducts = products[(products['product_group_descr'].notnull()) & (products['product_group_descr'].str.contains(product))]
+    print(wantedProducts['brand_descr'].unique().shape)
     print("Loaded "+product+" products")
     return wantedProducts
 
