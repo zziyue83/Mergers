@@ -83,11 +83,12 @@ for year in years:
                 print(area_month_upc.iloc[0])
             # print(i)
             area_month_upc = pd.concat(area_month_upc_list)
-            area_month_upc = store_month_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-            area_month_upc_Year.append(area_month_upc)
-            save_path = "../../GeneratedData/BEER_area_month_upc_"+group"_5020_"+year+".tsv"
+            area_month_upc = area_month_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
+            area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
+            save_path = "../../GeneratedData/BEER_area_month_upc_"+group+"_5020_"+year+".tsv"
             area_month_upc.to_csv(save_path, sep = '\t', encoding = 'utf-8')
             print("saved area-month-upc data. Year: "+year+" Group: "+str(group)+" Module: "+str(module))
+            area_month_upc_Year.append(area_month_upc)
 
 #aggregate yearly result and save as csv file
 area_month_upc = pd.concat(area_month_upc_Year)
