@@ -84,7 +84,7 @@ for year in years:
             area_month_upc = area_month_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
             area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
             print(area_month_upc.shape)
-            save_path = "../../GeneratedData/BEER_area_month_upc_"+str(group)+"_"+str(module)"_"+year+".tsv"
+            save_path = "../../GeneratedData/BEER_area_month_upc_"+str(group)+"_"+str(module)+"_"+year+".tsv"
             area_month_upc.to_csv(save_path, sep = '\t', encoding = 'utf-8')
             print("saved area-month-upc data. Year: "+year+" Group: "+str(group)+" Module: "+str(module))
             area_month_upc_Year.append(area_month_upc)
