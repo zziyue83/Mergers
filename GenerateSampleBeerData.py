@@ -60,7 +60,7 @@ print("Finished recording beer UPCs")
 years = ['2006','2007','2008','2009']
 groups = [5001]
 # modules = [5000,5001,5005,5010,5015,5020]
-modules = [5020]
+modules = [5005]
 area_month_upc_Year = []
 aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first'}
 for year in years:
@@ -90,9 +90,9 @@ for year in years:
             area_month_upc_Year.append(area_month_upc)
 
 #aggregate yearly result and save as csv file
+aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first'}
 area_month_upc = pd.concat(area_month_upc_Year)
 area_month_upc = area_month_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
 area_month_upc.to_csv("../../GeneratedData/BEER_area_month_upc_5020.tsv", sep = '\t', encoding = 'utf-8')
 
     # #load movements data
