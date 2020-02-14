@@ -74,7 +74,7 @@ for year in years:
                 data_chunk['month'] = data_chunk['week_end']/100
                 data_chunk['month'] = data_chunk['month'].astype(int)
                 data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
-                data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
+                data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
                 print(data_chunk.iloc[0])
             # print(i)
             print("added store info to movement file of "+year+", group: "+str(group)+", module: "+str(module))
