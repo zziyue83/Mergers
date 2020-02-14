@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 from ProductModuleMap import productModuleMap
+from tqdm import tqdm
 
 # load products data and find the product entries, ex. FindProduct("BEER")
 def LoadWantedProduct(product):
@@ -37,7 +38,7 @@ def LoadStoreTable(year):
 
 def LoadChunkedYearModuleMovementTable(year, group, module):
     movement_path = "../../Data/nielsen_extracts/RMS/"+str(year)+"/Movement_Files/"+str(group)+"_"+str(year)+"/"+str(module)+"_"+str(year)+".tsv"
-    movementTable = pd.read_csv(movement_path, delimiter = "\t",chunksize = 4000)
+    movementTable = pd.read_csv(movement_path, delimiter = "\t",chunksize = 10000)
     return movementTable
 
 
@@ -66,14 +67,11 @@ for year in years:
         for module in modules:
             movementTable = LoadChunkedYearModuleMovementTable(year, group, module)
             print("loaded movement file of "+year+", group: "+str(group)+", module: "+str(module))
-            i = 0
-            for data_chunk in movementTable:
-                print(i)
-                i += 1
-                # data_chunk['month'] = data_chunk['week_end']/100
-                # data_chunk['month'] = data_chunk['month'].astype(int)
-                # data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
-                # data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
+            for data_chunk in tqdm(movementTable):
+                data_chunk['month'] = data_chunk['week_end']/100
+                data_chunk['month'] = data_chunk['month'].astype(int)
+                data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
+                data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
             print("added store info to movement file of "+year+", group: "+str(group)+", module: "+str(module))
 
     # #load movements data
