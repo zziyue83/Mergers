@@ -7,7 +7,7 @@
 #SBATCH -t 4:00:00
 #SBATCH -p buyin
 #SBATCH --mail-user=yintianzhan2021@u.northwestern.edu
-#SBATCH --mem=20G
+#SBATCH --mem=4G
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
