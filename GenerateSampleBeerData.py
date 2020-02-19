@@ -62,10 +62,9 @@ years = ['2006','2007','2008','2009']
 groups = [5001]
 modules = [5000,5001,5005,5010,5015,5020]
 # modules = [5001]
-area_month_upc_Year = []
 aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first'}
 for year in years:
-    area_month_upc_list = []
+    area_month_upc_Year = []
     storeTable = LoadStoreTable(year)
     storeMap = storeTable.to_dict()
     dmaMap = storeMap['dma_code']
@@ -74,6 +73,7 @@ for year in years:
     #     print(dmaMap[key])
     for group in groups:
         for module in modules:
+            area_month_upc_list = []
             movementTable = LoadChunkedYearModuleMovementTable(year, group, module)
             print("loaded movement file of "+year+", group: "+str(group)+", module: "+str(module))
             # i = 0
@@ -85,6 +85,7 @@ for year in years:
                 # data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
                 # data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
                 area_month_upc = data_chunk.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
+                print(area_month_upc.iloc[0])
                 area_month_upc_list.append(area_month_upc)
             # print(i)
             area_month_upc = pd.concat(area_month_upc_list)
@@ -96,11 +97,11 @@ for year in years:
             # print("saved area-month-upc data. Year: "+year+" Group: "+str(group)+" Module: "+str(module))
             area_month_upc_Year.append(area_month_upc)
 
-#aggregate yearly result and save as csv file
-# aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first'}
-area_month_upc = pd.concat(area_month_upc_Year)
-area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-area_month_upc.to_csv("../../GeneratedData/BEER_area_month_upc.tsv", sep = '\t', encoding = 'utf-8')
+    #aggregate yearly result and save as csv file
+    # aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first'}
+    area_month_upc = pd.concat(area_month_upc_Year)
+    area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
+    area_month_upc.to_csv("../../GeneratedData/BEER_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8')
 
 #
 #     # Example:
