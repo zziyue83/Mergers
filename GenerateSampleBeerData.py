@@ -70,7 +70,7 @@ for year in years:
     storeMap = storeTable.to_dict()
     dmaMap = storeMap['dma_code']
     for key in dmaMap:
-        print(keu)
+        print(key)
         print(dmaMap[key])
 #     for group in groups:
 #         for module in modules:
