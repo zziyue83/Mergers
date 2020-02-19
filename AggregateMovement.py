@@ -13,6 +13,6 @@ print(module)
 years = ['2006','2007','2008','2009']
 
 for year in years:
-    rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+module+year
+    rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+module+"_"+year
     for file in os.listdir(rootdir):
         print(file)
