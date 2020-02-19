@@ -69,9 +69,9 @@ for year in years:
     storeTable = LoadStoreTable(year)
     storeMap = storeTable.to_dict()
     dmaMap = storeMap['dma_code']
-    for key in dmaMap:
-        print(key)
-        print(dmaMap[key])
+    # for key in dmaMap:
+    #     print(key)
+    #     print(dmaMap[key])
     for group in groups:
         for module in modules:
             movementTable = LoadChunkedYearModuleMovementTable(year, group, module)
