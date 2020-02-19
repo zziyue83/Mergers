@@ -62,6 +62,7 @@ if len(sys.argv) < 3:
     print("Not enough arguments")
     sys.exit()
 
+group = int(sys.argv[1])
 start = sys.argv[2]
 end = sys.argv[3]
 years = GenerateYearList(start, end)
