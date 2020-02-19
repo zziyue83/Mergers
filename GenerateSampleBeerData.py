@@ -68,17 +68,12 @@ for year in years:
     storeTable = LoadStoreTable(year)
     storeMap = storeTable.to_dict()
     dmaMap = storeMap['dma_code']
-    # for key in dmaMap:
-    #     print(key)
-    #     print(dmaMap[key])
     for group in groups:
         for module in modules:
             area_month_upc_list = []
             movementTable = LoadChunkedYearModuleMovementTable(year, group, module)
             print("loaded movement file of "+year+", group: "+str(group)+", module: "+str(module))
-            # i = 0
             for data_chunk in tqdm(movementTable):
-                # i = i+1
                 data_chunk['month'] = data_chunk['week_end']/100
                 data_chunk['month'] = data_chunk['month'].astype(int)
                 data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dmaMap)
@@ -90,17 +85,15 @@ for year in years:
             # print(i)
             area_month_upc = pd.concat(area_month_upc_list)
             area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-            # area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
             print(area_month_upc.shape)
             # save_path = "../../GeneratedData/BEER_area_month_upc_"+str(group)+"_"+str(module)+"_"+year+".tsv"
             # area_month_upc.to_csv(save_path, sep = '\t', encoding = 'utf-8')
             # print("saved area-month-upc data. Year: "+year+" Group: "+str(group)+" Module: "+str(module))
             area_month_upc_Year.append(area_month_upc)
 
-    #aggregate yearly result and save as csv file
-    # aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first'}
     area_month_upc = pd.concat(area_month_upc_Year)
     area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
+    area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
     area_month_upc.to_csv("../../GeneratedData/BEER_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8')
 
 #
