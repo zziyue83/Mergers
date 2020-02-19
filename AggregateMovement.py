@@ -64,7 +64,7 @@ group = int(group)
 print(group)
 
 start = sys.argv[2]
-end = sys.arg[3]
+end = sys.argv[3]
 years = GenerateYearList(start, end)
 print(years)
 
