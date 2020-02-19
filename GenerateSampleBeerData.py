@@ -67,62 +67,40 @@ aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'p
 for year in years:
     area_month_upc_list = []
     storeTable = LoadStoreTable(year)
-    for group in groups:
-        for module in modules:
-            movementTable = LoadChunkedYearModuleMovementTable(year, group, module)
-            print("loaded movement file of "+year+", group: "+str(group)+", module: "+str(module))
-            # i = 0
-            for data_chunk in tqdm(movementTable):
-                # i = i+1
-                data_chunk['month'] = data_chunk['week_end']/100
-                data_chunk['month'] = data_chunk['month'].astype(int)
-                data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
-                data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
-                area_month_upc = data_chunk.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
-                area_month_upc_list.append(area_month_upc)
-            # print(i)
-            area_month_upc = pd.concat(area_month_upc_list)
-            area_month_upc = area_month_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-            area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
-            print(area_month_upc.shape)
-            save_path = "../../GeneratedData/BEER_area_month_upc_"+str(group)+"_"+str(module)+"_"+year+".tsv"
-            area_month_upc.to_csv(save_path, sep = '\t', encoding = 'utf-8')
-            print("saved area-month-upc data. Year: "+year+" Group: "+str(group)+" Module: "+str(module))
-            area_month_upc_Year.append(area_month_upc)
-
-#aggregate yearly result and save as csv file
-aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first'}
-area_month_upc = pd.concat(area_month_upc_Year)
-area_month_upc = area_month_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-area_month_upc.to_csv("../../GeneratedData/BEER_area_month_upc_5001.tsv", sep = '\t', encoding = 'utf-8')
-
-
-    # #load movements data
-    # # movements_path = "../../Data/nielsen_extracts/RMS/2006/Movement_Files/5001_2006/5000_2006.tsv"
-    # movements_path = "../../Data/nielsen_extracts/RMS/"+year+"/Movement_Files/5001_"+year+"/5000_"+year+".tsv"
-    # movements = pd.read_csv(movements_path, delimiter = "\t", chunksize = 1000)
-    #
-    # # find data corresponding to beer upcs
-    # # data too large so slice to chunks
-    # chunk_list = []
-    # for data_chunk in movements:
-    #     filtered_chunk = data_chunk[data_chunk['upc'].isin(beer_UPCs)]
-    #     chunk_list.append(filtered_chunk)
-    # store_week_upc = pd.concat(chunk_list)
-    # print(store_week_upc.shape)
-
-#     # group data by month, upc, store_code_uc
-#     store_week_upc['month'] = store_week_upc['week_end']/100
-#     store_week_upc['month'] = store_week_upc['month'].astype(int)
-#     aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first'}
-#     store_month_upc = store_week_upc.groupby(['month', 'upc','store_code_uc'], as_index = False).aggregate(aggregation_function).reindex(columns = store_week_upc.columns)
-#     store_month_upc_Year.append(store_month_upc)
-#     print(store_month_upc)
+    storeMap = storeTable.to_dict()
+    dmaMap = storeMap['dma_code']
+    for key in dmaMap:
+        print(keu)
+        print(dmaMap[key])
+#     for group in groups:
+#         for module in modules:
+#             movementTable = LoadChunkedYearModuleMovementTable(year, group, module)
+#             print("loaded movement file of "+year+", group: "+str(group)+", module: "+str(module))
+#             # i = 0
+#             for data_chunk in tqdm(movementTable):
+#                 # i = i+1
+#                 data_chunk['month'] = data_chunk['week_end']/100
+#                 data_chunk['month'] = data_chunk['month'].astype(int)
+#                 data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
+#                 data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
+#                 area_month_upc = data_chunk.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
+#                 area_month_upc_list.append(area_month_upc)
+#             # print(i)
+#             area_month_upc = pd.concat(area_month_upc_list)
+#             area_month_upc = area_month_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
+#             area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
+#             print(area_month_upc.shape)
+#             save_path = "../../GeneratedData/BEER_area_month_upc_"+str(group)+"_"+str(module)+"_"+year+".tsv"
+#             area_month_upc.to_csv(save_path, sep = '\t', encoding = 'utf-8')
+#             print("saved area-month-upc data. Year: "+year+" Group: "+str(group)+" Module: "+str(module))
+#             area_month_upc_Year.append(area_month_upc)
 #
 # #aggregate yearly result and save as csv file
-# store_month_upc = pd.concat(store_month_upc_Year)
-# store_month_upc.drop('week_end', axis=1, inplace=True)
-# store_month_upc.to_csv("../../GeneratedData/BEER_store_month_upc.tsv", sep = '\t', encoding = 'utf-8')
+# aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first'}
+# area_month_upc = pd.concat(area_month_upc_Year)
+# area_month_upc = area_month_upc.groupby(['month', 'upc','fips_state_code','fips_county_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
+# area_month_upc.to_csv("../../GeneratedData/BEER_area_month_upc_5001.tsv", sep = '\t', encoding = 'utf-8')
+
 #
 #     # Example:
 #     # store_code_uc      738532.0
