@@ -85,7 +85,7 @@ for year in years:
                 # data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
                 # data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
                 area_month_upc = data_chunk.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
-                print(area_month_upc.iloc[0])
+                # print(area_month_upc.iloc[0])
                 area_month_upc_list.append(area_month_upc)
             # print(i)
             area_month_upc = pd.concat(area_month_upc_list)
