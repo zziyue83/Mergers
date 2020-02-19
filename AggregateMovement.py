@@ -70,7 +70,7 @@ print(years)
 
 
 for year in years:
-    rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+group+"_"+year
+    rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+str(group)+"_"+year
     for file in os.listdir(rootdir):
         if "tsv" in file:
             path = os.path.join(rootdir, file)
