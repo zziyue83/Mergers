@@ -60,8 +60,8 @@ def LoadChunkedYearModuleMovementTable(year, group, module):
 #process movement files by year
 years = ['2006','2007','2008','2009']
 groups = [5001]
-# modules = [5000,5001,5005,5010,5015,5020]
-modules = [5001]
+modules = [5000,5001,5005,5010,5015,5020]
+# modules = [5001]
 area_month_upc_Year = []
 aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first'}
 for year in years:
@@ -91,16 +91,16 @@ for year in years:
             area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
             # area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
             print(area_month_upc.shape)
-            save_path = "../../GeneratedData/BEER_area_month_upc_"+str(group)+"_"+str(module)+"_"+year+".tsv"
-            area_month_upc.to_csv(save_path, sep = '\t', encoding = 'utf-8')
-            print("saved area-month-upc data. Year: "+year+" Group: "+str(group)+" Module: "+str(module))
+            # save_path = "../../GeneratedData/BEER_area_month_upc_"+str(group)+"_"+str(module)+"_"+year+".tsv"
+            # area_month_upc.to_csv(save_path, sep = '\t', encoding = 'utf-8')
+            # print("saved area-month-upc data. Year: "+year+" Group: "+str(group)+" Module: "+str(module))
             area_month_upc_Year.append(area_month_upc)
 
 #aggregate yearly result and save as csv file
 # aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first'}
 area_month_upc = pd.concat(area_month_upc_Year)
 area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-area_month_upc.to_csv("../../GeneratedData/BEER_area_month_upc_5001.tsv", sep = '\t', encoding = 'utf-8')
+area_month_upc.to_csv("../../GeneratedData/BEER_area_month_upc.tsv", sep = '\t', encoding = 'utf-8')
 
 #
 #     # Example:
