@@ -60,7 +60,7 @@ def LoadChunkedYearModuleMovementTable(year, group, module):
 #process movement files by year
 years = ['2006','2007','2008','2009']
 groups = [5001]
-modules = [5015,5020]
+modules = [5000,5001,5005,5010,5015,5020]
 # modules = [5001]
 aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first'}
 for year in years:
