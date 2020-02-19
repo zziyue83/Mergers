@@ -58,13 +58,14 @@ years = ['2006','2007','2008','2009']
 groups = [5001]
 modules = [5000,5001,5005,5010,5015,5020]
 aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first','sales':'sum'}
-products = LoadWantedProduct("BEER")
+products = LoadWantedProduct(5001)
 productMap = products.to_dict()
 for year in years:
     area_month_upc_Year = []
     storeTable = LoadStoreTable(year)
     storeMap = storeTable.to_dict()
     dmaMap = storeMap['dma_code']
+
     for group in groups:
         for module in modules:
             area_month_upc_list = []
