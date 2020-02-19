@@ -44,16 +44,16 @@ def LoadChunkedYearModuleMovementTable(year, group, module):
 
 
 
-beerProducts = LoadWantedProduct("BEER")
-# record beer upcs
-beer_UPCs = {}
-for index, row in beerProducts.iterrows():
-    upc = row['upc']
-    beer_UPCs[upc] = 0
-    # for purpose of running quickly
-    if len(beer_UPCs) >= 10:
-        break
-print("Finished recording beer UPCs")
+# beerProducts = LoadWantedProduct("BEER")
+# # record beer upcs
+# beer_UPCs = {}
+# for index, row in beerProducts.iterrows():
+#     upc = row['upc']
+#     beer_UPCs[upc] = 0
+#     # for purpose of running quickly
+#     if len(beer_UPCs) >= 10:
+#         break
+# print("Finished recording beer UPCs")
 
 
 
