@@ -16,4 +16,5 @@ for year in years:
     rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+module+"_"+year
     for file in os.listdir(rootdir):
         if "tsv" in file:
-            print(file)
+            path = os.path.join(rootdir, file)
+            print(path)
