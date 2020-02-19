@@ -1,5 +1,4 @@
 import pandas as pd
-import os
 from ProductModuleMap import productModuleMap
 from tqdm import tqdm
 
@@ -61,7 +60,6 @@ def LoadChunkedYearModuleMovementTable(year, group, module):
 years = ['2006','2007','2008','2009']
 groups = [5001]
 modules = [5000,5001,5005,5010,5015,5020]
-# modules = [5001]
 aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first'}
 for year in years:
     area_month_upc_Year = []
@@ -91,15 +89,3 @@ for year in years:
     area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
     area_month_upc.to_csv("../../GeneratedData/BEER_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8')
     print("Saved dma_month_upc data for year "+year)
-
-#
-#     # Example:
-#     # store_code_uc      738532.0
-#     # upc              15000004.0
-#     # week_end         20060107.0
-#     # units                   2.0
-#     # prmult                  1.0
-#     # price                   1.5
-#     # feature                 NaN
-#     # display                 NaN
-#     # month              200601.0
