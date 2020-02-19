@@ -62,10 +62,6 @@ if len(sys.argv) < 3:
     print("Not enough arguments")
     sys.exit()
 
-group = sys.argv[1]
-group = int(group)
-print(group)
-
 start = sys.argv[2]
 end = sys.argv[3]
 years = GenerateYearList(start, end)
@@ -95,7 +91,7 @@ for year in years:
     for group in groups:
         for file in os.listdir(rootdir):
             area_month_upc_list = []
-            movementTable = LoadChunkedYearModuleMovementTable(file)
+            movementTable = LoadChunkedYearModuleMovementTable(path = file)
             print("loaded movement file of " + file)
             for data_chunk in tqdm(movementTable):
                 data_chunk['month'] = data_chunk['week_end']/100
