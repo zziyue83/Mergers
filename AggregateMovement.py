@@ -43,9 +43,9 @@ def LoadStoreTable(year):
 def LoadChunkedYearModuleMovementTable(year = 2006, group = 5001, module = 5000, path = ''):
     if path == '':
         movement_path = "../../Data/nielsen_extracts/RMS/"+str(year)+"/Movement_Files/"+str(group)+"_"+str(year)+"/"+str(module)+"_"+str(year)+".tsv"
-        movementTable = pd.read_csv(movement_path, delimiter = "\t",chunksize = 1000000)
+        movementTable = pd.read_csv(movement_path, delimiter = "\t", chunksize = 1000000)
     else:
-        movementTable = pd.read_csv(path, delimiter = "\t",chunksize = 1000000)
+        movementTable = pd.read_csv(path, delimiter = "\t", chunksize = 1000000)
     return movementTable
 
 def GenerateYearList(start, end):
@@ -96,6 +96,7 @@ for year in years:
             movementTable = LoadChunkedYearModuleMovementTable(path = path)
             print("loaded movement file of " + file)
             for data_chunk in tqdm(movementTable):
+                print(data_chunk.iloc[0])
                 data_chunk['month'] = data_chunk['week_end']/100
                 data_chunk['month'] = data_chunk['month'].astype(int)
                 data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dmaMap)
