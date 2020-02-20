@@ -87,12 +87,13 @@ for year in years:
     storeTable = LoadStoreTable(year)
     storeMap = storeTable.to_dict()
     dmaMap = storeMap['dma_code']
-    rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+str(group)+"_"+year
 
     for group in groups:
+        rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+str(group)+"_"+year
         for file in os.listdir(rootdir):
+            path = os.path.join(rootdir, file)
             area_month_upc_list = []
-            movementTable = LoadChunkedYearModuleMovementTable(path = file)
+            movementTable = LoadChunkedYearModuleMovementTable(path = path)
             print("loaded movement file of " + file)
             for data_chunk in tqdm(movementTable):
                 data_chunk['month'] = data_chunk['week_end']/100
