@@ -69,6 +69,7 @@ def AggregateMovement(years, groups):
         dmaMap = storeMap['dma_code']
 
         for group in groups:
+            countDownMerge = 5
             rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+group+"_"+year
             for file in os.listdir(rootdir):
                 if "tsv" in file and year in file:
@@ -94,6 +95,12 @@ def AggregateMovement(years, groups):
                     area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
                     print(area_month_upc.shape)
                     area_month_upc_Year.append(area_month_upc)
+                    countDownMerge -= 1
+                    if countDownMerge == 0:
+                        area_month_upc = pd.concat(area_month_upc_Year)
+                        area_month_upc_Year = []
+                        area_month_upc_Year.append(area_month_upc)
+                        countDownMerge = 5
 
         area_month_upc = pd.concat(area_month_upc_Year)
         area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)

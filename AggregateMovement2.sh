@@ -5,7 +5,7 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -c 4
 #SBATCH -t 1:00:00
-#SBATCH --mail-user=gastonillanes@gmail.com
+#SBATCH --mail-user=yintianzhan2021@u.northwestern.edu
 #SBATCH --array=1
 #SBATCH --mem=0G
 #SBATCH --nodes=1
