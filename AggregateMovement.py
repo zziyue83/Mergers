@@ -90,29 +90,29 @@ for year in years:
 
     for group in groups:
         rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+str(group)+"_"+year
-        for file in os.listdir(rootdir):
-            path = os.path.join(rootdir, file)
-            area_month_upc_list = []
-            movementTable = LoadChunkedYearModuleMovementTable(path = path)
-            print("loaded movement file of " + file)
-            for data_chunk in tqdm(movementTable):
-                print(data_chunk.iloc[0])
-                data_chunk['month'] = data_chunk['week_end']/100
-                data_chunk['month'] = data_chunk['month'].astype(int)
-                data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dmaMap)
-                data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
-                # data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
-                # data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
-                # data_chunk['size1_amount'] = data_chunk['upc'].map(productMap['size1_amount'])
-                # data_chunk['multi'] = data_chunk['upc'].map(productMap['multi'])
-                # data_chunk['brand_code_uc'] = data_chunk['upc'].map(productMap['brand_code_uc'])
-                # data_chunk['brand_descr'] = data_chunk['upc'].map(productMap['brand_descr'])
-                area_month_upc = data_chunk.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
-                area_month_upc_list.append(area_month_upc)
-            area_month_upc = pd.concat(area_month_upc_list)
-            area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-            print(area_month_upc.shape)
-            area_month_upc_Year.append(area_month_upc)
+        for file in os.listdir(rootdir)
+            if "tsv" in file and year in file:
+                path = os.path.join(rootdir, file)
+                area_month_upc_list = []
+                movementTable = LoadChunkedYearModuleMovementTable(path = path)
+                print("loaded movement file of " + file)
+                for data_chunk in tqdm(movementTable):
+                    data_chunk['month'] = data_chunk['week_end']/100
+                    data_chunk['month'] = data_chunk['month'].astype(int)
+                    data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dmaMap)
+                    data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
+                    # data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
+                    # data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
+                    # data_chunk['size1_amount'] = data_chunk['upc'].map(productMap['size1_amount'])
+                    # data_chunk['multi'] = data_chunk['upc'].map(productMap['multi'])
+                    # data_chunk['brand_code_uc'] = data_chunk['upc'].map(productMap['brand_code_uc'])
+                    # data_chunk['brand_descr'] = data_chunk['upc'].map(productMap['brand_descr'])
+                    area_month_upc = data_chunk.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
+                    area_month_upc_list.append(area_month_upc)
+                area_month_upc = pd.concat(area_month_upc_list)
+                area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
+                print(area_month_upc.shape)
+                area_month_upc_Year.append(area_month_upc)
 
     area_month_upc = pd.concat(area_month_upc_Year)
     area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
