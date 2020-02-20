@@ -80,6 +80,7 @@ def AggregateMovement(years, groups):
                     for data_chunk in tqdm(movementTable):
                         i += 1
                     print("total chunks: "+str(i))
+                    movementTable = LoadChunkedYearModuleMovementTable(path = path)
                     for data_chunk in tqdm(movementTable):
                         data_chunk['month'] = data_chunk['week_end']/100
                         data_chunk['month'] = data_chunk['month'].astype(int)
