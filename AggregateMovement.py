@@ -42,7 +42,7 @@ def LoadStoreTable(year):
 
 def LoadChunkedYearModuleMovementTable(year = 2006, group = 5001, module = 5000, path = ''):
     if path == '':
-        movement_path = "../../Data/nielsen_extracts/RMS/"+str(year)+"/Movement_Files/"+str(group)+"_"+str(year)+"/"+str(module)+"_"+str(year)+".tsv"
+        movement_path = "../../Data/nielsen_extracts/RMS/"+str(year)+"/Movement_Files/"+group+"_"+str(year)+"/"+str(module)+"_"+str(year)+".tsv"
         movementTable = pd.read_csv(movement_path, delimiter = "\t", chunksize = 1000000)
     else:
         movementTable = pd.read_csv(path, delimiter = "\t", chunksize = 1000000)
@@ -68,7 +68,7 @@ def AggregateMovement(years, groups):
         dmaMap = storeMap['dma_code']
 
         for group in groups:
-            rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+str(group)+"_"+year
+            rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+group+"_"+year
             for file in os.listdir(rootdir):
                 if "tsv" in file and year in file:
                     path = os.path.join(rootdir, file)
@@ -105,7 +105,7 @@ if len(sys.argv) < 3:
     print("Not enough arguments")
     sys.exit()
 
-group = int(sys.argv[1])
+group = sys.argv[1]
 start = sys.argv[2]
 end = sys.argv[3]
 years = GenerateYearList(start, end)
