@@ -91,28 +91,37 @@ def AggregateMovement(years, groups):
                         # data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
                         area_month_upc = data_chunk.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
                         area_month_upc_list.append(area_month_upc)
+
                     area_month_upc = pd.concat(area_month_upc_list)
                     area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
+                    area_month_upc['brand_code_uc'] = area_month_upc['upc'].map(productMap['brand_code_uc'])
+                    area_month_upc['brand_descr'] = area_month_upc['upc'].map(productMap['brand_descr'])
+                    area_month_upc['multi'] = area_month_upc['upc'].map(productMap['multi'])
+                    area_month_upc['size1_amount'] = area_month_upc['upc'].map(productMap['size1_amount'])
+                    area_month_upc['volume'] = area_month_upc['units'] * area_month_upc['size1_amount'] * area_month_upc['multi']
+                    area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
+                    area_month_upc.to_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8', mode = 'a')
+                    print("Saved dma_month_upc data for year "+year)
                     print(area_month_upc.shape)
-                    area_month_upc_Year.append(area_month_upc)
+                    # area_month_upc_Year.append(area_month_upc)
                     countDownMerge -= 1
-                    if countDownMerge == 0:
-                        print("try shortening the list")
-                        area_month_upc = pd.concat(area_month_upc_Year)
-                        area_month_upc_Year = []
-                        area_month_upc_Year.append(area_month_upc)
-                        countDownMerge = 5
+                    # if countDownMerge == 0:
+                    #     print("try shortening the list")
+                    #     area_month_upc = pd.concat(area_month_upc_Year)
+                    #     area_month_upc_Year = []
+                    #     area_month_upc_Year.append(area_month_upc)
+                    #     countDownMerge = 5
 
-        area_month_upc = pd.concat(area_month_upc_Year)
-        area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-        area_month_upc['brand_code_uc'] = area_month_upc['upc'].map(productMap['brand_code_uc'])
-        area_month_upc['brand_descr'] = area_month_upc['upc'].map(productMap['brand_descr'])
-        area_month_upc['multi'] = area_month_upc['upc'].map(productMap['multi'])
-        area_month_upc['size1_amount'] = area_month_upc['upc'].map(productMap['size1_amount'])
-        area_month_upc['volume'] = area_month_upc['units'] * area_month_upc['size1_amount'] * area_month_upc['multi']
-        area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
-        area_month_upc.to_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8')
-        print("Saved dma_month_upc data for year "+year)
+        # area_month_upc = pd.concat(area_month_upc_Year)
+        # area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
+        # area_month_upc['brand_code_uc'] = area_month_upc['upc'].map(productMap['brand_code_uc'])
+        # area_month_upc['brand_descr'] = area_month_upc['upc'].map(productMap['brand_descr'])
+        # area_month_upc['multi'] = area_month_upc['upc'].map(productMap['multi'])
+        # area_month_upc['size1_amount'] = area_month_upc['upc'].map(productMap['size1_amount'])
+        # area_month_upc['volume'] = area_month_upc['units'] * area_month_upc['size1_amount'] * area_month_upc['multi']
+        # area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
+        # area_month_upc.to_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8')
+        # print("Saved dma_month_upc data for year "+year)
 
 
 if len(sys.argv) < 3:
