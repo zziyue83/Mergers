@@ -58,6 +58,7 @@ def GenerateYearList(start, end):
 
 def AggregateMovement(years, groups):
     aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first','sales':'sum'}
+    group = groups[0]
     product, products = LoadWantedProduct(group)
     productMap = products.to_dict()
     for year in years:
