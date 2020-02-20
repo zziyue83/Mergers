@@ -97,6 +97,7 @@ def AggregateMovement(years, groups):
                     area_month_upc_Year.append(area_month_upc)
                     countDownMerge -= 1
                     if countDownMerge == 0:
+                        print("try shortening the list")
                         area_month_upc = pd.concat(area_month_upc_Year)
                         area_month_upc_Year = []
                         area_month_upc_Year.append(area_month_upc)
