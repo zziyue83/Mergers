@@ -56,8 +56,50 @@ def GenerateYearList(start, end):
         years.append(str(i))
     return years
 
-print('Number of arguments:', len(sys.argv), 'arguments.')
-print('Argument List:', str(sys.argv))
+def AggregateMovement(years, groups):
+    aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first','sales':'sum'}
+    product, products = LoadWantedProduct(group)
+    productMap = products.to_dict()
+    for year in years:
+        area_month_upc_Year = []
+        storeTable = LoadStoreTable(year)
+        storeMap = storeTable.to_dict()
+        dmaMap = storeMap['dma_code']
+
+        for group in groups:
+            rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+str(group)+"_"+year
+            for file in os.listdir(rootdir):
+                if "tsv" in file and year in file:
+                    path = os.path.join(rootdir, file)
+                    area_month_upc_list = []
+                    movementTable = LoadChunkedYearModuleMovementTable(path = path)
+                    print("loaded movement file of " + file)
+                    for data_chunk in tqdm(movementTable):
+                        data_chunk['month'] = data_chunk['week_end']/100
+                        data_chunk['month'] = data_chunk['month'].astype(int)
+                        data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dmaMap)
+                        data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
+                        # data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
+                        # data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
+                        area_month_upc = data_chunk.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
+                        area_month_upc_list.append(area_month_upc)
+                    area_month_upc = pd.concat(area_month_upc_list)
+                    area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
+                    print(area_month_upc.shape)
+                    area_month_upc_Year.append(area_month_upc)
+
+        area_month_upc = pd.concat(area_month_upc_Year)
+        area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
+        area_month_upc['brand_code_uc'] = area_month_upc['upc'].map(productMap['brand_code_uc'])
+        area_month_upc['brand_descr'] = area_month_upc['upc'].map(productMap['brand_descr'])
+        area_month_upc['multi'] = area_month_upc['upc'].map(productMap['multi'])
+        area_month_upc['size1_amount'] = area_month_upc['upc'].map(productMap['size1_amount'])
+        area_month_upc['volume'] = area_month_upc['units'] * area_month_upc['size1_amount'] * area_month_upc['multi']
+        area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
+        area_month_upc.to_csv("../../GeneratedData/BEER_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8')
+        print("Saved dma_month_upc data for year "+year)
+
+
 if len(sys.argv) < 3:
     print("Not enough arguments")
     sys.exit()
@@ -67,60 +109,5 @@ start = sys.argv[2]
 end = sys.argv[3]
 years = GenerateYearList(start, end)
 print(years)
-
-
-# for year in years:
-#     rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+str(group)+"_"+year
-#     for file in os.listdir(rootdir):
-#         if "tsv" in file:
-#             path = os.path.join(rootdir, file)
-#             print(path)
-
-#process movement files by year
 groups = [group]
-# modules = [5000,5001,5005,5010,5015,5020]
-aggregation_function = {'week_end': 'first', 'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first','sales':'sum'}
-product, products = LoadWantedProduct(group)
-productMap = products.to_dict()
-for year in years:
-    area_month_upc_Year = []
-    storeTable = LoadStoreTable(year)
-    storeMap = storeTable.to_dict()
-    dmaMap = storeMap['dma_code']
-
-    for group in groups:
-        rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+str(group)+"_"+year
-        for file in os.listdir(rootdir):
-            if "tsv" in file and year in file:
-                path = os.path.join(rootdir, file)
-                area_month_upc_list = []
-                movementTable = LoadChunkedYearModuleMovementTable(path = path)
-                print("loaded movement file of " + file)
-                for data_chunk in tqdm(movementTable):
-                    data_chunk['month'] = data_chunk['week_end']/100
-                    data_chunk['month'] = data_chunk['month'].astype(int)
-                    data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dmaMap)
-                    data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
-                    # data_chunk['fips_state_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_state_code, axis = 1)
-                    # data_chunk['fips_county_code'] = data_chunk.apply(lambda x: storeTable.loc[x['store_code_uc']].fips_county_code, axis = 1)
-                    # data_chunk['size1_amount'] = data_chunk['upc'].map(productMap['size1_amount'])
-                    # data_chunk['multi'] = data_chunk['upc'].map(productMap['multi'])
-                    # data_chunk['brand_code_uc'] = data_chunk['upc'].map(productMap['brand_code_uc'])
-                    # data_chunk['brand_descr'] = data_chunk['upc'].map(productMap['brand_descr'])
-                    area_month_upc = data_chunk.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
-                    area_month_upc_list.append(area_month_upc)
-                area_month_upc = pd.concat(area_month_upc_list)
-                area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-                print(area_month_upc.shape)
-                area_month_upc_Year.append(area_month_upc)
-
-    area_month_upc = pd.concat(area_month_upc_Year)
-    area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-    area_month_upc['brand_code_uc'] = area_month_upc['upc'].map(productMap['brand_code_uc'])
-    area_month_upc['brand_descr'] = area_month_upc['upc'].map(productMap['brand_descr'])
-    area_month_upc['multi'] = area_month_upc['upc'].map(productMap['multi'])
-    area_month_upc['size1_amount'] = area_month_upc['upc'].map(productMap['size1_amount'])
-    area_month_upc['volume'] = area_month_upc['units'] * area_month_upc['size1_amount'] * area_month_upc['multi']
-    area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
-    area_month_upc.to_csv("../../GeneratedData/BEER_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8')
-    print("Saved dma_month_upc data for year "+year)
+AggregateMovement(years, groups)
