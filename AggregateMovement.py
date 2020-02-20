@@ -10,7 +10,8 @@ from tqdm import tqdm
 def LoadWantedProduct(product_group_code):
     products_path = "../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
     products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0, index_col = "upc")
-    wantedProducts = products[products['product_group_code'] == product_group_code]
+    group = int(product_group_code)
+    wantedProducts = products[products['product_group_code'] == group]
     product = wantedProducts.iloc[0]['product_group_descr']
     print("Loaded "+product+" products, group code: " + str(product_group_code))
     return product, wantedProducts
