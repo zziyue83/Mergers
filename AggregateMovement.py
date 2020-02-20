@@ -90,7 +90,7 @@ for year in years:
 
     for group in groups:
         rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+str(group)+"_"+year
-        for file in os.listdir(rootdir)
+        for file in os.listdir(rootdir):
             if "tsv" in file and year in file:
                 path = os.path.join(rootdir, file)
                 area_month_upc_list = []
