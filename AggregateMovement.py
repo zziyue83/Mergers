@@ -101,10 +101,10 @@ def AggregateMovement(years, groups):
                     area_month_upc['volume'] = area_month_upc['units'] * area_month_upc['size1_amount'] * area_month_upc['multi']
                     area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
                     area_month_upc.to_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8', mode = 'a')
-                    print("Saved dma_month_upc data for year "+year)
+                    print("Saved dma_month_upc data for year "+year+", group: "+group+", product: "+product+", file: "+file)
                     print(area_month_upc.shape)
                     # area_month_upc_Year.append(area_month_upc)
-                    countDownMerge -= 1
+                    # countDownMerge -= 1
                     # if countDownMerge == 0:
                     #     print("try shortening the list")
                     #     area_month_upc = pd.concat(area_month_upc_Year)
