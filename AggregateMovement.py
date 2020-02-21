@@ -67,6 +67,10 @@ def AggregateMovement(years, groups):
         storeTable = LoadStoreTable(year)
         storeMap = storeTable.to_dict()
         dmaMap = storeMap['dma_code']
+        savePath = "../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv"
+        if os.path.exist(savePath):
+            os.remove(savePath)
+            print("deleted previous file")
 
         for group in groups:
             countDownMerge = 5
@@ -100,7 +104,7 @@ def AggregateMovement(years, groups):
                     area_month_upc['size1_amount'] = area_month_upc['upc'].map(productMap['size1_amount'])
                     area_month_upc['volume'] = area_month_upc['units'] * area_month_upc['size1_amount'] * area_month_upc['multi']
                     area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
-                    area_month_upc.to_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8', mode = 'a')
+                    area_month_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8', mode = 'a')
                     print("Saved dma_month_upc data for year "+year+", group: "+group+", product: "+product+", file: "+file)
                     print(area_month_upc.shape)
                     # area_month_upc_Year.append(area_month_upc)
