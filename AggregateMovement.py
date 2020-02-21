@@ -68,9 +68,9 @@ def AggregateMovement(years, groups):
         storeMap = storeTable.to_dict()
         dmaMap = storeMap['dma_code']
         savePath = "../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv"
-        if os.path.exist(savePath):
+        if os.path.exists(savePath):
             os.remove(savePath)
-            print("deleted previous file")
+            print("deleted previous file, product:")
 
         for group in groups:
             countDownMerge = 5
@@ -108,13 +108,6 @@ def AggregateMovement(years, groups):
                     print("Saved dma_month_upc data for year "+year+", group: "+group+", product: "+product+", file: "+file)
                     print(area_month_upc.shape)
                     # area_month_upc_Year.append(area_month_upc)
-                    # countDownMerge -= 1
-                    # if countDownMerge == 0:
-                    #     print("try shortening the list")
-                    #     area_month_upc = pd.concat(area_month_upc_Year)
-                    #     area_month_upc_Year = []
-                    #     area_month_upc_Year.append(area_month_upc)
-                    #     countDownMerge = 5
 
         # area_month_upc = pd.concat(area_month_upc_Year)
         # area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
