@@ -1,12 +1,12 @@
 import pandas as pd
-<<<<<<< HEAD
+# <<<<<<< HEAD
 
 def MarketShare(nupc = 300, year, product):
     path = "../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv"
     area_month_upc = pd.read_csv(path, delimiter = "\t")
     area_month_upc['sale'] = area_month_upc['units']*area_month_upc['prmult']*area_month_upc['price']
     aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','store_code_uc':'first'}
-=======
+# =======
 import sys
 
 def GenerateYearList(start, end):
@@ -38,4 +38,4 @@ product = sys.argv[3]
 years = GenerateYearList(start, end)
 print(years)
 MarketShare(product, years)
->>>>>>> fc0f14f7f4cc63df8fc9b9cfc1a730ed3a969f91
+# >>>>>>> fc0f14f7f4cc63df8fc9b9cfc1a730ed3a969f91
