@@ -70,7 +70,7 @@ def AggregateMovement(years, groups):
         savePath = "../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv"
         if os.path.exists(savePath):
             os.remove(savePath)
-            print("deleted previous file, product:")
+            print("deleted previous file, product: "+product+", year: "+year)
 
         for group in groups:
             countDownMerge = 5
