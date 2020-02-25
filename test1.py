@@ -7,7 +7,7 @@ for data_chunk in tqdm(products):
     if i == 1:
         break
     else:
-        print(data_chunk.iloc[-1])
+        print(data_chunk.iloc[0])
         i = i + 1
 
 # print(a[a['volume']=='volume'])
