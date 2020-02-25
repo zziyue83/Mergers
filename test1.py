@@ -1,6 +1,6 @@
 import pandas as pd
 from tqdm import tqdm
-products = pd.read_csv("../../GeneratedData/"+"CANDY"+"_dma_month_upc_"+"2009"+".tsv", header = 0, delimiter = "\t", index_col = "upc", chunksize = 10000001)
+products = pd.read_csv("../../GeneratedData/"+"CANDY"+"_dma_month_upc_"+"2009"+".tsv", header = 0, delimiter = "\t", index_col = "upc", chunksize = 100000)
 brandsVolume = pd.DataFrame()
 i = 0
 for data_chunk in tqdm(products):
