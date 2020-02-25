@@ -12,5 +12,5 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-# python AggregateMovement.py 0503 2006 2009
-python test1.py
+python AggregateMovement.py 0503 2006 2009
+# python test1.py
