@@ -75,6 +75,7 @@ def AggregateMovement(years, groups):
         for group in groups:
             countDownMerge = 5
             rootdir = "/projects/b1048/gillanes/Mergers/Data/nielsen_extracts/RMS/"+year+"/Movement_Files/"+group+"_"+year
+            firstFile = True
             for file in os.listdir(rootdir):
                 if "tsv" in file and year in file:
                     path = os.path.join(rootdir, file)
@@ -104,7 +105,11 @@ def AggregateMovement(years, groups):
                     area_month_upc['size1_amount'] = area_month_upc['upc'].map(productMap['size1_amount'])
                     area_month_upc['volume'] = area_month_upc['units'] * area_month_upc['size1_amount'] * area_month_upc['multi']
                     area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
-                    area_month_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8', mode = 'a')
+                    if firstFile:
+                        area_month_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8')
+                        firstFile = False
+                    else:
+                        area_month_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8', mode = 'a', header = False)
                     print("Saved dma_month_upc data for year "+year+", group: "+group+", product: "+product+", file: "+file)
                     print(area_month_upc.shape)
                     # area_month_upc_Year.append(area_month_upc)
