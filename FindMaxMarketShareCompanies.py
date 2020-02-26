@@ -26,13 +26,10 @@ def MarketShare(product, years):
         print(len(brandsCumuYear))
 
     brands = list(set(brandsCumuYear))
-    print(len(brands))
-    # for key in brandsMap['brand_descr']:
-    #     print(key)
     brands_descr = [brandsMap['brand_descr'][bcode] for bcode in brands]
-    print(brands_descr)
-    print(len(brands_descr))
-    return brands
+    dict = {'brand_code_uc': brands, 'brand_descr': brands_descr}
+    topBrandDf = pd.DataFrame(dict)
+    topBrandDf.to_csv('Top 100 '+product+'.csv', delimiter=',')
 
 if len(sys.argv) < 4:
     print("Not enough arguments")
