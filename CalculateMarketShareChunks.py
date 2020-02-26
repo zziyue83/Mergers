@@ -15,7 +15,7 @@ def MarketShare(product, years):
         brandsVolume = pd.DataFrame()
         for data_chunk in tqdm(productsTable):
             data_chunk.volume = data_chunk.volume.astype('float64')
-            brandsVolume = pd.concat([brandsVolume,data_chunk.groupby(['month','brand_code_uc']).agg({'volume': 'sum'})])
+            brandsVolume = pd.concat([brandsVolume,data_chunk.groupby(['month','brand_descr']).agg({'volume': 'sum'})])
         brandsVolume = brandsVolume.groupby(level=[0,1]).agg({'volume': 'sum'})
         top100forEachMonth = brandsVolume.groupby(level=0)['volume'].nlargest(100)
         brandsCumuYear.extend(list(set(top100forEachMonth.index.get_level_values(2))))
@@ -23,7 +23,8 @@ def MarketShare(product, years):
         
     brands = list(set(brandsCumuYear))
     print(len(brands))
-    print(brands)    
+    brands = pd.DataFrame(brands,columns=['brand name'])
+    print(brands)
     return brands
 
 if len(sys.argv) < 4:
