@@ -1,0 +1,69 @@
+\begin{document}
+
+Merger simulation outline
+\begin{itemize}
+	\item Define market
+	\item Define characteristics
+	\begin{itemize}
+		\item What do previous merger papers do?
+	\end{itemize}	
+	\item Define instruments
+	\begin{itemize}
+		\item BLP
+		\item Diff
+		\item Input prices
+	\end{itemize}
+	\item Micro-moments?
+	\item Cross-validation for demand?
+\end{itemize}
+
+Timeline
+\begin{itemize}
+\item Winter 2020
+	\begin{itemize}
+	\item Identify test mergers - is there a strategic way to do this?
+	\item Identify useful undergrads
+	\item Find DMA level demographic dataset 
+	\item Finish beer example
+	\end{itemize}
+\item Spring 2020
+	\begin{itemize}
+	\item Identify all mergers
+	\item Run through 10-50 mergers to identify issues
+	\end{itemize}
+\item Summer 2020
+	\begin{itemize}
+	\item Mergers identified
+	\item General codebase ready
+	\item Estimating for all mergers
+	\end{itemize}
+\item Fall 2020
+	\begin{itemize}
+	\item Write draft
+	\end{itemize}
+\end{itemize}
+
+Workflow
+\begin{itemize}
+	\item Identify a merger
+	\item Pull Nielsen Scanner data
+	\begin{itemize}	
+		\item All products in the same category - discuss if it seems difficult. Drop all other products
+		\item Window around the merger - 2 years for now. Drop all other periods
+		\item Aggregate to month-DMA level. This is a market
+		\item Can we get product information from Nielsen? Size / relevant characteristics?
+	\end{itemize}
+	\item Pull Nielsen panelist data
+	\begin{itemize}	
+		\item Only keep purchases of the products above, same window.
+	\end{itemize}
+	\item Clean and reshape into pyBLP format
+	\item Find auxiliary characteristics dataset, merge into pyBLP
+	\item Merge in demographics
+	\item Estimate demand
+	\item Back out MC
+	\item Simulate merger
+
+\end{itemize}
+
+\end{document}
