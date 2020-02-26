@@ -29,7 +29,7 @@ def MarketShare(product, years):
     print(brands)
     # for key in brandsMap['brand_descr']:
     #     print(key)
-    brands_descr = [brandsMap['brand_descr'][bcode] for bcode in brandsMap]
+    brands_descr = [brandsMap['brand_descr'][bcode] for bcode in brandsMap['brand_descr']]
     print(brands_descr)
     return brands
 
