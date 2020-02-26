@@ -27,10 +27,10 @@ def MarketShare(product, years):
 
     brands = list(set(brandsCumuYear))
     print(brands)
-    for key in brandsMap['brand_descr']:
-        print(key)
-    # brands_descr = [brandsMap['brand_descr'][bcode] for bcode in brandsMap]
-    # print(brands_descr)
+    # for key in brandsMap['brand_descr']:
+    #     print(key)
+    brands_descr = [brandsMap['brand_descr'][bcode] for bcode in brandsMap]
+    print(brands_descr)
     return brands
 
 if len(sys.argv) < 4:
