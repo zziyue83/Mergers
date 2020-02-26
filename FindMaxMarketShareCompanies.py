@@ -28,7 +28,7 @@ def MarketShare(product, years):
 
     brands = list(set(brandsCumuYear))
     print(brands)
-    brands_descr = [brandsMap[bcode] for bcode in brandsMap]
+    brands_descr = [brandsMap['brand_descr'][bcode] for bcode in brandsMap]
     print(brands_descr)
     return brands
 
