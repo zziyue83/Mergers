@@ -29,7 +29,7 @@ def MarketShare(product, years):
     brands_descr = [brandsMap['brand_descr'][bcode] for bcode in brands]
     dict = {'brand_code_uc': brands, 'brand_descr': brands_descr}
     topBrandDf = pd.DataFrame(dict)
-    topBrandDf.to_csv('Top 100 '+product+'.csv', delimiter=',')
+    topBrandDf.to_csv('Top 100 '+product+'.csv')
 
 if len(sys.argv) < 4:
     print("Not enough arguments")
