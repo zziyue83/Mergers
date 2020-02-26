@@ -19,16 +19,17 @@ def MarketShare(product, years):
     brandsCumuYear = []
     for year in years:
         products = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", sep = '\t', encoding = 'utf-8', header = 0, index_col = "upc")
-        productMap = products.to_dict()
+        brandsMap = products.groupby(['brand_code_uc']).agg({'brand_descr': 'first'}).to_dict()
         brandsVolume = products.groupby(['month','brand_code_uc']).agg({'volume': 'sum', 'brand_descr': 'first'})
         brandsMap = brandsVolume.to_dict()
-        print(brandsVolume.iloc[0])
         top100forEachMonth = brandsVolume.groupby(level=0)['volume'].nlargest(100)
         brandsCumuYear.extend(list(set(top100forEachMonth.index.get_level_values(2))))
         print(len(brandsCumuYear))
 
     brands = list(set(brandsCumuYear))
     print(brands)
+    brands_descr = [brandsMap[bcode] for bcode in brandsMap]
+    print(brands_descr)
     return brands
 
 if len(sys.argv) < 4:
