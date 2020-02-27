@@ -18,10 +18,10 @@ def AddExtraFeatures(product, years):
         for data_chunk in tqdm(movement):
             merged = data_chunk.merge(features, how = 'left', left_index = True, right_index = True)
             if firstFile:
-                merged.to_csv(savePath, sep = '/t')
+                merged.to_csv(savePath, sep = '\t')
                 firstFile = False
             else:
-                merged.to_csv(savePath, sep = '/t', header = False, mode = 'a')
+                merged.to_csv(savePath, sep = '\t', header = False, mode = 'a')
 
 
 if len(sys.argv) < 4:
