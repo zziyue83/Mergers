@@ -6,5 +6,5 @@ dmaDf = pd.DataFrame(major_cities)
 citydma = dmaDf['dma_code'].tolist()
 movementdma = movement['dma_code'].unique()
 for dma in movementdma:
-    if dma not in citydma:
+    if dma in citydma:
         print(dma)
