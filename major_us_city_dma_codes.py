@@ -228,4 +228,4 @@ major_cities = [
 {'city': 'Winston Salem', 'dma_code': 518, 'latitude': 36.099859600000002, 'longitude': -80.244215999999994, 'region': 'NC', 'slug': 'winston-salem-nc'},
 {'city': 'York', 'dma_code': 566, 'latitude': 39.962598399999997, 'longitude': -76.727744999999999, 'region': 'PA', 'slug': 'york-pa'},
 {'city': 'Youngstown', 'dma_code': 536, 'latitude': 41.099780299999999, 'longitude': -80.649519400000003, 'region': 'OH', 'slug': 'youngstown-oh'},
-{'city': 'Zanesville', 'dma_code': 596, 'latitude': 39.940345299999997, 'longitude': -82.013192399999994, 'region': 'OH', 'slug': 'zanesville-oh'},
+{'city': 'Zanesville', 'dma_code': 596, 'latitude': 39.940345299999997, 'longitude': -82.013192399999994, 'region': 'OH', 'slug': 'zanesville-oh'}]
