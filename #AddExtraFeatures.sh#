@@ -12,5 +12,5 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python AddExtraFeatures.py 2006 2009 BEER
+python AddExtraFeatures.py 2006 2009 GUM
 # python test1.py
