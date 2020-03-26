@@ -9,6 +9,7 @@ def GenerateYearList(start, end):
 
 def CreateFrequencyTable(product, years):
     freqTables = {}
+    unwantedFeatures = ['upc','units','prmult','price','month','sales','brand_code_uc','brand_descr','volume']
     # Form_FrequencyTable = pd.DataFrame()
     # Type_FrequencyTable = pd.DataFrame()
     # Variety_FrequencyTable = pd.DataFrame()
@@ -18,18 +19,20 @@ def CreateFrequencyTable(product, years):
         for data_chunk in tqdm(chunks):
             columns = data_chunk.columns
             for column in columns:
-                if column not in freqTables:
-                    freqTables[column] = pd.DataFrame()
-                frequencyTable_per_chunk = data_chunk[column].value_counts(dropna=False)
-                if freqTables[column].empty:
-                    freqTables[column] = frequencyTable_per_chunk
-                    print(freqTables[column])
-                else:
-                    freqTables[column] = freqTables[column].add(frequencyTable_per_chunk, fill_value=0)
+                if column not in unwantedFeatures:
+                    if column not in freqTables:
+                        freqTables[column] = pd.DataFrame()
+                    frequencyTable_per_chunk = data_chunk[column].value_counts(dropna=False)
+                    if freqTables[column].empty:
+                        freqTables[column] = frequencyTable_per_chunk
+                        print(freqTables[column])
+                    else:
+                        freqTables[column] = freqTables[column].add(frequencyTable_per_chunk, fill_value=0)
+    print(columns)
     output = product + "_Frequency_Table.xlsx"
     with pd.ExcelWriter(output) as writer:
         for column in freqTables:
-            freqTables[column].to_excel(writer,sheet_name = column)
+            freqTables[column].to_frame().reset_index().to_excel(writer,sheet_name = column)
             # Type_FrequencyTable_per_chunk = data_chunk['type_descr'].value_counts(dropna=False)
             # if Type_FrequencyTable.empty:
             #     Type_FrequencyTable = Type_FrequencyTable_per_chunk
