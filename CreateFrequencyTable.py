@@ -1,5 +1,6 @@
 import pandas as pd
 from tqdm import tqdm
+import sys
 
 def CreateFrequencyTable(product, years):
     freqTables = {}
