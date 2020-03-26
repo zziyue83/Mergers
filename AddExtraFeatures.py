@@ -32,6 +32,7 @@ start = sys.argv[1]
 end = sys.argv[2]
 product = sys.argv[3]
 years = GenerateYearList(start, end)
+print(product)
 print(years)
 AddExtraFeatures(product, years)
 # >>>>>>> fc0f14f7f4cc63df8fc9b9cfc1a730ed3a969f91
