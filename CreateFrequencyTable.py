@@ -34,6 +34,7 @@ def CreateFrequencyTable(product, years):
         for column in freqTables:
             df = freqTables[column].to_frame().reset_index()
             df.columns = [column,'count']
+            df = df.sort_values(by=['count'])
             df.to_excel(writer,sheet_name = column)
             # Type_FrequencyTable_per_chunk = data_chunk['type_descr'].value_counts(dropna=False)
             # if Type_FrequencyTable.empty:
