@@ -2,6 +2,11 @@ import pandas as pd
 from tqdm import tqdm
 import sys
 
+def GenerateYearList(start, end):
+    s = int(start)
+    e = int(end)
+    return list(range(s, e+1))
+
 def CreateFrequencyTable(product, years):
     freqTables = {}
     # Form_FrequencyTable = pd.DataFrame()
@@ -57,4 +62,4 @@ product = sys.argv[3]
 years = GenerateYearList(start, end)
 print(product)
 print(years)
-AddExtraFeatures(product, years)
+CreateFrequencyTable(product, years)
