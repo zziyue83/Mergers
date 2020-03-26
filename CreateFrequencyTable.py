@@ -9,7 +9,7 @@ def GenerateYearList(start, end):
 
 def CreateFrequencyTable(product, years):
     freqTables = {}
-    unwantedFeatures = ['upc','units','prmult','price','month','sales','brand_code_uc','brand_descr','volume']
+    unwantedFeatures = ['Unnamed: 0','upc','units','prmult','price','month','sales','brand_code_uc','brand_descr','volume']
     # Form_FrequencyTable = pd.DataFrame()
     # Type_FrequencyTable = pd.DataFrame()
     # Variety_FrequencyTable = pd.DataFrame()
