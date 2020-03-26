@@ -10,8 +10,8 @@ def GenerateYearList(start, end):
 def AddExtraFeatures(product, years):
     years = list(map(str,years))
     brandsCumuYear = []
-    firstFile = True
     for year in years:
+        firstFile = True
         savePath = "../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv"
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", delimiter = '\t' , index_col = "upc" , chunksize = 1000000)
         features = pd.read_csv("../../Data/nielsen_extracts/RMS/"+year+"/Annual_Files/products_extra_"+year+".tsv", delimiter = '\t', index_col = 'upc')
