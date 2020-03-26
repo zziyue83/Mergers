@@ -32,7 +32,7 @@ def CreateFrequencyTable(product, years):
     output = product + "_Frequency_Table.xlsx"
     with pd.ExcelWriter(output) as writer:
         for column in freqTables:
-            freqTables[column].to_frame().reset_index().to_excel(writer,sheet_name = column)
+            freqTables[column].to_frame().to_excel(writer,sheet_name = column)
             # Type_FrequencyTable_per_chunk = data_chunk['type_descr'].value_counts(dropna=False)
             # if Type_FrequencyTable.empty:
             #     Type_FrequencyTable = Type_FrequencyTable_per_chunk
