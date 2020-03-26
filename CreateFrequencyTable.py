@@ -23,7 +23,7 @@ def CreateFrequencyTable(product, years):
                 frequencyTable_per_chunk = data_chunk[column].value_counts(dropna=False)
                 if freqTables[column].empty:
                     freqTables[column] = frequencyTable_per_chunk
-                    print(Form_FrequencyTable)
+                    print(freqTables[column])
                 else:
                     freqTables[column] = freqTables[column].add(frequencyTable_per_chunk, fill_value=0)
     output = product + "_Frequency_Table.xlsx"
