@@ -25,8 +25,8 @@ def CalDMAMktSize(product, years, size_multiplier):
     area_quarter_agg = pd.concat(area_quarter_mkt_list)
     area_quarter_agg = area_quarter_agg.groupby(['dma_code'], as_index = False).aggregate(mkt_size_agg_function).reindex(columns = area_quarter_agg.columns)
     area_quarter_agg.drop(['quarter'], axis=1, inplace=True)
-    area_quarter_agg.rename(columns = {'dma_code':'dma_code','volume':'mkt_size'})
-    area_quarter_agg.set_index('dma_code')
+    area_quarter_agg = area_quarter_agg.rename(columns = {'dma_code':'dma_code','volume':'mkt_size'})
+    area_quarter_agg = area_quarter_agg.set_index('dma_code')
     print(area_quarter_agg)
     area_quarter_agg.to_csv(savePath, sep = '\t', encoding = 'utf-8')
             #     firstFile = False
