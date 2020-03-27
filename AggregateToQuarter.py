@@ -9,8 +9,8 @@ def GenerateYearList(start, end):
 
 def AggregateToQuarter(product, years):
     years = list(map(str,years))
-    brandsCumuYear = []
     aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','sales':'sum', 'volume':'sum','month':'first','brand_descr':'first','brand_code_uc':'first','multi':'first','size1_amount':'first'}
+    mkt_agg_funtion = {'quarter':'max','upc':'first'}
     for year in years:
         firstFile = True
         savePath = "../../GeneratedData/"+product+"_dma_quarter_upc_"+year+".tsv"
@@ -18,7 +18,7 @@ def AggregateToQuarter(product, years):
         for data_chunk in tqdm(movement):
             data_chunk['quarter'] = pd.to_datetime(data_chunk['month'].values, format = '%Y%m').astype('period[Q]')
             area_quarter_upc = data_chunk.groupby(['quarter', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
-            area_month_upc.drop(['month'], axis=1, inplace=True)
+            area_quarter_upc.drop(['month'], axis=1, inplace=True)
             if firstFile:
                 area_quarter_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8')
                 firstFile = False
