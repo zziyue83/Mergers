@@ -84,7 +84,8 @@ def aggregate_demographics(years,weight,ids):
 
     # Create weighted variables
     wt_vars = []
-    for cc in ids:
+    all_avg = weight + ids
+    for cc in all_avg:
         new_var = cc + '_wt'
         dma_counties_demog[new_var] = dma_counties_demog[cc]*dma_counties_demog[weight[0]]
         wt_vars.append(new_var)
@@ -95,7 +96,7 @@ def aggregate_demographics(years,weight,ids):
 
     # Compute weighted averages
     avg_vars = []
-    for cc in ids:
+    for cc in all_avg:
         wt_var_name = cc + '_wt'
         avg_var_name = cc + '_avg'
         dma_demographics[avg_var_name] = dma_demographics[wt_var_name]/dma_demographics[weight[0]]
