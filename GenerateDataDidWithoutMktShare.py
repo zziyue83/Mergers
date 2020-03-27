@@ -10,9 +10,9 @@ def GenerateYearList(start, end):
 def MakeOwnerDummy(mergers, controls):
     ownerDummyDf = pd.DataFrame(columns = ['owner', 'merging'])
     for merger in mergers:
-        ownerDummyDf = ownerDummyDf.append({'owner': merger, 'merging':1})
+        ownerDummyDf = ownerDummyDf.append({'owner': merger, 'merging':1}, ignore_index = True)
     for control in controls:
-        ownerDummyDf = ownerDummyDf.append({'owner': control, 'merging':0})
+        ownerDummyDf = ownerDummyDf.append({'owner': control, 'merging':0}, ignore_index = True)
     return ownerDummyDf
 
 def AddOwner(product, years, mergers, controls):
