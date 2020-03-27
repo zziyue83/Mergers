@@ -55,8 +55,8 @@ def AddOwnerandTimeVariables(product, years, mergers, controls, mergingq, startq
     savePath = "../../GeneratedData/"+product+"_DID_without_Share.tsv"
     added_owner_agg = pd.concat(added_owner_list)
     DID_data = added_owner_agg.merge(ownerDummyDf, how = 'inner', left_on = 'owner initial', right_on = 'owner')
-    DID_data['quarter_str'] = DID_data['quarter'].to_string()
-    quarters = DIA_data['quarter_datatime'].unique()
+    DID_data['quarter_str'] = DID_data['quarter'].astype(str)
+    quarters = DIA_data['quarter_str'].unique()
     timeDummyDf = MakeTimeDummy(quarters, mergingq, startq)
     DID_data = DID_data.merge(timeDummyDf, how = 'inner', left_on = 'quarter_str', right_on = 'quarter')
     DID_data.to_csv(savePath, sep = '\t')
