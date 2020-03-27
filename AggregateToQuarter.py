@@ -18,10 +18,11 @@ def AggregateToQuarter(product, years):
         for data_chunk in tqdm(movement):
             data_chunk['quarter'] = pd.to_datetime(data_chunk['month'].values, format = '%Y%m').astype('period[Q]')
             area_quarter_upc = data_chunk.groupby(['quarter', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
+            area_month_upc.drop(['month'], axis=1, inplace=True)
             if firstFile:
                 area_quarter_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8')
                 firstFile = False
-                print(area_quarter_upc.iloc[0])
+                # print(area_quarter_upc.iloc[0])
             else:
                 area_quarter_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8', mode = 'a', header = False)
 
