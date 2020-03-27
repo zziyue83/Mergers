@@ -10,7 +10,7 @@ def GenerateYearList(start, end):
 def AggregateToQuarter(product, years):
     years = list(map(str,years))
     brandsCumuYear = []
-    aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','sales':'sum', 'volume':'sum'}
+    aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','sales':'sum', 'volume':'sum','month':'first','brand_descr':'first','brand_code_uc':'first','multi':'first','size1_amount':'first'}
     for year in years:
         firstFile = True
         savePath = "../../GeneratedData/"+product+"_dma_quarter_upc_"+year+".tsv"
