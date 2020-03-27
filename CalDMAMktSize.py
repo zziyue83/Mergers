@@ -17,7 +17,7 @@ def CalDMAMktSize(product, years, size_multiplier):
         for data_chunk in tqdm(movement):
             area_quarter = data_chunk.groupby(['quarter','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
             area_quarter = area_quarter[['quarter','dma_code','volume']]
-            area_quarter['volume'] = area_quarter * size_multiplier
+            area_quarter['volume'] = area_quarter['volume'] * size_multiplier
             area_quarter_mkt_list.append(area_quarter)
 
     savePath = "../../GeneratedData/"+product+"__mkt_size_"+year+".tsv"
