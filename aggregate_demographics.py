@@ -82,9 +82,6 @@ def aggregate_demographics(years,weight,ids):
     # Merge demographics onto DMA/county dataset
     dma_counties_demog = pd.merge(dma_counties,demographics,on=['year','fips_state_code','fips_county_code'],how='left')
 
-    # Export to csv
-    dma_counties_demog.to_csv ('Clean/demog_test.csv', index = None, header=True)
-
     # Create weighted variables
     wt_vars = []
     for cc in ids:
@@ -95,6 +92,18 @@ def aggregate_demographics(years,weight,ids):
     # Aggregate to DMA level (weighted averages of weight variable)
     agg_vars = weight + wt_vars
     dma_demographics = dma_counties_demog.groupby(['year','dma_code'])[agg_vars].agg('sum').reset_index()
+
+    # Compute weighted averages
+    avg_vars = []
+    for cc in ids:
+        wt_var_name = cc + '_wt'
+        avg_var_name = cc + '_avg'
+        dma_demographics[avg_var_name] = dma_demographics[wt_var_name]/dma_demographics[weight[0]]
+        avg_vars.append(avg_var_name)
+
+    # Restrict to relevant variables
+    rel_vars_demog = ['year','dma_code'] + weight + avg_vars
+    dma_demographics = dma_demographics[rel_vars_demog]
 
     # Export to csv
     dma_demographics.to_csv ('Clean/dma_demographics.csv', index = None, header=True)
