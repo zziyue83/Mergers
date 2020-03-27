@@ -14,7 +14,7 @@ def AggregateToQuarter(product, years):
     for year in years:
         firstFile = True
         savePath = "../../GeneratedData/"+product+"_dma_quarter_upc_"+year+".tsv"
-        movement = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", delimiter = '\t' , index_col = "upc" , chunksize = 1000000)
+        movement = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", delimiter = '\t', chunksize = 100000)
         for data_chunk in tqdm(movement):
             data_chunk['quarter'] = pd.to_datetime(data_chunk['month'].values, format = '%Y%m').astype('period[Q]')
             area_quarter_upc = data_chunk.groupby(['quarter', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
