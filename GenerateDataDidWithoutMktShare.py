@@ -21,7 +21,8 @@ def AddOwner(product, years, mergers, controls):
     print(ownerDummyDf)
     years = list(map(str,years))
     brandsCumuYear = []
-    owners = pd.read_excel("Top 100 "+product+".xlsx", delimiter = '\t', index_col = 0)
+    owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
+    print(owners)
     for year in years:
         # firstFile = True
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_quarter_upc_"+year+".tsv", delimiter = '\t', index_col = "upc", chunksize = 1000000)
