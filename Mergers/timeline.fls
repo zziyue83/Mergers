@@ -1,0 +1,12 @@
+PWD /home/gaston/Dropbox/Research/Mergers
+INPUT /etc/texmf/web2c/texmf.cnf
+INPUT /usr/share/texmf/web2c/texmf.cnf
+INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
+INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
+INPUT /home/gaston/Dropbox/Research/Mergers/timeline.tex
+OUTPUT /home/gaston/Dropbox/Research/Mergers/timeline.log
+INPUT /home/gaston/Dropbox/Research/Mergers/timeline.aux
+INPUT /home/gaston/Dropbox/Research/Mergers/timeline.aux
+OUTPUT /home/gaston/Dropbox/Research/Mergers/timeline.aux
+OUTPUT /home/gaston/Dropbox/Research/Mergers/timeline.pdf
+INPUT /home/gaston/Dropbox/Research/Mergers/timeline.aux
