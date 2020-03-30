@@ -34,32 +34,31 @@ def MakeTimeDummy(quarters, mergingq, startq):
     return timeDummyDf
 
 def AddOwnerandTimeVariables(product, years, mergers, controls, mergingq, startq):
-    added_owner_list = []
+    DID_list = []
     ownerDummyDf = MakeOwnerDummy(mergers, controls)
     print(ownerDummyDf)
     years = list(map(str,years))
-    brandsCumuYear = []
     owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
-    print(owners)
     for year in years:
         # firstFile = True
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_quarter_upc_"+year+".tsv", delimiter = '\t', index_col = "upc", chunksize = 1000000)
         for data_chunk in tqdm(movement):
             addedOwner = data_chunk.merge(owners, how = 'inner', left_on = 'brand_code_uc', right_on = 'brand_code_uc')
-            added_owner_list.append(addedOwner)
-            # if firstFile:
-            #     merged.to_csv(savePath, sep = '\t')
-            #     firstFile = False
-            # else:
-            #     merged.to_csv(savePath, sep = '\t', header = False, mode = 'a')
-    savePath = "../../GeneratedData/"+product+"_DID_without_Share.tsv"
-    added_owner_agg = pd.concat(added_owner_list)
-    DID_data = added_owner_agg.merge(ownerDummyDf, how = 'inner', left_on = 'owner initial', right_on = 'owner')
+            added_owner['quarter_str'] = added_owner['quarter'].astype(str)
+            quarters = added_owner['quarter_str'].unique()
+            timeDummyDf = MakeTimeDummy(quarters, mergingq, startq)
+            added_time = added_owner.merge(timeDummyDf, how = 'inner', left_on = 'quarter_str', right_on = 'q')
+            DID_list.append(added_time)
+            print(added_time.iloc[0])
 
-    DID_data['quarter_str'] = DID_data['quarter'].astype(str)
-    quarters = DID_data['quarter_str'].unique()
-    timeDummyDf = MakeTimeDummy(quarters, mergingq, startq)
-    DID_data = DID_data.merge(timeDummyDf, how = 'inner', left_on = 'quarter_str', right_on = 'q')
+    savePath = "../../GeneratedData/"+product+"_DID_without_Share.tsv"
+    DID_agg = pd.concat(DID_list)
+    # DID_data = added_owner_agg.merge(ownerDummyDf, how = 'inner', left_on = 'owner initial', right_on = 'owner')
+
+    # DID_data['quarter_str'] = DID_data['quarter'].astype(str)
+    # quarters = DID_data['quarter_str'].unique()
+    # timeDummyDf = MakeTimeDummy(quarters, mergingq, startq)
+    # DID_data = DID_data.merge(timeDummyDf, how = 'inner', left_on = 'quarter_str', right_on = 'q')
     DID_data = DID_data[['upc','price','dma_code','brand_code_uc','brand_code_desr','post_merger','quarters_since_start','quarter','owner','merging']]
     DID_data.to_csv(savePath, sep = '\t')
 
