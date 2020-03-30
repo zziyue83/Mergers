@@ -10,7 +10,7 @@ def GenerateYearList(start, end):
 def CalDMAMktSize(product, years, size_multiplier, frequency):
     area_quarter_mkt_list = []
     years = list(map(str,years))
-    aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','sales':'sum', 'volume':'sum','month':'first','brand_descr':'first','brand_code_uc':'first','multi':'first','size1_amount':'first'}
+    aggregation_function = {'units': 'sum', 'prmult':'mean', 'price':'mean', 'feature': 'first','display':'first','sales':'sum', 'volume':'sum','brand_descr':'first','brand_code_uc':'first','multi':'first','size1_amount':'first'}
     for year in years:
         firstFile = True
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_upc_"+year+".tsv", delimiter = '\t', chunksize = 100000)
