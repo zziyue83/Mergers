@@ -14,7 +14,7 @@ def MakeOwnerDummy(mergers, all_owners):
         ownerDummyDf = ownerDummyDf.append({'owner': merger, 'merging':1}, ignore_index = True)
     for owner in all_owners:
         if owner not in mergers:
-            ownerDummyDf = ownerDummyDf.append({'owner': control, 'merging':0}, ignore_index = True)
+            ownerDummyDf = ownerDummyDf.append({'owner': owner, 'merging':0}, ignore_index = True)
     return ownerDummyDf
 
 def MakeTimeDummy(quarters, mergingq, startq):
