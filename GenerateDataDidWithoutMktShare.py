@@ -60,9 +60,8 @@ def AddOwnerandTimeVariables(product, years, mergers, controls, mergingq, startq
     quarters = DID_data['quarter_str'].unique()
     timeDummyDf = MakeTimeDummy(quarters, mergingq, startq)
     DID_data = DID_data.merge(timeDummyDf, how = 'inner', left_on = 'quarter_str', right_on = 'q')
-    DID_data = DID_data['upc','price','dma_code','brand_code_uc','brand_code_desr','post_merger','quarters_since_start','quarter','owner','merging']
+    DID_data = DID_data[['upc','price','dma_code','brand_code_uc','brand_code_desr','post_merger','quarters_since_start','quarter','owner','merging']]
     DID_data.to_csv(savePath, sep = '\t')
-
 
 
 
