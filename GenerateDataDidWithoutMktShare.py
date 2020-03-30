@@ -17,7 +17,7 @@ def MakeOwnerDummy(mergers, controls):
     return ownerDummyDf
 
 def MakeTimeDummy(quarters, mergingq, startq):
-    timeDummyDf = pd.DataFrame(columns = ['quarter', 'post_merger','quarters_since_start'])
+    timeDummyDf = pd.DataFrame(columns = ['q', 'post_merger','quarters_since_start'])
     merging_year = int(mergingq[0:4])
     merging_q = int(mergingq[-1])
     start_year = int(startq[0:4])
@@ -25,12 +25,12 @@ def MakeTimeDummy(quarters, mergingq, startq):
     for quarter in quarters:
         year = int(quarter[0:4])
         q = int(quarter[-1])
-        if year>= merging_year and q >= merging_q:
+        if (year>= merging_year and q >= merging_q) or (year > merging_year):
             post_merger = 1
         else:
             post_merger = 0
         quarters_since_start = (year - start_year) * 4 + (q - start_q)
-        timeDummyDf = timeDummyDf.append({'quarter': quarter, 'post_merger':post_merger, 'quarters_since_start':quarters_since_start}, ignore_index = True)
+        timeDummyDf = timeDummyDf.append({'q': quarter, 'post_merger':post_merger, 'quarters_since_start':quarters_since_start}, ignore_index = True)
     return timeDummyDf
 
 def AddOwnerandTimeVariables(product, years, mergers, controls, mergingq, startq):
@@ -55,10 +55,12 @@ def AddOwnerandTimeVariables(product, years, mergers, controls, mergingq, startq
     savePath = "../../GeneratedData/"+product+"_DID_without_Share.tsv"
     added_owner_agg = pd.concat(added_owner_list)
     DID_data = added_owner_agg.merge(ownerDummyDf, how = 'inner', left_on = 'owner initial', right_on = 'owner')
+
     DID_data['quarter_str'] = DID_data['quarter'].astype(str)
     quarters = DID_data['quarter_str'].unique()
     timeDummyDf = MakeTimeDummy(quarters, mergingq, startq)
-    DID_data = DID_data.merge(timeDummyDf, how = 'inner', left_on = 'quarter_str', right_on = 'quarter')
+    DID_data = DID_data.merge(timeDummyDf, how = 'inner', left_on = 'quarter_str', right_on = 'q')
+    DID_data = DID_data['upc','price','dma_code','brand_code_uc','brand_code_desr','post_merger','quarters_since_start','quarter','owner','merging']
     DID_data.to_csv(savePath, sep = '\t')
 
 
