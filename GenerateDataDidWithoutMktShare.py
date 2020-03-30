@@ -24,7 +24,7 @@ def MakeTimeDummy(times, mergingq, startq, frequency):
         merging_q = int(mergingq[-1])
         start_year = int(startq[0:4])
         start_q = int(startq[-1])
-        for quarter in quarters:
+        for quarter in times:
             year = int(quarter[0:4])
             q = int(quarter[-1])
             if (year>= merging_year and q >= merging_q) or (year > merging_year):
@@ -70,5 +70,6 @@ frequency = sys.argv[4]
 years = GenerateYearList(start, end)
 print(product)
 print(years)
+print(frequency)
 AddOwnerandTimeVariables(product, years, ['Molson Coors', 'SABMiller'],'2008Q3','2006Q1', frequency)
 # >>>>>>> fc0f14f7f4cc63df8fc9b9cfc1a730ed3a969f91
