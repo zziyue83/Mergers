@@ -8,12 +8,13 @@ def GenerateYearList(start, end):
     e = int(end)
     return list(range(s, e+1))
 
-def MakeOwnerDummy(mergers, controls):
+def MakeOwnerDummy(mergers, all_owners):
     ownerDummyDf = pd.DataFrame(columns = ['owner', 'merging'])
     for merger in mergers:
         ownerDummyDf = ownerDummyDf.append({'owner': merger, 'merging':1}, ignore_index = True)
-    for control in controls:
-        ownerDummyDf = ownerDummyDf.append({'owner': control, 'merging':0}, ignore_index = True)
+    for owner in all_owners:
+        if control not in mergers:
+            ownerDummyDf = ownerDummyDf.append({'owner': control, 'merging':0}, ignore_index = True)
     return ownerDummyDf
 
 def MakeTimeDummy(quarters, mergingq, startq):
@@ -35,10 +36,12 @@ def MakeTimeDummy(quarters, mergingq, startq):
 
 def AddOwnerandTimeVariables(product, years, mergers, mergingq, startq):
     owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
-    DID_list = []
-    ownerDummyDf = MakeOwnerDummy(mergers, controls)
+    all_owners = owners['owner_inital'].unique()
+    ownerDummyDf = MakeOwnerDummy(mergers, all_owners)
     print(ownerDummyDf)
     years = list(map(str,years))
+
+    DID_list = []
     for year in years:
         # firstFile = True
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_quarter_upc_"+year+".tsv", delimiter = '\t', index_col = "upc", chunksize = 1000000)
