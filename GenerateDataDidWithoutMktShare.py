@@ -53,7 +53,7 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingq, startq, frequenc
             added_time = added_owner.merge(timeDummyDf, how = 'inner', left_on = 'quarter_str', right_on = 'q')
             DID_list.append(added_time)
 
-    savePath = "../../GeneratedData/"+product+"_DID_without_Share.tsv"
+    savePath = "../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv"
     DID_agg = pd.concat(DID_list)
     DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr_x','post_merger','quarters_since_start','quarter','owner','merging']]
     DID_agg = DID_agg.rename(columns = {'brand_descr_x': 'brand_descr'})
