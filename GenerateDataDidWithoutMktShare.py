@@ -37,7 +37,7 @@ def MakeTimeDummy(quarters, mergingq, startq):
 def AddOwnerandTimeVariables(product, years, mergers, mergingq, startq):
     owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
     print(owners.columns)
-    all_owners = owners['owner inital'].unique()
+    all_owners = owners['owner initial'].unique()
     ownerDummyDf = MakeOwnerDummy(mergers, all_owners)
     print(ownerDummyDf)
     years = list(map(str,years))
