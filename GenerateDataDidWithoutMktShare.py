@@ -43,7 +43,7 @@ def AddOwnerandTimeVariables(product, years, mergers, controls, mergingq, startq
         # firstFile = True
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_quarter_upc_"+year+".tsv", delimiter = '\t', index_col = "upc", chunksize = 1000000)
         for data_chunk in tqdm(movement):
-            addedOwner = data_chunk.merge(owners, how = 'inner', left_on = 'brand_code_uc', right_on = 'brand_code_uc')
+            added_owner = data_chunk.merge(owners, how = 'inner', left_on = 'brand_code_uc', right_on = 'brand_code_uc')
             added_owner['quarter_str'] = added_owner['quarter'].astype(str)
             quarters = added_owner['quarter_str'].unique()
             timeDummyDf = MakeTimeDummy(quarters, mergingq, startq)
