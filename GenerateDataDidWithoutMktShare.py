@@ -13,7 +13,7 @@ def MakeOwnerDummy(mergers, all_owners):
     for merger in mergers:
         ownerDummyDf = ownerDummyDf.append({'owner': merger, 'merging':1}, ignore_index = True)
     for owner in all_owners:
-        if control not in mergers:
+        if owner not in mergers:
             ownerDummyDf = ownerDummyDf.append({'owner': control, 'merging':0}, ignore_index = True)
     return ownerDummyDf
 
