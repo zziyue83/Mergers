@@ -33,17 +33,19 @@ def MakeTimeDummy(quarters, mergingq, startq):
         timeDummyDf = timeDummyDf.append({'q': quarter, 'post_merger':post_merger, 'quarters_since_start':quarters_since_start}, ignore_index = True)
     return timeDummyDf
 
-def AddOwnerandTimeVariables(product, years, mergers, controls, mergingq, startq):
+def AddOwnerandTimeVariables(product, years, mergers, mergingq, startq):
+    owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
     DID_list = []
     ownerDummyDf = MakeOwnerDummy(mergers, controls)
     print(ownerDummyDf)
     years = list(map(str,years))
-    owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
     for year in years:
         # firstFile = True
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_quarter_upc_"+year+".tsv", delimiter = '\t', index_col = "upc", chunksize = 1000000)
         for data_chunk in tqdm(movement):
+            print(data_chunk.iloc[0])
             added_owner = data_chunk.merge(owners, how = 'inner', left_on = 'brand_code_uc', right_on = 'brand_code_uc')
+            added_owner = added_owner.merge(ownerDummyDf, how = 'inner', left_on = 'owner initial', right_on = 'owner')
             print(added_owner.iloc[0])
             added_owner['quarter_str'] = added_owner['quarter'].astype(str)
             quarters = added_owner['quarter_str'].unique()
@@ -75,5 +77,5 @@ product = sys.argv[3]
 years = GenerateYearList(start, end)
 print(product)
 print(years)
-AddOwnerandTimeVariables(product, years, ['Molson Coors', 'SABMiller'], ['Anheuser-Busch', 'InBev'],'2008Q3','2006Q1')
+AddOwnerandTimeVariables(product, years, ['Molson Coors', 'SABMiller'],'2008Q3','2006Q1')
 # >>>>>>> fc0f14f7f4cc63df8fc9b9cfc1a730ed3a969f91
