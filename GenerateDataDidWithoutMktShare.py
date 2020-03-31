@@ -54,7 +54,6 @@ def MakeTimeDummy(times, mergingt, startt, frequency):
 
 def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequency):
     owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
-    print(owners.columns)
     all_owners = owners['owner initial'].unique()
     ownerDummyDf = MakeOwnerDummy(mergers, all_owners)
     years = list(map(str,years))
@@ -63,7 +62,6 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequenc
     for year in years:
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_upc_"+year+".tsv", delimiter = '\t', chunksize = 1000000)
         for data_chunk in tqdm(movement):
-            print(data_chunk.columns)
             added_owner = data_chunk.merge(owners, how = 'inner', left_on = 'brand_descr', right_on = 'brand_descr')
             added_owner = added_owner.merge(ownerDummyDf, how = 'inner', left_on = 'owner initial', right_on = 'owner')
             added_owner[frequency+'_str'] = added_owner[frequency].astype(str)
