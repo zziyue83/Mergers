@@ -21,7 +21,7 @@ def CalDMAMktSize(product, years, size_multiplier, frequency):
             area_quarter_mkt_list.append(area_quarter)
 
     area_quarter_agg = pd.concat(area_quarter_mkt_list)
-    area_quarter_agg = area_quarter_agg.groupby([frequency,'dma_code'], as_index = False).aggregate({'volume':'sum'}).reindex(columns = data_chunk.columns)
+    area_quarter_agg = area_quarter_agg.groupby([frequency,'dma_code'], as_index = False).aggregate({'volume':'sum'}).reindex(columns = area_quarter_agg.columns)
 
     savePath = "../../GeneratedData/"+product+"_dma_"+frequency+"_mkt_size.tsv"
     mkt_size_agg_function = {'volume': 'max', frequency:'first'}
