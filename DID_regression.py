@@ -17,9 +17,9 @@ def DID_regression(product, frequency, share):
         exog = sm.add_constant(data[exog_vars])
         mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
         fe_res = mod.fit()
-        print(fe_res)
-        with open(product + '_DID_NoMktShare.pickle', 'w') as f:
-            pickle.dump(fe_res, f)
+        print(fe_res.summary)
+        # with open(product + '_DID_NoMktShare.pkl', 'w') as f:
+        #     pickle.dump(fe_res, f)
 
         # f = open('../Codes/Mergers/'+product + '_DID_NoMktShare.tex', 'w')
         # beginningtex = """\\documentclass{report}
