@@ -12,5 +12,5 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python GenerateDataDidWithoutMktShare.py 2006 2009 CANDY month 200805 200601
+python GenerateDataDidWithoutMktShare.py 2006 2009 CANDY month 200804 200601
 # python test1.py
