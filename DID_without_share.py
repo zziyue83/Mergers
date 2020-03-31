@@ -2,6 +2,7 @@ import pandas as pd
 from linearmodels.panel import PooledOLS
 import statsmodels.api as sm
 import numpy as np
+import sys
 
 def DID_regression(product, frequency, share):
     if share == 'NoMktShare':
