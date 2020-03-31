@@ -108,6 +108,6 @@ years = GenerateYearList(start, end)
 print(product)
 print(years)
 print(frequency)
-# AddOwnerandTimeVariables(product, years, ['Mars', 'Wrigley'],mergingt,startt, frequency)
-AddOwnerandTimeVariables(product, years, ['SABMiller', 'Molson Coors'],mergingt,startt, frequency)
+AddOwnerandTimeVariables(product, years, ['Mars', 'Wrigley'],mergingt,startt, frequency)
+# AddOwnerandTimeVariables(product, years, ['SABMiller', 'Molson Coors'],mergingt,startt, frequency)
 # >>>>>>> fc0f14f7f4cc63df8fc9b9cfc1a730ed3a969f91
