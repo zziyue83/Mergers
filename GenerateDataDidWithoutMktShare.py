@@ -74,12 +74,15 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequenc
 
         if firstFile:
             DID_agg = pd.concat(DID_list)
-            DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr_x','post_merger',frequency+'s_since_start',frequency,'owner','merging']]
-            DID_agg = DID_agg.rename(columns = {'brand_descr_x': 'brand_descr'})
-            area_month_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8')
+            DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr','post_merger',frequency+'s_since_start',frequency,'owner','merging']]
+            # DID_agg = DID_agg.rename(columns = {'brand_descr_x': 'brand_descr'})
+            DID_agg.to_csv(savePath, sep = '\t')
             firstFile = False
         else:
-            area_month_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8', mode = 'a', header = False)
+            DID_agg = pd.concat(DID_list)
+            DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr','post_merger',frequency+'s_since_start',frequency,'owner','merging']]
+            # DID_agg = DID_agg.rename(columns = {'brand_descr_x': 'brand_descr'})
+            DID_agg.to_csv(savePath, sep = '\t', encoding = 'utf-8', mode = 'a', header = False)
 
     # savePath = "../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv"
     # DID_agg = pd.concat(DID_list)
