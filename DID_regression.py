@@ -20,6 +20,8 @@ def DID_regression(product, frequency, share):
         print(fe_res)
         # summaryDf = pd.DataFrame(fe_res.summary)
         # summaryDf.to_csv(product + '_DID_NoMktShare.csv', sep = ',')
+        print(type(fe_res))
+        print(type(fe_res.summary))
         with open(product + '_DID_NoMktShare.pkl', 'w') as f:
             pickle.dump(fe_res.summary, f)
 
