@@ -3,6 +3,7 @@ from linearmodels.panel import PanelOLS
 import statsmodels.api as sm
 import numpy as np
 import sys
+import pickle
 
 def DID_regression(product, frequency, share):
     if share == 'NoMktShare':
@@ -17,7 +18,8 @@ def DID_regression(product, frequency, share):
         mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
         fe_res = mod.fit()
         print(fe_res)
-        fe_res.save(product + '_DID_NoMktShare.pickle')
+        with open(product + '_DID_NoMktShare.pickle', 'w') as f:
+            pickle.dump(fe_res, f)
 
         # f = open('../Codes/Mergers/'+product + '_DID_NoMktShare.tex', 'w')
         # beginningtex = """\\documentclass{report}
