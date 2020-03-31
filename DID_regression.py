@@ -25,7 +25,6 @@ def DID_regression(product, frequency, share):
         # with open(product + '_DID_NoMktShare.pkl', 'w') as f:
         #     pickle.dump(fe_res.summary, f)
 
-        f = open('../Codes/Mergers/'+product + '_DID_NoMktShare.tex', 'w')
         beginningtex = """\\documentclass{report}
                           \\usepackage{booktabs}
                           \\begin{document}"""
