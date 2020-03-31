@@ -17,17 +17,18 @@ def DID_regression(product, frequency, share):
         mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
         fe_res = mod.fit()
         print(fe_res)
+        fe_res.save(product + '_DID_NoMktShare.pickle')
 
         # f = open('../Codes/Mergers/'+product + '_DID_NoMktShare.tex', 'w')
-        beginningtex = """\\documentclass{report}
-                          \\usepackage{booktabs}
-                          \\begin{document}"""
-        endtex = "\end{document}"
-        f = open(product + '_DID_NoMktShare.tex', 'w')
-        f.write(beginningtex)
-        f.write(fe_res.as_latex())
-        f.write(endtex)
-        f.close()
+        # beginningtex = """\\documentclass{report}
+        #                   \\usepackage{booktabs}
+        #                   \\begin{document}"""
+        # endtex = "\end{document}"
+        # f = open(product + '_DID_NoMktShare.tex', 'w')
+        # f.write(beginningtex)
+        # f.write(fe_res.as_latex())
+        # f.write(endtex)
+        # f.close()
 
 if len(sys.argv) < 3:
     print("Not enough arguments")
