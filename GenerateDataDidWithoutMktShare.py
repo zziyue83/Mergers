@@ -59,8 +59,9 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequenc
     years = list(map(str,years))
     firstFile = True
     savePath = "../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv"
+    DID_list = []
     for year in years:
-        DID_list = []
+        # DID_list = []
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_upc_"+year+".tsv", delimiter = '\t', chunksize = 1000000)
         for data_chunk in tqdm(movement):
             added_owner = data_chunk.merge(owners, how = 'inner', left_on = 'brand_descr', right_on = 'brand_descr')
@@ -72,23 +73,23 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequenc
             # print(added_time.shape)
             DID_list.append(added_time)
 
-        if firstFile:
-            DID_agg = pd.concat(DID_list)
-            DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr','post_merger',frequency+'s_since_start',frequency,'owner','merging']]
-            # DID_agg = DID_agg.rename(columns = {'brand_descr_x': 'brand_descr'})
-            DID_agg.to_csv(savePath, sep = '\t')
-            firstFile = False
-        else:
-            DID_agg = pd.concat(DID_list)
-            DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr','post_merger',frequency+'s_since_start',frequency,'owner','merging']]
-            # DID_agg = DID_agg.rename(columns = {'brand_descr_x': 'brand_descr'})
-            DID_agg.to_csv(savePath, sep = '\t', encoding = 'utf-8', mode = 'a', header = False)
+        # if firstFile:
+        #     DID_agg = pd.concat(DID_list)
+        #     DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr','post_merger',frequency+'s_since_start',frequency,'owner','merging']]
+        #     # DID_agg = DID_agg.rename(columns = {'brand_descr_x': 'brand_descr'})
+        #     DID_agg.to_csv(savePath, sep = '\t')
+        #     firstFile = False
+        # else:
+        #     DID_agg = pd.concat(DID_list)
+        #     DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr','post_merger',frequency+'s_since_start',frequency,'owner','merging']]
+        #     # DID_agg = DID_agg.rename(columns = {'brand_descr_x': 'brand_descr'})
+        #     DID_agg.to_csv(savePath, sep = '\t', encoding = 'utf-8', mode = 'a', header = False)
 
-    # savePath = "../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv"
-    # DID_agg = pd.concat(DID_list)
-    # DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr_x','post_merger',frequency+'s_since_start',frequency,'owner','merging']]
-    # DID_agg = DID_agg.rename(columns = {'brand_descr_x': 'brand_descr'})
-    # DID_agg.to_csv(savePath, sep = '\t')
+    savePath = "../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv"
+    DID_agg = pd.concat(DID_list)
+    DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr_x','post_merger',frequency+'s_since_start',frequency,'owner','merging']]
+    DID_agg = DID_agg.rename(columns = {'brand_descr_x': 'brand_descr'})
+    DID_agg.to_csv(savePath, sep = '\t')
 
 if len(sys.argv) < 4:
     print("Not enough arguments")
