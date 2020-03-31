@@ -24,7 +24,9 @@ def CalDMAMktSize(product, years, size_multiplier, frequency):
     mkt_size_agg_function = {'volume': 'max', frequency:'first'}
     area_quarter_agg = pd.concat(area_quarter_mkt_list)
     dmaGroup = area_quarter_agg.groupby(['dma_code'], as_index = False)
-    print(dmaGroup.get_group(592))
+    example = dmaGroup.get_group(592)
+    print(example)
+    print(example[frequency])
     area_quarter_agg = dmaGroup.aggregate(mkt_size_agg_function).reindex(columns = area_quarter_agg.columns)
     area_quarter_agg.drop([frequency], axis=1, inplace=True)
     area_quarter_agg = area_quarter_agg.rename(columns = {'dma_code':'dma_code','volume':'mkt_size'})
