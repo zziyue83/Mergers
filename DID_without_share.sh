@@ -12,5 +12,5 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python DID_without_share.py BEER month NoMktShare
+python DID_regression.py BEER month NoMktShare
 # python test1.py
