@@ -19,6 +19,10 @@ def DID_regression(product, frequency, share):
         print(fe_res)
 
         # f = open('../Codes/Mergers/'+product + '_DID_NoMktShare.tex', 'w')
+        beginningtex = """\\documentclass{report}
+                          \\usepackage{booktabs}
+                          \\begin{document}"""
+        endtex = "\end{document}"
         f = open(product + '_DID_NoMktShare.tex', 'w')
         f.write(beginningtex)
         f.write(res.summary().as_latex())
