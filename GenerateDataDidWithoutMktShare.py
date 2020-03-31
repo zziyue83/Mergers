@@ -60,7 +60,7 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequenc
 
     DID_list = []
     for year in years:
-        movement = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_upc_"+year+".tsv", delimiter = '\t', chunksize = 5000000)
+        movement = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_upc_"+year+".tsv", delimiter = '\t', chunksize = 1000000)
         for data_chunk in tqdm(movement):
             added_owner = data_chunk.merge(owners, how = 'inner', left_on = 'brand_descr', right_on = 'brand_descr')
             added_owner = added_owner.merge(ownerDummyDf, how = 'inner', left_on = 'owner initial', right_on = 'owner')
@@ -68,7 +68,7 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequenc
             times = added_owner[frequency+'_str'].unique()
             timeDummyDf = MakeTimeDummy(times, mergingt, startt, frequency)
             added_time = added_owner.merge(timeDummyDf, how = 'inner', left_on = frequency+'_str', right_on = 't')
-            pring(added_time.shape)
+            print(added_time.shape)
             DID_list.append(added_time)
 
     savePath = "../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv"
