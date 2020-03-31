@@ -19,7 +19,7 @@ def MakeOwnerDummy(mergers, all_owners):
     return ownerDummyDf
 
 def MakeTimeDummy(times, mergingt, startt, frequency):
-    timeDummyDf = pd.DataFrame(columns = ['t', 'post_merger','quarters_since_start'])
+    timeDummyDf = pd.DataFrame(columns = ['t', 'post_merger',frequency+'s_since_start'])
     if frequency == 'quarter':
         merging_year = int(mergingt[0:4])
         merging_q = int(mergingt[-1])
@@ -64,8 +64,8 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequenc
         # DID_list = []
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_upc_"+year+".tsv", delimiter = '\t', chunksize = 1000000)
         for data_chunk in tqdm(movement):
-            print(data_chunk.columns)
-            print(data_chunk.iloc[0])
+            # print(data_chunk.columns)
+            # print(data_chunk.iloc[0])
             added_owner = data_chunk.merge(owners, how = 'inner', left_on = 'brand_descr', right_on = 'brand_descr')
             added_owner = added_owner.merge(ownerDummyDf, how = 'inner', left_on = 'owner initial', right_on = 'owner')
             added_owner[frequency+'_str'] = added_owner[frequency].astype(str)
@@ -109,5 +109,5 @@ print(product)
 print(years)
 print(frequency)
 # AddOwnerandTimeVariables(product, years, ['Mars', 'Wrigley'],mergingt,startt, frequency)
-AddOwnerandTimeVariables(product, years, ['SABMillar', 'Molson Coors'],mergingt,startt, frequency)
+AddOwnerandTimeVariables(product, years, ['SABMiller', 'Molson Coors'],mergingt,startt, frequency)
 # >>>>>>> fc0f14f7f4cc63df8fc9b9cfc1a730ed3a969f91
