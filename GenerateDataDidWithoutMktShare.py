@@ -39,8 +39,8 @@ def MakeTimeDummy(times, mergingt, startt, frequency):
         start_year = int(startt[0:4])
         start_m = int(startt[4:])
         for month in times:
-            year = int(quarter[0:4])
-            m = int(quarter[4:])
+            year = int(month[0:4])
+            m = int(month[4:])
             if (year>= merging_year and m >= merging_m) or (year > merging_year):
                 post_merger = 1
             else:
