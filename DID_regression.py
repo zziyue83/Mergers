@@ -18,7 +18,8 @@ def DID_regression(product, frequency, share):
         fe_res = mod.fit()
         print(fe_res)
 
-        f = open('../Codes/Mergers/'+product + '_DID_NoMktShare.tex', 'w')
+        # f = open('../Codes/Mergers/'+product + '_DID_NoMktShare.tex', 'w')
+        f = open(product + '_DID_NoMktShare.tex', 'w')
         f.write(beginningtex)
         f.write(res.summary().as_latex())
         f.write(endtex)
