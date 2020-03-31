@@ -36,8 +36,8 @@ def MakeTimeDummy(times, mergingt, startt, frequency):
     elif frequency == 'month':
         merging_year = int(mergingt[0:4])
         merging_m = int(mergingt[4:])
-        start_year = int(startq[0:4])
-        start_m = int(startq[4:])
+        start_year = int(startt[0:4])
+        start_m = int(startt[4:])
         for month in times:
             year = int(quarter[0:4])
             m = int(quarter[4:])
@@ -51,7 +51,7 @@ def MakeTimeDummy(times, mergingt, startt, frequency):
         return None
     return timeDummyDf
 
-def AddOwnerandTimeVariables(product, years, mergers, mergingq, startq, frequency):
+def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequency):
     owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
     all_owners = owners['owner initial'].unique()
     ownerDummyDf = MakeOwnerDummy(mergers, all_owners)
@@ -65,7 +65,7 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingq, startq, frequenc
             added_owner = added_owner.merge(ownerDummyDf, how = 'inner', left_on = 'owner initial', right_on = 'owner')
             added_owner[frequency+'_str'] = added_owner[frequency].astype(str)
             times = added_owner[frequency+'_str'].unique()
-            timeDummyDf = MakeTimeDummy(times, mergingq, startq, frequency)
+            timeDummyDf = MakeTimeDummy(times, mergingt, startt, frequency)
             added_time = added_owner.merge(timeDummyDf, how = 'inner', left_on = frequency+'_str', right_on = 't')
             DID_list.append(added_time)
 
@@ -83,9 +83,11 @@ start = sys.argv[1]
 end = sys.argv[2]
 product = sys.argv[3]
 frequency = sys.argv[4]
+mergingt = sys.argv[5]
+startt = sys.argv[6]
 years = GenerateYearList(start, end)
 print(product)
 print(years)
 print(frequency)
-AddOwnerandTimeVariables(product, years, ['Molson Coors', 'SABMiller'],'2008Q3','2006Q1', frequency)
+AddOwnerandTimeVariables(product, years, ['Molson Coors', 'SABMiller'],mergingt,startt, frequency)
 # >>>>>>> fc0f14f7f4cc63df8fc9b9cfc1a730ed3a969f91
