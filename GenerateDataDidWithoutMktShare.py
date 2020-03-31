@@ -68,6 +68,7 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequenc
             times = added_owner[frequency+'_str'].unique()
             timeDummyDf = MakeTimeDummy(times, mergingt, startt, frequency)
             added_time = added_owner.merge(timeDummyDf, how = 'inner', left_on = frequency+'_str', right_on = 't')
+            pring(added_time.shape)
             DID_list.append(added_time)
 
     savePath = "../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv"
