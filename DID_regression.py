@@ -25,7 +25,7 @@ def DID_regression(product, frequency, share):
         endtex = "\end{document}"
         f = open(product + '_DID_NoMktShare.tex', 'w')
         f.write(beginningtex)
-        f.write(fe_res.summary().as_latex())
+        f.write(fe_res.as_latex())
         f.write(endtex)
         f.close()
 
