@@ -22,19 +22,19 @@ def DID_regression(product, frequency, share):
         # summaryDf.to_csv(product + '_DID_NoMktShare.csv', sep = ',')
         print(type(fe_res))
         print(type(fe_res.summary))
-        with open(product + '_DID_NoMktShare.pkl', 'w') as f:
-            pickle.dump(fe_res.summary, f)
+        # with open(product + '_DID_NoMktShare.pkl', 'w') as f:
+        #     pickle.dump(fe_res.summary, f)
 
-        # f = open('../Codes/Mergers/'+product + '_DID_NoMktShare.tex', 'w')
-        # beginningtex = """\\documentclass{report}
-        #                   \\usepackage{booktabs}
-        #                   \\begin{document}"""
-        # endtex = "\end{document}"
-        # f = open(product + '_DID_NoMktShare.tex', 'w')
-        # f.write(beginningtex)
-        # f.write(fe_res.as_latex())
-        # f.write(endtex)
-        # f.close()
+        f = open('../Codes/Mergers/'+product + '_DID_NoMktShare.tex', 'w')
+        beginningtex = """\\documentclass{report}
+                          \\usepackage{booktabs}
+                          \\begin{document}"""
+        endtex = "\end{document}"
+        f = open(product + '_DID_NoMktShare.tex', 'w')
+        f.write(beginningtex)
+        f.write(fe_res.summary.as_latex())
+        f.write(endtex)
+        f.close()
 
 if len(sys.argv) < 3:
     print("Not enough arguments")
