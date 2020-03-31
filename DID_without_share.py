@@ -1,5 +1,5 @@
 import pandas as pd
-from linearmodels.panel import PooledOLS
+from linearmodels.panel import PanelOLS
 import statsmodels.api as sm
 import numpy as np
 import sys
@@ -12,7 +12,7 @@ def DID_regression(product, frequency, share):
         data.set_index(['dma_code','upc'])
         exog_vars = ['post_merger*merging', 'post_merger']
         exog = sm.add_constant(data[exog_vars])
-        mod = PooledOLS(data['lprice'], exog, entity_effects = True)
+        mod = PanelOLS(data['lprice'], exog, entity_effects = True)
         fe_res = mod.fit()
         print(fe_res)
 
