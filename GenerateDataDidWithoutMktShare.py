@@ -17,13 +17,13 @@ def MakeOwnerDummy(mergers, all_owners):
             ownerDummyDf = ownerDummyDf.append({'owner': owner, 'merging':0}, ignore_index = True)
     return ownerDummyDf
 
-def MakeTimeDummy(times, mergingq, startq, frequency):
-    timeDummyDf = pd.DataFrame(columns = ['q', 'post_merger','quarters_since_start'])
+def MakeTimeDummy(times, mergingt, startt, frequency):
+    timeDummyDf = pd.DataFrame(columns = ['t', 'post_merger','quarters_since_start'])
     if frequency == 'quarter':
-        merging_year = int(mergingq[0:4])
-        merging_q = int(mergingq[-1])
-        start_year = int(startq[0:4])
-        start_q = int(startq[-1])
+        merging_year = int(mergingt[0:4])
+        merging_q = int(mergingt[-1])
+        start_year = int(startt[0:4])
+        start_q = int(startt[-1])
         for quarter in times:
             year = int(quarter[0:4])
             q = int(quarter[-1])
@@ -32,7 +32,23 @@ def MakeTimeDummy(times, mergingq, startq, frequency):
             else:
                 post_merger = 0
             quarters_since_start = (year - start_year) * 4 + (q - start_q)
-            timeDummyDf = timeDummyDf.append({'q': quarter, 'post_merger':post_merger, 'quarters_since_start':quarters_since_start}, ignore_index = True)
+            timeDummyDf = timeDummyDf.append({'t': quarter, 'post_merger':post_merger, 'quarters_since_start':quarters_since_start}, ignore_index = True)
+    elif frequency == 'month':
+        merging_year = int(mergingt[0:4])
+        merging_m = int(mergingt[4:])
+        start_year = int(startq[0:4])
+        start_m = int(startq[4:])
+        for month in times:
+            year = int(quarter[0:4])
+            m = int(quarter[4:])
+            if (year>= merging_year and m >= merging_m) or (year > merging_year):
+                post_merger = 1
+            else:
+                post_merger = 0
+            months_since_start = (year - start_year) * 12 + (m - start_m)
+            timeDummyDf = timeDummyDf.append({'t': month, 'post_merger':post_merger, 'months_since_start':months_since_start}, ignore_index = True)
+    else:
+        return None
     return timeDummyDf
 
 def AddOwnerandTimeVariables(product, years, mergers, mergingq, startq, frequency):
@@ -47,10 +63,10 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingq, startq, frequenc
         for data_chunk in tqdm(movement):
             added_owner = data_chunk.merge(owners, how = 'inner', left_on = 'brand_code_uc', right_on = 'brand_code_uc')
             added_owner = added_owner.merge(ownerDummyDf, how = 'inner', left_on = 'owner initial', right_on = 'owner')
-            added_owner[frequency+'_str'] = added_owner['quarter'].astype(str)
+            added_owner[frequency+'_str'] = added_owner[frequency].astype(str)
             times = added_owner[frequency+'_str'].unique()
             timeDummyDf = MakeTimeDummy(times, mergingq, startq, frequency)
-            added_time = added_owner.merge(timeDummyDf, how = 'inner', left_on = 'quarter_str', right_on = 'q')
+            added_time = added_owner.merge(timeDummyDf, how = 'inner', left_on = frequency+'_str', right_on = 't')
             DID_list.append(added_time)
 
     savePath = "../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv"
