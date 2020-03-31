@@ -10,8 +10,9 @@ def DID_regression(product, frequency, share):
         data['post_merger*merging'] = data['post_merger']*data['merging']
         data['dma_upc'] = data['dma_code'].astype(str) + "_" + data['upc'].astype(str)
         data['lprice_'+product] = np.log(data['price'])
+        data['trend'] = data[frequency+'s_since_start']
         data = data.set_index(['dma_upc',frequency+'s_since_start'])
-        exog_vars = ['post_merger*merging', 'post_merger', frequency+'s_since_start']
+        exog_vars = ['post_merger*merging', 'post_merger', 'trend']
         exog = sm.add_constant(data[exog_vars])
         mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
         fe_res = mod.fit()
