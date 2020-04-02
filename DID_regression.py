@@ -32,10 +32,12 @@ def DID_regression(product, frequency, share):
     elif share == 'MktShare':
         data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
         dma_month_volume = pd.read_csv("../../GeneratedData/"+product+"_dma_every_"+frequency+"_mkt_volume.tsv", delimiter = '\t')
+        print(data.shape)
+        print(dma_month_volume.shape)
         dma_month_volume = dma_month_volume.merge(data, how = 'inner', left_on = frequency, right_on = frequency)
         dma_pre_post_merger_volume = data.groupby(['dma','post_merger'], as_index = False).aggregate({'volume': 'sum'}).reindex(columns = data.columns)
         dma_pre_post_merger_volume = dma_pre_post_merger_volume[['dma','post_merger','volume']]
-        dma_pre_post_merger_volume.to_csv('trial.csv', sep = 't')
+        dma_pre_post_merger_volume.to_csv('trial.csv', sep = '\t')
         # volumes = data.groupby(['dma','post_merger','owner'])
         # data['DHHI'] = data['HHIAfter'] - data['HHIBefore']
         # data['DHHI*post_merger'] = data['DHHI']*data['merging']
