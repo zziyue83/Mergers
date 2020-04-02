@@ -8,6 +8,9 @@ def GenerateYearList(start, end):
     e = int(end)
     return list(range(s, e+1))
 
+def CalculatePostPreMktSize():
+
+
 def MakeOwnerDummy(mergers, all_owners):
     ownerDummyDf = pd.DataFrame(columns = ['owner', 'merging'])
     for merger in mergers:

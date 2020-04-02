@@ -17,18 +17,20 @@ def CalDMAMktSize(product, years, size_multiplier, frequency):
         for data_chunk in tqdm(movement):
             area_quarter = data_chunk.groupby([frequency,'dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
             area_quarter = area_quarter[[frequency,'dma_code','volume']]
-            area_quarter['volume'] = area_quarter['volume'] * size_multiplier
+            # area_quarter['volume'] = area_quarter['volume'] * size_multiplier
             area_quarter_mkt_list.append(area_quarter)
 
     area_quarter_agg = pd.concat(area_quarter_mkt_list)
     area_quarter_agg = area_quarter_agg.groupby([frequency,'dma_code'], as_index = False).aggregate({'volume':'sum'}).reindex(columns = area_quarter_agg.columns)
+    dma_volume_frequency_savePath ="../../GeneratedData/"+product+"_dma_every_"+frequency+"_mkt_volume.tsv"
+    area_quarter_agg.to_csv(dma_volume_frequency_savePath, sep = '\t')
 
     savePath = "../../GeneratedData/"+product+"_dma_"+frequency+"_mkt_size.tsv"
     mkt_size_agg_function = {'volume': 'max', frequency:'first'}
     dmaGroup = area_quarter_agg.groupby(['dma_code'], as_index = False)
-    example = dmaGroup.get_group(592)
-    print(example)
-    print(example[frequency])
+    # example = dmaGroup.get_group(592)
+    # print(example)
+    # print(example[frequency])
     area_quarter_agg = dmaGroup.aggregate(mkt_size_agg_function).reindex(columns = area_quarter_agg.columns)
     area_quarter_agg.drop([frequency], axis=1, inplace=True)
     area_quarter_agg = area_quarter_agg.rename(columns = {'dma_code':'dma_code','volume':'mkt_size'})

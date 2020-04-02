@@ -18,18 +18,36 @@ def DID_regression(product, frequency, share):
         mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
         fe_res = mod.fit()
         print(fe_res)
-        # summaryDf = pd.DataFrame(fe_res.summary)
-        # summaryDf.to_csv(product + '_DID_NoMktShare.csv', sep = ',')
-        print(type(fe_res))
-        print(type(fe_res.summary))
-        # with open(product + '_DID_NoMktShare.pkl', 'w') as f:
-        #     pickle.dump(fe_res.summary, f)
 
         beginningtex = """\\documentclass{report}
                           \\usepackage{booktabs}
                           \\begin{document}"""
         endtex = "\end{document}"
         f = open(product + '_DID_NoMktShare.tex', 'w')
+        f.write(beginningtex)
+        f.write(fe_res.summary.as_latex())
+        f.write(endtex)
+        f.close()
+    elif share == 'MktShare':
+        data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
+        volumes = data.groupby(['dma','post_merger','owner'])
+        data['DHHI'] = data['HHIAfter'] - data['HHIBefore']
+        data['DHHI*post_merger'] = data['DHHI']*data['merging']
+        data['dma_upc'] = data['dma_code'].astype(str) + "_" + data['upc'].astype(str)
+        data['lprice_'+product] = np.log(data['price'])
+        data['trend'] = data[frequency+'s_since_start']
+        data = data.set_index(['dma_upc',frequency+'s_since_start'])
+        exog_vars = ['DHHI*post_merger', 'post_merger', 'trend']
+        exog = sm.add_constant(data[exog_vars])
+        mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
+        fe_res = mod.fit()
+        print(fe_res)
+
+        beginningtex = """\\documentclass{report}
+                          \\usepackage{booktabs}
+                          \\begin{document}"""
+        endtex = "\end{document}"
+        f = open(product + '_DID_MktShare.tex', 'w')
         f.write(beginningtex)
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
