@@ -33,9 +33,9 @@ def DID_regression(product, frequency, share):
         print('hahahaha')
         dma_month_volume = pd.read_csv("../../GeneratedData/"+product+"_dma_every_"+frequency+"_mkt_volume.tsv", delimiter = '\t')
         print('abababab')
-        dma_month_volume = dma_month_volume.merge(data[[frequency,'post_merger']], how = 'inner', left_on = frequency, right_on = frequency)
+        data = data.merge(dma_month_volume, how = 'inner', left_on = frequency, right_on = frequency)
         print('huhuhuhuhhu')
-        dma_pre_post_merger_volume = dma_monthvolume.groupby(['dma','post_merger'], as_index = False).aggregate({'volume': 'sum'}).reindex(columns = dma_month_volume.columns)
+        dma_pre_post_merger_volume = data.groupby(['dma','post_merger'], as_index = False).aggregate({'volume': 'sum'}).reindex(columns = data.columns)
         print(dma_pre_post_merger_volume)
         # volumes = data.groupby(['dma','post_merger','owner'])
         # data['DHHI'] = data['HHIAfter'] - data['HHIBefore']
