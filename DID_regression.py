@@ -33,7 +33,7 @@ def MakeTimeDummy(times, mergingt, frequency):
         return None
     return timeDummyDf
 
-def AggPrePostVolume(product, frequency, mergingt):
+def AggDMAPrePostSize(product, frequency, mergingt):
     dma_frequency_volume = pd.read_csv("../../GeneratedData/"+product+"_dma_every_"+frequency+"_mkt_volume.tsv", delimiter = '\t')
     dma_frequency_volume[frequency+'_str'] = dma_frequency_volume[frequency].astype(str)
     times = dma_frequency_volume[frequency+'_str'].unique()
