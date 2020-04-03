@@ -72,8 +72,6 @@ def AddOwnerandTimeVariables(product, years, mergers, mergingt, startt, frequenc
             times = added_owner[frequency+'_str'].unique()
             timeDummyDf = MakeTimeDummy(times, mergingt, startt, frequency)
             added_time = added_owner.merge(timeDummyDf, how = 'inner', left_on = frequency+'_str', right_on = 't')
-            # print(added_time.shape)
-            print(added_time.iloc[0])
             DID_list.append(added_time)
 
         # if firstFile:
