@@ -138,4 +138,4 @@ else:
     mergingt = '0'
     mergers = []
 print(product)
-DID_regression(product, frequency, mktshare, mergingt,mergers)
+DID_regression(product, frequency, mktshare, mergingt,['SABMiller', 'Molson Coors'])
