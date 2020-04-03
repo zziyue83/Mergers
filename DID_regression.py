@@ -99,7 +99,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         firmDMA['share_square'] = firmDMA['share'] * firmDMA['share']
         firmDMA['share_square_post_merger'] = firmDMA['share_square'] * firmDMA['post_merger'] * (1 - firmDMA['merging'])
         firmDMA['share_square_pre_merger'] = firmDMA['share_sqare'] * (1 - firmDMA['post_merger'])
-        merger = firmDMA[firmDMA['post_merger'] == 1 && firmDMA['merging'] == 1]
+        merger = firmDMA[firmDMA['post_merger'] == 1 & firmDMA['merging'] == 1]
         merger = merger.groupby(['dma']).agg({'share':'sum','dma_size':'first','volume':'sum','owner':'first','merging':'first','post_merger': 'first'}, as_index = False).reindex(columns = firmDMA.columns)
         merger['share_square'] = merger['share'] * merger['share']
         merger['share_square_post_merger'] = merger['share_square'] * merger['post_merger']
