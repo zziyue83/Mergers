@@ -4,7 +4,16 @@ import statsmodels.api as sm
 import numpy as np
 import sys
 import pickle
-from GenerateDataDidWithoutMktShare import MakeTimeDummy
+
+def MakeOwnerDummy(mergers, all_owners):
+    ownerDummyDf = pd.DataFrame(columns = ['owner', 'merging'])
+    for merger in mergers:
+        ownerDummyDf = ownerDummyDf.append({'owner': merger, 'merging':1}, ignore_index = True)
+    for owner in all_owners:
+        if owner not in mergers:
+            ownerDummyDf = ownerDummyDf.append({'owner': owner, 'merging':0}, ignore_index = True)
+    print(ownerDummyDf)
+    return ownerDummyDf
 
 def MakeTimeDummy(times, mergingt, frequency):
     timeDummyDf = pd.DataFrame(columns = ['t', 'post_merger'])
