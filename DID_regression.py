@@ -116,27 +116,27 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         DMAConcentrationMap = DMAConcentration.to_dict()
 #end of calculating DHHI
 
-        # data['DHHI'] = data['dma_code'].map(DMAConcentrationMap['DHHI'])
-        # data['DHHI*post_merger'] = data['DHHI']*data['merging']
-        # data['dma_upc'] = data['dma_code'].astype(str) + "_" + data['upc'].astype(str)
-        # data['lprice_'+product] = np.log(data['price'])
-        # data['trend'] = data[frequency+'s_since_start']
-        # data = data.set_index(['dma_upc',frequency+'s_since_start'])
-        # exog_vars = ['DHHI*post_merger', 'post_merger', 'trend']
-        # exog = sm.add_constant(data[exog_vars])
-        # mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
-        # fe_res = mod.fit()
-        # print(fe_res)
+        data['DHHI'] = data['dma_code'].map(DMAConcentrationMap['DHHI'])
+        data['DHHI*post_merger'] = data['DHHI']*data['merging']
+        data['dma_upc'] = data['dma_code'].astype(str) + "_" + data['upc'].astype(str)
+        data['lprice_'+product] = np.log(data['price'])
+        data['trend'] = data[frequency+'s_since_start']
+        data = data.set_index(['dma_upc',frequency+'s_since_start'])
+        exog_vars = ['DHHI*post_merger', 'post_merger', 'trend']
+        exog = sm.add_constant(data[exog_vars])
+        mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
+        fe_res = mod.fit()
+        print(fe_res)
 
-        # beginningtex = """\\documentclass{report}
-        #                   \\usepackage{booktabs}
-        #                   \\begin{document}"""
-        # endtex = "\end{document}"
-        # f = open(product + '_DID_MktShare.tex', 'w')
-        # f.write(beginningtex)
-        # f.write(fe_res.summary.as_latex())
-        # f.write(endtex)
-        # f.close()
+        beginningtex = """\\documentclass{report}
+                          \\usepackage{booktabs}
+                          \\begin{document}"""
+        endtex = "\end{document}"
+        f = open(product + '_DID_MktShare.tex', 'w')
+        f.write(beginningtex)
+        f.write(fe_res.summary.as_latex())
+        f.write(endtex)
+        f.close()
 
 if len(sys.argv) < 3:
     print("Not enough arguments")
