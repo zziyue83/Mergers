@@ -75,7 +75,8 @@ def DID_regression(product, frequency, share, mergingt):
         data['dma_postmerger'] = data['dma_code'].astype(str)+data['post_merger'].astype(str)
         prepostSizeMap = prepostDMAsize.to_dict()
 
-        firmDMAVolume = data[['owner','dma_code','post_merger','volume']].groupby(['owner','dma_code','post_merger'], as_index = False).agg({'volume' : 'sum'}).reindex(columns = data.columns)
+        firmDMAVolume = data[['owner','dma_code','post_merger','volume']]
+        firmDMAVolume = firmDMAVolume.groupby(['owner','dma_code','post_merger'], as_index = False).agg({'volume' : 'sum'}).reindex(columns = firmDMAVolume.columns)
         print(firmDMAVolume)
 
         # dma_month_volume = dma_month_volume.merge(data, how = 'inner', left_on = frequency, right_on = frequency)
