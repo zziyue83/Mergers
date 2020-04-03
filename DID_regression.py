@@ -131,11 +131,7 @@ frequency = sys.argv[2]
 mktshare = sys.argv[3]
 if len(sys.argv) > 4:
     mergingt = sys.argv[4]
-    merger1 = sys.argv[5]
-    merger2 = sys.argv[6]
-    mergers = [merger1,merger2]
 else:
     mergingt = '0'
-    mergers = []
 print(product)
 DID_regression(product, frequency, mktshare, mergingt,['SABMiller', 'Molson Coors'])
