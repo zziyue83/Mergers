@@ -100,6 +100,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         firmDMA['share_square_post_merger'] = firmDMA['share_square'] * firmDMA['post_merger'] * (1 - firmDMA['merging'])
         firmDMA['share_square_pre_merger'] = firmDMA['share_square'] * (1 - firmDMA['post_merger'])
         merger = firmDMA[(firmDMA['post_merger'] == 1) & (firmDMA['merging'] == 1)]
+        print(merger)
         merger = merger.groupby(['dma_code']).agg({'share':'sum','dma_size':'first','volume':'sum','owner':'first','merging':'first','post_merger': 'first'}, as_index = False).reindex(columns = firmDMA.columns)
         merger['share_square'] = merger['share'] * merger['share']
         merger['share_square_post_merger'] = merger['share_square'] * merger['post_merger']
@@ -110,7 +111,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         print(firmDMA)
         DMAConcentration = firmDMA.groupby('dma_code', as_index = False).agg({'volume':'sum','share_square':'sum','share_square_post_merger':'sum','share_square_pre_merger':'sum'}).reindex(columns = firmDMA.columns)
         DMAConcentration['DHHI'] = DMAConcentration['share_square_post_merger'] - DMAConcentration['share_square_pre_merger']
-        DMAConcentration.set_index('dma_code')
+        DMAConcentration = .set_index('dma_code')
         print(DMAConcentration)
         DMAConcentrationMap = DMAConcentration.to_dict()
 #end of calculating DHHI
@@ -127,15 +128,15 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         # fe_res = mod.fit()
         # print(fe_res)
 
-        beginningtex = """\\documentclass{report}
-                          \\usepackage{booktabs}
-                          \\begin{document}"""
-        endtex = "\end{document}"
-        f = open(product + '_DID_MktShare.tex', 'w')
-        f.write(beginningtex)
-        f.write(fe_res.summary.as_latex())
-        f.write(endtex)
-        f.close()
+        # beginningtex = """\\documentclass{report}
+        #                   \\usepackage{booktabs}
+        #                   \\begin{document}"""
+        # endtex = "\end{document}"
+        # f = open(product + '_DID_MktShare.tex', 'w')
+        # f.write(beginningtex)
+        # f.write(fe_res.summary.as_latex())
+        # f.write(endtex)
+        # f.close()
 
 if len(sys.argv) < 3:
     print("Not enough arguments")
