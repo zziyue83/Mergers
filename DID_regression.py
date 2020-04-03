@@ -107,6 +107,6 @@ mktshare = sys.argv[3]
 if len(sys.argv) > 4:
     mergingt = sys.argv[4]
 else:
-    mergingt = 0
+    mergingt = '0'
 print(product)
 DID_regression(product, frequency, mktshare, mergingt)
