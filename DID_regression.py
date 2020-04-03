@@ -111,7 +111,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         print(firmDMA)
         DMAConcentration = firmDMA.groupby('dma_code', as_index = False).agg({'volume':'sum','share_square':'sum','share_square_post_merger':'sum','share_square_pre_merger':'sum'}).reindex(columns = firmDMA.columns)
         DMAConcentration['DHHI'] = DMAConcentration['share_square_post_merger'] - DMAConcentration['share_square_pre_merger']
-        DMAConcentration = .set_index('dma_code')
+        DMAConcentration = DMAConcentration.set_index('dma_code')
         print(DMAConcentration)
         DMAConcentrationMap = DMAConcentration.to_dict()
 #end of calculating DHHI
