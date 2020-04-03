@@ -91,15 +91,15 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         prepostSizeMap = prepostDMASize.to_dict()
         firmDMA = data[['owner','dma_code','post_merger','volume']]
         firmDMA = firmDMA.merge(ownerDummyDf, how = 'inner', left_on='owner', right_on = 'owner')
-        firmDMA = firmDMA.groupby(['owner','dma_code','post_merger'], as_index = False).agg({'volume' : 'sum'}).reindex(columns = firmDMA.columns)
+        firmDMA = firmDMA.groupby(['owner','dma_code','post_merger'], as_index = False).agg({'volume' : 'sum', 'merging':'first'}).reindex(columns = firmDMA.columns)
         print(firmDMA)
         firmDMA['dma_postmerger'] = firmDMA['dma_code'].astype(str)+firmDMA['post_merger'].astype(str)
         firmDMA['dma_size'] = firmDMA['dma_postmerger'].map(prepostDMASize['volume'])
         firmDMA['share'] = firmDMA['volume'] / firmDMA['dma_size']
         firmDMA['share_square'] = firmDMA['share'] * firmDMA['share']
         firmDMA['share_square_post_merger'] = firmDMA['share_square'] * firmDMA['post_merger']
-        print(firmDMAVolume)
-        DMAConcentration = firmDMA.groupby('dma_code', as_index = False).agg({'volume':'sum','share_square':'sum','share_square_post_merger':'sum'}).reindex(columns = firmDMA.columms)
+        print(firmDMA)
+        DMAConcentration = firmDMA.groupby('dma_code', as_index = False).agg({'volume':'sum','share_square':'sum','share_square_post_merger':'sum','merging':'first'}).reindex(columns = firmDMA.columms)
         DMAConcentration['share_square_pre_merger'] = DMAConcentration['share_square'] - DMAConcentration['share_square_post_merger']
 
 
