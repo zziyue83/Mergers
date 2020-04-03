@@ -4,6 +4,7 @@ import statsmodels.api as sm
 import numpy as np
 import sys
 import pickle
+from GenerateDataDidWithoutMktShare import MakeTimeDummy
 
 def MakeTimeDummy(times, mergingt, frequency):
     timeDummyDf = pd.DataFrame(columns = ['t', 'post_merger'])
@@ -44,7 +45,7 @@ def AggDMAPrePostSize(product, frequency, mergingt):
     dma_prepost_volume = dma_prepost_volume.set_index('dma_postmerger')
     return dma_prepost_volume[['dma_code', 'post_merger', 'volume']]
 
-def DID_regression(product, frequency, share, mergingt):
+def DID_regression(product, frequency, share, mergingt, mergers):
     if share == 'NoMktShare':
         data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
         data['post_merger*merging'] = data['post_merger']*data['merging']
@@ -72,17 +73,25 @@ def DID_regression(product, frequency, share, mergingt):
         data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
 
 #calculate Herfindahl index
+        owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
+        all_owners = owners['owner initial'].unique()
+        ownerDummyDf = MakeOwnerDummy(mergers, all_owners)
         prepostDMASize = AggDMAPrePostSize(product, frequency, mergingt)
         print(prepostDMASize)
         # data['dma_postmerger'] = data['dma_code'].astype(str)+data['post_merger'].astype(str)
         prepostSizeMap = prepostDMASize.to_dict()
-        firmDMAVolume = data[['owner','dma_code','post_merger','volume']]
-        firmDMAVolume = firmDMAVolume.groupby(['owner','dma_code','post_merger'], as_index = False).agg({'volume' : 'sum'}).reindex(columns = firmDMAVolume.columns)
+        firmDMA = data[['owner','dma_code','post_merger','volume']]
+        firmDMA = firmDMA.merge(ownerDummyDf, how = 'inner', left_on='owner', right_on = 'owner')
+        firmDMA = firmDMA.groupby(['owner','dma_code','post_merger'], as_index = False).agg({'volume' : 'sum'}).reindex(columns = firmDMA.columns)
+        print(firmDMA)
+        firmDMA['dma_postmerger'] = firmDMA['dma_code'].astype(str)+firmDMA['post_merger'].astype(str)
+        firmDMA['dma_size'] = firmDMA['dma_postmerger'].map(prepostDMASize['volume'])
+        firmDMA['share'] = firmDMA['volume'] / firmDMA['dma_size']
+        firmDMA['share_square'] = firmDMA['share'] * firmDMA['share']
+        firmDMA['share_square_post_merger'] = firmDMA['share_square'] * firmDMA['post_merger']
         print(firmDMAVolume)
-        firmDMAVolume['dma_postmerger'] = firmDMAVolume['dma_code'].astype(str)+firmDMAVolume['post_merger'].astype(str)
-        firmDMAVolume['dma_size'] = firmDMAVolume['dma_postmerger'].map(prepostDMASize['volume'])
-        print(firmDMAVolume)
-
+        DMAConcentration = firmDMA.groupby('dma_code', as_index = False).agg({'volume':'sum','share_square':'sum','share_square_post_merger':'sum'}).reindex(columns = firmDMA.columms)
+        DMAConcentration['share_square_pre_merger'] = DMAConcentration['share_square'] - DMAConcentration['share_square_post_merger']
 
 
         # dma_month_volume = dma_month_volume.merge(data, how = 'inner', left_on = frequency, right_on = frequency)
@@ -122,7 +131,11 @@ frequency = sys.argv[2]
 mktshare = sys.argv[3]
 if len(sys.argv) > 4:
     mergingt = sys.argv[4]
+    merger1 = sys.argv[5]
+    merger2 = sys.argv[6]
+    mergers = [merger1,merger2]
 else:
     mergingt = '0'
+    mergers = []
 print(product)
-DID_regression(product, frequency, mktshare, mergingt)
+DID_regression(product, frequency, mktshare, mergingt,mergers)
