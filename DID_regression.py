@@ -42,7 +42,7 @@ def AggDMAPrePostSize(product, frequency, mergingt):
     dma_prepost_volume = dma_frequency_volume.groupby(['dma_code','post_merger'], as_index = False).agg({'volume':'sum'}).reindex(columns = dma_frequency_volume.columns)
     dma_prepost_volume['dma_postmerger'] = dma_prepost_volume['dma_code'].astype(str)+dma_prepost_volume['post_merger'].astype(str)
     dma_prepost_volume = dma_prepost_volume.set_index('dma_postmerger')
-    return dma_frequency_volume[['dma_code', 'post_merger', 'volume']]
+    return dma_prepost_volume[['dma_code', 'post_merger', 'volume']]
 
 def DID_regression(product, frequency, share, mergingt):
     if share == 'NoMktShare':
@@ -70,14 +70,20 @@ def DID_regression(product, frequency, share, mergingt):
 
     elif share == 'MktShare':
         data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
-        prepostDMAsize = AggDMAPrePostSize(product, frequency, mergingt)
-        print(prepostDMAsize)
-        data['dma_postmerger'] = data['dma_code'].astype(str)+data['post_merger'].astype(str)
-        prepostSizeMap = prepostDMAsize.to_dict()
 
+#calculate Herfindahl index
+        prepostDMASize = AggDMAPrePostSize(product, frequency, mergingt)
+        print(prepostDMASize)
+        # data['dma_postmerger'] = data['dma_code'].astype(str)+data['post_merger'].astype(str)
+        prepostSizeMap = prepostDMASize.to_dict()
         firmDMAVolume = data[['owner','dma_code','post_merger','volume']]
         firmDMAVolume = firmDMAVolume.groupby(['owner','dma_code','post_merger'], as_index = False).agg({'volume' : 'sum'}).reindex(columns = firmDMAVolume.columns)
         print(firmDMAVolume)
+        firmDMAVolume['dma_postmerger'] = firmDMAVolume['dma_code'].astype(str)+firmDMAVolume['post_merger'].astype(str)
+        firmDMAVolume['dma_size'] = firmDMAVolume['dma_postmerger'].map(prepostDMASize['volume'])
+        print(firmDMAVolume)
+
+
 
         # dma_month_volume = dma_month_volume.merge(data, how = 'inner', left_on = frequency, right_on = frequency)
         # dma_pre_post_merger_volume = data.groupby(['dma','post_merger'], as_index = False).aggregate({'volume': 'sum'}).reindex(columns = data.columns)
