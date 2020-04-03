@@ -97,19 +97,24 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         firmDMA['dma_size'] = firmDMA['dma_postmerger'].map(prepostDMASize['volume'])
         firmDMA['share'] = firmDMA['volume'] / firmDMA['dma_size']
         firmDMA['share_square'] = firmDMA['share'] * firmDMA['share']
-        firmDMA['share_square_post_merger'] = firmDMA['share_square'] * firmDMA['post_merger']
+        firmDMA['share_square_post_merger'] = firmDMA['share_square'] * firmDMA['post_merger'] * (1 - firmDMA['merging'])
+        firmDMA['share_square_pre_merger'] = firmDMA['share_sqare'] * (1 - firmDMA['post_merger'])
+        merger = firmDMA[firmDMA['post_merger'] == 1 && firmDMA['merging'] == 1]
+        merger = merger.groupby(['dma']).agg({'share':'sum','dma_size':'first','volume':'sum','owner':'first','merging':'first','post_merger': 'first'}, as_index = False).reindex(columns = firmDMA.columns)
+        merger['share_square'] = merger['share'] * merger['share']
+        merger['share_square_post_merger'] = merger['share_square'] * merger['post_merger']
+        merger['share_square_pre_merger'] = 0
+        merger['owner'] = 'merger'
+        firmDMA.append(merger)
         print(firmDMA)
-        DMAConcentration = firmDMA.groupby('dma_code', as_index = False).agg({'volume':'sum','share_square':'sum','share_square_post_merger':'sum','merging':'first'}).reindex(columns = firmDMA.columms)
-        DMAConcentration['share_square_pre_merger'] = DMAConcentration['share_square'] - DMAConcentration['share_square_post_merger']
+        DMAConcentration = firmDMA.groupby('dma_code', as_index = False).agg({'volume':'sum','share_square':'sum','share_square_post_merger':'sum','share_square_pre_merger':'sum'}).reindex(columns = firmDMA.columns)
+        DMAConcentration['DHHI'] = DMAConcentration['share_square_post_merger'] - DMAConcentration['share_square_pre_merger']
+        DMAConcentration.set_index('dma_code')
+        print(DMAConcentration)
+        DMAConcentrationMap = DMAConcentration.to_dict()
+#end of calculating DHHI
 
-
-        # dma_month_volume = dma_month_volume.merge(data, how = 'inner', left_on = frequency, right_on = frequency)
-        # dma_pre_post_merger_volume = data.groupby(['dma','post_merger'], as_index = False).aggregate({'volume': 'sum'}).reindex(columns = data.columns)
-        # dma_pre_post_merger_volume = dma_pre_post_merger_volume[['dma','post_merger','volume']]
-        # dma_pre_post_merger_volume.to_csv('trial.csv', sep = '\t')
-
-        # volumes = data.groupby(['dma','post_merger','owner'])
-        # data['DHHI'] = data['HHIAfter'] - data['HHIBefore']
+        # data['DHHI'] = data['dma_code'].map(DMAConcentrationMap['DHHI'])
         # data['DHHI*post_merger'] = data['DHHI']*data['merging']
         # data['dma_upc'] = data['dma_code'].astype(str) + "_" + data['upc'].astype(str)
         # data['lprice_'+product] = np.log(data['price'])
@@ -120,16 +125,16 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         # mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
         # fe_res = mod.fit()
         # print(fe_res)
-        #
-        # beginningtex = """\\documentclass{report}
-        #                   \\usepackage{booktabs}
-        #                   \\begin{document}"""
-        # endtex = "\end{document}"
-        # f = open(product + '_DID_MktShare.tex', 'w')
-        # f.write(beginningtex)
-        # f.write(fe_res.summary.as_latex())
-        # f.write(endtex)
-        # f.close()
+
+        beginningtex = """\\documentclass{report}
+                          \\usepackage{booktabs}
+                          \\begin{document}"""
+        endtex = "\end{document}"
+        f = open(product + '_DID_MktShare.tex', 'w')
+        f.write(beginningtex)
+        f.write(fe_res.summary.as_latex())
+        f.write(endtex)
+        f.close()
 
 if len(sys.argv) < 3:
     print("Not enough arguments")
