@@ -39,8 +39,10 @@ def AggDMAPrePostSize(product, frequency, mergingt):
     times = dma_frequency_volume[frequency+'_str'].unique()
     timeDummyDf = MakeTimeDummy(times, mergingt, frequency)
     dma_frequency_volume = dma_frequency_volume.merge(timeDummyDf, how = 'left', left_on = frequency+'_str', right_on = 't')
-    dma_frequency_volume = dma_frequency_volume.groupby(['dma_code','post_merger'], as_index = False).agg({'volume':'sum'}).reindex(columns = dma_frequency_volume.columns)
-    return dma_frequency_volume
+    dma_prepost_volume = dma_frequency_volume.groupby(['dma_code','post_merger'], as_index = False).agg({'volume':'sum'}).reindex(columns = dma_frequency_volume.columns)
+    dma_prepost_volume['dma_postmerger'] = dma_prepost_volume['dma_code'].astype(str)+dma_prepost_volume['post_merger'].astype(str)
+    dma_prepost_volume = dma_prepost_volume.set_index('dma_postmerger')
+    return dma_frequency_volume[['dma_code', 'post_merger', 'volume']]
 
 def DID_regression(product, frequency, share, mergingt):
     if share == 'NoMktShare':
@@ -56,7 +58,7 @@ def DID_regression(product, frequency, share, mergingt):
         fe_res = mod.fit()
         print(fe_res)
 
-        beginningtex = """\\documentclass{report}
+        beginningtex = """\\documentclass{report}a
                           \\usepackage{booktabs}
                           \\begin{document}"""
         endtex = "\end{document}"
@@ -70,6 +72,12 @@ def DID_regression(product, frequency, share, mergingt):
         data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
         prepostDMAsize = AggDMAPrePostSize(product, frequency, mergingt)
         print(prepostDMAsize)
+        data['dma_postmerger'] = data['dma_code'].astype(str)+data['post_merger'].astype(str)
+        prepostSizeMap = prepostDMAsize.to_dict()
+
+        firmDMAvolume = data[['owner','dma_code','post_merger','volume']].groupby(['owner','dma_code','post_merger'], as_index = False).agg({'volume' = 'sum'}).reindex(columns = data.columns)
+        print(firmDMAVolume)
+
         # dma_month_volume = dma_month_volume.merge(data, how = 'inner', left_on = frequency, right_on = frequency)
         # dma_pre_post_merger_volume = data.groupby(['dma','post_merger'], as_index = False).aggregate({'volume': 'sum'}).reindex(columns = data.columns)
         # dma_pre_post_merger_volume = dma_pre_post_merger_volume[['dma','post_merger','volume']]
