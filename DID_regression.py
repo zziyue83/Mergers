@@ -39,7 +39,7 @@ def AggDMAPrePostSize(product, frequency, mergingt):
     times = dma_frequency_volume[frequency+'_str'].unique()
     timeDummyDf = MakeTimeDummy(times, mergingt, frequency)
     dma_frequency_volume = dma_frequency_volume.merge(timeDummyDf, how = 'left', left_on = frequency+'_str', right_on = 't')
-    dma_frequency_volume = dma_frequency_volume.groupby(['dma','post_merger'], as_index = False).agg({'volume':'sum'}).reindex(columns = dma_frequency_volume.columns)
+    dma_frequency_volume = dma_frequency_volume.groupby(['dma_code','post_merger'], as_index = False).agg({'volume':'sum'}).reindex(columns = dma_frequency_volume.columns)
     return dma_frequency_volume
 
 def DID_regression(product, frequency, share, mergingt):
