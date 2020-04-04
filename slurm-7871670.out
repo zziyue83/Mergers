@@ -1,78 +1,0 @@
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
-  warnings.warn(msg, UserWarning)
-0it [00:00, ?it/s]1it [00:02,  2.58s/it]2it [00:05,  2.56s/it]3it [00:07,  2.54s/it]4it [00:10,  2.51s/it]5it [00:12,  2.48s/it]6it [00:14,  2.47s/it]7it [00:17,  2.43s/it]8it [00:19,  2.42s/it]9it [00:19,  1.78s/it]9it [00:19,  2.21s/it]
-0it [00:00, ?it/s]1it [00:02,  2.36s/it]2it [00:04,  2.36s/it]3it [00:07,  2.37s/it]4it [00:09,  2.26s/it]5it [00:11,  2.30s/it]6it [00:14,  2.38s/it]7it [00:16,  2.37s/it]8it [00:18,  2.35s/it]9it [00:19,  1.95s/it]9it [00:19,  2.19s/it]
-0it [00:00, ?it/s]1it [00:02,  2.72s/it]2it [00:05,  2.65s/it]3it [00:07,  2.56s/it]4it [00:09,  2.50s/it]5it [00:11,  2.37s/it]6it [00:14,  2.35s/it]7it [00:16,  2.34s/it]8it [00:18,  2.34s/it]9it [00:19,  1.80s/it]9it [00:19,  2.17s/it]
-0it [00:00, ?it/s]1it [00:02,  2.13s/it]2it [00:04,  2.20s/it]3it [00:06,  2.26s/it]4it [00:09,  2.29s/it]5it [00:11,  2.31s/it]6it [00:13,  2.33s/it]7it [00:16,  2.39s/it]8it [00:19,  2.45s/it]8it [00:19,  2.39s/it]
-CANDY
-[2006, 2007, 2008, 2009]
-month
-                                  owner merging
-0                                  Mars       1
-1                               Wrigley       1
-2             American Licorice Company       0
-3                    Asher’s Chocolates       0
-4                         August Storck       0
-5                   Brach's Confections       0
-6            Bradford Chocolate Factory       0
-7                         Brown & Haley       0
-8                               Cadbury       0
-9                      Callard & Bowser       0
-10                          Ce De Candy       0
-11                            Colombina       0
-12                            CTL Foods       0
-13              Elmer Candy Corporation       0
-14                   Farley's & Sathers       0
-15                    FB Washburn Candy       0
-16                    Ferrara Pan Candy       0
-17                              Ferrero       0
-18  Frankford Candy & Chocolate Company       0
-19              Galerie Candy and Gifts       0
-20               Goetze's Candy Company       0
-21                          Grupo Arcor       0
-22                               Haribo       0
-23                              Hershey       0
-24                   Impact Confections       0
-25                 Jelly Belly Candy Co       0
-26                                Joyva       0
-27                        Just Born Inc       0
-28                     Kraft Foods Inc.       0
-29                     Lindt & Sprüngli       0
-30                      Log House Foods       0
-31                   Maxfield Candy Co.       0
-32                   Mayfair Sales Inc.       0
-33                 Mount Franklin Foods       0
-34                          Mrs. Fields       0
-35                                Necco       0
-36                               Nestlé       0
-37              Old Dominion Peanut Co.       0
-38              Pearson's Candy Company       0
-39                   Perfetti Van Melle       0
-40               Piedmont Candy Company       0
-41               R.L. Albert & Son, Inc       0
-42                         RM Palmer Co       0
-43           Russell Stover Candies Inc       0
-44                        Shari Candies       0
-45                Sherwood Brands, Inc.       0
-46                       Simply Goodies       0
-47               Spangler Candy Company       0
-48       Sun-Maid Growers of California       0
-49                  Sweet Candy Company       0
-50              Tootsie Roll Industries       0
-51                              unknown       0
-52             World's Finest Chocolate       0
-53                  Zachary Confections       0
-Traceback (most recent call last):
-  File "GenerateDataDidWithoutMktShare.py", line 108, in <module>
-    AddOwnerandTimeVariables(product, years, ['Mars', 'Wrigley'],mergingt,startt, frequency)
-  File "GenerateDataDidWithoutMktShare.py", line 90, in AddOwnerandTimeVariables
-    DID_agg = DID_agg[['upc','price','dma_code','brand_code_uc','brand_descr_x','post_merger',frequency+'s_since_start',frequency,'owner','merging']]
-  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/frame.py", line 3001, in __getitem__
-    indexer = self.loc._convert_to_indexer(key, axis=1, raise_missing=True)
-  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/indexing.py", line 1285, in _convert_to_indexer
-    return self._get_listlike_indexer(obj, axis, **kwargs)[1]
-  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/indexing.py", line 1092, in _get_listlike_indexer
-    keyarr, indexer, o._get_axis_number(axis), raise_missing=raise_missing
-  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/indexing.py", line 1185, in _validate_read_indexer
-    raise KeyError("{} not in index".format(not_found))
-KeyError: "['brand_descr_x'] not in index"
