@@ -91,7 +91,7 @@ def CalDMADeltaHHI(oneYearFirmDMA):
     postMerger['DHHI'] = postMerger['post_merger_share_square'] - postMerger['pre_merger_share_square']
     DMADHHI = postMerger[['dma_code','DHHI']].set_index('dma_code')
     print(DMADHHI)
-    return postMerger
+    return DMADHHI
 
 def DID_regression(product, frequency, share, mergingt, mergers):
     if share == 'NoMktShare':
