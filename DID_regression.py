@@ -90,6 +90,7 @@ def CalDMADeltaHHI(oneYearFirmDMA):
     postMerger = preMerger.groupby(['dma_code'], as_index = False).agg({'volume':'sum', 'dma_size':'first','share':'sum','pre_merger_share_square':'sum'}, as_index = False).reindex(columns = preMerger.columns)
     postMerger['post_merger_share_square'] = postMerger['share'] * postMerger['share']
     postMerger['DHHI'] = postMerger['post_merger_share_square'] - postMerger['pre_merger_share_square']
+    print(postMerger)
     DMADHHI = postMerger[['dma_code','DHHI']].set_index('dma_code')
     print(DMADHHI)
     return DMADHHI
