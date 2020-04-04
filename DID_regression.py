@@ -48,7 +48,7 @@ def MakeOneYearDummy(times, mergingt, frequency):
     merging_year = int(mergingt[0:4])
     i = 5 if frequency == 'quarter' else 5
     multiplier = 4 if frequency == 'quarter' else 12
-    merging_t = int(merging[i:])
+    merging_t = int(mergingt[i:])
     for time in times:
         year = int(time[0:4])
         t = int(time[i:])
