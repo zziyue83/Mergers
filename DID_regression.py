@@ -52,7 +52,7 @@ def MakeOneYearDummy(times, mergingt, frequency):
     for time in times:
         year = int(time[0:4])
         t = int(time[i:])
-        difference = (merging_year - year) + (mergingt - t)/multiplier
+        difference = (merging_year - year) + (merging_t - t)/multiplier
         if difference > 0 and difference <= 1:
             timeDummyDf = timeDummyDf.append({'t': time, 'include': 1}, ignore_index = True)
         else:
