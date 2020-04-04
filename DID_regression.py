@@ -128,7 +128,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         # print(prepostDMASize)
         # data['dma_postmerger'] = data['dma_code'].astype(str)+data['post_merger'].astype(str)
         # prepostSizeMap = prepostDMASize.to_dict()
-        firmDMA = data[['owner','dma_code','post_merger','volume']]
+        firmDMA = data[['owner','dma_code',frequency,'volume']]
         firmDMA = firmDMA.merge(ownerDummyDf, how = 'inner', left_on='owner', right_on = 'owner')
         firmDMA['time_str'] = firmDMA[frequency].astype(str)
         times = firm['time_str'].unique()
