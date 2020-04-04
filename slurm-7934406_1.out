@@ -1,0 +1,20 @@
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
+  warnings.warn(msg, UserWarning)
+/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
+  return ptp(axis=axis, out=out, **kwargs)
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '2.6.2' or newer of 'numexpr' (version '2.6.1' currently installed).
+  warnings.warn(msg, UserWarning)
+Traceback (most recent call last):
+  File "DIDregression1_A.py", line 29, in <module>
+    DID1(products, quarterOrMonth)
+  File "DIDregression1_A.py", line 13, in DID1
+    fe_res = mod.fit(cov_type = 'clustered', clusters = 'dma_code')
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/linearmodels/panel/model.py", line 1681, in fit
+    cov_config = self._setup_clusters(cov_config)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/linearmodels/panel/model.py", line 605, in _setup_clusters
+    formatted_clusters = self.reformat_clusters(clusters)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/linearmodels/panel/model.py", line 277, in reformat_clusters
+    clusters = PanelData(clusters, var_name="cov.cluster", convert_dummies=False)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/linearmodels/panel/data.py", line 230, in __init__
+    raise TypeError("Only ndarrays, DataFrames or DataArrays are " "supported")
+TypeError: Only ndarrays, DataFrames or DataArrays are supported
