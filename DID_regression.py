@@ -136,6 +136,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         firmDMA = firmDMA.merge(oneYearDummy, how = 'inner', left_on = 'time_str', right_on = 't')
         oneYearFirmDMA = firmDMA[firmDMA['include'] == 1]
         DMAVolume = oneYearFirmDMA.groupby(['dma_code']).agg({'volume':'sum'}, as_index = False).reindex(columns = oneYearFirmDMA)
+        print(DMAVolume)
         DMAVolume = DMAVolume[['dma_code','volume']].set_index('dma_code')
         DMAVolumeMap =DMAVolume.to_dict()
         print(DMAVolume)
