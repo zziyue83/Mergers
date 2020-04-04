@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="candy panel data generation"
+#SBATCH --job-name="DID regression"
 #SBATCH -A b1048
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -N 1
