@@ -83,6 +83,7 @@ def MakeOneYearDummy(times, mergingt, frequency):
 def CalDMADeltaHHI(oneYearFirmDMA):
     #I am only assuming the fact that the mergers don't divest their brands to outside-merger owner here
     merger = oneYearFirmDMA[oneYearFirmDMA['merging'] == 1]
+    print(merger)
     preMerger = merger.groupby(['dma_code', 'owner'], as_index = False).agg({'volume':'sum', 'dma_size':'first'}, as_index = False).reindex(columns = merger.columns)
     preMerger['share'] = preMerger['volume'] / preMerger['dma_size']
     preMerger['pre_merger_share_square'] =preMerger['share'] * preMerger['share']
