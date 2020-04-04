@@ -61,24 +61,24 @@ def MakeOneYearDummy(times, mergingt, frequency):
     print(timeDummyDf)
     return timeDummyDf
 
-def AggDMAPrePostSize(product, frequency, mergingt):
-    dma_frequency_volume = pd.read_csv("../../GeneratedData/"+product+"_dma_every_"+frequency+"_mkt_volume.tsv", delimiter = '\t')
-    dma_frequency_volume['time_str'] = dma_frequency_volume[frequency].astype(str)
-    times = dma_frequency_volume['time_str'].unique()
-    timeDummyDf = MakeTimeDummy(times, mergingt, frequency)
-    dma_frequency_volume = dma_frequency_volume.merge(timeDummyDf, how = 'left', left_on = 'time_str', right_on = 't')
-    dma_prepost_volume = dma_frequency_volume.groupby(['dma_code','post_merger'], as_index = False).agg({'volume':'sum'}).reindex(columns = dma_frequency_volume.columns)
-    dma_prepost_volume['dma_postmerger'] = dma_prepost_volume['dma_code'].astype(str)+dma_prepost_volume['post_merger'].astype(str)
-    dma_prepost_volume = dma_prepost_volume.set_index('dma_postmerger')
-    return dma_prepost_volume[['dma_code', 'post_merger', 'volume']]
+# def AggDMAPrePostSize(product, frequency, mergingt):
+#     dma_frequency_volume = pd.read_csv("../../GeneratedData/"+product+"_dma_every_"+frequency+"_mkt_volume.tsv", delimiter = '\t')
+#     dma_frequency_volume['time_str'] = dma_frequency_volume[frequency].astype(str)
+#     times = dma_frequency_volume['time_str'].unique()
+#     timeDummyDf = MakeTimeDummy(times, mergingt, frequency)
+#     dma_frequency_volume = dma_frequency_volume.merge(timeDummyDf, how = 'left', left_on = 'time_str', right_on = 't')
+#     dma_prepost_volume = dma_frequency_volume.groupby(['dma_code','post_merger'], as_index = False).agg({'volume':'sum'}).reindex(columns = dma_frequency_volume.columns)
+#     dma_prepost_volume['dma_postmerger'] = dma_prepost_volume['dma_code'].astype(str)+dma_prepost_volume['post_merger'].astype(str)
+#     dma_prepost_volume = dma_prepost_volume.set_index('dma_postmerger')
+#     return dma_prepost_volume[['dma_code', 'post_merger', 'volume']]
 
-def CalDMAMktSize(topBrandsDMAVolume, includeTimeDf, frequency):
-    topBrandsDMAVolume['time_str'] = topBrandsDMAVolume[frequency].astype(str)
-    topBrandsDMAVolume = topBrandsDMAVolume.merger(includeTimeDf, how = 'inner', left_on = 'time_str', right_on = 't')
-    topBrandsDMAVolume = topBrandsDMAVolume[topBrandsDMAVolume['include'] == 1]
-    DMAVolume = topBrandsDMAVolume.groupby(['dma_code']).agg('volume':'sum', as_index = False).reindex(columns = topBrandsDMAVolume)
-    DMAVolume = DMAVolume['dma_code','volume'].set_index('dma_code')
-    return DMAVolume
+# def CalDMAMktSize(topBrandsDMAVolume, includeTimeDf, frequency):
+#     topBrandsDMAVolume['time_str'] = topBrandsDMAVolume[frequency].astype(str)
+#     topBrandsDMAVolume = topBrandsDMAVolume.merger(includeTimeDf, how = 'inner', left_on = 'time_str', right_on = 't')
+#     topBrandsDMAVolume = topBrandsDMAVolume[topBrandsDMAVolume['include'] == 1]
+#     DMAVolume = topBrandsDMAVolume.groupby(['dma_code']).agg({'volume':'sum'}, as_index = False).reindex(columns = topBrandsDMAVolume)
+#     DMAVolume = DMAVolume['dma_code','volume'].set_index('dma_code')
+#     return DMAVolume
 
 def CalDMADeltaHHI(oneYearFirmDMA):
     #I am only assuming the fact that the mergers don't divest their brands to outside-merger owner here
