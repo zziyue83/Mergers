@@ -106,6 +106,7 @@ years = GenerateYearList(start, end)
 print(product)
 print(years)
 print(frequency)
+mergersMap = {'CANDY':['Mars', 'Wrigley'],'GUM':['Mars', 'Wrigley'], 'BEER': ['SABMiller', 'Molson Coors']}
 # AddOwnerandTimeVariables(product, years, ['Mars', 'Wrigley'],mergingt,startt, frequency)
-AddOwnerandTimeVariables(product, years, ['SABMiller', 'Molson Coors'],mergingt,startt, frequency)
+AddOwnerandTimeVariables(product, years, mergersMap[product], mergingt, startt, frequency)
 # >>>>>>> fc0f14f7f4cc63df8fc9b9cfc1a730ed3a969f91
