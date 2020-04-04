@@ -46,7 +46,7 @@ def MakeOwnerDummy(mergers, all_owners):
 def MakeOneYearDummy(times, mergingt, frequency):
     timeDummyDf = pd.DataFrame(columns = ['t', 'include'])
     merging_year = int(mergingt[0:4])
-    i = 5 if frequency == 'quarter' else 5
+    i = 5 if frequency == 'quarter' else 4
     multiplier = 4 if frequency == 'quarter' else 12
     merging_t = int(mergingt[i:])
     for time in times:
@@ -89,7 +89,7 @@ def CalDMADeltaHHI(oneYearFirmDMA):
     postMerger = preMerger.groupby(['dma_code']).agg({'volume':'sum', 'dma_size':'first','share':'sum','pre_merger_share_square':'sum'}, as_index = False).reindex(columns = preMerger.columns)
     postMerger['post_merger_share_square'] = postMerger['share'] * postMerger['share']
     postMerger['DHHI'] = postMerger['post_merger_share_square'] - postMerger['pre_merger_share_square']
-    DMADHHI = postMerger['dma_code','DHHI'].set_index('dma_code')
+    DMADHHI = postMerger[['dma_code','DHHI']].set_index('dma_code')
     print(DMADHHI)
     return postMerger
 
@@ -136,7 +136,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         firmDMA = firmDMA.merge(oneYearDummy, how = 'inner', left_on = 'time_str', right_on = 't')
         oneYearFirmDMA = firmDMA[firmDMA['include'] == 1]
         DMAVolume = oneYearFirmDMA.groupby(['dma_code']).agg({'volume':'sum'}, as_index = False).reindex(columns = oneYearFirmDMA)
-        DMAVolume = DMAVolume['dma_code','volume'].set_index('dma_code')
+        DMAVolume = DMAVolume[['dma_code','volume']].set_index('dma_code')
         DMAVolumeMap =DMAVolume.to_dict()
         print(DMAVolume)
         oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap)
