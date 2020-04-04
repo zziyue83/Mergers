@@ -177,6 +177,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         data = data.set_index(['dma_upc',frequency+'s_since_start'])
         exog_vars = ['DHHI*post_merger', 'post_merger', 'trend']
         exog = sm.add_constant(data[exog_vars])
+        print(data[exog_vars])
         mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
         fe_res = mod.fit()
         print(fe_res)
