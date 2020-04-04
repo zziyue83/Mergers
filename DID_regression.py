@@ -204,4 +204,5 @@ if len(sys.argv) > 4:
 else:
     mergingt = '0'
 print(product)
-DID_regression(product, frequency, mktshare, mergingt,['SABMiller', 'Molson Coors'])
+DID_regression(product, frequency, mktshare, mergingt,['Mars', 'Wrigley'])
+# DID_regression(product, frequency, mktshare, mergingt,['SABMiller', 'Molson Coors'])
