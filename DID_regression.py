@@ -141,6 +141,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         print(DMAVolume)
         oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
         DMADHHI = CalDMADeltaHHI(oneYearFirmDMA)
+        print(DMADHHI)
         DMAConcentrationMap = DMADHHI.to_dict()
 
 
