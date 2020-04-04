@@ -84,13 +84,11 @@ def CalDMADeltaHHI(oneYearFirmDMA):
     #I am only assuming the fact that the mergers don't divest their brands to outside-merger owner here
     merger = oneYearFirmDMA[oneYearFirmDMA['merging'] == 1]
     preMerger = merger.groupby(['dma_code', 'owner'], as_index = False).agg({'volume':'sum', 'dma_size':'first'}, as_index = False).reindex(columns = merger.columns)
-    print(preMerger)
     preMerger['share'] = preMerger['volume'] / preMerger['dma_size']
     preMerger['pre_merger_share_square'] =preMerger['share'] * preMerger['share']
     postMerger = preMerger.groupby(['dma_code'], as_index = False).agg({'volume':'sum', 'dma_size':'first','share':'sum','pre_merger_share_square':'sum'}, as_index = False).reindex(columns = preMerger.columns)
     postMerger['post_merger_share_square'] = postMerger['share'] * postMerger['share']
     postMerger['DHHI'] = postMerger['post_merger_share_square'] - postMerger['pre_merger_share_square']
-    print(postMerger)
     DMADHHI = postMerger[['dma_code','DHHI']].set_index('dma_code')
     print(DMADHHI)
     return postMerger
@@ -136,10 +134,8 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         times = firmDMA['time_str'].unique()
         oneYearDummy = MakeOneYearDummy(times, mergingt, frequency)
         firmDMA = firmDMA.merge(oneYearDummy, how = 'inner', left_on = 'time_str', right_on = 't')
-        print(firmDMA)
         oneYearFirmDMA = firmDMA[firmDMA['include'] == 1]
         DMAVolume = oneYearFirmDMA.groupby(['dma_code'], as_index = False).agg({'volume':'sum'}, as_index = False).reindex(columns = oneYearFirmDMA.columns)
-        print(DMAVolume.columns)
         DMAVolume = DMAVolume[['dma_code','volume']].set_index('dma_code')
         DMAVolumeMap =DMAVolume.to_dict()
         print(DMAVolume)
@@ -173,27 +169,27 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         # DMAConcentrationMap = DMAConcentration.to_dict()
 #end of calculating DHHI
 
-        # data['DHHI'] = data['dma_code'].map(DMAConcentrationMap['DHHI'])
-        # data['DHHI*post_merger'] = data['DHHI']*data['post_merger']
-        # data['dma_upc'] = data['dma_code'].astype(str) + "_" + data['upc'].astype(str)
-        # data['lprice_'+product] = np.log(data['price'])
-        # data['trend'] = data[frequency+'s_since_start']
-        # data = data.set_index(['dma_upc',frequency+'s_since_start'])
-        # exog_vars = ['DHHI*post_merger', 'post_merger', 'trend']
-        # exog = sm.add_constant(data[exog_vars])
-        # mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
-        # fe_res = mod.fit()
-        # print(fe_res)
-        #
-        # beginningtex = """\\documentclass{report}
-        #                   \\usepackage{booktabs}
-        #                   \\begin{document}"""
-        # endtex = "\end{document}"
-        # f = open(product + '_DID_MktShare.tex', 'w')
-        # f.write(beginningtex)
-        # f.write(fe_res.summary.as_latex())
-        # f.write(endtex)
-        # f.close()
+        data['DHHI'] = data['dma_code'].map(DMAConcentrationMap['DHHI'])
+        data['DHHI*post_merger'] = data['DHHI']*data['post_merger']
+        data['dma_upc'] = data['dma_code'].astype(str) + "_" + data['upc'].astype(str)
+        data['lprice_'+product] = np.log(data['price'])
+        data['trend'] = data[frequency+'s_since_start']
+        data = data.set_index(['dma_upc',frequency+'s_since_start'])
+        exog_vars = ['DHHI*post_merger', 'post_merger', 'trend']
+        exog = sm.add_constant(data[exog_vars])
+        mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
+        fe_res = mod.fit()
+        print(fe_res)
+
+        beginningtex = """\\documentclass{report}
+                          \\usepackage{booktabs}
+                          \\begin{document}"""
+        endtex = "\end{document}"
+        f = open(product + '_DID_MktShare.tex', 'w')
+        f.write(beginningtex)
+        f.write(fe_res.summary.as_latex())
+        f.write(endtex)
+        f.close()
 
 if len(sys.argv) < 3:
     print("Not enough arguments")
