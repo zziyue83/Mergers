@@ -1,0 +1,8 @@
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
+  warnings.warn(msg, UserWarning)
+Traceback (most recent call last):
+  File "GenerateDHHI.py", line 37, in <module>
+    GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth)
+  File "GenerateDHHI.py", line 14, in GenerateDHHI
+    panel_data['postmerger_a_year_before'] = np.where((panel_data['year'] < int(mergingyear)-1) | ((panel_data['year']==int(mergingyear)-1) & (panel_data['# month'] < int(mergingquarterormonth))), 0, 1)
+NameError: name 'np' is not defined
