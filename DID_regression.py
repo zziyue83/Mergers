@@ -141,7 +141,6 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         print(DMAVolume)
         oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
         DMADHHI = CalDMADeltaHHI(oneYearFirmDMA)
-        print(DMADHHI)
         DMAConcentrationMap = DMADHHI.to_dict()
 
 
@@ -171,7 +170,6 @@ def DID_regression(product, frequency, share, mergingt, mergers):
 #end of calculating DHHI
 
         data['DHHI'] = data['dma_code'].map(DMAConcentrationMap['DHHI'])
-        print(data['DHHI'])
         data['DHHI*post_merger'] = data['DHHI']*data['post_merger']
         data['dma_upc'] = data['dma_code'].astype(str) + "_" + data['upc'].astype(str)
         data['lprice_'+product] = np.log(data['price'])
