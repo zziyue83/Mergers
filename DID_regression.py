@@ -90,7 +90,7 @@ def CalDMADeltaHHI(oneYearFirmDMA):
     postMerger = preMerger.groupby(['dma_code'], as_index = False).agg({'volume':'sum', 'dma_size':'first','share':'sum','pre_merger_share_square':'sum'}, as_index = False).reindex(columns = preMerger.columns)
     postMerger['post_merger_share_square'] = postMerger['share'] * postMerger['share']
     postMerger['DHHI'] = postMerger['post_merger_share_square'] - postMerger['pre_merger_share_square']
-    print(DMADHHI)
+    print(postMerger)
     DMADHHI = postMerger[['dma_code','DHHI']].set_index('dma_code')
     print(DMADHHI)
     return postMerger
@@ -143,7 +143,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         DMAVolume = DMAVolume[['dma_code','volume']].set_index('dma_code')
         DMAVolumeMap =DMAVolume.to_dict()
         print(DMAVolume)
-        oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap)
+        oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
         DMADHHI = CalDMADeltaHHI(oneYearFirmDMA)
         DMAConcentrationMap = DMADHHI.to_dict()
 
