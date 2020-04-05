@@ -84,7 +84,7 @@ def CalDMADeltaHHI(oneYearFirmDMA):
     #I am only assuming the fact that the mergers don't divest their brands to outside-merger owner here
     merger = oneYearFirmDMA[oneYearFirmDMA['merging'] == 1]
     print(merger)
-    print(merger.owner)
+    print(merger.owner.unique())
     preMerger = merger.groupby(['dma_code', 'owner'], as_index = False).agg({'volume':'sum', 'dma_size':'first'}, as_index = False).reindex(columns = merger.columns)
     preMerger['share'] = preMerger['volume'] / preMerger['dma_size']
     preMerger['pre_merger_share_square'] =preMerger['share'] * preMerger['share']
@@ -99,6 +99,9 @@ def CalDMADeltaHHI(oneYearFirmDMA):
 def DID_regression(product, frequency, share, mergingt, mergers):
     if share == 'NoMktShare':
         data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
+        if product == 'CANDY':
+            gum = pd.read_csv("../../GeneratedData/"+"GUM"+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
+            data = data.append(gum)
         data['post_merger*merging'] = data['post_merger']*data['merging']
         data['dma_upc'] = data['dma_code'].astype(str) + "_" + data['upc'].astype(str)
         data['lprice_'+product] = np.log(data['price'])
@@ -122,7 +125,9 @@ def DID_regression(product, frequency, share, mergingt, mergers):
 
     elif share == 'MktShare':
         data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
-
+        if product == 'CANDY':
+            gum = pd.read_csv("../../GeneratedData/"+"GUM"+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
+            data = data.append(gum)
 #calculate Herfindahl index
         owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
         all_owners = owners['owner initial'].unique()
