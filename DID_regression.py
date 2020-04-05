@@ -187,7 +187,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         exog = sm.add_constant(data[exog_vars])
         print(data[exog_vars])
         mod = PanelOLS(data['lprice_' + product], exog, entity_effects = True)
-        fe_res = mod.fit()
+        fe_res = mod.fit(cov_type = 'clusted', clusters = data['dma_code'])
         print(fe_res)
 
         beginningtex = """\\documentclass{report}
