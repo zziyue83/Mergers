@@ -12,4 +12,4 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python AggregateToMonthOrQuarter_A.py GUM quarter 200805
+python AggregateToMonthOrQuarter_A.py BEER month 200807

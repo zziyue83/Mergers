@@ -1,0 +1,41 @@
+/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
+  warnings.warn(msg, UserWarning)
+/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '2.6.2' or newer of 'numexpr' (version '2.6.1' currently installed).
+  warnings.warn(msg, UserWarning)
+/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
+  return ptp(axis=axis, out=out, **kwargs)
+CANDY
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:           lprice_CANDY   R-squared:                        0.0041
+Estimator:                   PanelOLS   R-squared (Between):             -0.0098
+No. Observations:            26461629   R-squared (Within):               0.0041
+Date:                Sat, Apr 04 2020   R-squared (Overall):              0.0032
+Time:                        23:36:24   Log-likelihood                -7.342e+06
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                   3.356e+04
+Entities:                     2060550   P-value                           0.0000
+Avg Obs:                       12.842   Distribution:              F(3,24401076)
+Min Obs:                       1.0000                                           
+Max Obs:                       48.000   F-statistic (robust):             3017.3
+                                        P-value                           0.0000
+Time periods:                      48   Distribution:              F(3,24401076)
+Avg Obs:                    5.513e+05                                           
+Min Obs:                    4.391e+05                                           
+Max Obs:                     6.76e+05                                           
+                                                                                
+                                  Parameter Estimates                                  
+=======================================================================================
+                     Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+---------------------------------------------------------------------------------------
+const                   0.4990     0.0017     298.31     0.0000      0.4957      0.5023
+post_merger*merging     0.0178     0.0009     19.391     0.0000      0.0160      0.0196
+post_merger             0.0523     0.0008     67.471     0.0000      0.0508      0.0539
+trend                  -0.0002   7.76e-05    -1.9874     0.0469     -0.0003   -2.13e-06
+=======================================================================================
+
+F-test for Poolability: 67.489
+P-value: 0.0000
+Distribution: F(2060549,24401076)
+
+Included effects: Entity
