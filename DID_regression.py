@@ -99,9 +99,9 @@ def CalDMADeltaHHI(oneYearFirmDMA):
 def DID_regression(product, frequency, share, mergingt, mergers):
     if share == 'NoMktShare':
         data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
-        if product == 'CANDY':
-            gum = pd.read_csv("../../GeneratedData/"+"GUM"+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
-            data = data.append(gum)
+        # if product == 'CANDY':
+        #     gum = pd.read_csv("../../GeneratedData/"+"GUM"+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
+        #     data = data.append(gum)
         data['post_merger*merging'] = data['post_merger']*data['merging']
         data['dma_upc'] = data['dma_code'].astype(str) + "_" + data['upc'].astype(str)
         data['lprice_'+product] = np.log(data['price'])
@@ -194,7 +194,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
                           \\usepackage{booktabs}
                           \\begin{document}"""
         endtex = "\end{document}"
-        f = open(product + '_GUM_DID_MktShare.tex', 'w')
+        f = open(product + '_DID_MktShare.tex', 'w')
         f.write(beginningtex)
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
