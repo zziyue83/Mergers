@@ -1,0 +1,226 @@
+/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
+  warnings.warn(msg, UserWarning)
+DID_regression.py:150: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
+/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '2.6.2' or newer of 'numexpr' (version '2.6.1' currently installed).
+  warnings.warn(msg, UserWarning)
+/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
+  return ptp(axis=axis, out=out, **kwargs)
+CANDY
+                                  owner merging
+0                                  Mars       1
+1                               Wrigley       1
+2             American Licorice Company       0
+3                    Asher’s Chocolates       0
+4                         August Storck       0
+5                   Brach's Confections       0
+6            Bradford Chocolate Factory       0
+7                         Brown & Haley       0
+8                               Cadbury       0
+9                      Callard & Bowser       0
+10                          Ce De Candy       0
+11                            Colombina       0
+12                            CTL Foods       0
+13              Elmer Candy Corporation       0
+14                   Farley's & Sathers       0
+15                    FB Washburn Candy       0
+16                    Ferrara Pan Candy       0
+17                              Ferrero       0
+18  Frankford Candy & Chocolate Company       0
+19              Galerie Candy and Gifts       0
+20               Goetze's Candy Company       0
+21                          Grupo Arcor       0
+22                               Haribo       0
+23                              Hershey       0
+24                   Impact Confections       0
+25                 Jelly Belly Candy Co       0
+26                                Joyva       0
+27                        Just Born Inc       0
+28                     Kraft Foods Inc.       0
+29                     Lindt & Sprüngli       0
+30                      Log House Foods       0
+31                   Maxfield Candy Co.       0
+32                   Mayfair Sales Inc.       0
+33                 Mount Franklin Foods       0
+34                          Mrs. Fields       0
+35                                Necco       0
+36                               Nestlé       0
+37              Old Dominion Peanut Co.       0
+38              Pearson's Candy Company       0
+39                   Perfetti Van Melle       0
+40               Piedmont Candy Company       0
+41               R.L. Albert & Son, Inc       0
+42                         RM Palmer Co       0
+43           Russell Stover Candies Inc       0
+44                        Shari Candies       0
+45                Sherwood Brands, Inc.       0
+46                       Simply Goodies       0
+47               Spangler Candy Company       0
+48       Sun-Maid Growers of California       0
+49                  Sweet Candy Company       0
+50              Tootsie Roll Industries       0
+51                              unknown       0
+52             World's Finest Chocolate       0
+53                  Zachary Confections       0
+       include
+t             
+200601       0
+200602       0
+200603       0
+200604       0
+200605       0
+200606       0
+200607       0
+200608       0
+200609       0
+200610       0
+200611       0
+200612       0
+200701       0
+200702       0
+200703       0
+200704       0
+200705       1
+200706       1
+200707       1
+200708       1
+200709       1
+200710       1
+200711       1
+200712       1
+200801       1
+200802       1
+200803       1
+200804       1
+200806       0
+200808       0
+200809       0
+200810       0
+200811       0
+200812       0
+200805       0
+200807       0
+200901       0
+200902       0
+200903       0
+200904       0
+200905       0
+200906       0
+200907       0
+200908       0
+200909       0
+200910       0
+200911       0
+200912       0
+                volume
+dma_code              
+500       1.467240e+08
+501       1.803944e+09
+502       1.423976e+07
+503       3.250579e+07
+504       1.151186e+09
+...                ...
+855       4.780822e+07
+862       2.533845e+08
+866       1.083056e+08
+868       3.015134e+07
+881       8.117347e+07
+
+[205 rows x 1 columns]
+            owner  dma_code   month  ...  time_str include      dma_size
+7884485   Wrigley       501  200705  ...    200705       1  1.803944e+09
+7884486   Wrigley       505  200705  ...    200705       1  3.622422e+08
+7884487   Wrigley       524  200705  ...    200705       1  4.611591e+08
+7884488   Wrigley       527  200705  ...    200705       1  1.782593e+08
+7884489   Wrigley       528  200705  ...    200705       1  3.548645e+08
+...           ...       ...     ...  ...       ...     ...           ...
+13268078     Mars       855  200804  ...    200804       1  4.780822e+07
+13268079     Mars       862  200804  ...    200804       1  2.533845e+08
+13268080     Mars       866  200804  ...    200804       1  1.083056e+08
+13268081     Mars       868  200804  ...    200804       1  3.015134e+07
+13268082     Mars       881  200804  ...    200804       1  8.117347e+07
+
+[784638 rows x 8 columns]
+['Wrigley' 'Mars']
+     owner  dma_code  ...  post_merger_share_square      DHHI
+0      NaN       500  ...                  0.067355  0.008409
+1      NaN       501  ...                  0.153688  0.016795
+2      NaN       502  ...                  0.056992  0.011203
+3      NaN       503  ...                  0.063580  0.012970
+4      NaN       504  ...                  0.106620  0.011928
+..     ...       ...  ...                       ...       ...
+200    NaN       855  ...                  0.061051  0.015996
+201    NaN       862  ...                  0.068586  0.018701
+202    NaN       866  ...                  0.066732  0.015965
+203    NaN       868  ...                  0.061806  0.015485
+204    NaN       881  ...                  0.051719  0.012707
+
+[205 rows x 12 columns]
+              DHHI
+dma_code          
+500       0.008409
+501       0.016795
+502       0.011203
+503       0.012970
+504       0.011928
+...            ...
+855       0.015996
+862       0.018701
+866       0.015965
+868       0.015485
+881       0.012707
+
+[205 rows x 1 columns]
+                                     DHHI*post_merger  post_merger  trend
+dma_upc          months_since_start                                      
+529_10000001     0                           0.000000            0      0
+618_10000001     0                           0.000000            0      0
+789_10000001     0                           0.000000            0      0
+616_3080000145   0                           0.000000            0      0
+637_3080000145   0                           0.000000            0      0
+...                                               ...          ...    ...
+855_779058031159 36                          0.015996            1     36
+862_779058031159 36                          0.018701            1     36
+866_779058031159 36                          0.015965            1     36
+868_779058031159 36                          0.015485            1     36
+881_779058031159 36                          0.012707            1     36
+
+[22803259 rows x 3 columns]
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:           lprice_CANDY   R-squared:                        0.0042
+Estimator:                   PanelOLS   R-squared (Between):             -0.0082
+No. Observations:            22803259   R-squared (Within):               0.0042
+Date:                Sun, Apr 05 2020   R-squared (Overall):              0.0030
+Time:                        00:06:16   Log-likelihood                -7.223e+06
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                   2.937e+04
+Entities:                     1852838   P-value                           0.0000
+Avg Obs:                       12.307   Distribution:              F(3,20950418)
+Min Obs:                       1.0000                                           
+Max Obs:                       48.000   F-statistic (robust):             2704.0
+                                        P-value                           0.0000
+Time periods:                      48   Distribution:              F(3,20950418)
+Avg Obs:                    4.751e+05                                           
+Min Obs:                     3.69e+05                                           
+Max Obs:                    6.002e+05                                           
+                                                                                
+                                Parameter Estimates                                 
+====================================================================================
+                  Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+------------------------------------------------------------------------------------
+const                0.5319     0.0017     311.70     0.0000      0.5286      0.5352
+DHHI*post_merger    -1.1777     0.3836    -3.0705     0.0021     -1.9295     -0.4260
+post_merger          0.0804     0.0054     14.876     0.0000      0.0698      0.0910
+trend               -0.0004  8.015e-05    -5.3108     0.0000     -0.0006     -0.0003
+====================================================================================
+
+F-test for Poolability: 61.361
+P-value: 0.0000
+Distribution: F(1852837,20950418)
+
+Included effects: Entity
