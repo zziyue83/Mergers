@@ -37,6 +37,7 @@ mergingyear = sys.argv[2]
 mergingquarterormonth = sys.argv[3]
 #products = [sys.argv[4], sys.argv[5]]
 products = [sys.argv[4]]
-involvedcompanies = sys.argv[5]
+involvedcompanies = [sys.argv[5],sys.argv[6]+' '+sys.argv[7],sys.argv[8]]
 #involvedcompanies = sys.argv[6]
 preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, involvedcompanies)
+#SABMiller Molson Coors MillerCoors
