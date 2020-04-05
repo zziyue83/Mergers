@@ -1,0 +1,197 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2018.11.20)  5 APR 2020 13:45
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**\documentclass{report}
+
+*                      \usepackage{booktabs}
+(/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+*                      \begin{document}\begin{center}
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen103
+\lightrulewidth=\dimen104
+\cmidrulewidth=\dimen105
+\belowrulesep=\dimen106
+\belowbottomsep=\dimen107
+\aboverulesep=\dimen108
+\abovetopsep=\dimen109
+\cmidrulesep=\dimen110
+\cmidrulekern=\dimen111
+\defaultaddspace=\dimen112
+\@cmidla=\count88
+\@cmidlb=\count89
+\@aboverulesep=\dimen113
+\@belowrulesep=\dimen114
+\@thisruleclass=\count90
+\@lastruleclass=\count91
+\@thisrulewidth=\dimen115
+)
+No file file.aux.
+\openout1 = `file.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+
+*\begin{tabular}{lclc}
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 0.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 0.
+
+*\toprule
+
+*\textbf{Dep. Variable:}      &     log\_price     & \textbf{  R-squared:      
+   }   &      0.1626      \\
+
+*\textbf{Estimator:}          &      PanelOLS      & \textbf{  R-squared (Betwe
+en):}  &      0.0025      \\
+
+*\textbf{No. Observations:}   &      2967148       & \textbf{  R-squared (Withi
+n):}   &      0.1626      \\
+
+*\textbf{Date:}               &  Sun, Apr 05 2020  & \textbf{  R-squared (Overa
+ll):}  &      0.0027      \\
+
+*\textbf{Time:}               &      11:50:59      & \textbf{  Log-likelihood  
+   }   &    3.363e+06     \\
+
+*\textbf{Cov. Estimator:}     &     Clustered      & \textbf{                  
+   }   &                  \\
+
+*\textbf{}                    &                    & \textbf{  F-statistic:    
+   }   &    1.858e+05     \\
+
+*\textbf{Entities:}           &       96679        & \textbf{  P-value         
+   }   &      0.0000      \\
+
+*\textbf{Avg Obs:}            &       30.691       & \textbf{  Distribution:   
+   }   &   F(3,2870466)   \\
+
+*\textbf{Min Obs:}            &       1.0000       & \textbf{                  
+   }   &                  \\
+
+*\textbf{Max Obs:}            &       48.000       & \textbf{  F-statistic (rob
+ust):} &      1501.3      \\
+
+*\textbf{}                    &                    & \textbf{  P-value         
+   }   &      0.0000      \\
+
+*\textbf{Time periods:}       &         48         & \textbf{  Distribution:   
+   }   &   F(3,2870466)   \\
+
+*\textbf{Avg Obs:}            &     6.182e+04      & \textbf{                  
+   }   &                  \\
+
+*\textbf{Min Obs:}            &     4.979e+04      & \textbf{                  
+   }   &                  \\
+
+*\textbf{Max Obs:}            &      6.82e+04      & \textbf{                  
+   }   &                  \\
+
+*\bottomrule
+
+*\end{tabular}
+
+*\begin{tabular}{lcccccc}
+
+*                             & \textbf{Parameter} & \textbf{Std. Err.} & \text
+bf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf{Upper CI}  \\
+
+*\midrule
+
+*\textbf{const}               &       1.8259       &       0.0011       &      
+1730.2     &      0.0000      &       1.8238      &       1.8280       \\
+
+*\textbf{involvedpostmerger}  &       0.0129       &       0.0010       &      
+13.415     &      0.0000      &       0.0110      &       0.0148       \\
+
+*\textbf{postmerger}          &       0.0066       &       0.0007       &      
+8.8007     &      0.0000      &       0.0051      &       0.0081       \\
+
+*\textbf{month\_since\_start} &       0.0024       &     4.636e-05      &      
+51.447     &      0.0000      &       0.0023      &       0.0025       \\
+
+*\bottomrule
+
+*\end{tabular}
+
+*%\caption{PanelOLS Estimation Summary}
+
+*\end{center}
+
+Overfull \hbox (41.44788pt too wide) detected at line 0
+ [] 
+ []
+
+
+Overfull \hbox (99.51479pt too wide) detected at line 0
+ [] 
+ []
+
+
+*
+(Please type a command or say `\end')
+*F-test for Poolability: 3329.3 \newline
+
+* P-value: 0.0000 \newline
+
+* Distribution: F(96678,2870466) \newline
+
+*  \newline
+
+* Included effects: Entity\end{document}
+
+Underfull \hbox (badness 10000) detected at line 0
+
+ []
+
+[1
+
+{/usr/share/texlive/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+(/tmp/tmp8jnml6o9/file.aux) 
+Here is how much of TeX's memory you used:
+ 284 strings out of 495063
+ 3219 string characters out of 3182200
+ 51832 words of memory out of 3000000
+ 3550 multiletter control sequences out of 15000+200000
+ 3948 words of font info for 15 fonts, out of 3000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 22i,7n,17p,172b,182s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmr10.pfb>
+Output written on /tmp/tmp8jnml6o9/file.pdf (1 page, 37158 bytes).
+PDF statistics:
+ 16 PDF objects out of 1000 (max. 8388607)
+ 10 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+
