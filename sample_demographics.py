@@ -108,7 +108,7 @@ def sample_demographics(year,hhids,pids,ndraw):
                 pums_sample_dma['weight'] = 1/ndraw[0]
 
                 # Append to full dataset
-                rel_vars = ['YEAR','dma_code','weight'] + hhids + pids
+                rel_vars = ['YEAR','dma_code','weight','hhmember'] + hhids + pids
                 if count == 1:
                         demographics_sample = pums_sample_dma[rel_vars]
                 else:
