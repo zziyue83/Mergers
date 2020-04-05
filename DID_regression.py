@@ -117,7 +117,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
                           \\usepackage{booktabs}
                           \\begin{document}"""
         endtex = "\end{document}"
-        f = open(product + '_DID_NoMktShare_'+frequency+'.tex', 'w')
+        f = open(product + '_GUM_DID_NoMktShare_'+frequency+'.tex', 'w')
         f.write(beginningtex)
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
@@ -194,7 +194,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
                           \\usepackage{booktabs}
                           \\begin{document}"""
         endtex = "\end{document}"
-        f = open(product + '_DID_MktShare_'+frequency+'.tex', 'w')
+        f = open(product + '_GUM_DID_MktShare_'+frequency+'.tex', 'w')
         f.write(beginningtex)
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
