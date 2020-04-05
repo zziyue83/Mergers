@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="Aggregate"
+#SBATCH --job-name="DID1"
 #SBATCH -A b1048
 #SBATCH -p buyin
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -9,7 +9,7 @@
 #SBATCH --array=1
 #SBATCH --mem=20G
 #SBATCH --nodes=1
-
+      
 module load python/anaconda3.6
-cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python GenerateMarketSize.py BEER quarter
+cd /projects/b1048/gillanes/Mergers/Codes/Mergers  
+python preModelData_updated.py month 2008 7 BEER ['SABMiller','Molson Coors','MillerCoors']

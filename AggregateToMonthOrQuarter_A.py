@@ -2,10 +2,10 @@ import pandas as pd
 import sys
 
 def BrandOwner(product):
-    #brand_owner = pd.read_csv("Top 100 " + product + ".csv", index_col='brand_descr')
-    brand_owner = pd.read_excel("Top 100 " + product + " with owner.xlsx",header = 0,index_col='brand_descr')
-    brand_owner.rename(columns={2006:'owner initial', 2009:'owner last'}, inplace=True)
-    brand_owner = brand_owner.drop([2007,2008], axis = 1)
+    brand_owner = pd.read_csv("Top 100 " + product + ".csv", index_col='brand_descr')
+    #brand_owner = pd.read_excel("Top 100 " + product + " with owner.xlsx",header = 0,index_col='brand_descr')
+    #brand_owner.rename(columns={2006:'owner initial', 2009:'owner last'}, inplace=True)
+    #brand_owner = brand_owner.drop([2007,2008], axis = 1)
     return brand_owner
 
 def Aggregate_to_Month(top100brand_data):
