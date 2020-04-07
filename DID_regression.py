@@ -42,7 +42,7 @@ def MakeOneYearDummy(times, mergingt, frequency):
 #     DMAVolume = DMAVolume['dma_code','volume'].set_index('dma_code')
 #     return DMAVolume
 
-def CalDMADeltaHHI(oneYearFirmDMA):
+def CalDMADeltaHHI(oneYearFirmDMA, product, frequency):
     #I am only assuming the fact that the mergers don't divest their brands to outside-merger owner here
     merger = oneYearFirmDMA[oneYearFirmDMA['merging'] == 1]
     print(merger)
@@ -56,6 +56,7 @@ def CalDMADeltaHHI(oneYearFirmDMA):
     print(postMerger)
     DMADHHI = postMerger[['dma_code','DHHI']].set_index('dma_code')
     print(DMADHHI)
+    DMADHHI.to_csv(product+'_'+frequency+'_DHHI.csv', sep = ',')
     return DMADHHI
 
 def DID_regression(product, frequency, share, mergingt, mergers):
@@ -112,7 +113,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         DMAVolumeMap =DMAVolume.to_dict()
         print(DMAVolume)
         oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
-        DMADHHI = CalDMADeltaHHI(oneYearFirmDMA)
+        DMADHHI = CalDMADeltaHHI(oneYearFirmDMA, product)
         DMAConcentrationMap = DMADHHI.to_dict()
 
 
