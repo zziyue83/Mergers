@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2019.2.27)  6 APR 2020 22:13
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2019.2.27)  6 APR 2020 22:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -45,7 +45,7 @@ Package: booktabs 2005/04/14 v1.61803 publication quality tables
 \@lastruleclass=\count91
 \@thisrulewidth=\dimen115
 )
-No file BEER_DID_MktShare_month.aux.
+(./BEER_DID_MktShare_month.aux)
 \openout1 = `BEER_DID_MktShare_month.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 3.
@@ -84,8 +84,8 @@ Underfull \hbox (badness 10000) in paragraph at lines 36--40
 {/usr/share/texlive/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 (./BEER_DID_MktShare_month.aux) ) 
 Here is how much of TeX's memory you used:
- 285 strings out of 495063
- 3287 string characters out of 3182201
+ 287 strings out of 495063
+ 3343 string characters out of 3182201
  51832 words of memory out of 3000000
  3550 multiletter control sequences out of 15000+200000
  3948 words of font info for 15 fonts, out of 3000000 for 9000
