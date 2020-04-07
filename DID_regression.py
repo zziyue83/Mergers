@@ -5,44 +5,6 @@ import numpy as np
 import sys
 import pickle
 
-def MakeOwnerDummy(mergers, all_owners):
-    ownerDummyDf = pd.DataFrame(columns = ['owner', 'merging'])
-    for merger in mergers:
-        ownerDummyDf = ownerDummyDf.append({'owner': merger, 'merging':1}, ignore_index = True)
-    for owner in all_owners:
-        if owner not in mergers:
-            ownerDummyDf = ownerDummyDf.append({'owner': owner, 'merging':0}, ignore_index = True)
-    print(ownerDummyDf)
-    return ownerDummyDf
-
-# def MakeTimeDummy(times, mergingt, frequency):
-#     timeDummyDf = pd.DataFrame(columns = ['t', 'post_merger'])
-#     if frequency == 'quarter':
-#         merging_year = int(mergingt[0:4])
-#         merging_q = int(mergingt[-1])
-#         for quarter in times:
-#             year = int(quarter[0:4])
-#             q = int(quarter[-1])
-#             if (year>= merging_year and q >= merging_q) or (year > merging_year):
-#                 post_merger = 1
-#             else:
-#                 post_merger = 0
-#             timeDummyDf = timeDummyDf.append({'t': quarter, 'post_merger':post_merger}, ignore_index = True)
-#     elif frequency == 'month':
-#         merging_year = int(mergingt[0:4])
-#         merging_m = int(mergingt[4:])
-#         for month in times:
-#             year = int(month[0:4])
-#             m = int(month[4:])
-#             if (year>= merging_year and m >= merging_m) or (year > merging_year):
-#                 post_merger = 1
-#             else:
-#                 post_merger = 0
-#             timeDummyDf = timeDummyDf.append({'t': month, 'post_merger':post_merger}, ignore_index = True)
-#     else:
-#         return None
-#     return timeDummyDf
-
 def MakeOneYearDummy(times, mergingt, frequency):
     timeDummyDf = pd.DataFrame(columns = ['t', 'include'])
     merging_year = int(mergingt[0:4])
@@ -117,7 +79,8 @@ def DID_regression(product, frequency, share, mergingt, mergers):
                           \\usepackage{booktabs}
                           \\begin{document}"""
         endtex = "\end{document}"
-        f = open(product + '_GUM_DID_NoMktShare_'+frequency+'.tex', 'w')
+        addon = '_GUM' if product == 'CANDY' else ''
+        f = open(product + addon + '_DID_NoMktShare_'+frequency+'.tex', 'w')
         f.write(beginningtex)
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
@@ -129,7 +92,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
             gum = pd.read_csv("../../GeneratedData/"+"GUM"+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
             data = data.append(gum)
 #calculate Herfindahl index
-        owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
+        # owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
         # all_owners = owners['owner initial'].unique()
         # ownerDummyDf = MakeOwnerDummy(mergers, all_owners)
         # prepostDMASize = AggDMAPrePostSize(product, frequency, mergingt)
@@ -195,7 +158,8 @@ def DID_regression(product, frequency, share, mergingt, mergers):
                           \\usepackage{booktabs}
                           \\begin{document}"""
         endtex = "\end{document}"
-        f = open(product + '_GUM_DID_MktShare_'+frequency+'.tex', 'w')
+        addon = '_GUM' if product == 'CANDY' else ''
+        f = open(product + addon + '_DID_MktShare_'+frequency+'.tex', 'w')
         f.write(beginningtex)
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
