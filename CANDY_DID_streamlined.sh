@@ -19,7 +19,7 @@ python GenerateDataDidWithoutMktShare.py 2006 2009 CANDY month 200805 200601
 python GenerateDataDidWithoutMktShare.py 2006 2009 GUM month 200805 200601
 python DID_regression.py CANDY month NoMktShare 200805
 python DID_regression.py CANDY month MktShare 200805
-pdflatex CANDY_DID_MktShare_month.tex
-pdflatex CANDY_DID_NoMktShare_month.tex
-pdflatex CANDY_DID_MktShare_quarter.tex
-pdflatex CANDY_DID_NoMktShare_quarter.tex
+pdflatex CANDY_GUM_DID_MktShare_month.tex
+pdflatex CANDY_GUM_DID_NoMktShare_month.tex
+pdflatex CANDY_GUM_DID_MktShare_quarter.tex
+pdflatex CANDY_GUM_DID_NoMktShare_quarter.tex
