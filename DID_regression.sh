@@ -11,4 +11,4 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python DID_regression.py CANDY quarter NoMktShare 2008Q2
+python DID_regression.py CANDY quarter MktShare 2008Q2
