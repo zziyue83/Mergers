@@ -12,4 +12,4 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python GenerateMarketSize.py BEER month
+python GenerateMarketSize.py BEER quarter

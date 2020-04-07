@@ -1,0 +1,144 @@
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
+  warnings.warn(msg, UserWarning)
+AggregateToMonthOrQuarter_A.py:48: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk_pre_merger['owner company'] = data_chunk_pre_merger['brand_descr'].map(brand_owner['owner initial'])
+AggregateToMonthOrQuarter_A.py:51: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk_post_merger['owner company'] = data_chunk_post_merger['brand_descr'].map(brand_owner['owner last'])
+        Unnamed: 0           upc  units  ...  size1_amount   volume  owner company
+0                0      15000004      3  ...          12.0     36.0            NaN
+1                1      15000004     16  ...          12.0    192.0            NaN
+2                2     836125597     49  ...          11.2    548.8            NaN
+3                3     836125597     32  ...          11.2    358.4            NaN
+4                4     889600100      4  ...          12.0    288.0            NaN
+...            ...           ...    ...  ...           ...      ...            ...
+862668      862668  997582823448    276  ...          12.0  39744.0            NaN
+862669      862669  997582823448      3  ...          12.0    432.0            NaN
+862670      862670  997582823448     37  ...          12.0   5328.0            NaN
+862671      862671  997582823448     45  ...          12.0   6480.0            NaN
+862672      862672  997582823448     16  ...          12.0   2304.0            NaN
+
+[862673 rows x 16 columns]
+Empty DataFrame
+Columns: [Unnamed: 0, upc, units, prmult, price, feature, display, month, dma_code, sales, brand_code_uc, brand_descr, multi, size1_amount, volume, owner company]
+Index: []
+        Unnamed: 0         upc  units  ...  size1_amount   volume  owner company
+0                0    15000003    106  ...          12.0   1272.0  Sierra Nevada
+1                1    15000003    203  ...          12.0   2436.0  Sierra Nevada
+2                2    15000003      1  ...          12.0     12.0  Sierra Nevada
+3                3    15000003      7  ...          12.0     84.0  Sierra Nevada
+4                4    15000003     41  ...          12.0    492.0  Sierra Nevada
+...            ...         ...    ...  ...           ...      ...            ...
+999995      999995  7199000008    234  ...          12.0  16848.0   Molson Coors
+999996      999996  7199000008    132  ...          12.0   9504.0   Molson Coors
+999997      999997  7199000008    463  ...          12.0  33336.0   Molson Coors
+999998      999998  7199000008     46  ...          12.0   3312.0   Molson Coors
+999999      999999  7199000008     79  ...          12.0   5688.0   Molson Coors
+
+[1000000 rows x 16 columns]
+Empty DataFrame
+Columns: [Unnamed: 0, upc, units, prmult, price, feature, display, month, dma_code, sales, brand_code_uc, brand_descr, multi, size1_amount, volume, owner company]
+Index: []
+         Unnamed: 0           upc  units  ...  size1_amount   volume  owner company
+1000000     1000000    7199000008     20  ...          12.0   1440.0   Molson Coors
+1000001     1000001    7199000008     75  ...          12.0   5400.0   Molson Coors
+1000002     1000002    7199000008    152  ...          12.0  10944.0   Molson Coors
+1000003     1000003    7199000008     19  ...          12.0   1368.0   Molson Coors
+1000004     1000004    7199000008     41  ...          12.0   2952.0   Molson Coors
+...             ...           ...    ...  ...           ...      ...            ...
+1152368     1152368  937582871619     55  ...          12.0   7920.0       CTL Beer
+1152369     1152369  937582871619     17  ...          12.0   2448.0       CTL Beer
+1152370     1152370  937582871619     20  ...          12.0   2880.0       CTL Beer
+1152371     1152371  937582871619     11  ...          12.0   1584.0       CTL Beer
+1152372     1152372  957582842797      1  ...          12.0    144.0       CTL Beer
+
+[152373 rows x 16 columns]
+Empty DataFrame
+Columns: [Unnamed: 0, upc, units, prmult, price, feature, display, month, dma_code, sales, brand_code_uc, brand_descr, multi, size1_amount, volume, owner company]
+Index: []
+        Unnamed: 0           upc  units  ...  size1_amount  volume  owner company
+0                0      15000000     12  ...          12.0   144.0            NaN
+1                1      15000000      1  ...          12.0    12.0            NaN
+2                2      15000000      6  ...          12.0    72.0            NaN
+3                3      15000000      7  ...          12.0    84.0            NaN
+4                4      15000003      4  ...          12.0    48.0  Sierra Nevada
+...            ...           ...    ...  ...           ...     ...            ...
+603947      603947  937582871619      1  ...          12.0   144.0       CTL Beer
+603948      603948  937582871619     25  ...          12.0  3600.0       CTL Beer
+603949      603949  937582871619     13  ...          12.0  1872.0       CTL Beer
+603950      603950  937582871619     26  ...          12.0  3744.0       CTL Beer
+603951      603951  937582871619      7  ...          12.0  1008.0       CTL Beer
+
+[603952 rows x 16 columns]
+        Unnamed: 0         upc  units  ...  size1_amount  volume  owner company
+603952      603952    15000000      3  ...          12.0    36.0            NaN
+603953      603953    15000000     13  ...          12.0   156.0            NaN
+603954      603954    15000000     19  ...          12.0   228.0            NaN
+603955      603955    15000000      4  ...          12.0    48.0            NaN
+603956      603956    15000000     22  ...          12.0   264.0            NaN
+...            ...         ...    ...  ...           ...     ...            ...
+999995      999995  9530113126      7  ...          12.0   504.0            NaN
+999996      999996  9530113130     12  ...          12.0   144.0            NaN
+999997      999997  9530113130      1  ...          12.0    12.0            NaN
+999998      999998  9530113130      4  ...          12.0    48.0            NaN
+999999      999999  9530113130      2  ...          12.0    24.0            NaN
+
+[396048 rows x 16 columns]
+Empty DataFrame
+Columns: [Unnamed: 0, upc, units, prmult, price, feature, display, month, dma_code, sales, brand_code_uc, brand_descr, multi, size1_amount, volume, owner company]
+Index: []
+         Unnamed: 0           upc  units  ...  size1_amount   volume  owner company
+1000000     1000000    9530113130      1  ...          12.0     12.0            NaN
+1000001     1000001    9530113130     83  ...          12.0    996.0            NaN
+1000002     1000002    9530113130     29  ...          12.0    348.0            NaN
+1000003     1000003    9530113130     15  ...          12.0    180.0            NaN
+1000004     1000004    9530113130     26  ...          12.0    312.0            NaN
+...             ...           ...    ...  ...           ...      ...            ...
+1229657     1229657  937582882668    138  ...          12.0  19872.0            NaN
+1229658     1229658  937582882668      9  ...          12.0   1296.0            NaN
+1229659     1229659  937582882668     99  ...          12.0  14256.0            NaN
+1229660     1229660  937582882668     14  ...          12.0   2016.0            NaN
+1229661     1229661  937582882668     10  ...          12.0   1440.0            NaN
+
+[229662 rows x 16 columns]
+Empty DataFrame
+Columns: [Unnamed: 0, upc, units, prmult, price, feature, display, month, dma_code, sales, brand_code_uc, brand_descr, multi, size1_amount, volume, owner company]
+Index: []
+        Unnamed: 0         upc  units  ...  size1_amount    volume  owner company
+0                0    15000000      1  ...          12.0      12.0            NaN
+1                1    15000000      1  ...          12.0      12.0            NaN
+2                2    15000000     13  ...          12.0     156.0            NaN
+3                3    15000000      8  ...          12.0      96.0            NaN
+4                4    15000000      6  ...          12.0      72.0            NaN
+...            ...         ...    ...  ...           ...       ...            ...
+999995      999995  3410057340    282  ...          12.0   60912.0    MillerCoors
+999996      999996  3410057340   3391  ...          12.0  732456.0    MillerCoors
+999997      999997  3410057340    978  ...          12.0  211248.0    MillerCoors
+999998      999998  3410057340   1645  ...          12.0  355320.0    MillerCoors
+999999      999999  3410057340    747  ...          12.0  161352.0    MillerCoors
+
+[1000000 rows x 16 columns]
+Empty DataFrame
+Columns: [Unnamed: 0, upc, units, prmult, price, feature, display, month, dma_code, sales, brand_code_uc, brand_descr, multi, size1_amount, volume, owner company]
+Index: []
+         Unnamed: 0           upc  units  ...  size1_amount     volume  owner company
+1000000     1000000    3410057340    255  ...          12.0    55080.0    MillerCoors
+1000001     1000001    3410057340   1066  ...          12.0   230256.0    MillerCoors
+1000002     1000002    3410057341   6099  ...          12.0  2195640.0    MillerCoors
+1000003     1000003    3410057341   2636  ...          12.0   948960.0    MillerCoors
+1000004     1000004    3410057341     99  ...          12.0    35640.0    MillerCoors
+...             ...           ...    ...  ...           ...        ...            ...
+1292042     1292042  937582898480     48  ...          12.0     6912.0            NaN
+1292043     1292043  937582898480     54  ...          12.0     7776.0            NaN
+1292044     1292044  937582898480     44  ...          12.0     6336.0            NaN
+1292045     1292045  937582898480     27  ...          12.0     3888.0            NaN
+1292046     1292046  937582898480     18  ...          12.0     2592.0            NaN
+
+[292047 rows x 16 columns]
