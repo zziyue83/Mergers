@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2019.2.27)  6 APR 2020 22:21
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2019.2.27)  6 APR 2020 22:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -94,7 +94,7 @@ Here is how much of TeX's memory you used:
 </usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmr10.pfb>
-Output written on BEER_DID_MktShare_month.pdf (1 page, 38139 bytes).
+Output written on BEER_DID_MktShare_month.pdf (1 page, 38137 bytes).
 PDF statistics:
  16 PDF objects out of 1000 (max. 8388607)
  10 compressed objects within 1 object stream
