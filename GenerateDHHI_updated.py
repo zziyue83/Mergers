@@ -4,23 +4,21 @@ import numpy as np
 
 def GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth):
     panel_data = pd.read_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + "_pre_model_" + quarterOrMonth + "_data.tsv", delimiter = "\t")
-    data_owner = panel_data.groupby(['upc','postmerger']).agg({'owner company': 'first'}).reset_index('postmerger')
-    data_owner = data_owner[data_owner['owner company'] != 'unknown']
-    data_owner_before = data_owner[data_owner['postmerger'] == 0]
-    data_owner_after = data_owner[data_owner['postmerger'] == 1]
-    panel_data['owner_before_merger'] = panel_data['upc'].map(data_owner_before['owner company'])
-    panel_data['owner_after_merger'] = panel_data['upc'].map(data_owner_after['owner company'])
     if quarterOrMonth == 'quarter':
         panel_data['postmerger_a_year_before'] = np.where(((panel_data['year'] == (int(mergingyear)-1)) & (panel_data['# quarter'] >= int(mergingquarterormonth))) | ((panel_data['year'] == int(mergingyear)) & (panel_data['# quarter'] <= (int(mergingquarterormonth)-1))), 0, 1)
     if quarterOrMonth == 'month':
         panel_data['postmerger_a_year_before'] = np.where(((panel_data['year'] == (int(mergingyear)-1)) & (panel_data['# month'] >= int(mergingquarterormonth))) | ((panel_data['year'] == int(mergingyear)) & (panel_data['# month'] <= (int(mergingquarterormonth)-1))), 0, 1)
     pre_merger_data = panel_data[panel_data['postmerger_a_year_before']==0]
-    HHI_before = pre_merger_data.groupby(['owner_before_merger','dma_code',quarterOrMonth]).agg({'volume': 'sum', 'market_size': 'first'})
+    pre_merger_data = pre_merger_data[pre_merger_data['owner initial'] != 'unknown']
+    pre_merger_data = pre_merger_data[pre_merger_data['owner last'] != 'unknown']
+        
+    HHI_before = pre_merger_data.groupby(['owner initial','dma_code',quarterOrMonth]).agg({'volume': 'sum', 'market_size': 'first'})
     HHI_before = HHI_before.groupby(level=[0,1]).agg({'volume': 'sum', 'market_size': 'sum'})
     HHI_before['market_share'] = HHI_before['volume']/HHI_before['market_size']
     HHI_before['HHI_before'] = HHI_before['market_share']**2
     HHI_before = HHI_before.groupby('dma_code').agg({'HHI_before': 'sum'})
-    HHI_after = pre_merger_data.groupby(['owner_after_merger','dma_code',quarterOrMonth]).agg({'volume': 'sum', 'market_size': 'first'})
+    
+    HHI_after = pre_merger_data.groupby(['owner last','dma_code',quarterOrMonth]).agg({'volume': 'sum', 'market_size': 'first'})
     HHI_after = HHI_after.groupby(level=[0,1]).agg({'volume': 'sum', 'market_size': 'sum'})
     HHI_after['market_share'] = HHI_after['volume']/HHI_after['market_size']
     HHI_after['HHI_after'] = HHI_after['market_share']**2

@@ -1,0 +1,4 @@
+  File "GenerateDHHI_updated.py", line 10
+    panel_data['postmerger_a_year_before'] = np.where(((panel_data['year'] == (int(mergingyear)-1)) & (panel_data['# month'] >= int(mergingquarterormonth))) | ((panel_data['year'] == int(mergingyear)) & (panel_data['# month'] <= (int(mergingquarterormonth)-1))), 0, = panel_data[panel_data['postmerger_a_year_before']==0]
+                                                                                                                                                                                                                                                                          ^
+SyntaxError: invalid syntax
