@@ -23,8 +23,7 @@ def DID2(products, quarterOrMonth):
     f.write(endtex)
     f.close()
 
-product1 = sys.argv[1]
-product2 = sys.argv[2]
-products = [product1, product2]
-quarterOrMonth = sys.argv[3]
+quarterOrMonth = sys.argv[1]
+#products = [sys.argv[2], sys.argv[3]]
+products = [sys.argv[2]]
 DID2(products, quarterOrMonth)
