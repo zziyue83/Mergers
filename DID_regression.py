@@ -130,14 +130,14 @@ def DID_regression(product, frequency, share, mergingt, mergers):
             data = data.append(gum)
 #calculate Herfindahl index
         owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
-        all_owners = owners['owner initial'].unique()
-        ownerDummyDf = MakeOwnerDummy(mergers, all_owners)
+        # all_owners = owners['owner initial'].unique()
+        # ownerDummyDf = MakeOwnerDummy(mergers, all_owners)
         # prepostDMASize = AggDMAPrePostSize(product, frequency, mergingt)
         # print(prepostDMASize)
         # data['dma_postmerger'] = data['dma_code'].astype(str)+data['post_merger'].astype(str)
         # prepostSizeMap = prepostDMASize.to_dict()
         firmDMA = data[['owner','dma_code',frequency,'volume']]
-        firmDMA = firmDMA.merge(ownerDummyDf, how = 'inner', left_on='owner', right_on = 'owner')
+        # firmDMA = firmDMA.merge(ownerDummyDf, how = 'inner', left_on='owner', right_on = 'owner')
         firmDMA['time_str'] = firmDMA[frequency].astype(str)
         times = firmDMA['time_str'].unique()
         oneYearDummy = MakeOneYearDummy(times, mergingt, frequency)
