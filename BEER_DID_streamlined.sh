@@ -17,3 +17,7 @@ python DID_regression.py BEER quarter MktShare 2008Q3
 python GenerateDataDidWithoutMktShare.py 2006 2009 BEER month 200807 200601
 python DID_regression.py BEER month NoMktShare 200807
 python DID_regression.py BEER month MktShare 200807
+pdflatex BEER_DID_MktShare_month.tex
+pdflatex BEER_DID_NoMktShare_month.tex
+pdflatex BEER_DID_MktShare_quarter.tex
+pdflatex BEER_DID_NoMktShare_quarter.tex
