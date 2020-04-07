@@ -5,14 +5,15 @@ import numpy as np
 def GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth):
     panel_data = pd.read_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + "_pre_model_" + quarterOrMonth + "_data.tsv", delimiter = "\t")
     data_owner = panel_data.groupby(['upc','postmerger']).agg({'owner company': 'first'}).reset_index('postmerger')
+    data_owner = data_owner[data_owner['owner company'] != 'unknown']
     data_owner_before = data_owner[data_owner['postmerger'] == 0]
     data_owner_after = data_owner[data_owner['postmerger'] == 1]
     panel_data['owner_before_merger'] = panel_data['upc'].map(data_owner_before['owner company'])
     panel_data['owner_after_merger'] = panel_data['upc'].map(data_owner_after['owner company'])
     if quarterOrMonth == 'quarter':
-        panel_data['postmerger_a_year_before'] = np.where((panel_data['year'] < (int(mergingyear)-1)) | ((panel_data['year']==(int(mergingyear)-1)) & (panel_data['# quarter'] < int(mergingquarterormonth))), 0, 1)
+        panel_data['postmerger_a_year_before'] = np.where(((panel_data['year'] == (int(mergingyear)-1)) & (panel_data['# quarter'] >= int(mergingquarterormonth))) | ((panel_data['year'] == int(mergingyear)) & (panel_data['# quarter'] <= (int(mergingquarterormonth)-1))), 0, 1)
     if quarterOrMonth == 'month':
-        panel_data['postmerger_a_year_before'] = np.where((panel_data['year'] < (int(mergingyear)-1)) | ((panel_data['year']==(int(mergingyear)-1)) & (panel_data['# month'] < int(mergingquarterormonth))), 0, 1)
+        panel_data['postmerger_a_year_before'] = np.where(((panel_data['year'] == (int(mergingyear)-1)) & (panel_data['# month'] >= int(mergingquarterormonth))) | ((panel_data['year'] == int(mergingyear)) & (panel_data['# month'] <= (int(mergingquarterormonth)-1))), 0, 1)
     pre_merger_data = panel_data[panel_data['postmerger_a_year_before']==0]
     HHI_before = pre_merger_data.groupby(['owner_before_merger','dma_code',quarterOrMonth]).agg({'volume': 'sum', 'market_size': 'first'})
     HHI_before = HHI_before.groupby(level=[0,1]).agg({'volume': 'sum', 'market_size': 'sum'})
@@ -35,4 +36,5 @@ mergingquarterormonth = sys.argv[3]
 #products = [sys.argv[4], sys.argv[5]]
 products = [sys.argv[4]]
 GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth)
-# quarter 2008 3 BEER
+# quarter 2008 2 CANDY GUM
+# month 2008 5 CANDY GUM
