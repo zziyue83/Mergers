@@ -21,7 +21,7 @@ def preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, i
                 data_chunk['postmerger'] = np.where((data_chunk['year'] < int(mergingyear)) | ((data_chunk['year']==int(mergingyear)) & (data_chunk['# month'] < int(mergingquarterormonth))), 0, 1)
                 quarterOrMonth_since_start_dictionary = {200601: 0, 200602: 1, 200603: 2, 200604: 3, 200605: 4, 200606: 5, 200607: 6, 200608: 7, 200609: 8, 200610: 9, 200611: 10, 200612: 11, 200701: 12, 200702: 13, 200703: 14, 200704: 15, 200705: 16, 200706: 17, 200707: 18, 200708: 19, 200709: 20, 200710: 21, 200711: 22, 200712: 23, 200801: 24, 200802: 25, 200803: 26, 200804: 27, 200805: 28, 200806: 29, 200807: 30, 200808: 31, 200809: 32, 200810: 33, 200811: 34, 200812: 35, 200901: 36, 200902: 37, 200903: 38, 200904: 39, 200905: 40, 200906: 41, 200907: 42, 200908: 43, 200909: 44, 200910: 45, 200911: 46, 200912: 47}
             data_chunk[quarterOrMonth + '_since_start'] = data_chunk[quarterOrMonth].map(quarterOrMonth_since_start_dictionary)
-            data_chunk['involved'] = np.where((data_chunk['owner company'].isin(involvedcompanies)), 1, 0)
+            data_chunk['involved'] = np.where((data_chunk['owner initial'].isin(involvedcompanies)) | (data_chunk['owner last'].isin(involvedcompanies)), 1, 0)
             data_chunk['involvedpostmerger'] = data_chunk['involved']*data_chunk['postmerger']
             data_chunk['product-region'] = data_chunk['upc'].astype(str) + ' ' + data_chunk['dma_code'].astype(str)
             data_chunk['time'] = data_chunk[quarterOrMonth + '_since_start']

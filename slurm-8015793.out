@@ -1,9 +1,9 @@
 /home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
   warnings.warn(msg, UserWarning)
-0it [00:00, ?it/s]1it [00:02,  2.13s/it]2it [00:04,  2.07s/it]3it [00:05,  2.02s/it]4it [00:06,  1.61s/it]4it [00:06,  1.66s/it]
-0it [00:00, ?it/s]1it [00:01,  1.88s/it]2it [00:03,  1.87s/it]3it [00:05,  1.86s/it]4it [00:06,  1.57s/it]4it [00:06,  1.61s/it]
-0it [00:00, ?it/s]1it [00:01,  1.84s/it]2it [00:03,  1.85s/it]3it [00:05,  1.88s/it]4it [00:06,  1.55s/it]4it [00:06,  1.60s/it]
-0it [00:00, ?it/s]1it [00:01,  1.86s/it]2it [00:03,  1.89s/it]3it [00:05,  1.88s/it]4it [00:06,  1.50s/it]4it [00:06,  1.57s/it]
+0it [00:00, ?it/s]1it [00:02,  2.05s/it]2it [00:03,  2.00s/it]3it [00:05,  1.98s/it]4it [00:06,  1.58s/it]4it [00:06,  1.63s/it]
+0it [00:00, ?it/s]1it [00:02,  2.24s/it]2it [00:04,  2.12s/it]3it [00:05,  2.05s/it]4it [00:06,  1.70s/it]4it [00:06,  1.71s/it]
+0it [00:00, ?it/s]1it [00:01,  1.88s/it]2it [00:03,  1.88s/it]3it [00:05,  1.90s/it]4it [00:06,  1.56s/it]4it [00:06,  1.61s/it]
+0it [00:00, ?it/s]1it [00:02,  2.02s/it]2it [00:03,  1.98s/it]3it [00:05,  1.94s/it]4it [00:06,  1.54s/it]4it [00:06,  1.59s/it]
 CANDY
 [2006, 2007, 2008, 2009]
 quarter
@@ -64,9 +64,9 @@ quarter
 53                  Zachary Confections       0
 /home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
   warnings.warn(msg, UserWarning)
-0it [00:00, ?it/s]1it [00:00,  1.23it/s]1it [00:00,  1.23it/s]
+0it [00:00, ?it/s]1it [00:00,  1.25it/s]1it [00:00,  1.25it/s]
 0it [00:00, ?it/s]1it [00:00,  1.24it/s]1it [00:00,  1.24it/s]
-0it [00:00, ?it/s]1it [00:00,  1.11it/s]1it [00:00,  1.11it/s]
+0it [00:00, ?it/s]1it [00:00,  1.17it/s]1it [00:00,  1.17it/s]
 0it [00:00, ?it/s]1it [00:00,  1.13it/s]1it [00:00,  1.13it/s]
 GUM
 [2006, 2007, 2008, 2009]
@@ -144,7 +144,7 @@ Dep. Variable:           lprice_CANDY   R-squared:                        0.0016
 Estimator:                   PanelOLS   R-squared (Between):             -0.0078
 No. Observations:            10868697   R-squared (Within):               0.0016
 Date:                Mon, Apr 06 2020   R-squared (Overall):              0.0021
-Time:                        22:51:51   Log-likelihood                -2.633e+06
+Time:                        23:36:41   Log-likelihood                -2.633e+06
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                      4674.6
 Entities:                     2060550   P-value                           0.0000
@@ -283,7 +283,7 @@ Dep. Variable:           lprice_CANDY   R-squared:                        0.0014
 Estimator:                   PanelOLS   R-squared (Between):             -0.0084
 No. Observations:            10868697   R-squared (Within):               0.0014
 Date:                Mon, Apr 06 2020   R-squared (Overall):              0.0014
-Time:                        22:55:22   Log-likelihood                -2.634e+06
+Time:                        23:40:12   Log-likelihood                -2.634e+06
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                      4093.5
 Entities:                     2060550   P-value                           0.0000
@@ -313,10 +313,10 @@ Distribution: F(2060549,8808144)
 Included effects: Entity
 /home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
   warnings.warn(msg, UserWarning)
-0it [00:00, ?it/s]1it [00:02,  2.42s/it]2it [00:04,  2.41s/it]3it [00:07,  2.42s/it]4it [00:09,  2.40s/it]5it [00:11,  2.37s/it]6it [00:14,  2.36s/it]7it [00:16,  2.31s/it]8it [00:18,  2.31s/it]9it [00:19,  1.69s/it]9it [00:19,  2.11s/it]
-0it [00:00, ?it/s]1it [00:02,  2.72s/it]2it [00:05,  2.59s/it]3it [00:07,  2.50s/it]4it [00:09,  2.33s/it]5it [00:11,  2.34s/it]6it [00:14,  2.39s/it]7it [00:16,  2.36s/it]8it [00:18,  2.36s/it]9it [00:19,  1.94s/it]9it [00:19,  2.19s/it]
-0it [00:00, ?it/s]1it [00:02,  2.66s/it]2it [00:05,  2.60s/it]3it [00:07,  2.49s/it]4it [00:09,  2.44s/it]5it [00:11,  2.31s/it]6it [00:13,  2.29s/it]7it [00:16,  2.26s/it]8it [00:18,  2.25s/it]9it [00:18,  1.72s/it]9it [00:18,  2.09s/it]
-0it [00:00, ?it/s]1it [00:01,  1.95s/it]2it [00:04,  2.06s/it]3it [00:06,  2.13s/it]4it [00:08,  2.18s/it]5it [00:11,  2.20s/it]6it [00:13,  2.23s/it]7it [00:15,  2.29s/it]8it [00:18,  2.35s/it]8it [00:18,  2.29s/it]
+0it [00:00, ?it/s]1it [00:02,  2.36s/it]2it [00:04,  2.37s/it]3it [00:07,  2.38s/it]4it [00:09,  2.36s/it]5it [00:11,  2.33s/it]6it [00:13,  2.29s/it]7it [00:16,  2.25s/it]8it [00:18,  2.27s/it]9it [00:18,  1.67s/it]9it [00:18,  2.07s/it]
+0it [00:00, ?it/s]1it [00:02,  2.22s/it]2it [00:04,  2.23s/it]3it [00:06,  2.25s/it]4it [00:08,  2.15s/it]5it [00:11,  2.21s/it]6it [00:13,  2.30s/it]7it [00:15,  2.30s/it]8it [00:18,  2.27s/it]9it [00:18,  1.87s/it]9it [00:18,  2.11s/it]
+0it [00:00, ?it/s]1it [00:02,  2.53s/it]2it [00:04,  2.50s/it]3it [00:07,  2.42s/it]4it [00:09,  2.38s/it]5it [00:11,  2.25s/it]6it [00:13,  2.23s/it]7it [00:15,  2.21s/it]8it [00:18,  2.22s/it]9it [00:18,  1.70s/it]9it [00:18,  2.06s/it]
+0it [00:00, ?it/s]1it [00:01,  1.91s/it]2it [00:04,  2.02s/it]3it [00:06,  2.09s/it]4it [00:08,  2.13s/it]5it [00:10,  2.16s/it]6it [00:13,  2.19s/it]7it [00:15,  2.24s/it]8it [00:17,  2.30s/it]8it [00:17,  2.24s/it]
 CANDY
 [2006, 2007, 2008, 2009]
 month
@@ -377,10 +377,10 @@ month
 53                  Zachary Confections       0
 /home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
   warnings.warn(msg, UserWarning)
-0it [00:00, ?it/s]1it [00:02,  2.75s/it]1it [00:02,  2.75s/it]
-0it [00:00, ?it/s]1it [00:02,  2.71s/it]1it [00:02,  2.71s/it]
-0it [00:00, ?it/s]1it [00:03,  3.26s/it]1it [00:03,  3.26s/it]
-0it [00:00, ?it/s]1it [00:03,  3.36s/it]2it [00:03,  1.71s/it]
+0it [00:00, ?it/s]1it [00:02,  2.76s/it]1it [00:02,  2.76s/it]
+0it [00:00, ?it/s]1it [00:02,  2.72s/it]1it [00:02,  2.72s/it]
+0it [00:00, ?it/s]1it [00:02,  2.83s/it]1it [00:02,  2.83s/it]
+0it [00:00, ?it/s]1it [00:02,  3.00s/it]2it [00:03,  1.53s/it]
 GUM
 [2006, 2007, 2008, 2009]
 month
@@ -457,7 +457,7 @@ Dep. Variable:           lprice_CANDY   R-squared:                        0.0041
 Estimator:                   PanelOLS   R-squared (Between):             -0.0098
 No. Observations:            26461629   R-squared (Within):               0.0041
 Date:                Mon, Apr 06 2020   R-squared (Overall):              0.0032
-Time:                        23:07:35   Log-likelihood                -7.342e+06
+Time:                        23:52:26   Log-likelihood                -7.342e+06
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                   3.356e+04
 Entities:                     2060550   P-value                           0.0000
@@ -628,7 +628,7 @@ Dep. Variable:           lprice_CANDY   R-squared:                        0.0041
 Estimator:                   PanelOLS   R-squared (Between):             -0.0101
 No. Observations:            26461629   R-squared (Within):               0.0041
 Date:                Mon, Apr 06 2020   R-squared (Overall):              0.0029
-Time:                        23:14:08   Log-likelihood                -7.341e+06
+Time:                        23:58:58   Log-likelihood                -7.341e+06
 Cov. Estimator:             Clustered                                           
                                         F-statistic:                    3.37e+04
 Entities:                     2060550   P-value                           0.0000
@@ -656,7 +656,7 @@ P-value: 0.0000
 Distribution: F(2060549,24401076)
 
 Included effects: Entity
-/var/spool/slurmd/job8014992/slurm_script: line 22: pdflatex: command not found
-/var/spool/slurmd/job8014992/slurm_script: line 23: pdflatex: command not found
-/var/spool/slurmd/job8014992/slurm_script: line 24: pdflatex: command not found
-/var/spool/slurmd/job8014992/slurm_script: line 25: pdflatex: command not found
+/var/spool/slurmd/job8015793/slurm_script: line 22: pdflatex: command not found
+/var/spool/slurmd/job8015793/slurm_script: line 23: pdflatex: command not found
+/var/spool/slurmd/job8015793/slurm_script: line 24: pdflatex: command not found
+/var/spool/slurmd/job8015793/slurm_script: line 25: pdflatex: command not found

@@ -9,7 +9,7 @@ def BrandOwner(product):
     return brand_owner
 
 def Aggregate_to_Month(top100brand_data):
-    panel_data = top100brand_data.groupby(['upc','dma_code','month']).agg({'volume': 'sum', 'price': 'mean', 'brand_descr': 'first', 'owner company': 'first'})
+    panel_data = top100brand_data.groupby(['upc','dma_code','month']).agg({'volume': 'sum', 'price': 'mean', 'brand_descr': 'first', 'owner initial': 'first', 'owner last': 'first'})
     panel_data = panel_data.reset_index()
     panel_data['y-m-d'] = pd.to_datetime(panel_data['month'].values, format='%Y%m')
     panel_data['year'] = panel_data['y-m-d'].dt.year
@@ -19,7 +19,7 @@ def Aggregate_to_Month(top100brand_data):
   
 def Aggregate_to_Quarter(top100brand_data):
     top100brand_data['y-q'] = pd.to_datetime(top100brand_data['month'].values, format='%Y%m').astype('period[Q]')
-    panel_data = top100brand_data.groupby(['upc','dma_code','y-q']).agg({'volume': 'sum', 'price': 'mean', 'brand_descr': 'first', 'owner company': 'first'})
+    panel_data = top100brand_data.groupby(['upc','dma_code','y-q']).agg({'volume': 'sum', 'price': 'mean', 'brand_descr': 'first', 'owner initial': 'first', 'owner last': 'first'})
     panel_data = panel_data.reset_index()
     panel_data['quarter'] = panel_data['y-q'].astype(str)
     panel_data['year'] = panel_data['y-q'].dt.year
@@ -36,26 +36,13 @@ def Limit_to_Top100_and_Aggregate_to_quarter_or_month(product, quarterOrmonth, m
         year = str(year)
         chunks = pd.read_csv("../../GeneratedData/" + product + "_dma_month_upc_" + year + ".tsv", delimiter = "\t", chunksize = 1000000)
         for data_chunk in chunks:
-            if quarterOrmonth == 'quarter':
-                mergingtimeyear = str(mergingtime)[:4]
-                mergingtimemonth = int(str(mergingtime)[5:])
-                adjustedmonth = str(round((mergingtimemonth-1)/3)*3+1)
-                if len(adjustedmonth) == 1:
-                    mergingtime = int(mergingtimeyear+'0'+adjustedmonth)
-                else:
-                    mergingtime = int(mergingtimeyear+adjustedmonth)
-            data_chunk_pre_merger = data_chunk[data_chunk['month'] < mergingtime]
-            data_chunk_pre_merger['owner company'] = data_chunk_pre_merger['brand_descr'].map(brand_owner['owner initial'])
-            print(data_chunk_pre_merger)
-            data_chunk_post_merger = data_chunk[data_chunk['month'] >= mergingtime]
-            data_chunk_post_merger['owner company'] = data_chunk_post_merger['brand_descr'].map(brand_owner['owner last'])
-            print(data_chunk_post_merger)                
-            data_chunk = pd.concat([data_chunk_pre_merger, data_chunk_post_merger])
+            data_chunk['owner initial'] = data_chunk['brand_descr'].map(brand_owner['owner initial'])
+            data_chunk['owner last'] = data_chunk['brand_descr'].map(brand_owner['owner last'])
             if top100brand_data.empty:
                 top100brand_data = data_chunk
             else:
                 top100brand_data = pd.concat([top100brand_data, data_chunk])
-        top100brand_data = top100brand_data.dropna(subset=['owner company'])
+        top100brand_data = top100brand_data.dropna(subset=['owner initial'])
         
     if quarterOrmonth == 'month':
         Aggregate_to_Month(top100brand_data)
