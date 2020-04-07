@@ -75,7 +75,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         fe_res = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
         print(fe_res)
 
-        beginningtex = """\\documentclass{report}a
+        beginningtex = """\\documentclass{report}
                           \\usepackage{booktabs}
                           \\begin{document}"""
         endtex = "\end{document}"
