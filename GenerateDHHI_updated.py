@@ -26,7 +26,7 @@ def GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth):
     DHHI = HHI_before.merge(HHI_after, left_index = True, right_index = True)
     DHHI['DHHI'] = DHHI['HHI_after'] - DHHI['HHI_before']
     panel_data['DHHI'] = panel_data['dma_code'].map(DHHI['DHHI'])
-    panel_data.to_csv('_'.join([str(elem) for elem in products]) + "_DHHI_" + quarterOrMonth + ".tsv", sep = '\t', encoding = 'utf-8')
+    panel_data.to_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + "_DHHI_" + quarterOrMonth + ".tsv", sep = '\t', encoding = 'utf-8')
     
 quarterOrMonth = sys.argv[1]
 mergingyear = sys.argv[2]
