@@ -12,4 +12,4 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python DIDregression2_A.py month BEER
+python DIDregression2_A.py quarter BEER

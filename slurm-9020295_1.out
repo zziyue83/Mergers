@@ -1,0 +1,20 @@
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
+  warnings.warn(msg, UserWarning)
+Traceback (most recent call last):
+  File "GenerateDHHI.py", line 33, in <module>
+    GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth)
+  File "GenerateDHHI.py", line 6, in GenerateDHHI
+    panel_data = pd.read_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + "_pre_model_" + quarterOrMonth + "_data.tsv", delimiter = "\t", index_col = 0)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/io/parsers.py", line 685, in parser_f
+    return _read(filepath_or_buffer, kwds)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/io/parsers.py", line 457, in _read
+    parser = TextFileReader(fp_or_buf, **kwds)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/io/parsers.py", line 895, in __init__
+    self._make_engine(self.engine)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/io/parsers.py", line 1135, in _make_engine
+    self._engine = CParserWrapper(self.f, **self.options)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/io/parsers.py", line 1917, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+  File "pandas/_libs/parsers.pyx", line 382, in pandas._libs.parsers.TextReader.__cinit__
+  File "pandas/_libs/parsers.pyx", line 689, in pandas._libs.parsers.TextReader._setup_parser_source
+FileNotFoundError: [Errno 2] File b'../../GeneratedData/7_pre_model_BEER_data.tsv' does not exist: b'../../GeneratedData/7_pre_model_BEER_data.tsv'
