@@ -3,38 +3,40 @@
                       \begin{document}\begin{center}
 \begin{tabular}{lclc}
 \toprule
-\textbf{Dep. Variable:}        &     log\_price     & \textbf{  R-squared:         }   &      0.1393      \\
-\textbf{Estimator:}            &      PanelOLS      & \textbf{  R-squared (Between):}  &      0.0022      \\
-\textbf{No. Observations:}     &      1044078       & \textbf{  R-squared (Within):}   &      0.1393      \\
-\textbf{Date:}                 &  Tue, Apr 07 2020  & \textbf{  R-squared (Overall):}  &      0.0024      \\
-\textbf{Time:}                 &      11:17:39      & \textbf{  Log-likelihood     }   &    1.111e+06     \\
-\textbf{Cov. Estimator:}       &     Clustered      & \textbf{                     }   &                  \\
-\textbf{}                      &                    & \textbf{  F-statistic:       }   &    5.111e+04     \\
-\textbf{Entities:}             &       96685        & \textbf{  P-value            }   &      0.0000      \\
-\textbf{Avg Obs:}              &       10.799       & \textbf{  Distribution:      }   &   F(3,947390)    \\
-\textbf{Min Obs:}              &       1.0000       & \textbf{                     }   &                  \\
-\textbf{Max Obs:}              &       16.000       & \textbf{  F-statistic (robust):} &      1422.2      \\
-\textbf{}                      &                    & \textbf{  P-value            }   &      0.0000      \\
-\textbf{Time periods:}         &         16         & \textbf{  Distribution:      }   &   F(3,947390)    \\
-\textbf{Avg Obs:}              &     6.525e+04      & \textbf{                     }   &                  \\
-\textbf{Min Obs:}              &      5.29e+04      & \textbf{                     }   &                  \\
-\textbf{Max Obs:}              &     7.137e+04      & \textbf{                     }   &                  \\
+\textbf{Dep. Variable:}                          & log\_adjusted\_price & \textbf{  R-squared:         }   &      0.0240      \\
+\textbf{Estimator:}                              &       PanelOLS       & \textbf{  R-squared (Between):}  &      0.0002      \\
+\textbf{No. Observations:}                       &       1044078        & \textbf{  R-squared (Within):}   &      0.0240      \\
+\textbf{Date:}                                   &   Sun, Apr 19 2020   & \textbf{  R-squared (Overall):}  &     -0.0002      \\
+\textbf{Time:}                                   &       11:11:30       & \textbf{  Log-likelihood     }   &    1.097e+06     \\
+\textbf{Cov. Estimator:}                         &      Clustered       & \textbf{                     }   &                  \\
+\textbf{}                                        &                      & \textbf{  F-statistic:       }   &      4663.1      \\
+\textbf{Entities:}                               &        96685         & \textbf{  P-value            }   &      0.0000      \\
+\textbf{Avg Obs:}                                &        10.799        & \textbf{  Distribution:      }   &   F(5,947388)    \\
+\textbf{Min Obs:}                                &        1.0000        & \textbf{                     }   &                  \\
+\textbf{Max Obs:}                                &        16.000        & \textbf{  F-statistic (robust):} &      274.17      \\
+\textbf{}                                        &                      & \textbf{  P-value            }   &      0.0000      \\
+\textbf{Time periods:}                           &          16          & \textbf{  Distribution:      }   &   F(5,947388)    \\
+\textbf{Avg Obs:}                                &      6.525e+04       & \textbf{                     }   &                  \\
+\textbf{Min Obs:}                                &       5.29e+04       & \textbf{                     }   &                  \\
+\textbf{Max Obs:}                                &      7.137e+04       & \textbf{                     }   &                  \\
 \bottomrule
 \end{tabular}
 \begin{tabular}{lcccccc}
-                               & \textbf{Parameter} & \textbf{Std. Err.} & \textbf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf{Upper CI}  \\
+                                                 & \textbf{Parameter} & \textbf{Std. Err.} & \textbf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf{Upper CI}  \\
 \midrule
-\textbf{const}                 &       1.8283       &       0.0010       &      1755.0     &      0.0000      &       1.8262      &       1.8303       \\
-\textbf{involvedpostmerger}    &       0.0126       &       0.0010       &      12.628     &      0.0000      &       0.0107      &       0.0146       \\
-\textbf{postmerger}            &       0.0064       &       0.0008       &      8.0682     &      0.0000      &       0.0049      &       0.0080       \\
-\textbf{quarter\_since\_start} &       0.0070       &       0.0001       &      48.107     &      0.0000      &       0.0068      &       0.0073       \\
+\textbf{const}                                   &       1.5879       &       0.1381       &      11.498     &      0.0000      &       1.3173      &       1.8586       \\
+\textbf{involvedpostmerger}                      &       0.0125       &       0.0010       &      12.535     &      0.0000      &       0.0106      &       0.0145       \\
+\textbf{postmerger}                              &       0.0161       &       0.0009       &      18.002     &      0.0000      &       0.0143      &       0.0178       \\
+\textbf{quarter\_since\_start}                   &     -3.122e-05     &       0.0002       &     -0.1801     &      0.8571      &      -0.0004      &       0.0003       \\
+\textbf{log\_employment\_rate}                   &      -0.2989       &       0.0290       &     -10.317     &      0.0000      &      -0.3556      &      -0.2421       \\
+\textbf{log\_adjusted\_hhinc\_per\_person\_mean} &       0.0449       &       0.0129       &      3.4827     &      0.0005      &       0.0196      &       0.0702       \\
 \bottomrule
 \end{tabular}
 %\caption{PanelOLS Estimation Summary}
 \end{center}
 
-F-test for Poolability: 1013.8 \newline
+F-test for Poolability: 985.66 \newline
  P-value: 0.0000 \newline
- Distribution: F(96684,947390) \newline
+ Distribution: F(96684,947388) \newline
   \newline
  Included effects: Entity\end{document}

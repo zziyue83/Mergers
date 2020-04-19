@@ -9,7 +9,7 @@
 #SBATCH --array=1
 #SBATCH --mem=20G
 #SBATCH --nodes=1
-      
+
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers  
-python preModelData_updated.py quarter 2008 3 BEER SABMiller Molson Coors MillerCoors
+python preModelData.py quarter 2008 3 BEER SABMiller Molson Coors MillerCoors

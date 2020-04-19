@@ -1,662 +1,0 @@
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
-  warnings.warn(msg, UserWarning)
-0it [00:00, ?it/s]1it [00:02,  2.05s/it]2it [00:03,  2.00s/it]3it [00:05,  1.98s/it]4it [00:06,  1.58s/it]4it [00:06,  1.63s/it]
-0it [00:00, ?it/s]1it [00:02,  2.24s/it]2it [00:04,  2.12s/it]3it [00:05,  2.05s/it]4it [00:06,  1.70s/it]4it [00:06,  1.71s/it]
-0it [00:00, ?it/s]1it [00:01,  1.88s/it]2it [00:03,  1.88s/it]3it [00:05,  1.90s/it]4it [00:06,  1.56s/it]4it [00:06,  1.61s/it]
-0it [00:00, ?it/s]1it [00:02,  2.02s/it]2it [00:03,  1.98s/it]3it [00:05,  1.94s/it]4it [00:06,  1.54s/it]4it [00:06,  1.59s/it]
-CANDY
-[2006, 2007, 2008, 2009]
-quarter
-                                  owner merging
-0                                  Mars       1
-1                               Wrigley       1
-2             American Licorice Company       0
-3                    Asher’s Chocolates       0
-4                         August Storck       0
-5                   Brach's Confections       0
-6            Bradford Chocolate Factory       0
-7                         Brown & Haley       0
-8                               Cadbury       0
-9                      Callard & Bowser       0
-10                          Ce De Candy       0
-11                            Colombina       0
-12                            CTL Foods       0
-13              Elmer Candy Corporation       0
-14                   Farley's & Sathers       0
-15                    FB Washburn Candy       0
-16                    Ferrara Pan Candy       0
-17                              Ferrero       0
-18  Frankford Candy & Chocolate Company       0
-19              Galerie Candy and Gifts       0
-20               Goetze's Candy Company       0
-21                          Grupo Arcor       0
-22                               Haribo       0
-23                              Hershey       0
-24                   Impact Confections       0
-25                 Jelly Belly Candy Co       0
-26                                Joyva       0
-27                        Just Born Inc       0
-28                     Kraft Foods Inc.       0
-29                     Lindt & Sprüngli       0
-30                      Log House Foods       0
-31                   Maxfield Candy Co.       0
-32                   Mayfair Sales Inc.       0
-33                 Mount Franklin Foods       0
-34                          Mrs. Fields       0
-35                                Necco       0
-36                               Nestlé       0
-37              Old Dominion Peanut Co.       0
-38              Pearson's Candy Company       0
-39                   Perfetti Van Melle       0
-40               Piedmont Candy Company       0
-41               R.L. Albert & Son, Inc       0
-42                         RM Palmer Co       0
-43           Russell Stover Candies Inc       0
-44                        Shari Candies       0
-45                Sherwood Brands, Inc.       0
-46                       Simply Goodies       0
-47               Spangler Candy Company       0
-48       Sun-Maid Growers of California       0
-49                  Sweet Candy Company       0
-50              Tootsie Roll Industries       0
-51                              unknown       0
-52             World's Finest Chocolate       0
-53                  Zachary Confections       0
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
-  warnings.warn(msg, UserWarning)
-0it [00:00, ?it/s]1it [00:00,  1.25it/s]1it [00:00,  1.25it/s]
-0it [00:00, ?it/s]1it [00:00,  1.24it/s]1it [00:00,  1.24it/s]
-0it [00:00, ?it/s]1it [00:00,  1.17it/s]1it [00:00,  1.17it/s]
-0it [00:00, ?it/s]1it [00:00,  1.13it/s]1it [00:00,  1.13it/s]
-GUM
-[2006, 2007, 2008, 2009]
-quarter
-                                  owner merging
-0                                  Mars       1
-1                               Wrigley       1
-2              A Nut Above The Rest Inc       0
-3                  Action Candy Company       0
-4                        American Foods       0
-5                               Au'some       0
-6                   Brach's Confections       0
-7                    Brand New Products       0
-8                           C. Howard's       0
-9                               Cadbury       0
-10                       Candy Dynamics       0
-11                              Canel's       0
-12                           Casa Dulce       0
-13                       CCA Industries       0
-14                          Ce De Candy       0
-15                      Church & Dwight       0
-16                            CTL Foods       0
-17                          Dulces Vero       0
-18                            Eillien's       0
-19                             El Guapo       0
-20                   Farley's & Sathers       0
-21               Ford Gum & Machine Co.       0
-22  Frankford Candy & Chocolate Company       0
-23              Galerie Candy and Gifts       0
-24                           Gumrunners       0
-25                              Hershey       0
-26                                Hilco       0
-27                         Imaginings 3       0
-28                   Impact Confections       0
-29                         Imperial Toy       0
-30                          It's Delish       0
-31                 Jelly Belly Candy Co       0
-32                             Mad Croc       0
-33                   Mayfair Sales Inc.       0
-34                 Mount Franklin Foods       0
-35              Mueller Sports Medicine       0
-36                                Necco       0
-37                               Nestlé       0
-38                       New Era Brands       0
-39             Perfetti Van Melle Group       0
-40                              Philips       0
-41               R.L. Albert & Son, Inc       0
-42                Richardson Brands Co.       0
-43                Schuster Products LLC       0
-44                        Shari Candies       0
-45                Sherwood Brands, Inc.       0
-46                       SP Enterprises       0
-47                            Starbucks       0
-48                              Strauss       0
-49                          Sweet N Fun       0
-50               SweetWorks Confections       0
-51            The Foreign Candy Company       0
-52                          TheraBreath       0
-53                        Thrifty White       0
-54              Tootsie Roll Industries       0
-55                                Topps       0
-56                              unknown       0
-57                                Verve       0
-58                     Zeta Espacial SA       0
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
-  warnings.warn(msg, UserWarning)
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '2.6.2' or newer of 'numexpr' (version '2.6.1' currently installed).
-  warnings.warn(msg, UserWarning)
-/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
-  return ptp(axis=axis, out=out, **kwargs)
-CANDY
-                          PanelOLS Estimation Summary                           
-================================================================================
-Dep. Variable:           lprice_CANDY   R-squared:                        0.0016
-Estimator:                   PanelOLS   R-squared (Between):             -0.0078
-No. Observations:            10868697   R-squared (Within):               0.0016
-Date:                Mon, Apr 06 2020   R-squared (Overall):              0.0021
-Time:                        23:36:41   Log-likelihood                -2.633e+06
-Cov. Estimator:             Clustered                                           
-                                        F-statistic:                      4674.6
-Entities:                     2060550   P-value                           0.0000
-Avg Obs:                       5.2747   Distribution:               F(3,8808144)
-Min Obs:                       1.0000                                           
-Max Obs:                       16.000   F-statistic (robust):             804.32
-                                        P-value                           0.0000
-Time periods:                      16   Distribution:               F(3,8808144)
-Avg Obs:                    6.793e+05                                           
-Min Obs:                     5.67e+05                                           
-Max Obs:                    8.588e+05                                           
-                                                                                
-                                  Parameter Estimates                                  
-=======================================================================================
-                     Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
----------------------------------------------------------------------------------------
-const                   0.5028     0.0018     284.61     0.0000      0.4993      0.5062
-post_merger*merging     0.0393     0.0011     36.095     0.0000      0.0372      0.0415
-post_merger            -0.0430     0.0013    -32.679     0.0000     -0.0456     -0.0404
-trend                   0.0053     0.0002     21.668     0.0000      0.0049      0.0058
-=======================================================================================
-
-F-test for Poolability: 28.117
-P-value: 0.0000
-Distribution: F(2060549,8808144)
-
-Included effects: Entity
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
-  warnings.warn(msg, UserWarning)
-DID_regression.py:115: SettingWithCopyWarning: 
-A value is trying to be set on a copy of a slice from a DataFrame.
-Try using .loc[row_indexer,col_indexer] = value instead
-
-See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-  oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '2.6.2' or newer of 'numexpr' (version '2.6.1' currently installed).
-  warnings.warn(msg, UserWarning)
-/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
-  return ptp(axis=axis, out=out, **kwargs)
-CANDY
-       include
-t             
-2006Q1       0
-2006Q2       0
-2006Q3       0
-2006Q4       0
-2007Q1       0
-2007Q2       1
-2007Q3       1
-2007Q4       1
-2008Q1       1
-2008Q2       0
-2008Q3       0
-2008Q4       0
-2009Q1       0
-2009Q2       0
-2009Q3       0
-2009Q4       0
-                volume
-dma_code              
-500       2.172327e+08
-501       2.951397e+09
-502       2.166690e+07
-503       5.599310e+07
-504       1.628865e+09
-...                ...
-855       8.687993e+07
-862       4.471695e+08
-866       1.936955e+08
-868       4.947016e+07
-881       1.232151e+08
-
-[205 rows x 1 columns]
-           owner  dma_code quarter  ...  time_str  include      dma_size
-3632904     Mars       500  2007Q2  ...    2007Q2        1  2.172327e+08
-3632905     Mars       501  2007Q2  ...    2007Q2        1  2.951397e+09
-3632906     Mars       502  2007Q2  ...    2007Q2        1  2.166690e+07
-3632907     Mars       503  2007Q2  ...    2007Q2        1  5.599310e+07
-3632908     Mars       504  2007Q2  ...    2007Q2        1  1.628865e+09
-...          ...       ...     ...  ...       ...      ...           ...
-6078191  Wrigley       528  2008Q1  ...    2008Q1        1  5.827336e+08
-6078192  Wrigley       535  2008Q1  ...    2008Q1        1  3.250000e+08
-6078193  Wrigley       637  2008Q1  ...    2008Q1        1  1.201757e+08
-6078194  Wrigley       762  2008Q1  ...    2008Q1        1  3.536647e+07
-6078195  Wrigley       770  2008Q1  ...    2008Q1        1  3.254347e+08
-
-[453636 rows x 8 columns]
-['Mars' 'Wrigley']
-     owner  dma_code  ...  post_merger_share_square      DHHI
-0      NaN       500  ...                  0.117817  0.058836
-1      NaN       501  ...                  0.195141  0.097497
-2      NaN       502  ...                  0.117788  0.057447
-3      NaN       503  ...                  0.149474  0.067109
-4      NaN       504  ...                  0.154890  0.076361
-..     ...       ...  ...                       ...       ...
-200    NaN       855  ...                  0.155787  0.065283
-201    NaN       862  ...                  0.149657  0.066601
-202    NaN       866  ...                  0.134766  0.061489
-203    NaN       868  ...                  0.134652  0.062568
-204    NaN       881  ...                  0.125789  0.058556
-
-[205 rows x 12 columns]
-              DHHI
-dma_code          
-500       0.058836
-501       0.097497
-502       0.057447
-503       0.067109
-504       0.076361
-...            ...
-855       0.065283
-862       0.066601
-866       0.061489
-868       0.062568
-881       0.058556
-
-[205 rows x 1 columns]
-                                       DHHI*post_merger  post_merger  trend
-dma_upc          quarters_since_start                                      
-529_10000001     0                             0.000000            0      0
-618_10000001     0                             0.000000            0      0
-640_10000001     0                             0.000000            0      0
-693_10000001     0                             0.000000            0      0
-789_10000001     0                             0.000000            0      0
-...                                                 ...          ...    ...
-855_937582890889 15                            0.065283            1     15
-862_937582890889 15                            0.066601            1     15
-866_937582890889 15                            0.061489            1     15
-868_937582890889 15                            0.062568            1     15
-881_937582890889 15                            0.058556            1     15
-
-[10868697 rows x 3 columns]
-                          PanelOLS Estimation Summary                           
-================================================================================
-Dep. Variable:           lprice_CANDY   R-squared:                        0.0014
-Estimator:                   PanelOLS   R-squared (Between):             -0.0084
-No. Observations:            10868697   R-squared (Within):               0.0014
-Date:                Mon, Apr 06 2020   R-squared (Overall):              0.0014
-Time:                        23:40:12   Log-likelihood                -2.634e+06
-Cov. Estimator:             Clustered                                           
-                                        F-statistic:                      4093.5
-Entities:                     2060550   P-value                           0.0000
-Avg Obs:                       5.2747   Distribution:               F(3,8808144)
-Min Obs:                       1.0000                                           
-Max Obs:                       16.000   F-statistic (robust):             318.39
-                                        P-value                           0.0000
-Time periods:                      16   Distribution:               F(3,8808144)
-Avg Obs:                    6.793e+05                                           
-Min Obs:                     5.67e+05                                           
-Max Obs:                    8.588e+05                                           
-                                                                                
-                                Parameter Estimates                                 
-====================================================================================
-                  Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
-------------------------------------------------------------------------------------
-const                0.5026     0.0016     309.55     0.0000      0.4994      0.5057
-DHHI*post_merger    -1.0993     0.2854    -3.8511     0.0001     -1.6587     -0.5398
-post_merger          0.0351     0.0188     1.8665     0.0620     -0.0018      0.0720
-trend                0.0054     0.0002     21.917     0.0000      0.0049      0.0059
-====================================================================================
-
-F-test for Poolability: 28.133
-P-value: 0.0000
-Distribution: F(2060549,8808144)
-
-Included effects: Entity
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
-  warnings.warn(msg, UserWarning)
-0it [00:00, ?it/s]1it [00:02,  2.36s/it]2it [00:04,  2.37s/it]3it [00:07,  2.38s/it]4it [00:09,  2.36s/it]5it [00:11,  2.33s/it]6it [00:13,  2.29s/it]7it [00:16,  2.25s/it]8it [00:18,  2.27s/it]9it [00:18,  1.67s/it]9it [00:18,  2.07s/it]
-0it [00:00, ?it/s]1it [00:02,  2.22s/it]2it [00:04,  2.23s/it]3it [00:06,  2.25s/it]4it [00:08,  2.15s/it]5it [00:11,  2.21s/it]6it [00:13,  2.30s/it]7it [00:15,  2.30s/it]8it [00:18,  2.27s/it]9it [00:18,  1.87s/it]9it [00:18,  2.11s/it]
-0it [00:00, ?it/s]1it [00:02,  2.53s/it]2it [00:04,  2.50s/it]3it [00:07,  2.42s/it]4it [00:09,  2.38s/it]5it [00:11,  2.25s/it]6it [00:13,  2.23s/it]7it [00:15,  2.21s/it]8it [00:18,  2.22s/it]9it [00:18,  1.70s/it]9it [00:18,  2.06s/it]
-0it [00:00, ?it/s]1it [00:01,  1.91s/it]2it [00:04,  2.02s/it]3it [00:06,  2.09s/it]4it [00:08,  2.13s/it]5it [00:10,  2.16s/it]6it [00:13,  2.19s/it]7it [00:15,  2.24s/it]8it [00:17,  2.30s/it]8it [00:17,  2.24s/it]
-CANDY
-[2006, 2007, 2008, 2009]
-month
-                                  owner merging
-0                                  Mars       1
-1                               Wrigley       1
-2             American Licorice Company       0
-3                    Asher’s Chocolates       0
-4                         August Storck       0
-5                   Brach's Confections       0
-6            Bradford Chocolate Factory       0
-7                         Brown & Haley       0
-8                               Cadbury       0
-9                      Callard & Bowser       0
-10                          Ce De Candy       0
-11                            Colombina       0
-12                            CTL Foods       0
-13              Elmer Candy Corporation       0
-14                   Farley's & Sathers       0
-15                    FB Washburn Candy       0
-16                    Ferrara Pan Candy       0
-17                              Ferrero       0
-18  Frankford Candy & Chocolate Company       0
-19              Galerie Candy and Gifts       0
-20               Goetze's Candy Company       0
-21                          Grupo Arcor       0
-22                               Haribo       0
-23                              Hershey       0
-24                   Impact Confections       0
-25                 Jelly Belly Candy Co       0
-26                                Joyva       0
-27                        Just Born Inc       0
-28                     Kraft Foods Inc.       0
-29                     Lindt & Sprüngli       0
-30                      Log House Foods       0
-31                   Maxfield Candy Co.       0
-32                   Mayfair Sales Inc.       0
-33                 Mount Franklin Foods       0
-34                          Mrs. Fields       0
-35                                Necco       0
-36                               Nestlé       0
-37              Old Dominion Peanut Co.       0
-38              Pearson's Candy Company       0
-39                   Perfetti Van Melle       0
-40               Piedmont Candy Company       0
-41               R.L. Albert & Son, Inc       0
-42                         RM Palmer Co       0
-43           Russell Stover Candies Inc       0
-44                        Shari Candies       0
-45                Sherwood Brands, Inc.       0
-46                       Simply Goodies       0
-47               Spangler Candy Company       0
-48       Sun-Maid Growers of California       0
-49                  Sweet Candy Company       0
-50              Tootsie Roll Industries       0
-51                              unknown       0
-52             World's Finest Chocolate       0
-53                  Zachary Confections       0
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
-  warnings.warn(msg, UserWarning)
-0it [00:00, ?it/s]1it [00:02,  2.76s/it]1it [00:02,  2.76s/it]
-0it [00:00, ?it/s]1it [00:02,  2.72s/it]1it [00:02,  2.72s/it]
-0it [00:00, ?it/s]1it [00:02,  2.83s/it]1it [00:02,  2.83s/it]
-0it [00:00, ?it/s]1it [00:02,  3.00s/it]2it [00:03,  1.53s/it]
-GUM
-[2006, 2007, 2008, 2009]
-month
-                                  owner merging
-0                                  Mars       1
-1                               Wrigley       1
-2              A Nut Above The Rest Inc       0
-3                  Action Candy Company       0
-4                        American Foods       0
-5                               Au'some       0
-6                   Brach's Confections       0
-7                    Brand New Products       0
-8                           C. Howard's       0
-9                               Cadbury       0
-10                       Candy Dynamics       0
-11                              Canel's       0
-12                           Casa Dulce       0
-13                       CCA Industries       0
-14                          Ce De Candy       0
-15                      Church & Dwight       0
-16                            CTL Foods       0
-17                          Dulces Vero       0
-18                            Eillien's       0
-19                             El Guapo       0
-20                   Farley's & Sathers       0
-21               Ford Gum & Machine Co.       0
-22  Frankford Candy & Chocolate Company       0
-23              Galerie Candy and Gifts       0
-24                           Gumrunners       0
-25                              Hershey       0
-26                                Hilco       0
-27                         Imaginings 3       0
-28                   Impact Confections       0
-29                         Imperial Toy       0
-30                          It's Delish       0
-31                 Jelly Belly Candy Co       0
-32                             Mad Croc       0
-33                   Mayfair Sales Inc.       0
-34                 Mount Franklin Foods       0
-35              Mueller Sports Medicine       0
-36                                Necco       0
-37                               Nestlé       0
-38                       New Era Brands       0
-39             Perfetti Van Melle Group       0
-40                              Philips       0
-41               R.L. Albert & Son, Inc       0
-42                Richardson Brands Co.       0
-43                Schuster Products LLC       0
-44                        Shari Candies       0
-45                Sherwood Brands, Inc.       0
-46                       SP Enterprises       0
-47                            Starbucks       0
-48                              Strauss       0
-49                          Sweet N Fun       0
-50               SweetWorks Confections       0
-51            The Foreign Candy Company       0
-52                          TheraBreath       0
-53                        Thrifty White       0
-54              Tootsie Roll Industries       0
-55                                Topps       0
-56                              unknown       0
-57                                Verve       0
-58                     Zeta Espacial SA       0
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
-  warnings.warn(msg, UserWarning)
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '2.6.2' or newer of 'numexpr' (version '2.6.1' currently installed).
-  warnings.warn(msg, UserWarning)
-/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
-  return ptp(axis=axis, out=out, **kwargs)
-CANDY
-                          PanelOLS Estimation Summary                           
-================================================================================
-Dep. Variable:           lprice_CANDY   R-squared:                        0.0041
-Estimator:                   PanelOLS   R-squared (Between):             -0.0098
-No. Observations:            26461629   R-squared (Within):               0.0041
-Date:                Mon, Apr 06 2020   R-squared (Overall):              0.0032
-Time:                        23:52:26   Log-likelihood                -7.342e+06
-Cov. Estimator:             Clustered                                           
-                                        F-statistic:                   3.356e+04
-Entities:                     2060550   P-value                           0.0000
-Avg Obs:                       12.842   Distribution:              F(3,24401076)
-Min Obs:                       1.0000                                           
-Max Obs:                       48.000   F-statistic (robust):             3017.3
-                                        P-value                           0.0000
-Time periods:                      48   Distribution:              F(3,24401076)
-Avg Obs:                    5.513e+05                                           
-Min Obs:                    4.391e+05                                           
-Max Obs:                     6.76e+05                                           
-                                                                                
-                                  Parameter Estimates                                  
-=======================================================================================
-                     Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
----------------------------------------------------------------------------------------
-const                   0.4990     0.0017     298.31     0.0000      0.4957      0.5023
-post_merger*merging     0.0178     0.0009     19.391     0.0000      0.0160      0.0196
-post_merger             0.0523     0.0008     67.471     0.0000      0.0508      0.0539
-trend                  -0.0002   7.76e-05    -1.9874     0.0469     -0.0003   -2.13e-06
-=======================================================================================
-
-F-test for Poolability: 67.489
-P-value: 0.0000
-Distribution: F(2060549,24401076)
-
-Included effects: Entity
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
-  warnings.warn(msg, UserWarning)
-DID_regression.py:115: SettingWithCopyWarning: 
-A value is trying to be set on a copy of a slice from a DataFrame.
-Try using .loc[row_indexer,col_indexer] = value instead
-
-See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-  oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
-/home/yza4307/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '2.6.2' or newer of 'numexpr' (version '2.6.1' currently installed).
-  warnings.warn(msg, UserWarning)
-/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
-  return ptp(axis=axis, out=out, **kwargs)
-CANDY
-       include
-t             
-200601       0
-200602       0
-200603       0
-200604       0
-200605       0
-200606       0
-200607       0
-200608       0
-200609       0
-200610       0
-200611       0
-200612       0
-200701       0
-200702       0
-200703       0
-200704       0
-200705       1
-200706       1
-200707       1
-200708       1
-200709       1
-200710       1
-200711       1
-200712       1
-200801       1
-200802       1
-200803       1
-200804       1
-200805       0
-200806       0
-200807       0
-200808       0
-200809       0
-200810       0
-200811       0
-200812       0
-200901       0
-200902       0
-200903       0
-200904       0
-200905       0
-200906       0
-200907       0
-200908       0
-200909       0
-200910       0
-200911       0
-200912       0
-                volume
-dma_code              
-500       2.138576e+08
-501       2.917658e+09
-502       2.089272e+07
-503       5.502952e+07
-504       1.600256e+09
-...                ...
-855       8.485952e+07
-862       4.335241e+08
-866       1.874574e+08
-868       4.785902e+07
-881       1.202513e+08
-
-[205 rows x 1 columns]
-            owner  dma_code   month  ...  time_str  include      dma_size
-8874731      Mars       504  200705  ...    200705        1  1.600256e+09
-8874732      Mars       505  200705  ...    200705        1  5.594618e+08
-8874733      Mars       506  200705  ...    200705        1  1.552823e+09
-8874734      Mars       507  200705  ...    200705        1  7.017262e+07
-8874735      Mars       511  200705  ...    200705        1  9.337117e+08
-...           ...       ...     ...  ...       ...      ...           ...
-15325227  Wrigley       567  200804  ...    200804        1  2.584391e+08
-15325228  Wrigley       618  200804  ...    200804        1  5.925037e+08
-15325229  Wrigley       632  200804  ...    200804        1  4.217624e+07
-15325230  Wrigley       722  200804  ...    200804        1  7.472954e+07
-15325231  Wrigley       803  200804  ...    200804        1  1.932942e+09
-
-[1148193 rows x 8 columns]
-['Mars' 'Wrigley']
-     owner  dma_code  ...  post_merger_share_square      DHHI
-0      NaN       500  ...                  0.120091  0.059944
-1      NaN       501  ...                  0.197227  0.098535
-2      NaN       502  ...                  0.121878  0.059160
-3      NaN       503  ...                  0.152626  0.068232
-4      NaN       504  ...                  0.157094  0.077512
-..     ...       ...  ...                       ...       ...
-200    NaN       855  ...                  0.159253  0.066207
-201    NaN       862  ...                  0.154199  0.067797
-202    NaN       866  ...                  0.138923  0.062769
-203    NaN       868  ...                  0.139022  0.063935
-204    NaN       881  ...                  0.129951  0.060223
-
-[205 rows x 12 columns]
-              DHHI
-dma_code          
-500       0.059944
-501       0.098535
-502       0.059160
-503       0.068232
-504       0.077512
-...            ...
-855       0.066207
-862       0.067797
-866       0.062769
-868       0.063935
-881       0.060223
-
-[205 rows x 1 columns]
-                                     DHHI*post_merger  post_merger  trend
-dma_upc          months_since_start                                      
-529_10000001     0                           0.000000            0      0
-618_10000001     0                           0.000000            0      0
-789_10000001     0                           0.000000            0      0
-616_3080000145   0                           0.000000            0      0
-637_3080000145   0                           0.000000            0      0
-...                                               ...          ...    ...
-855_937582890889 47                          0.066207            1     47
-862_937582890889 47                          0.067797            1     47
-866_937582890889 47                          0.062769            1     47
-868_937582890889 47                          0.063935            1     47
-881_937582890889 47                          0.060223            1     47
-
-[26461629 rows x 3 columns]
-                          PanelOLS Estimation Summary                           
-================================================================================
-Dep. Variable:           lprice_CANDY   R-squared:                        0.0041
-Estimator:                   PanelOLS   R-squared (Between):             -0.0101
-No. Observations:            26461629   R-squared (Within):               0.0041
-Date:                Mon, Apr 06 2020   R-squared (Overall):              0.0029
-Time:                        23:58:58   Log-likelihood                -7.341e+06
-Cov. Estimator:             Clustered                                           
-                                        F-statistic:                    3.37e+04
-Entities:                     2060550   P-value                           0.0000
-Avg Obs:                       12.842   Distribution:              F(3,24401076)
-Min Obs:                       1.0000                                           
-Max Obs:                       48.000   F-statistic (robust):             2320.0
-                                        P-value                           0.0000
-Time periods:                      48   Distribution:              F(3,24401076)
-Avg Obs:                    5.513e+05                                           
-Min Obs:                    4.391e+05                                           
-Max Obs:                     6.76e+05                                           
-                                                                                
-                                Parameter Estimates                                 
-====================================================================================
-                  Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
-------------------------------------------------------------------------------------
-const                0.4989     0.0016     317.50     0.0000      0.4958      0.5020
-DHHI*post_merger    -0.8391     0.2438    -3.4417     0.0006     -1.3169     -0.3613
-post_merger          0.1109     0.0160     6.9343     0.0000      0.0796      0.1423
-trend               -0.0002  7.744e-05    -1.9424     0.0521     -0.0003   1.363e-06
-====================================================================================
-
-F-test for Poolability: 67.516
-P-value: 0.0000
-Distribution: F(2060549,24401076)
-
-Included effects: Entity
-/var/spool/slurmd/job8015793/slurm_script: line 22: pdflatex: command not found
-/var/spool/slurmd/job8015793/slurm_script: line 23: pdflatex: command not found
-/var/spool/slurmd/job8015793/slurm_script: line 24: pdflatex: command not found
-/var/spool/slurmd/job8015793/slurm_script: line 25: pdflatex: command not found
