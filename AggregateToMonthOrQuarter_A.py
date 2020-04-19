@@ -27,10 +27,9 @@ def Aggregate_to_Quarter(top100brand_data):
     panel_data.to_csv("../../GeneratedData/" + product + "_dma_quarter_upc_top100.tsv", sep = '\t', encoding = 'utf-8')
     return None
 
-def Limit_to_Top100_and_Aggregate_to_quarter_or_month(product, quarterOrmonth, mergingtime):
+def Limit_to_Top100_and_Aggregate_to_quarter_or_month(product, quarterOrmonth):
     years = [2006, 2007, 2008, 2009]
     brand_owner = BrandOwner(product)
-    mergingtime = int(mergingtime)
     top100brand_data = pd.DataFrame()
     for year in years:
         year = str(year)
@@ -57,7 +56,5 @@ if len(sys.argv) < 3:
     
 product = sys.argv[1]
 quarterOrmonth = sys.argv[2]
-mergingtime = sys.argv[3]
 
-#mergingtime 200801
-Limit_to_Top100_and_Aggregate_to_quarter_or_month(product, quarterOrmonth, mergingtime)
+Limit_to_Top100_and_Aggregate_to_quarter_or_month(product, quarterOrmonth)

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2019.2.27)  7 APR 2020 11:18
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2019.2.27)  19 APR 2020 11:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -68,53 +68,53 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
 *\toprule
 
-*\textbf{Dep. Variable:}      &     log\_price     & \textbf{  R-squared:      
-   }   &      0.1627      \\
+*\textbf{Dep. Variable:}                          & log\_adjusted\_price & \tex
+tbf{  R-squared:         }   &      0.0301      \\
 
-*\textbf{Estimator:}          &      PanelOLS      & \textbf{  R-squared (Betwe
-en):}  &      0.0025      \\
+*\textbf{Estimator:}                              &       PanelOLS       & \tex
+tbf{  R-squared (Between):}  &      0.0002      \\
 
-*\textbf{No. Observations:}   &      2967807       & \textbf{  R-squared (Withi
-n):}   &      0.1627      \\
+*\textbf{No. Observations:}                       &       2967807        & \tex
+tbf{  R-squared (Within):}   &      0.0301      \\
 
-*\textbf{Date:}               &  Tue, Apr 07 2020  & \textbf{  R-squared (Overa
-ll):}  &      0.0028      \\
+*\textbf{Date:}                                   &   Sun, Apr 19 2020   & \tex
+tbf{  R-squared (Overall):}  &     -0.0003      \\
 
-*\textbf{Time:}               &      11:18:10      & \textbf{  Log-likelihood  
-   }   &    3.363e+06     \\
+*\textbf{Time:}                                   &       11:12:06       & \tex
+tbf{  Log-likelihood     }   &    3.311e+06     \\
 
-*\textbf{Cov. Estimator:}     &     Clustered      & \textbf{                  
-   }   &                  \\
+*\textbf{Cov. Estimator:}                         &      Clustered       & \tex
+tbf{                     }   &                  \\
 
-*\textbf{}                    &                    & \textbf{  F-statistic:    
-   }   &    1.859e+05     \\
+*\textbf{}                                        &                      & \tex
+tbf{  F-statistic:       }   &    1.784e+04     \\
 
-*\textbf{Entities:}           &       96685        & \textbf{  P-value         
-   }   &      0.0000      \\
+*\textbf{Entities:}                               &        96685         & \tex
+tbf{  P-value            }   &      0.0000      \\
 
-*\textbf{Avg Obs:}            &       30.696       & \textbf{  Distribution:   
-   }   &   F(3,2871119)   \\
+*\textbf{Avg Obs:}                                &        30.696        & \tex
+tbf{  Distribution:      }   &   F(5,2871117)   \\
 
-*\textbf{Min Obs:}            &       1.0000       & \textbf{                  
-   }   &                  \\
+*\textbf{Min Obs:}                                &        1.0000        & \tex
+tbf{                     }   &                  \\
 
-*\textbf{Max Obs:}            &       48.000       & \textbf{  F-statistic (rob
-ust):} &      1545.4      \\
+*\textbf{Max Obs:}                                &        48.000        & \tex
+tbf{  F-statistic (robust):} &      318.36      \\
 
-*\textbf{}                    &                    & \textbf{  P-value         
-   }   &      0.0000      \\
+*\textbf{}                                        &                      & \tex
+tbf{  P-value            }   &      0.0000      \\
 
-*\textbf{Time periods:}       &         48         & \textbf{  Distribution:   
-   }   &   F(3,2871119)   \\
+*\textbf{Time periods:}                           &          48          & \tex
+tbf{  Distribution:      }   &   F(5,2871117)   \\
 
-*\textbf{Avg Obs:}            &     6.183e+04      & \textbf{                  
-   }   &                  \\
+*\textbf{Avg Obs:}                                &      6.183e+04       & \tex
+tbf{                     }   &                  \\
 
-*\textbf{Min Obs:}            &     4.981e+04      & \textbf{                  
-   }   &                  \\
+*\textbf{Min Obs:}                                &      4.981e+04       & \tex
+tbf{                     }   &                  \\
 
-*\textbf{Max Obs:}            &      6.82e+04      & \textbf{                  
-   }   &                  \\
+*\textbf{Max Obs:}                                &       6.82e+04       & \tex
+tbf{                     }   &                  \\
 
 *\bottomrule
 
@@ -122,22 +122,35 @@ ust):} &      1545.4      \\
 
 *\begin{tabular}{lcccccc}
 
-*                             & \textbf{Parameter} & \textbf{Std. Err.} & \text
-bf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf{Upper CI}  \\
+*                                                 & \textbf{Parameter} & \textb
+f{Std. Err.} & \textbf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf
+{Upper CI}  \\
 
 *\midrule
 
-*\textbf{const}               &       1.8255       &       0.0010       &      
-1739.6     &      0.0000      &       1.8235      &       1.8276       \\
+*\textbf{const}                                   &       1.4284       &       
+0.1351       &      10.576     &      0.0000      &       1.1637      &       1
+.6932       \\
 
-*\textbf{involvedpostmerger}  &       0.0128       &       0.0010       &      
-13.405     &      0.0000      &       0.0109      &       0.0147       \\
+*\textbf{involvedpostmerger}                      &       0.0127       &       
+0.0010       &      13.301     &      0.0000      &       0.0108      &       0
+.0145       \\
 
-*\textbf{postmerger}          &       0.0067       &       0.0007       &      
-8.9711     &      0.0000      &       0.0052      &       0.0081       \\
+*\textbf{postmerger}                              &       0.0163       &       
+0.0008       &      19.526     &      0.0000      &       0.0146      &       0
+.0179       \\
 
-*\textbf{month\_since\_start} &       0.0024       &     4.625e-05      &      
-51.586     &      0.0000      &       0.0023      &       0.0025       \\
+*\textbf{month\_since\_start}                     &     2.616e-05      &     5.
+644e-05      &      0.4634     &      0.6430      &     -8.447e-05    &       0
+.0001       \\
+
+*\textbf{log\_employment\_rate}                   &      -0.3173       &       
+0.0285       &     -11.151     &      0.0000      &      -0.3731      &      -0
+.2615       \\
+
+*\textbf{log\_adjusted\_hhinc\_per\_person\_mean} &       0.0598       &       
+0.0126       &      4.7369     &      0.0000      &       0.0351      &       0
+.0845       \\
 
 *\bottomrule
 
@@ -147,23 +160,23 @@ bf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf{Upper CI}  \\
 
 *\end{center}
 
-Overfull \hbox (41.17006pt too wide) detected at line 0
+Overfull \hbox (43.14787pt too wide) detected at line 0
  [] 
  []
 
 
-Overfull \hbox (99.51479pt too wide) detected at line 0
+Overfull \hbox (183.89508pt too wide) detected at line 0
  [] 
  []
 
 
 *
 (Please type a command or say `\end')
-*F-test for Poolability: 3329.1 \newline
+*F-test for Poolability: 3214.3 \newline
 
 * P-value: 0.0000 \newline
 
-* Distribution: F(96684,2871119) \newline
+* Distribution: F(96684,2871117) \newline
 
 *  \newline
 
@@ -176,19 +189,19 @@ Underfull \hbox (badness 10000) detected at line 0
 [1
 
 {/usr/share/texlive/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-(/tmp/tmpeixg2n2e/file.aux) 
+(/tmp/tmps0bqeort/file.aux) 
 Here is how much of TeX's memory you used:
  284 strings out of 495063
  3219 string characters out of 3182201
- 51832 words of memory out of 3000000
+ 52832 words of memory out of 3000000
  3550 multiletter control sequences out of 15000+200000
  3948 words of font info for 15 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 22i,7n,17p,172b,182s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 22i,7n,17p,192b,182s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmr10.pfb>
-Output written on /tmp/tmpeixg2n2e/file.pdf (1 page, 37363 bytes).
+Output written on /tmp/tmps0bqeort/file.pdf (1 page, 37965 bytes).
 PDF statistics:
  16 PDF objects out of 1000 (max. 8388607)
  10 compressed objects within 1 object stream
