@@ -12,4 +12,4 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python GenerateDHHI.py CANDY GUM month 2008 5
+python GenerateDHHI.py month 2008 7 BEER
