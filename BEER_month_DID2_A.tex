@@ -1,0 +1,42 @@
+\documentclass{report}
+                      \usepackage{booktabs}
+                      \begin{document}\begin{center}
+\begin{tabular}{lclc}
+\toprule
+\textbf{Dep. Variable:}                          & log\_adjusted\_price & \textbf{  R-squared:         }   &      0.0301      \\
+\textbf{Estimator:}                              &       PanelOLS       & \textbf{  R-squared (Between):}  &      0.0003      \\
+\textbf{No. Observations:}                       &       2966826        & \textbf{  R-squared (Within):}   &      0.0301      \\
+\textbf{Date:}                                   &   Sun, Apr 19 2020   & \textbf{  R-squared (Overall):}  &    -1.675e-05    \\
+\textbf{Time:}                                   &       13:06:29       & \textbf{  Log-likelihood     }   &     3.31e+06     \\
+\textbf{Cov. Estimator:}                         &      Clustered       & \textbf{                     }   &                  \\
+\textbf{}                                        &                      & \textbf{  F-statistic:       }   &    1.779e+04     \\
+\textbf{Entities:}                               &        96569         & \textbf{  P-value            }   &      0.0000      \\
+\textbf{Avg Obs:}                                &        30.722        & \textbf{  Distribution:      }   &   F(5,2870252)   \\
+\textbf{Min Obs:}                                &        1.0000        & \textbf{                     }   &                  \\
+\textbf{Max Obs:}                                &        48.000        & \textbf{  F-statistic (robust):} &      286.54      \\
+\textbf{}                                        &                      & \textbf{  P-value            }   &      0.0000      \\
+\textbf{Time periods:}                           &          48          & \textbf{  Distribution:      }   &   F(5,2870252)   \\
+\textbf{Avg Obs:}                                &      6.181e+04       & \textbf{                     }   &                  \\
+\textbf{Min Obs:}                                &      4.981e+04       & \textbf{                     }   &                  \\
+\textbf{Max Obs:}                                &      6.812e+04       & \textbf{                     }   &                  \\
+\bottomrule
+\end{tabular}
+\begin{tabular}{lcccccc}
+                                                 & \textbf{Parameter} & \textbf{Std. Err.} & \textbf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf{Upper CI}  \\
+\midrule
+\textbf{const}                                   &       1.4412       &       0.1304       &      11.049     &      0.0000      &       1.1855      &       1.6968       \\
+\textbf{DHHIpostmerger}                          &       0.1954       &       0.0474       &      4.1196     &      0.0000      &       0.1024      &       0.2883       \\
+\textbf{postmerger}                              &       0.0070       &       0.0034       &      2.0745     &      0.0380      &       0.0004      &       0.0135       \\
+\textbf{month\_since\_start}                     &     3.012e-05      &     5.604e-05      &      0.5374     &      0.5910      &     -7.972e-05    &       0.0001       \\
+\textbf{log\_employment\_rate}                   &      -0.3200       &       0.0280       &     -11.421     &      0.0000      &      -0.3749      &      -0.2651       \\
+\textbf{log\_adjusted\_hhinc\_per\_person\_mean} &       0.0586       &       0.0122       &      4.8043     &      0.0000      &       0.0347      &       0.0825       \\
+\bottomrule
+\end{tabular}
+%\caption{PanelOLS Estimation Summary}
+\end{center}
+
+F-test for Poolability: 3216.1 \newline
+ P-value: 0.0000 \newline
+ Distribution: F(96568,2870252) \newline
+  \newline
+ Included effects: Entity\end{document}

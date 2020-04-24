@@ -1,0 +1,235 @@
+/var/spool/slurmd/job9316924/slurm_script: line 14: 12823 Killed                  python DID_regression.py CANDY month NoMktShare 200805
+/var/spool/slurmd/job9316924/slurm_script: line 15: 13583 Killed                  python DID_regression.py CANDY month MktShare 200805
+/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
+  return ptp(axis=axis, out=out, **kwargs)
+/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
+  return ptp(axis=axis, out=out, **kwargs)
+/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
+  return ptp(axis=axis, out=out, **kwargs)
+        Year  month     cpiu  price_index
+t                                        
+200001  2000      1  168.800     1.528264
+200002  2000      2  169.800     1.519264
+200003  2000      3  171.200     1.506840
+200004  2000      4  171.300     1.505960
+200005  2000      5  171.500     1.504204
+...      ...    ...      ...          ...
+201910  2019     10  257.346     1.002429
+201911  2019     11  257.208     1.002966
+201912  2019     12  256.974     1.003880
+202001  2020      1  257.971     1.000000
+202002  2020      2  258.678     0.997267
+
+[242 rows x 4 columns]
+        Year  quarter        cpiu  price_index
+t                                             
+200001  2000        1  169.933333     1.520152
+200002  2000        2  171.733333     1.504219
+200003  2000        3  173.100000     1.492343
+200004  2000        4  174.033333     1.484339
+200101  2001        1  175.700000     1.470259
+...      ...      ...         ...          ...
+201901  2019        1  252.896667     1.021463
+201902  2019        2  255.927667     1.009365
+201903  2019        3  256.629333     1.006606
+201904  2019        4  257.176000     1.004466
+202001  2020        1  258.324500     1.000000
+
+[81 rows x 4 columns]
+CANDY
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:           lprice_CANDY   R-squared:                        0.0016
+Estimator:                   PanelOLS   R-squared (Between):             -0.0078
+No. Observations:            10868697   R-squared (Within):               0.0016
+Date:                Fri, Apr 24 2020   R-squared (Overall):              0.0021
+Time:                        01:24:42   Log-likelihood                -2.633e+06
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                      4674.6
+Entities:                     2060550   P-value                           0.0000
+Avg Obs:                       5.2747   Distribution:               F(3,8808144)
+Min Obs:                       1.0000                                           
+Max Obs:                       16.000   F-statistic (robust):             804.32
+                                        P-value                           0.0000
+Time periods:                      16   Distribution:               F(3,8808144)
+Avg Obs:                    6.793e+05                                           
+Min Obs:                     5.67e+05                                           
+Max Obs:                    8.588e+05                                           
+                                                                                
+                                  Parameter Estimates                                  
+=======================================================================================
+                     Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+---------------------------------------------------------------------------------------
+const                   0.5028     0.0018     284.61     0.0000      0.4993      0.5062
+post_merger*merging     0.0393     0.0011     36.095     0.0000      0.0372      0.0415
+post_merger            -0.0430     0.0013    -32.679     0.0000     -0.0456     -0.0404
+trend                   0.0053     0.0002     21.668     0.0000      0.0049      0.0058
+=======================================================================================
+
+F-test for Poolability: 28.117
+P-value: 0.0000
+Distribution: F(2060549,8808144)
+
+Included effects: Entity
+Traceback (most recent call last):
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/ops/__init__.py", line 968, in na_op
+    result = expressions.evaluate(op, str_rep, x, y, **eval_kwargs)
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/computation/expressions.py", line 221, in evaluate
+    return _evaluate(op, op_str, a, b, **eval_kwargs)
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/computation/expressions.py", line 127, in _evaluate_numexpr
+    result = _evaluate_standard(op, op_str, a, b)
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/computation/expressions.py", line 70, in _evaluate_standard
+    return op(a, b)
+TypeError: unsupported operand type(s) for //: 'str' and 'int'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "DID_regression.py", line 236, in <module>
+    DID_regression(product, frequency, mktshare, mergingt,mergersMap[product])
+  File "DID_regression.py", line 117, in DID_regression
+    data['year'] = data[frequency] // 100
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/ops/__init__.py", line 1048, in wrapper
+    result = na_op(lvalues, rvalues)
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/ops/__init__.py", line 970, in na_op
+    result = masked_arith_op(x, y, op)
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/ops/__init__.py", line 464, in masked_arith_op
+    result[mask] = op(xrav[mask], y)
+TypeError: unsupported operand type(s) for //: 'str' and 'int'
+DID_regression.py:158: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
+/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
+  return ptp(axis=axis, out=out, **kwargs)
+        Year  month     cpiu  price_index
+t                                        
+200001  2000      1  168.800     1.528264
+200002  2000      2  169.800     1.519264
+200003  2000      3  171.200     1.506840
+200004  2000      4  171.300     1.505960
+200005  2000      5  171.500     1.504204
+...      ...    ...      ...          ...
+201910  2019     10  257.346     1.002429
+201911  2019     11  257.208     1.002966
+201912  2019     12  256.974     1.003880
+202001  2020      1  257.971     1.000000
+202002  2020      2  258.678     0.997267
+
+[242 rows x 4 columns]
+        Year  quarter        cpiu  price_index
+t                                             
+200001  2000        1  169.933333     1.520152
+200002  2000        2  171.733333     1.504219
+200003  2000        3  173.100000     1.492343
+200004  2000        4  174.033333     1.484339
+200101  2001        1  175.700000     1.470259
+...      ...      ...         ...          ...
+201901  2019        1  252.896667     1.021463
+201902  2019        2  255.927667     1.009365
+201903  2019        3  256.629333     1.006606
+201904  2019        4  257.176000     1.004466
+202001  2020        1  258.324500     1.000000
+
+[81 rows x 4 columns]
+CANDY
+              DHHI
+dma_code          
+500       0.058836
+501       0.097497
+502       0.057447
+503       0.067109
+504       0.076361
+...            ...
+855       0.065283
+862       0.066601
+866       0.061489
+868       0.062568
+881       0.058556
+
+[205 rows x 1 columns]
+                                       DHHI*post_merger  post_merger  trend
+dma_upc          quarters_since_start                                      
+529_10000001     0                             0.000000            0      0
+618_10000001     0                             0.000000            0      0
+640_10000001     0                             0.000000            0      0
+693_10000001     0                             0.000000            0      0
+789_10000001     0                             0.000000            0      0
+...                                                 ...          ...    ...
+855_937582890889 15                            0.065283            1     15
+862_937582890889 15                            0.066601            1     15
+866_937582890889 15                            0.061489            1     15
+868_937582890889 15                            0.062568            1     15
+881_937582890889 15                            0.058556            1     15
+
+[10868697 rows x 3 columns]
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:           lprice_CANDY   R-squared:                        0.0014
+Estimator:                   PanelOLS   R-squared (Between):             -0.0084
+No. Observations:            10868697   R-squared (Within):               0.0014
+Date:                Fri, Apr 24 2020   R-squared (Overall):              0.0014
+Time:                        01:28:12   Log-likelihood                -2.634e+06
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                      4093.5
+Entities:                     2060550   P-value                           0.0000
+Avg Obs:                       5.2747   Distribution:               F(3,8808144)
+Min Obs:                       1.0000                                           
+Max Obs:                       16.000   F-statistic (robust):             318.39
+                                        P-value                           0.0000
+Time periods:                      16   Distribution:               F(3,8808144)
+Avg Obs:                    6.793e+05                                           
+Min Obs:                     5.67e+05                                           
+Max Obs:                    8.588e+05                                           
+                                                                                
+                                Parameter Estimates                                 
+====================================================================================
+                  Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+------------------------------------------------------------------------------------
+const                0.5026     0.0016     309.55     0.0000      0.4994      0.5057
+DHHI*post_merger    -1.0993     0.2854    -3.8511     0.0001     -1.6587     -0.5398
+post_merger          0.0351     0.0188     1.8665     0.0620     -0.0018      0.0720
+trend                0.0054     0.0002     21.917     0.0000      0.0049      0.0059
+====================================================================================
+
+F-test for Poolability: 28.133
+P-value: 0.0000
+Distribution: F(2060549,8808144)
+
+Included effects: Entity
+Traceback (most recent call last):
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/ops/__init__.py", line 968, in na_op
+    result = expressions.evaluate(op, str_rep, x, y, **eval_kwargs)
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/computation/expressions.py", line 221, in evaluate
+    return _evaluate(op, op_str, a, b, **eval_kwargs)
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/computation/expressions.py", line 127, in _evaluate_numexpr
+    result = _evaluate_standard(op, op_str, a, b)
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/computation/expressions.py", line 70, in _evaluate_standard
+    return op(a, b)
+TypeError: unsupported operand type(s) for //: 'str' and 'int'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "DID_regression.py", line 236, in <module>
+    DID_regression(product, frequency, mktshare, mergingt,mergersMap[product])
+  File "DID_regression.py", line 193, in DID_regression
+    data['year'] = data[frequency] // 100
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/ops/__init__.py", line 1048, in wrapper
+    result = na_op(lvalues, rvalues)
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/ops/__init__.py", line 970, in na_op
+    result = masked_arith_op(x, y, op)
+  File "/home/yza4307/.local/lib/python3.6/site-packages/pandas/core/ops/__init__.py", line 464, in masked_arith_op
+    result[mask] = op(xrav[mask], y)
+TypeError: unsupported operand type(s) for //: 'str' and 'int'
+/var/spool/slurmd/job9316924/slurm_script: line 18: pdflatex: command not found
+/var/spool/slurmd/job9316924/slurm_script: line 19: pdflatex: command not found
+/var/spool/slurmd/job9316924/slurm_script: line 20: pdflatex: command not found
+/var/spool/slurmd/job9316924/slurm_script: line 21: pdflatex: command not found
+/var/spool/slurmd/job9316924/slurm_script: line 22: pdflatex: command not found
+/var/spool/slurmd/job9316924/slurm_script: line 23: pdflatex: command not found
+/var/spool/slurmd/job9316924/slurm_script: line 24: pdflatex: command not found
+/var/spool/slurmd/job9316924/slurm_script: line 25: pdflatex: command not found
+slurmstepd: error: Detected 2 oom-kill event(s) in step 9316924.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
