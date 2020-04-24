@@ -117,6 +117,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         data['year'] = data[frequency].astype(str)
         data['year'] = data['year'].str[:4]
         data['year'] = data['year'].astype(int)
+        print(data['year'])
         # data['year'] = data[frequency] // 100
         data = data.join(demographics.set_index(['YEAR','dma_code']), on=['year','dma_code'])
         data['adjusted_hhinc_per_person'] = data['hhinc_per_person_mean']*data['price_index']
@@ -196,6 +197,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         data['year'] = data[frequency].astype(str)
         data['year'] = data['year'].str[:4]
         data['year'] = data['year'].astype(int)
+        print(data['year'])
         # data['year'] = data[frequency] // 100
         data = data.join(demographics.set_index(['YEAR','dma_code']), on=['year','dma_code'])
         data['adjusted_hhinc_per_person'] = data['hhinc_per_person_mean']*data['price_index']
