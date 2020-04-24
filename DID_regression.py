@@ -20,7 +20,7 @@ def MakeOneYearDummy(times, mergingt, frequency):
         else:
             timeDummyDf = timeDummyDf.append({'t': time, 'include': 0}, ignore_index = True)
     timeDummyDf = timeDummyDf.set_index('t')
-    print(timeDummyDf)
+    # print(timeDummyDf)
     return timeDummyDf
 
 def AdjustInflation(frequency):
@@ -65,15 +65,15 @@ def AdjustInflation(frequency):
 def CalDMADeltaHHI(oneYearFirmDMA, product, frequency):
     #I am only assuming the fact that the mergers don't divest their brands to outside-merger owner here
     merger = oneYearFirmDMA[oneYearFirmDMA['merging'] == 1]
-    print(merger)
-    print(merger.owner.unique())
+    # print(merger)
+    # print(merger.owner.unique())
     preMerger = merger.groupby(['dma_code', 'owner'], as_index = False).agg({'volume':'sum', 'dma_size':'first'}, as_index = False).reindex(columns = merger.columns)
     preMerger['share'] = preMerger['volume'] / preMerger['dma_size']
     preMerger['pre_merger_share_square'] =preMerger['share'] * preMerger['share']
     postMerger = preMerger.groupby(['dma_code'], as_index = False).agg({'volume':'sum', 'dma_size':'first','share':'sum','pre_merger_share_square':'sum'}, as_index = False).reindex(columns = preMerger.columns)
     postMerger['post_merger_share_square'] = postMerger['share'] * postMerger['share']
     postMerger['DHHI'] = postMerger['post_merger_share_square'] - postMerger['pre_merger_share_square']
-    print(postMerger)
+    # print(postMerger)
     DMADHHI = postMerger[['dma_code','DHHI']].set_index('dma_code')
     print(DMADHHI)
     DMADHHI.to_csv(product+'_'+frequency+'_DHHI.csv', sep = ',')
@@ -123,7 +123,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         DMAVolume = oneYearFirmDMA.groupby(['dma_code'], as_index = False).agg({'volume':'sum'}, as_index = False).reindex(columns = oneYearFirmDMA.columns)
         DMAVolume = DMAVolume[['dma_code','volume']].set_index('dma_code')
         DMAVolumeMap =DMAVolume.to_dict()
-        print(DMAVolume)
+        # print(DMAVolume)
         oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
         DMADHHI = CalDMADeltaHHI(oneYearFirmDMA, product, frequency)
         DMAConcentrationMap = DMADHHI.to_dict()
@@ -161,7 +161,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         data['year'] = data[frequency] // 100
         data = data.join(demographics.set_index(['YEAR','dma_code']), on=['year','dma_code'])
         data['adjusted_hhinc_per_person'] = data['hhinc_per_person_mean']*data['price_index']
-        data['ladjusted_hhinc_per_person'] = np.log(data['adjusted_hhinc_per_person_mean'])
+        data['ladjusted_hhinc_per_person'] = np.log(data['adjusted_hhinc_per_person'])
         data['lemployment_rate'] = np.log(data['employment_rate'])
         print(data)
 
