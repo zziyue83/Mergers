@@ -23,6 +23,22 @@ def MakeOneYearDummy(times, mergingt, frequency):
     print(timeDummyDf)
     return timeDummyDf
 
+def AdjustInflation(frequency):
+    cpiu = pd.read_excel('cpiu_2000_2020.xlsx', header = 11)
+    cpiu = cpiu.set_index('Year')
+    month_dictionary = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12}
+    cpiu = cpiu.rename(columns = month_dictionary)
+    cpiu = cpiu.drop(['HALF1','HALF2'], axis=1)
+    cpiu = cpiu.stack()
+    cpiu_202001 = float(cpiu.loc[(2020,1)])
+    cpiu = cpiu.reset_index().rename(columns = {'level_1':'month',0:'cpiu'})
+    if quarterOrMonth == 'quarter':
+        cpiu['quarter'] = cpiu['month'].apply(lambda x: 1 if x <=3 else 2 if ((x>3) & (x<=6)) else 3 if ((x>6) & (x<=9)) else 4)
+        cpiu = cpiu.groupby(['Year',quarterOrMonth]).agg({'cpiu': 'mean'})
+    if quarterOrMonth == 'month':
+        cpiu = cpiu.set_index(['Year',quarterOrMonth])
+    cpiu['price_index'] = cpiu_202001/cpiu['cpiu']
+    return cpiu
 # def AggDMAPrePostSize(product, frequency, mergingt):
 #     dma_frequency_volume = pd.read_csv("../../GeneratedData/"+product+"_dma_every_"+frequency+"_mkt_volume.tsv", delimiter = '\t')
 #     dma_frequency_volume['time_str'] = dma_frequency_volume[frequency].astype(str)
@@ -166,18 +182,22 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         f.write(endtex)
         f.close()
 
-if len(sys.argv) < 3:
-    print("Not enough arguments")
-    sys.exit()
+if __name__ == "__main__":
 
-product = sys.argv[1]
-frequency = sys.argv[2]
-mktshare = sys.argv[3]
-if len(sys.argv) > 4:
-    mergingt = sys.argv[4]
-else:
-    mergingt = '0'
-print(product)
-mergersMap = {'CANDY':['Mars', 'Wrigley'],'GUM':['Mars', 'Wrigley'], 'BEER': ['SABMiller', 'Molson Coors']}
-DID_regression(product, frequency, mktshare, mergingt,mergersMap[product])
-# DID_regression(product, frequency, mktshare, mergingt,['SABMiller', 'Molson Coors'])
+    cpi = AdjustInflation(quarter)
+    print(cpi)
+    # if len(sys.argv) < 3:
+    #     print("Not enough arguments")
+    #     sys.exit()
+    #
+    # product = sys.argv[1]
+    # frequency = sys.argv[2]
+    # mktshare = sys.argv[3]
+    # if len(sys.argv) > 4:
+    #     mergingt = sys.argv[4]
+    # else:
+    #     mergingt = '0'
+    # print(product)
+    # mergersMap = {'CANDY':['Mars', 'Wrigley'],'GUM':['Mars', 'Wrigley'], 'BEER': ['SABMiller', 'Molson Coors']}
+    # DID_regression(product, frequency, mktshare, mergingt,mergersMap[product])
+    # # DID_regression(product, frequency, mktshare, mergingt,['SABMiller', 'Molson Coors'])
