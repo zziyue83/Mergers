@@ -32,10 +32,10 @@ def AdjustInflation(frequency):
     cpiu = cpiu.stack()
     cpiu_202001 = float(cpiu.loc[(2020,1)])
     cpiu = cpiu.reset_index().rename(columns = {'level_1':'month',0:'cpiu'})
-    if quarterOrMonth == 'quarter':
+    if frequency == 'quarter':
         cpiu['quarter'] = cpiu['month'].apply(lambda x: 1 if x <=3 else 2 if ((x>3) & (x<=6)) else 3 if ((x>6) & (x<=9)) else 4)
         cpiu = cpiu.groupby(['Year',quarterOrMonth]).agg({'cpiu': 'mean'})
-    if quarterOrMonth == 'month':
+    if frequency == 'month':
         cpiu = cpiu.set_index(['Year',quarterOrMonth])
     cpiu['price_index'] = cpiu_202001/cpiu['cpiu']
     return cpiu
