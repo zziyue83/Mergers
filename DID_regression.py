@@ -37,9 +37,9 @@ def AdjustInflation(frequency):
         cpiu = cpiu.groupby(['Year', frequency]).agg({'cpiu': 'mean'})
     if frequency == 'month':
         cpiu = cpiu.set_index(['Year', frequency])
+    cpiu_202001 = float(cpiu.loc[(2020,1)])
     cpiu['price_index'] = cpiu_202001/cpiu['cpiu']
     cpiu = cpiu.reset_index()
-    # filler = '' if frequency == 'month' else '0'
     cpiu['t'] = cpiu['Year'] * 100 + cpiu[frequency]
     return cpiu
 # def AggDMAPrePostSize(product, frequency, mergingt):
@@ -112,16 +112,8 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
             gum = pd.read_csv("../../GeneratedData/"+"GUM"+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
             data = data.append(gum)
 #calculate Herfindahl index
-        # owners = pd.read_csv("Top 100 "+product+".csv", delimiter = ',')
-        # all_owners = owners['owner initial'].unique()
-        # ownerDummyDf = MakeOwnerDummy(mergers, all_owners)
-        # prepostDMASize = AggDMAPrePostSize(product, frequency, mergingt)
-        # print(prepostDMASize)
-        # data['dma_postmerger'] = data['dma_code'].astype(str)+data['post_merger'].astype(str)
-        # prepostSizeMap = prepostDMASize.to_dict()
         firmDMA = data[['owner','dma_code',frequency,'volume','merging']]
         firmDMA = firmDMA[firmDMA['owner'] != 'unknown']
-        # firmDMA = firmDMA.merge(ownerDummyDf, how = 'inner', left_on='owner', right_on = 'owner')
         firmDMA['time_str'] = firmDMA[frequency].astype(str)
         times = firmDMA['time_str'].unique()
         oneYearDummy = MakeOneYearDummy(times, mergingt, frequency)
@@ -134,31 +126,6 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
         DMADHHI = CalDMADeltaHHI(oneYearFirmDMA, product, frequency)
         DMAConcentrationMap = DMADHHI.to_dict()
-
-
-        # firmDMA = firmDMA.groupby(['owner','dma_code','post_merger'], as_index = False).agg({'volume' : 'sum', 'merging':'first'}).reindex(columns = firmDMA.columns)
-        # print(firmDMA)
-        # firmDMA['dma_postmerger'] = firmDMA['dma_code'].astype(str)+firmDMA['post_merger'].astype(str)
-        # firmDMA['dma_size'] = firmDMA['dma_postmerger'].map(prepostDMASize['volume'])
-        # firmDMA['share'] = firmDMA['volume'] / firmDMA['dma_size']
-        # firmDMA['share_square'] = firmDMA['share'] * firmDMA['share']
-        # firmDMA['share_square_post_merger'] = firmDMA['share_square'] * firmDMA['post_merger'] * (1 - firmDMA['merging'])
-        # firmDMA['share_square_pre_merger'] = firmDMA['share_square'] * (1 - firmDMA['post_merger'])
-        # merger = firmDMA[(firmDMA['post_merger'] == 1) & (firmDMA['merging'] == 1)]
-        # print(merger)
-        # merger = merger.groupby(['dma_code']).agg({'share':'sum','dma_size':'first','volume':'sum','owner':'first','merging':'first','post_merger': 'first'}, as_index = False).reindex(columns = firmDMA.columns)
-        # merger['share_square'] = merger['share'] * merger['share']
-        # merger['share_square_post_merger'] = merger['share_square'] * merger['post_merger']
-        # merger['share_square_pre_merger'] = 0
-        # merger['owner'] = 'merger'
-        # print(merger)
-        # firmDMA.append(merger)
-        # print(firmDMA)
-        # DMAConcentration = firmDMA.groupby('dma_code', as_index = False).agg({'volume':'sum','share_square':'sum','share_square_post_merger':'sum','share_square_pre_merger':'sum'}).reindex(columns = firmDMA.columns)
-        # DMAConcentration['DHHI'] = DMAConcentration['share_square_post_merger'] - DMAConcentration['share_square_pre_merger']
-        # DMAConcentration = DMAConcentration.set_index('dma_code')
-        # print(DMAConcentration)
-        # DMAConcentrationMap = DMAConcentration.to_dict()
 
         data['DHHI'] = data['dma_code'].map(DMAConcentrationMap['DHHI'])
         data['DHHI*post_merger'] = data['DHHI']*data['post_merger']
@@ -183,6 +150,11 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
         f.close()
+
+        cpiu = AdjustInflation(frequency)
+        cpiu.set_index('t')
+        cpiu
+        data['cpiu'] = data
 
 if __name__ == "__main__":
 
