@@ -187,6 +187,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
 if __name__ == "__main__":
 
     cpi = AdjustInflation('month')
+    cpi = AdjustInflation('quarter')
     print(cpi)
     # if len(sys.argv) < 3:
     #     print("Not enough arguments")
