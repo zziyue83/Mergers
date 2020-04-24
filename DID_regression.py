@@ -30,6 +30,7 @@ def AdjustInflation(frequency):
     cpiu = cpiu.rename(columns = month_dictionary)
     cpiu = cpiu.drop(['HALF1','HALF2'], axis=1)
     cpiu = cpiu.stack()
+    print(cpiu)
     cpiu_202001 = float(cpiu.loc[(2020,1)])
     cpiu = cpiu.reset_index().rename(columns = {'level_1':'month',0:'cpiu'})
     if frequency == 'quarter':
@@ -184,7 +185,7 @@ def DID_regression(product, frequency, share, mergingt, mergers):
 
 if __name__ == "__main__":
 
-    cpi = AdjustInflation('quarter')
+    cpi = AdjustInflation('month')
     print(cpi)
     # if len(sys.argv) < 3:
     #     print("Not enough arguments")
