@@ -30,7 +30,6 @@ def AdjustInflation(frequency):
     cpiu = cpiu.rename(columns = month_dictionary)
     cpiu = cpiu.drop(['HALF1','HALF2'], axis=1)
     cpiu = cpiu.stack()
-    print(cpiu)
     cpiu_202001 = float(cpiu.loc[(2020,1)])
     cpiu = cpiu.reset_index().rename(columns = {'level_1':'month',0:'cpiu'})
     if frequency == 'quarter':
@@ -41,7 +40,7 @@ def AdjustInflation(frequency):
     cpiu['price_index'] = cpiu_202001/cpiu['cpiu']
     cpiu = cpiu.reset_index()
     # filler = '' if frequency == 'month' else '0'
-    cpiu['t'] = cpiu['year'] * 100 + cpiu[frequency]
+    cpiu['t'] = cpiu['Year'] * 100 + cpiu[frequency]
     return cpiu
 # def AggDMAPrePostSize(product, frequency, mergingt):
 #     dma_frequency_volume = pd.read_csv("../../GeneratedData/"+product+"_dma_every_"+frequency+"_mkt_volume.tsv", delimiter = '\t')
