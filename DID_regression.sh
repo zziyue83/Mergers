@@ -11,10 +11,10 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python DID_regression.py CANDY month NoMktShare 200805
+# python DID_regression.py CANDY month NoMktShare 200805
 # python DID_regression.py CANDY month MktShare 200805
-# python DID_regression.py CANDY quarter NoMktShare 2008Q2
-# python DID_regression.py CANDY quarter MktShare 2008Q2
+python DID_regression.py CANDY quarter NoMktShare 2008Q2
+python DID_regression.py CANDY quarter MktShare 2008Q2
 # pdflatex CANDY_GUM_DID_MktShare_month.tex
 # pdflatex CANDY_GUM_DID_NoMktShare_month.tex
 # pdflatex CANDY_GUM_DID_MktShare_quarter.tex

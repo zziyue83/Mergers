@@ -1,0 +1,155 @@
+DID_regression.py:158: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
+/software/anaconda3.6/lib/python3.6/site-packages/numpy/core/fromnumeric.py:2389: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
+  return ptp(axis=axis, out=out, **kwargs)
+        Year  month     cpiu  price_index
+t                                        
+200001  2000      1  168.800     1.528264
+200002  2000      2  169.800     1.519264
+200003  2000      3  171.200     1.506840
+200004  2000      4  171.300     1.505960
+200005  2000      5  171.500     1.504204
+...      ...    ...      ...          ...
+201910  2019     10  257.346     1.002429
+201911  2019     11  257.208     1.002966
+201912  2019     12  256.974     1.003880
+202001  2020      1  257.971     1.000000
+202002  2020      2  258.678     0.997267
+
+[242 rows x 4 columns]
+        Year  quarter        cpiu  price_index
+t                                             
+200001  2000        1  169.933333     1.520152
+200002  2000        2  171.733333     1.504219
+200003  2000        3  173.100000     1.492343
+200004  2000        4  174.033333     1.484339
+200101  2001        1  175.700000     1.470259
+...      ...      ...         ...          ...
+201901  2019        1  252.896667     1.021463
+201902  2019        2  255.927667     1.009365
+201903  2019        3  256.629333     1.006606
+201904  2019        4  257.176000     1.004466
+202001  2020        1  258.324500     1.000000
+
+[81 rows x 4 columns]
+CANDY
+              DHHI
+dma_code          
+500       0.059944
+501       0.098535
+502       0.059160
+503       0.068232
+504       0.077512
+...            ...
+855       0.066207
+862       0.067797
+866       0.062769
+868       0.063935
+881       0.060223
+
+[205 rows x 1 columns]
+                                     DHHI*post_merger  post_merger  trend
+dma_upc          months_since_start                                      
+529_10000001     0                           0.000000            0      0
+618_10000001     0                           0.000000            0      0
+789_10000001     0                           0.000000            0      0
+616_3080000145   0                           0.000000            0      0
+637_3080000145   0                           0.000000            0      0
+...                                               ...          ...    ...
+855_937582890889 47                          0.066207            1     47
+862_937582890889 47                          0.067797            1     47
+866_937582890889 47                          0.062769            1     47
+868_937582890889 47                          0.063935            1     47
+881_937582890889 47                          0.060223            1     47
+
+[26461629 rows x 3 columns]
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:           lprice_CANDY   R-squared:                        0.0041
+Estimator:                   PanelOLS   R-squared (Between):             -0.0101
+No. Observations:            26461629   R-squared (Within):               0.0041
+Date:                Fri, Apr 24 2020   R-squared (Overall):              0.0029
+Time:                        01:50:43   Log-likelihood                -7.341e+06
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                    3.37e+04
+Entities:                     2060550   P-value                           0.0000
+Avg Obs:                       12.842   Distribution:              F(3,24401076)
+Min Obs:                       1.0000                                           
+Max Obs:                       48.000   F-statistic (robust):             2320.0
+                                        P-value                           0.0000
+Time periods:                      48   Distribution:              F(3,24401076)
+Avg Obs:                    5.513e+05                                           
+Min Obs:                    4.391e+05                                           
+Max Obs:                     6.76e+05                                           
+                                                                                
+                                Parameter Estimates                                 
+====================================================================================
+                  Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+------------------------------------------------------------------------------------
+const                0.4989     0.0016     317.50     0.0000      0.4958      0.5020
+DHHI*post_merger    -0.8391     0.2438    -3.4417     0.0006     -1.3169     -0.3613
+post_merger          0.1109     0.0160     6.9343     0.0000      0.0796      0.1423
+trend               -0.0002  7.744e-05    -1.9424     0.0521     -0.0003   1.363e-06
+====================================================================================
+
+F-test for Poolability: 67.516
+P-value: 0.0000
+Distribution: F(2060549,24401076)
+
+Included effects: Entity
+regression with inflation-adjusted price and demographics covariates
+                                     DHHI*post_merger  ...  lemployment_rate
+dma_upc          months_since_start                    ...                  
+529_10000001     0                           0.000000  ...         -0.043894
+618_10000001     0                           0.000000  ...         -0.080043
+789_10000001     0                           0.000000  ...         -0.056777
+616_3080000145   0                           0.000000  ...         -0.067179
+637_3080000145   0                           0.000000  ...         -0.063645
+...                                               ...  ...               ...
+855_937582890889 47                          0.066207  ...         -0.061014
+862_937582890889 47                          0.067797  ...         -0.146441
+866_937582890889 47                          0.062769  ...         -0.183565
+868_937582890889 47                          0.063935  ...         -0.140089
+881_937582890889 47                          0.060223  ...         -0.089804
+
+[26461629 rows x 5 columns]
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:     ladjust_priceCANDY   R-squared:                        0.0021
+Estimator:                   PanelOLS   R-squared (Between):             -0.0166
+No. Observations:            26461629   R-squared (Within):               0.0021
+Date:                Fri, Apr 24 2020   R-squared (Overall):             -0.0014
+Time:                        01:54:53   Log-likelihood                -7.409e+06
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                   1.035e+04
+Entities:                     2060550   P-value                           0.0000
+Avg Obs:                       12.842   Distribution:              F(5,24401074)
+Min Obs:                       1.0000                                           
+Max Obs:                       48.000   F-statistic (robust):             531.05
+                                        P-value                           0.0000
+Time periods:                      48   Distribution:              F(5,24401074)
+Avg Obs:                    5.513e+05                                           
+Min Obs:                    4.391e+05                                           
+Max Obs:                     6.76e+05                                           
+                                                                                
+                                     Parameter Estimates                                      
+==============================================================================================
+                            Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+----------------------------------------------------------------------------------------------
+const                          1.3398     0.2440     5.4919     0.0000      0.8617      1.8180
+DHHI*post_merger              -0.9952     0.2283    -4.3599     0.0000     -1.4426     -0.5478
+post_merger                    0.1148     0.0151     7.6251     0.0000      0.0853      0.1443
+trend                         -0.0021  8.828e-05    -24.096     0.0000     -0.0023     -0.0020
+ladjusted_hhinc_per_person    -0.0572     0.0229    -2.5010     0.0124     -0.1020     -0.0124
+lemployment_rate              -0.3688     0.0503    -7.3295     0.0000     -0.4674     -0.2702
+==============================================================================================
+
+F-test for Poolability: 67.151
+P-value: 0.0000
+Distribution: F(2060549,24401074)
+
+Included effects: Entity
