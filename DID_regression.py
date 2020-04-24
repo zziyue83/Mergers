@@ -39,6 +39,9 @@ def AdjustInflation(frequency):
     if frequency == 'month':
         cpiu = cpiu.set_index(['Year', frequency])
     cpiu['price_index'] = cpiu_202001/cpiu['cpiu']
+    cpiu = cpiu.reset_index()
+    # filler = '' if frequency == 'month' else '0'
+    cpiu['t'] = cpiu['year'] * 100 + cpiu[frequency]
     return cpiu
 # def AggDMAPrePostSize(product, frequency, mergingt):
 #     dma_frequency_volume = pd.read_csv("../../GeneratedData/"+product+"_dma_every_"+frequency+"_mkt_volume.tsv", delimiter = '\t')
@@ -76,7 +79,7 @@ def CalDMADeltaHHI(oneYearFirmDMA, product, frequency):
     DMADHHI.to_csv(product+'_'+frequency+'_DHHI.csv', sep = ',')
     return DMADHHI
 
-def DID_regression(product, frequency, share, mergingt, mergers):
+def DID_regression(product, frequency, share, mergingt, mergers, inflation = False, demographics = False):
     if share == 'NoMktShare':
         data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
         if product == 'CANDY':
@@ -157,7 +160,6 @@ def DID_regression(product, frequency, share, mergingt, mergers):
         # DMAConcentration = DMAConcentration.set_index('dma_code')
         # print(DMAConcentration)
         # DMAConcentrationMap = DMAConcentration.to_dict()
-#end of calculating DHHI
 
         data['DHHI'] = data['dma_code'].map(DMAConcentrationMap['DHHI'])
         data['DHHI*post_merger'] = data['DHHI']*data['post_merger']
