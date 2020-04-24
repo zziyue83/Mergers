@@ -141,29 +141,47 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         fe_res = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
         print(fe_res)
 
-        # beginningtex = """\\documentclass{report}
-        #                   \\usepackage{booktabs}
-        #                   \\begin{document}"""
-        # endtex = "\end{document}"
-        # addon = '_GUM' if product == 'CANDY' else ''
-        # f = open(product + addon + '_DID_MktShare_'+frequency+'.tex', 'w')
-        # f.write(beginningtex)
-        # f.write(fe_res.summary.as_latex())
-        # f.write(endtex)
-        # f.close()
+        beginningtex = """\\documentclass{report}
+                          \\usepackage{booktabs}
+                          \\begin{document}"""
+        endtex = "\end{document}"
+        addon = '_GUM' if product == 'CANDY' else ''
+        f = open(product + addon + '_DID_MktShare_'+frequency+'.tex', 'w')
+        f.write(beginningtex)
+        f.write(fe_res.summary.as_latex())
+        f.write(endtex)
+        f.close()
 
+# with inflation-adjusted price and demographics covariates
         cpiu = AdjustInflation(frequency)
         cpiu_map  = cpiu.to_dict()
         data['price_index'] = data[frequency].map(cpiu_map['price_index'])
         data['adjusted_price'] = data['price'] * data['price_index']
-        data['ladjust_prce'] = np.log(data['adjusted_price'])
+        data['ladjust_price'+product] = np.log(data['adjusted_price'])
         demographics = pd.read_csv('Clean/dma_level_demographics.csv')
         data['year'] = data[frequency] // 100
         data = data.join(demographics.set_index(['YEAR','dma_code']), on=['year','dma_code'])
         data['adjusted_hhinc_per_person'] = data['hhinc_per_person_mean']*data['price_index']
         data['ladjusted_hhinc_per_person'] = np.log(data['adjusted_hhinc_per_person'])
         data['lemployment_rate'] = np.log(data['employment_rate'])
-        print(data)
+        exog_vars = ['DHHI*post_merger', 'post_merger', 'trend','ladjusted_hhinc_per_person','lemployment_rate']
+        exog = sm.add_constant(data[exog_vars])
+        print('regression with inflation-adjusted price and demographics covariates')
+        print(data[exog_vars])
+        mod = PanelOLS(data['ladjust_price'+product], exog, entity_effects = True)
+        fe_res = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
+        print(fe_res)
+
+        beginningtex = """\\documentclass{report}
+                          \\usepackage{booktabs}
+                          \\begin{document}"""
+        endtex = "\end{document}"
+        addon = '_GUM' if product == 'CANDY' else ''
+        f = open(product + addon + '_DID_MktShare_'+frequency+'demographics_inflation_adjusted'+'.tex', 'w')
+        f.write(beginningtex)
+        f.write(fe_res.summary.as_latex())
+        f.write(endtex)
+        f.close()
 
 if __name__ == "__main__":
 
