@@ -18,7 +18,8 @@ for upc in upcs:
         response = urlopen(url)
         data = json.loads(response.read())
         print(data)
-    except:
+    except Exception as e:
+        print(e)
         print('could not find nutrition data for upc '+upc)
 
 
