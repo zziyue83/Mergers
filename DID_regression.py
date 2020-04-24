@@ -154,7 +154,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
 
         cpiu = AdjustInflation(frequency)
         cpiu_map  = cpiu.to_dict()
-        data['cpiu'] = data[frequency].map(cpiu_map['price_index'])
+        data['price_index'] = data[frequency].map(cpiu_map['price_index'])
         data['adjusted_price'] = data['price'] * data['price_index']
         data['ladjust_prce'] = np.log(data['adjusted_price'])
         demographics = pd.read_csv('Clean/dma_level_demographics.csv')
