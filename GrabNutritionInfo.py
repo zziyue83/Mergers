@@ -1,5 +1,6 @@
 import json
 from urllib.request import urlopen
+import pandas as pd
 
 data = pd.read_csv("../../GeneratedData/"+product+"_DID_without_share_"+frequency+".tsv", delimiter = '\t')
 for index, row in data.iterrows():
