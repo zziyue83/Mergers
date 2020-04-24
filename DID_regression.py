@@ -160,9 +160,9 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         demographics = pd.read_csv('Clean/dma_level_demographics.csv')
         data['year'] = data[frequency] // 100
         data = data.join(demographics.set_index(['YEAR','dma_code']), on=['year','dma_code'])
-        data['adjusted_hhinc_per_person_mean'] = data['hhinc_per_person_mean']*data['price_index']
-        data['ladjusted_hhinc_per_person_mean'] = np.log(data['adjusted_hhinc_per_person_mean'])
-        data['lemployment_rate'] = np.log(data_chunk['employment_rate'])
+        data['adjusted_hhinc_per_person'] = data['hhinc_per_person_mean']*data['price_index']
+        data['ladjusted_hhinc_per_person'] = np.log(data['adjusted_hhinc_per_person_mean'])
+        data['lemployment_rate'] = np.log(data['employment_rate'])
         print(data)
 
 if __name__ == "__main__":
