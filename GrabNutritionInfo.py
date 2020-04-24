@@ -9,6 +9,7 @@ import time
 # print(data)
 
 data = pd.read_csv("../../GeneratedData/"+'BEER'+"_DID_without_share_"+'month'+".tsv", delimiter = '\t')
+data = pd.read_csv("../../GeneratedData/12digitupc.tsv", delimiter = '\t')
 data['upc_str'] = data['upc'].astype(str)
 upcs = data['upc_str'].unique()
 for upc in upcs:
