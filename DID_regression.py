@@ -115,7 +115,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         data['ladjust_price'+product] = np.log(data['adjusted_price'])
         demographics = pd.read_csv('Clean/dma_level_demographics.csv')
         data['year'] = data[frequency].astype(str)
-        data['year'] = data['year'].str(:4)
+        data['year'] = data['year'].str[:4]
         data['year'] = data['year'].astype(int)
         # data['year'] = data[frequency] // 100
         data = data.join(demographics.set_index(['YEAR','dma_code']), on=['year','dma_code'])
@@ -194,7 +194,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         data['ladjust_price'+product] = np.log(data['adjusted_price'])
         demographics = pd.read_csv('Clean/dma_level_demographics.csv')
         data['year'] = data[frequency].astype(str)
-        data['year'] = data['year'].str(:4)
+        data['year'] = data['year'].str[:4]
         data['year'] = data['year'].astype(int)
         # data['year'] = data[frequency] // 100
         data = data.join(demographics.set_index(['YEAR','dma_code']), on=['year','dma_code'])
