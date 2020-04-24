@@ -7,7 +7,7 @@ data['upc_str'] = data['upc'].astype(str)
 for index, row in data.iterrows():
     upc = row['upc_str']
     print(upc)
-    url = "https://api.edamam.com/api/food-database/parser?upc="+upc+"&app_id=4237ba9d&app_key=56559448d34967c26665a71a519650e6"
+    url = "https://api.edamam.com/api/food-database/parser?upc="+"948700007"+"&app_id=4237ba9d&app_key=56559448d34967c26665a71a519650e6"
     response = urlopen(url)
     data = json.loads(response.read())
     print(data)
