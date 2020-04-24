@@ -41,7 +41,7 @@ def AdjustInflation(frequency):
     cpiu['price_index'] = cpiu_202001/cpiu['cpiu']
     cpiu = cpiu.reset_index()
     cpiu['t'] = cpiu['Year'] * 100 + cpiu[frequency]
-    cpiu = cpiu.reset_index('t')
+    cpiu = cpiu.set_index('t')
     return cpiu
 # def AggDMAPrePostSize(product, frequency, mergingt):
 #     dma_frequency_volume = pd.read_csv("../../GeneratedData/"+product+"_dma_every_"+frequency+"_mkt_volume.tsv", delimiter = '\t')
