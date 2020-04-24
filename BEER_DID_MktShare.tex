@@ -1,0 +1,40 @@
+\documentclass{report}
+                          \usepackage{booktabs}
+                          \begin{document}\begin{center}
+\begin{tabular}{lclc}
+\toprule
+\textbf{Dep. Variable:}    &    lprice\_BEER    & \textbf{  R-squared:         }   &      0.1387      \\
+\textbf{Estimator:}        &      PanelOLS      & \textbf{  R-squared (Between):}  &      0.0024      \\
+\textbf{No. Observations:} &      1044050       & \textbf{  R-squared (Within):}   &      0.1387      \\
+\textbf{Date:}             &  Sun, Apr 05 2020  & \textbf{  R-squared (Overall):}  &      0.0026      \\
+\textbf{Time:}             &      01:29:53      & \textbf{  Log-likelihood     }   &    1.111e+06     \\
+\textbf{Cov. Estimator:}   &     Clustered      & \textbf{                     }   &                  \\
+\textbf{}                  &                    & \textbf{  F-statistic:       }   &    5.087e+04     \\
+\textbf{Entities:}         &       96680        & \textbf{  P-value            }   &      0.0000      \\
+\textbf{Avg Obs:}          &       10.799       & \textbf{  Distribution:      }   &   F(3,947367)    \\
+\textbf{Min Obs:}          &       1.0000       & \textbf{                     }   &                  \\
+\textbf{Max Obs:}          &       16.000       & \textbf{  F-statistic (robust):} &      1449.4      \\
+\textbf{}                  &                    & \textbf{  P-value            }   &      0.0000      \\
+\textbf{Time periods:}     &         16         & \textbf{  Distribution:      }   &   F(3,947367)    \\
+\textbf{Avg Obs:}          &     6.525e+04      & \textbf{                     }   &                  \\
+\textbf{Min Obs:}          &      5.29e+04      & \textbf{                     }   &                  \\
+\textbf{Max Obs:}          &     7.136e+04      & \textbf{                     }   &                  \\
+\bottomrule
+\end{tabular}
+\begin{tabular}{lcccccc}
+                           & \textbf{Parameter} & \textbf{Std. Err.} & \textbf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf{Upper CI}  \\
+\midrule
+\textbf{const}             &       1.8282       &       0.0011       &      1727.4     &      0.0000      &       1.8262      &       1.8303       \\
+\textbf{DHHI*post\_merger} &       0.0994       &       0.0425       &      2.3383     &      0.0194      &       0.0161      &       0.1827       \\
+\textbf{post\_merger}      &       0.0053       &       0.0025       &      2.1278     &      0.0334      &       0.0004      &       0.0102       \\
+\textbf{trend}             &       0.0072       &       0.0001       &      49.057     &      0.0000      &       0.0069      &       0.0075       \\
+\bottomrule
+\end{tabular}
+%\caption{PanelOLS Estimation Summary}
+\end{center}
+
+F-test for Poolability: 1013.0 \newline
+ P-value: 0.0000 \newline
+ Distribution: F(96679,947367) \newline
+  \newline
+ Included effects: Entity\end{document}
