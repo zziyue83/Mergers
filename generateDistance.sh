@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="Aggregate"
+#SBATCH --job-name="distance"
 #SBATCH -A b1048
 #SBATCH -p buyin
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -9,7 +9,7 @@
 #SBATCH --array=1
 #SBATCH --mem=20G
 #SBATCH --nodes=1
-
+      
 module load python/anaconda3.6
-cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python AggregateToMonthOrQuarter_A.py GUM month
+cd /projects/b1048/gillanes/Mergers/Codes/Mergers  
+python generateDistance.py month Beer
