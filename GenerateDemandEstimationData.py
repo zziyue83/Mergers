@@ -18,8 +18,8 @@ def GenerateDEData(product, frequency, inputs):
     z = np.transpose(x)
     y = np.matmul(z, x)
     print(x)
-    y = np.linalg.inv(x)
-    print(y)
+    u = np.linalg.inv(y)
+    print(u)
     # variables = ['dma_code_'+frequency,'log_adjusted_price','upc','market_share']
     # for input in inputs:
     #     variables.append(input)
