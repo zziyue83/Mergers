@@ -4,6 +4,7 @@ import pyblp
 
 def GenerateDEData(product, frequency):
     data = pd.read_csv("../../GeneratedData/" + product + "_pre_model_" + frequency + "_with_distance.tsv", delimiter = '\t')
+    print(data.columns)
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     demand_estimation_data = data[['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance']]
     print(demand_estimation_data.head())
@@ -29,4 +30,4 @@ product = sys.argv[2]
 file = 'wheat-prices-historical-chart-data.csv'
 instrument = ReadInstrument(file,15)
 print(instrument)
-# GenerateDEData(product, frequency)
+GenerateDEData(product, frequency)
