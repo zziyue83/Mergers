@@ -10,7 +10,9 @@ def GenerateDEData(product, frequency, inputs):
         data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
         data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
-    demand_estimation_data = data[['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance'].extend(inputs)]
+    variables = ['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance'].extend(inputs)
+    print(variables)
+    demand_estimation_data = data[variables]
     print(demand_estimation_data.head())
     rename_dic = {'dma_code_'+frequency:'market_ids','log_adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'upc':'product_ids','distance':'demand_instruments0','market_share':'shares'}
     for i in range(len(inputs)):
@@ -27,7 +29,6 @@ def GenerateDEData(product, frequency, inputs):
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
     instrument['t'] = pd.to_datetime(instrument['date']).dt.to_period('M')
-    print(instrument.head())
     instrument = instrument.groupby('t',as_index = False).agg({'value':'mean','date':'first'},as_index = False).reindex(columns = instrument.columns)
     instrument = instrument.rename(columns = {'value':input})
     return instrument[[input,'t']]
