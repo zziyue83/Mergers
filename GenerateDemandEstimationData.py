@@ -41,7 +41,7 @@ def ReadInstrument(input, skiprows = 0):
 
 frequency = sys.argv[1]
 product = sys.argv[2]
-# input = 'barley'
-# instrument = ReadInstrument(input)
-# print(instrument)
+input = 'barley'
+instrument = ReadInstrument(input)
+print(instrument['t'])
 GenerateDEData(product, frequency, inputs = ['wheat'])
