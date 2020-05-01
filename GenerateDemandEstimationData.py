@@ -14,7 +14,9 @@ def GenerateDEData(product, frequency, inputs):
     # data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     # x = data['distance']
     data['constant'] = 1
+    data = data.dropna()
     x = data[['distance','constant']].to_numpy()
+
     z = np.transpose(x)
     y = np.matmul(z, x)
     print(x)
