@@ -2,12 +2,13 @@ import pandas as pd
 import sys
 import pyblp
 
-def GenerateDEData(product, frequency, input):
+def GenerateDEData(product, frequency, inputs):
     data = pd.read_csv("../../GeneratedData/" + product + "_pre_model_" + frequency + "_with_distance.tsv", delimiter = '\t')
     print(data['y-m-d'])
-    input_prices = ReadInstrument(input)
-    data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
-    data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
+    for input in inputs:
+        input_prices = ReadInstrument(input)
+        data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
+        data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     demand_estimation_data = data[['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance',input]]
     print(demand_estimation_data.head())
