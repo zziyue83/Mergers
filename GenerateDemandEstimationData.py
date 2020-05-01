@@ -6,7 +6,8 @@ def GenerateDEData(product, frequency):
     print(data)
     print(data.columns)
     print(data['market_share'])
-
+    demand_estimation_data = data[['dma_code','log_adjusted_price','Firm','brand_descr',frequency+'_since_start','upc']]
+    print(demand_estimation_data)
 frequency = sys.argv[1]
 product = sys.argv[2]
 GenerateDEData(product, frequency)
