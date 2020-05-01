@@ -5,6 +5,7 @@ import pyblp
 def GenerateDEData(product, frequency):
     data = pd.read_csv("../../GeneratedData/" + product + "_pre_model_" + frequency + "_with_distance.tsv", delimiter = '\t')
     print(data.columns)
+    print(data['y-m-d'])
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     demand_estimation_data = data[['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance']]
     print(demand_estimation_data.head())
