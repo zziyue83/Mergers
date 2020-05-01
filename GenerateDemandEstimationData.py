@@ -19,6 +19,7 @@ def GenerateDEData(product, frequency):
 
 def ReadInstrument(file, skiprows = 0):
     instrument = pd.read_csv(file, skiprows = skiprows, delimiter = ',')
+    instrument['t'] = pd.to_datetime(instrument['date'])
     return instrument
 
 
