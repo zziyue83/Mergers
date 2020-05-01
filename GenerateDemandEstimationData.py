@@ -10,7 +10,9 @@ def GenerateDEData(product, frequency, inputs):
         data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
         data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
-    variables = ['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance'].extend(inputs)
+    variables = ['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance']
+    for input in inputs:
+        variables.append(input)
     print(variables)
     demand_estimation_data = data[variables]
     print(demand_estimation_data.head())
