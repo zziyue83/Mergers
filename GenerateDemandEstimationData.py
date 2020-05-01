@@ -7,4 +7,4 @@ def GenerateDEData(product, frequency):
 
 frequency = sys.argv[1]
 products = sys.argv[2]
-generateDistance(product, frequency)
+GenerateDEData(product, frequency)
