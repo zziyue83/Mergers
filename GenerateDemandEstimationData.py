@@ -1,6 +1,7 @@
 import pandas as pd
 import sys
 import pyblp
+import numpy as np
 
 def GenerateDEData(product, frequency, inputs):
     data = pd.read_csv("../../GeneratedData/" + product + "_pre_model_" + frequency + "_with_distance.tsv", delimiter = '\t')
@@ -11,8 +12,11 @@ def GenerateDEData(product, frequency, inputs):
     #     data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
     #     print(data.head())
     # data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
-    x = data['distance']
-    x['constant'] = 1
+    # x = data['distance']
+    data['constant'] = 1
+    x = data[['distance','constant']].to_numpy()
+    z = np.transpose(x)
+    y = x * z
     print(x)
     y = np.linalg.inv(x)
 
