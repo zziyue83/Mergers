@@ -34,6 +34,7 @@ def ReadInstrument(input, skiprows = 0):
     instrument['t'] = pd.to_datetime(instrument['date']).dt.to_period('M')
     instrument = instrument.groupby('t',as_index = False).agg({'value':'mean','date':'first'},as_index = False).reindex(columns = instrument.columns)
     instrument = instrument.rename(columns = {'value':input})
+    print(instrument.head())
     return instrument[[input,'t']]
 
 
