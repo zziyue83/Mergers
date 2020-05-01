@@ -11,7 +11,7 @@ def GenerateDEData(product, frequency, inputs):
         data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
         print(data.head())
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
-    variables = ['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance']
+    variables = ['dma_code_'+frequency,'log_adjusted_price','upc','market_share']
     for input in inputs:
         variables.append(input)
     print(variables)
@@ -19,7 +19,7 @@ def GenerateDEData(product, frequency, inputs):
     print(demand_estimation_data.head())
     rename_dic = {'dma_code_'+frequency:'market_ids','log_adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'upc':'product_ids','distance':'demand_instruments0','market_share':'shares'}
     for i in range(len(inputs)):
-        rename_dic[inputs[i]] = 'demand_instruments'+str(i+1)
+        rename_dic[inputs[i]] = 'demand_instruments'+str(i)
     demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
     print(demand_estimation_data.head())
     pyblp.options.collinear_atol = pyblp.options.collinear_rtol = 0
@@ -44,4 +44,4 @@ product = sys.argv[2]
 # input = 'barley'
 # instrument = ReadInstrument(input)
 # print(instrument)
-GenerateDEData(product, frequency, inputs = ['wheat','barley'])
+GenerateDEData(product, frequency, inputs = ['wheat'])
