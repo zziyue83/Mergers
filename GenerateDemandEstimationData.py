@@ -6,5 +6,5 @@ def GenerateDEData(product, frequency):
     print(data)
 
 frequency = sys.argv[1]
-products = sys.argv[2]
+product = sys.argv[2]
 GenerateDEData(product, frequency)
