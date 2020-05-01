@@ -16,10 +16,10 @@ def GenerateDEData(product, frequency, inputs):
     data['constant'] = 1
     x = data[['distance','constant']].to_numpy()
     z = np.transpose(x)
-    y = x * z
+    y = np.matmul(z, x)
     print(x)
     y = np.linalg.inv(x)
-
+    print(y)
     # variables = ['dma_code_'+frequency,'log_adjusted_price','upc','market_share']
     # for input in inputs:
     #     variables.append(input)
