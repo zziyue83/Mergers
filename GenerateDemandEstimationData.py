@@ -6,6 +6,7 @@ def GenerateDEData(product, frequency):
     data = pd.read_csv("../../GeneratedData/" + product + "_pre_model_" + frequency + "_with_distance.tsv", delimiter = '\t')
     print(data.columns)
     print(data['y-m-d'])
+    data['y-m-d'] =
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     demand_estimation_data = data[['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance']]
     print(demand_estimation_data.head())
@@ -22,7 +23,8 @@ def GenerateDEData(product, frequency):
 def ReadInstrument(file, skiprows = 0):
     instrument = pd.read_csv(file, skiprows = skiprows, delimiter = ',')
     instrument['t'] = pd.to_datetime(instrument['date']).dt.to_period('M')
-    return instrument
+    instrument = instrument.groupby('t',as_index = False).agg({'value':'mean','date':'first'},as_index = False).reindex(columns = instrument.columns)
+    return instrument[['value','t']]
 
 
 
