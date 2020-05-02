@@ -12,4 +12,4 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python GenerateMarketSize.py CANDY month
+python GenerateMarketSize.py GUM month

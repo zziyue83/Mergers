@@ -45,7 +45,8 @@ def preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, i
             data_chunk = data_chunk.join(demographics.set_index(['YEAR','dma_code']), on=['year','dma_code'])
             data_chunk['adjusted_hhinc_per_person_mean'] = data_chunk['hhinc_per_person_mean']*data_chunk['price_index']
             data_chunk['log_adjusted_hhinc_per_person_mean'] = np.log(data_chunk['adjusted_hhinc_per_person_mean'])
-            data_chunk['log_employment_rate'] = np.log(data_chunk['employment_rate'])            
+            data_chunk['log_employment_rate'] = np.log(data_chunk['employment_rate'])
+            data_chunk['product'] = product            
             if panel_data.empty:
                 panel_data = data_chunk
             else:
@@ -55,9 +56,8 @@ def preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, i
 quarterOrMonth = sys.argv[1]
 mergingyear = sys.argv[2]
 mergingquarterormonth = sys.argv[3]
-#products = [sys.argv[4], sys.argv[5]]
-products = [sys.argv[4]]
-involvedcompanies = [sys.argv[5],sys.argv[6]+' '+sys.argv[7],sys.argv[8]]
-#involvedcompanies = [sys.argv[6], sys.argv[7]]
+products = [sys.argv[4], sys.argv[5]]
+#products = [sys.argv[4]]
+#involvedcompanies = [sys.argv[5],sys.argv[6]+' '+sys.argv[7],sys.argv[8]]
+involvedcompanies = [sys.argv[6], sys.argv[7]]
 preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, involvedcompanies)
-#SABMiller Molson Coors MillerCoors
