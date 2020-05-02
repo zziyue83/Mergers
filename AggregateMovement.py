@@ -103,7 +103,9 @@ def AggregateMovement(years, groups):
                     area_month_upc['brand_descr'] = area_month_upc['upc'].map(productMap['brand_descr'])
                     area_month_upc['multi'] = area_month_upc['upc'].map(productMap['multi'])
                     area_month_upc['size1_amount'] = area_month_upc['upc'].map(productMap['size1_amount'])
+                    area_month_upc['size1_units'] = area_month_upc['upc'].map(productMap['size1_units'])
                     area_month_upc['volume'] = area_month_upc['units'] * area_month_upc['size1_amount'] * area_month_upc['multi']
+                    area_month_upc['weighted_price'] = area_month_upc['sales'] / area_month_upc['volume']
                     area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
                     if firstFile:
                         area_month_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8')
