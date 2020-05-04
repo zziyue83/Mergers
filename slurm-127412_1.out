@@ -1,0 +1,4 @@
+  File "unitConversionCandyGum.py", line 6
+    if product = 'CANDY':
+               ^
+SyntaxError: invalid syntax

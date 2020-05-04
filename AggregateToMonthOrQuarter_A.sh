@@ -12,4 +12,4 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python AggregateToMonthOrQuarter_A.py CANDY month
+python AggregateToMonthOrQuarter_A.py CANDY quarter
