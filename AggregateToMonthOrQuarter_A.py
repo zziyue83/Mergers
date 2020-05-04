@@ -9,7 +9,7 @@ def BrandOwner(product):
     return brand_owner
 
 def Aggregate_to_Month(top100brand_data):
-    panel_data = top100brand_data.groupby(['upc','dma_code','month']).agg({'volume': 'sum', 'price': 'mean', 'brand_descr': 'first', 'owner initial': 'first', 'owner last': 'first'})
+    panel_data = top100brand_data.groupby(['upc','dma_code','month']).agg({'volume': 'sum', 'price': 'mean', 'size1_amount': 'first', 'size1_units': 'first', 'brand_descr': 'first', 'owner initial': 'first', 'owner last': 'first'})
     panel_data = panel_data.reset_index()
     panel_data['y-m-d'] = pd.to_datetime(panel_data['month'].values, format='%Y%m')
     panel_data['year'] = panel_data['y-m-d'].dt.year
@@ -19,7 +19,7 @@ def Aggregate_to_Month(top100brand_data):
   
 def Aggregate_to_Quarter(top100brand_data):
     top100brand_data['y-q'] = pd.to_datetime(top100brand_data['month'].values, format='%Y%m').astype('period[Q]')
-    panel_data = top100brand_data.groupby(['upc','dma_code','y-q']).agg({'volume': 'sum', 'price': 'mean', 'brand_descr': 'first', 'owner initial': 'first', 'owner last': 'first'})
+    panel_data = top100brand_data.groupby(['upc','dma_code','y-q']).agg({'volume': 'sum', 'price': 'mean', 'size1_amount': 'first', 'size1_units': 'first', 'brand_descr': 'first', 'owner initial': 'first', 'owner last': 'first'})
     panel_data = panel_data.reset_index()
     panel_data['quarter'] = panel_data['y-q'].astype(str)
     panel_data['year'] = panel_data['y-q'].dt.year
