@@ -1,2 +1,0 @@
-/var/spool/slurmd/job169560/slurm_script: line 15:  5105 Killed                  python generateDistance_updated.py month Candy Gum
-slurmstepd: error: Detected 1 oom-kill event(s) in step 169560.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
