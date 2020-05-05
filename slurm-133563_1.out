@@ -1,2 +1,0 @@
-/var/spool/slurmd/job133563/slurm_script: line 15:  6816 Killed                  python DIDregression1_A.py CANDY GUM month
-slurmstepd: error: Detected 1 oom-kill event(s) in step 133563.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.

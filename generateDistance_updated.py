@@ -272,6 +272,7 @@ def generateDistance(products, quarterOrMonth):
         distribution_centers = pd.concat([distribution_centers, distribution_centers_product])
     distribution_centers = distribution_centers.drop_duplicates()
     distribution_centers = geocoding_distribution_centers(distribution_centers)
+    distribution_centers = distribution_centers.drop_duplicates()
     distribution_centers.to_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + "distribution_centers_locations.tsv", sep = '\t', encoding = 'utf-8')
     
     distribution_centers = distribution_centers[['Firm','Brand','Product','US/foreign','warehousing','distribution_centers_latitude','distribution_centers_longitude']]
