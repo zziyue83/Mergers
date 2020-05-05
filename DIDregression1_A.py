@@ -22,8 +22,15 @@ def DID1(products, quarterOrMonth):
     f.write(endtex)
     f.close()
 
+<<<<<<< HEAD
 products = [sys.argv[1], sys.argv[2]]
 quarterOrMonth = sys.argv[3]
 #products = [sys.argv[1]]
 #quarterOrMonth = sys.argv[2]
+=======
+#products = [sys.argv[1], sys.argv[2]]
+#quarterOrMonth = sys.argv[3]
+products = [sys.argv[1]]
+quarterOrMonth = sys.argv[2]
+>>>>>>> 60263bd182d4190d5acc2accfbd420a51a7136d3
 DID1(products, quarterOrMonth)

@@ -12,4 +12,8 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
+<<<<<<< HEAD
 python DIDregression2_A.py quarter CANDY GUM
+=======
+python DIDregression2_A.py quarter BEER
+>>>>>>> 60263bd182d4190d5acc2accfbd420a51a7136d3
