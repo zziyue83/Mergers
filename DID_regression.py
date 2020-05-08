@@ -74,17 +74,17 @@ def CalDMADeltaHHI(oneYearFirmDMA, product, frequency):
     size_multiplier = 12 if frequency == 'month' else 4
     preMerger['dma_size'] = preMerger['dma_code'].map(mktsize_dict['mkt_size'])
     preMerger['share'] = preMerger['volume'] / (preMerger['dma_size'] * size_multiplier)
-    print('potential bugs')
-    print(preMerger[['share','dma_size','dma_code']])
-    bugs = preMerger[preMerger['share']>1]
-    print('share > 1')
-    print(bugs[['share','dma_size','dma_code']])
+    # print('potential bugs')
+    # print(preMerger[['share','dma_size','dma_code']])
+    # bugs = preMerger[preMerger['share']>1]
+    # print('share > 1')
+    # print(bugs[['share','dma_size','dma_code']])
     preMerger['pre_merger_share_square'] =preMerger['share'] * preMerger['share']
     postMerger = preMerger.groupby(['dma_code'], as_index = False).agg({'volume':'sum', 'dma_size':'first','share':'sum','pre_merger_share_square':'sum'}, as_index = False).reindex(columns = preMerger.columns)
     postMerger['post_merger_share_square'] = postMerger['share'] * postMerger['share']
     postMerger['DHHI'] = postMerger['post_merger_share_square'] - postMerger['pre_merger_share_square']
-    print('sum share > 1')
-    bugs = postMerger[postMerger['share']>1]
+    # print('sum share > 1')
+    # bugs = postMerger[postMerger['share']>1]
     print(bugs)
     # print(postMerger)
     DMADHHI = postMerger[['dma_code','DHHI']].set_index('dma_code')
@@ -169,11 +169,11 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
         oneYearDummy = MakeOneYearDummy(times, mergingt, frequency)
         firmDMA = firmDMA.merge(oneYearDummy, how = 'inner', left_on = 'time_str', right_on = 't')
         oneYearFirmDMA = firmDMA[firmDMA['include'] == 1]
-        DMAVolume = oneYearFirmDMA.groupby(['dma_code'], as_index = False).agg({'volume':'sum'}, as_index = False).reindex(columns = oneYearFirmDMA.columns)
-        DMAVolume = DMAVolume[['dma_code','volume']].set_index('dma_code')
-        DMAVolumeMap =DMAVolume.to_dict()
+        # DMAVolume = oneYearFirmDMA.groupby(['dma_code'], as_index = False).agg({'volume':'sum'}, as_index = False).reindex(columns = oneYearFirmDMA.columns)
+        # DMAVolume = DMAVolume[['dma_code','volume']].set_index('dma_code')
+        # DMAVolumeMap =DMAVolume.to_dict()
         # print(DMAVolume)
-        oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
+        # oneYearFirmDMA['dma_size'] = oneYearFirmDMA['dma_code'].map(DMAVolumeMap['volume'])
         DMADHHI = CalDMADeltaHHI(oneYearFirmDMA, product, frequency)
         DMAConcentrationMap = DMADHHI.to_dict()
 

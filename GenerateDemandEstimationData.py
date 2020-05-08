@@ -43,9 +43,9 @@ def GenerateDEData(product, frequency, inputs):
 
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
-    instrument['t'] = pd.to_datetime(instrument['date']).dt.to_period('M')
+    instrument['t'] = pd.to_datetime(instrument['time']).dt.to_period('M')
     instrument = instrument.groupby('t',as_index = False).agg({'value':'mean','date':'first'},as_index = False).reindex(columns = instrument.columns)
-    instrument = instrument.rename(columns = {'value':input})
+    instrument = instrument.rename(columns = {'price':input})
     print(instrument.head())
     return instrument[[input,'t']]
 
@@ -56,4 +56,4 @@ product = sys.argv[2]
 # input = 'barley'
 # instrument = ReadInstrument(input)
 # print(instrument['t'])
-GenerateDEData(product, frequency, inputs = ['wheat'])
+GenerateDEData(product, frequency, inputs = ['wheat','barley'])
