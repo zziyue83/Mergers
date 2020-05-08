@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2019.2.27)  19 APR 2020 11:16
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2020.5.5)  7 MAY 2020 19:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -69,25 +69,25 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 *\toprule
 
 *\textbf{Dep. Variable:}                          & log\_adjusted\_price & \tex
-tbf{  R-squared:         }   &      0.0240      \\
+tbf{  R-squared:         }   &      0.0226      \\
 
 *\textbf{Estimator:}                              &       PanelOLS       & \tex
-tbf{  R-squared (Between):}  &      0.0002      \\
+tbf{  R-squared (Between):}  &      0.0006      \\
 
 *\textbf{No. Observations:}                       &       1044078        & \tex
-tbf{  R-squared (Within):}   &      0.0240      \\
+tbf{  R-squared (Within):}   &      0.0226      \\
 
-*\textbf{Date:}                                   &   Sun, Apr 19 2020   & \tex
-tbf{  R-squared (Overall):}  &     -0.0002      \\
+*\textbf{Date:}                                   &   Thu, May 07 2020   & \tex
+tbf{  R-squared (Overall):}  &      0.0014      \\
 
-*\textbf{Time:}                                   &       11:11:30       & \tex
-tbf{  Log-likelihood     }   &    1.097e+06     \\
+*\textbf{Time:}                                   &       18:53:10       & \tex
+tbf{  Log-likelihood     }   &    1.077e+06     \\
 
 *\textbf{Cov. Estimator:}                         &      Clustered       & \tex
 tbf{                     }   &                  \\
 
 *\textbf{}                                        &                      & \tex
-tbf{  F-statistic:       }   &      4663.1      \\
+tbf{  F-statistic:       }   &      4385.0      \\
 
 *\textbf{Entities:}                               &        96685         & \tex
 tbf{  P-value            }   &      0.0000      \\
@@ -99,7 +99,7 @@ tbf{  Distribution:      }   &   F(5,947388)    \\
 tbf{                     }   &                  \\
 
 *\textbf{Max Obs:}                                &        16.000        & \tex
-tbf{  F-statistic (robust):} &      274.17      \\
+tbf{  F-statistic (robust):} &      260.31      \\
 
 *\textbf{}                                        &                      & \tex
 tbf{  P-value            }   &      0.0000      \\
@@ -128,29 +128,29 @@ f{Std. Err.} & \textbf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf
 
 *\midrule
 
-*\textbf{const}                                   &       1.5879       &       
-0.1381       &      11.498     &      0.0000      &       1.3173      &       1
-.8586       \\
+*\textbf{const}                                   &      -2.9530       &       
+0.1426       &     -20.706     &      0.0000      &      -3.2325      &      -2
+.6735       \\
 
-*\textbf{involvedpostmerger}                      &       0.0125       &       
-0.0010       &      12.535     &      0.0000      &       0.0106      &       0
-.0145       \\
+*\textbf{involvedpostmerger}                      &       0.0127       &       
+0.0010       &      12.456     &      0.0000      &       0.0107      &       0
+.0148       \\
 
-*\textbf{postmerger}                              &       0.0161       &       
-0.0009       &      18.002     &      0.0000      &       0.0143      &       0
-.0178       \\
+*\textbf{postmerger}                              &       0.0162       &       
+0.0009       &      17.985     &      0.0000      &       0.0144      &       0
+.0180       \\
 
-*\textbf{quarter\_since\_start}                   &     -3.122e-05     &       
-0.0002       &     -0.1801     &      0.8571      &      -0.0004      &       0
+*\textbf{quarter\_since\_start}                   &     -9.909e-05     &       
+0.0002       &     -0.5519     &      0.5810      &      -0.0005      &       0
 .0003       \\
 
-*\textbf{log\_employment\_rate}                   &      -0.2989       &       
-0.0290       &     -10.317     &      0.0000      &      -0.3556      &      -0
-.2421       \\
+*\textbf{log\_employment\_rate}                   &      -0.2971       &       
+0.0298       &     -9.9606     &      0.0000      &      -0.3555      &      -0
+.2386       \\
 
-*\textbf{log\_adjusted\_hhinc\_per\_person\_mean} &       0.0449       &       
-0.0129       &      3.4827     &      0.0005      &       0.0196      &       0
-.0702       \\
+*\textbf{log\_adjusted\_hhinc\_per\_person\_mean} &       0.0442       &       
+0.0133       &      3.3152     &      0.0009      &       0.0181      &       0
+.0703       \\
 
 *\bottomrule
 
@@ -160,7 +160,7 @@ f{Std. Err.} & \textbf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf
 
 *\end{center}
 
-Overfull \hbox (38.14786pt too wide) detected at line 0
+Overfull \hbox (40.03119pt too wide) detected at line 0
  [] 
  []
 
@@ -172,7 +172,7 @@ Overfull \hbox (183.89508pt too wide) detected at line 0
 
 *
 (Please type a command or say `\end')
-*F-test for Poolability: 985.66 \newline
+*F-test for Poolability: 179.57 \newline
 
 * P-value: 0.0000 \newline
 
@@ -189,10 +189,10 @@ Underfull \hbox (badness 10000) detected at line 0
 [1
 
 {/usr/share/texlive/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-(/tmp/tmptf9yxaoa/file.aux) 
+(/tmp/tmpfkoc4mh1/file.aux) 
 Here is how much of TeX's memory you used:
  284 strings out of 495063
- 3219 string characters out of 3182201
+ 3219 string characters out of 3182202
  52832 words of memory out of 3000000
  3550 multiletter control sequences out of 15000+200000
  3948 words of font info for 15 fonts, out of 3000000 for 9000
@@ -201,7 +201,7 @@ Here is how much of TeX's memory you used:
 </usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmr10.pfb>
-Output written on /tmp/tmptf9yxaoa/file.pdf (1 page, 37957 bytes).
+Output written on /tmp/tmpfkoc4mh1/file.pdf (1 page, 38378 bytes).
 PDF statistics:
  16 PDF objects out of 1000 (max. 8388607)
  10 compressed objects within 1 object stream

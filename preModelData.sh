@@ -12,4 +12,6 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers  
-python preModelData.py month 2008 5 CANDY GUM Wrigley Mars
+python preModelData.py quarter 2008 3 BEER SABMiller Molson Coors MillerCoors
+
+

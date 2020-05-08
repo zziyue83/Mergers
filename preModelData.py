@@ -2,11 +2,13 @@ import pandas as pd
 import sys
 import numpy as np
 
-<<<<<<< HEAD
 def marketSize(products, quarterOrMonth):
     market_size = pd.DataFrame()
     for product in products:
-        market_size_product = pd.read_csv("../../GeneratedData/" + product + "_dma_" + quarterOrMonth + "_upc_top100_unit_converted.tsv", delimiter = "\t")
+        try:
+            market_size_product = pd.read_csv("../../GeneratedData/" + product + "_dma_" + quarterOrMonth + "_upc_top100_unit_converted.tsv", delimiter = "\t")
+        except:
+            market_size_product = pd.read_csv("../../GeneratedData/" + product + "_dma_" + quarterOrMonth + "_upc_top100.tsv", delimiter = "\t")
         market_size = pd.concat([market_size, market_size_product])
     market_size = market_size.groupby(['dma_code', quarterOrMonth]).agg({'volume': 'sum'})
     market_size.rename(columns = {'volume':'market_size'}, inplace = True)
@@ -15,16 +17,8 @@ def marketSize(products, quarterOrMonth):
 def preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, involvedcompanies):
     panel_data = pd.DataFrame()
     market_size = marketSize(products, quarterOrMonth)
-    market_size_DMA = market_size.groupby('dma_code').agg({'market_size': 'max'})*1.5
+    market_size_DMA = market_size.groupby(level=0).agg({'market_size': 'max'})*1.5
     for product in products:
-=======
-def preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, involvedcompanies):
-    panel_data = pd.DataFrame()
-    for product in products:
-        market_size = pd.read_csv("../../GeneratedData/" + product + "_market_size_" + quarterOrMonth + ".tsv", delimiter = "\t")
-        market_size.rename(columns = {'volume':'market_size'}, inplace = True)
-        market_size_DMA = market_size.groupby('dma_code').agg({'market_size': 'max'})*1.5
->>>>>>> 60263bd182d4190d5acc2accfbd420a51a7136d3
         demographics = pd.read_csv('Clean/dma_level_demographics.csv')
         cpiu = pd.read_excel('cpiu_2000_2020.xlsx', header = 11)
         cpiu = cpiu.set_index('Year')
@@ -40,15 +34,12 @@ def preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, i
         if quarterOrMonth == 'month':
             cpiu = cpiu.set_index(['Year',quarterOrMonth])
         cpiu['price_index'] = cpiu_202001/cpiu['cpiu']
-<<<<<<< HEAD
-        chunks = pd.read_csv("../../GeneratedData/" + product + "_dma_" + quarterOrMonth + "_upc_top100_unit_converted.tsv", delimiter = "\t", index_col = 0, chunksize = 1000000)
+        try:
+            chunks = pd.read_csv("../../GeneratedData/" + product + "_dma_" + quarterOrMonth + "_upc_top100_unit_converted.tsv", delimiter = "\t", index_col = 0, chunksize = 1000000)
+        except:
+            chunks = pd.read_csv("../../GeneratedData/" + product + "_dma_" + quarterOrMonth + "_upc_top100.tsv", delimiter = "\t", index_col = 0, chunksize = 1000000)
         for data_chunk in chunks:
             data_chunk = data_chunk.join(market_size, on=['dma_code', quarterOrMonth])
-=======
-        chunks = pd.read_csv("../../GeneratedData/" + product + "_dma_" + quarterOrMonth + "_upc_top100.tsv", delimiter = "\t", index_col = 0, chunksize = 1000000)
-        for data_chunk in chunks:
-            data_chunk = data_chunk.join(market_size.set_index(['dma_code', quarterOrMonth]), on=['dma_code', quarterOrMonth])
->>>>>>> 60263bd182d4190d5acc2accfbd420a51a7136d3
             data_chunk['market_size_DMA'] = data_chunk['dma_code'].map(market_size_DMA['market_size'])
             data_chunk['market_share'] = data_chunk['volume']/data_chunk['market_size_DMA']
             if quarterOrMonth == 'quarter':
@@ -68,13 +59,8 @@ def preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, i
             data_chunk = data_chunk.join(demographics.set_index(['YEAR','dma_code']), on=['year','dma_code'])
             data_chunk['adjusted_hhinc_per_person_mean'] = data_chunk['hhinc_per_person_mean']*data_chunk['price_index']
             data_chunk['log_adjusted_hhinc_per_person_mean'] = np.log(data_chunk['adjusted_hhinc_per_person_mean'])
-<<<<<<< HEAD
             data_chunk['log_employment_rate'] = np.log(data_chunk['employment_rate'])   
             data_chunk['product'] = product
-=======
-            data_chunk['log_employment_rate'] = np.log(data_chunk['employment_rate'])
-            data_chunk['product'] = product            
->>>>>>> 60263bd182d4190d5acc2accfbd420a51a7136d3
             if panel_data.empty:
                 panel_data = data_chunk
             else:
@@ -84,8 +70,8 @@ def preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, i
 quarterOrMonth = sys.argv[1]
 mergingyear = sys.argv[2]
 mergingquarterormonth = sys.argv[3]
-products = [sys.argv[4], sys.argv[5]]
-#products = [sys.argv[4]]
-#involvedcompanies = [sys.argv[5],sys.argv[6]+' '+sys.argv[7],sys.argv[8]]
-involvedcompanies = [sys.argv[6], sys.argv[7]]
+#products = [sys.argv[4], sys.argv[5]]
+products = [sys.argv[4]]
+involvedcompanies = [sys.argv[5],sys.argv[6]+' '+sys.argv[7],sys.argv[8]]
+#involvedcompanies = [sys.argv[6], sys.argv[7]]
 preModelData(products, quarterOrMonth, mergingyear, mergingquarterormonth, involvedcompanies)

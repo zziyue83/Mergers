@@ -236,7 +236,7 @@ def geocoding_dma():
     {'city': 'Zanesville', 'dma_code': 596, 'latitude': 39.940345299999997, 'longitude': -82.013192399999994, 'region': 'OH', 'slug': 'zanesville-oh'},]
     major_cities = pd.DataFrame(major_cities)
     return major_cities
-    
+
 def geocoding_distribution_centers(distribution_centers):
     distribution_centers1 = distribution_centers.dropna(subset=['Location'])
     cities = distribution_centers1['Location'].tolist()
@@ -259,9 +259,16 @@ def geocoding_distribution_centers(distribution_centers):
     distribution_centers = distribution_centers.merge(geocoding_distribution_centers, left_on = 'Location', right_index = True, how = 'left')
     return distribution_centers
 
-def allbut(data, *names):
-    names = set(names)
-    return [item for item in list(data) if item not in names]
+def LoadWantedProduct(product_group_descr):
+    products_path = "../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
+    products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0)
+    wantedProducts = products[products['product_group_descr'] == product_group_descr]
+    print("Loaded " + product_group_descr + " products")
+    return wantedProducts
+
+def BrandOwner(product):
+    brand_owner = pd.read_csv("Top 100 " + product + ".csv", index_col='brand_descr')
+    return brand_owner
 
 def generateDistance(products, quarterOrMonth):
     # products = ['Beer']
@@ -270,34 +277,50 @@ def generateDistance(products, quarterOrMonth):
     for product in products:
         distribution_centers_product = pd.read_excel(product + " Distribution Centers.xlsx")
         distribution_centers = pd.concat([distribution_centers, distribution_centers_product])
-    distribution_centers = distribution_centers.drop_duplicates()
+    distribution_centers = distribution_centers.drop_duplicates(keep='first')
     distribution_centers = geocoding_distribution_centers(distribution_centers)
-    distribution_centers = distribution_centers.drop_duplicates()
-    distribution_centers.to_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products])  + quarterOrMonth + "_distribution_centers_locations.tsv", sep = '\t', encoding = 'utf-8')
-    
+    distribution_centers = distribution_centers.drop_duplicates(keep='first')
+    distribution_centers.to_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + "_distribution_centers_locations.tsv", sep = '\t', encoding = 'utf-8')
+
     distribution_centers = distribution_centers[['Firm','Brand','Product','US/foreign','warehousing','distribution_centers_latitude','distribution_centers_longitude']]
     brands_wt_dc_assigned = distribution_centers[distribution_centers['Brand'].notna()].reset_index(drop=True)
     firms_wt_dc_assigned_to_products = list(set(distribution_centers['Firm'][distribution_centers['Product'].notna()]))
-    distribution_centers['Firm_Product'] = np.where(distribution_centers['Firm'].isin(firms_wt_dc_assigned_to_products), distribution_centers['Firm'].astype(str)+distribution_centers['Product'].astype(str), distribution_centers['Firm'])
-    products = [x.upper() for x in products]
-    data = pd.read_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + "_pre_model_" + quarterOrMonth + "_data.tsv", delimiter = "\t", index_col = 0)
-    data['Firm_Product'] = np.where(data['owner initial'].isin(firms_wt_dc_assigned_to_products), data['owner initial'].astype(str)+data['product'].astype(str), data['owner initial'])
-    major_cities = geocoding_dma()
-    data['latitude'] = data['dma_code'].map(major_cities.drop_duplicates('dma_code').set_index('dma_code')['latitude'])
-    data['longitude'] = data['dma_code'].map(major_cities.drop_duplicates('dma_code').set_index('dma_code')['longitude'])
-    data = data.merge(distribution_centers, left_on = 'Firm_Product', right_on = 'Firm_Product', how = 'outer')
+    distribution_centers['Firm_Product'] = np.where(distribution_centers['Firm'].isin(firms_wt_dc_assigned_to_products), distribution_centers['Firm']+distribution_centers['Product'], distribution_centers['Firm'])
+
+    product_group_descrs = [x.upper() for x in products]
+    products_data = pd.DataFrame()
+    for product_group_descr in product_group_descrs:
+        wantedProducts = LoadWantedProduct(product_group_descr)
+        brand_owner = BrandOwner(product_group_descr)
+        wantedProducts['owner initial'] = wantedProducts['brand_descr'].map(brand_owner['owner initial'])
+        wantedProducts['owner last'] = wantedProducts['brand_descr'].map(brand_owner['owner last'])
+        products_data = pd.concat([wantedProducts, products_data])
+        
+    products_data['Firm_Product'] = np.where(products_data['owner initial'].isin(firms_wt_dc_assigned_to_products), products_data['owner initial']+products_data['product_group_descr'], products_data['owner initial'])
+    products_data = products_data.merge(distribution_centers, left_on = 'Firm_Product', right_on = 'Firm_Product', how = 'outer')
 
     for i in range(len(brands_wt_dc_assigned)):
-        brands_assigned = list(set(data['brand_descr'][data['brand_descr'].str.contains(brands_wt_dc_assigned.iloc[i]['Brand'].upper(), na=False)]))
-        data['distribution_centers_latitude'] = np.where((data['owner initial'].astype(str) == brands_wt_dc_assigned.iloc[i]['Firm']) & (data['brand_descr'].isin(brands_assigned)), brands_wt_dc_assigned.loc[i, 'distribution_centers_latitude'], data['distribution_centers_latitude'])
-        data['distribution_centers_longitude'] = np.where((data['owner initial'].astype(str) == brands_wt_dc_assigned.iloc[i]['Firm']) & (data['brand_descr'].isin(brands_assigned)), brands_wt_dc_assigned.loc[i, 'distribution_centers_longitude'], data['distribution_centers_longitude'])
-    
-    data['distance'] = 6371.01 * np.arccos(np.sin(data['distribution_centers_latitude'].map(radians))*np.sin(data['latitude'].map(radians)) + np.cos(data['distribution_centers_latitude'].map(radians))*np.cos(data['latitude'].map(radians))*np.cos(data['distribution_centers_longitude'].map(radians) - data['longitude'].map(radians)))
-    data = data.groupby(allbut(data, 'distribution_centers_latitude','distribution_centers_longitude','distance')).agg({'distance': 'min'}).reset_index()
-    
-    data.to_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + "_pre_model_" + quarterOrMonth + "_with_distance.tsv", sep = '\t', encoding = 'utf-8')
+        brands_assigned = list(set(products_data['brand_descr'][products_data['brand_descr'].str.contains(brands_wt_dc_assigned['Brand'].iloc[i].upper(), na=False)]))
+        products_data['distribution_centers_latitude'] = np.where((products_data['owner initial'].astype(str) == brands_wt_dc_assigned['Firm'].iloc[i]) & (products_data['brand_descr'].isin(brands_assigned)), brands_wt_dc_assigned.loc[i, 'distribution_centers_latitude'], products_data['distribution_centers_latitude'])
+        products_data['distribution_centers_longitude'] = np.where((products_data['owner initial'].astype(str) == brands_wt_dc_assigned['Firm'].iloc[i]) & (products_data['brand_descr'].isin(brands_assigned)), brands_wt_dc_assigned.loc[i, 'distribution_centers_longitude'], products_data['distribution_centers_longitude'])
+        print(i)
+
+    data = pd.read_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in product_group_descrs]) + "_pre_model_" + quarterOrMonth + "_data.tsv", delimiter = "\t", index_col = 0)
+    upc_dma_code = data[['upc','dma_code']].drop_duplicates()
+    products_data = products_data.merge(upc_dma_code, left_on = 'upc', right_on = 'upc', how = 'outer')
+    major_cities = geocoding_dma()
+    products_data['latitude'] = products_data['dma_code'].map(major_cities.drop_duplicates('dma_code').set_index('dma_code')['latitude'])
+    products_data['longitude'] = products_data['dma_code'].map(major_cities.drop_duplicates('dma_code').set_index('dma_code')['longitude'])
+    products_data['distance'] = 6371.01 * np.arccos(np.sin(products_data['distribution_centers_latitude'].map(radians))*np.sin(products_data['latitude'].map(radians)) + np.cos(products_data['distribution_centers_latitude'].map(radians))*np.cos(products_data['latitude'].map(radians))*np.cos(products_data['distribution_centers_longitude'].map(radians) - products_data['longitude'].map(radians)))
+    products_data = products_data.groupby(['upc','dma_code']).agg({'distance': 'min'}).reset_index()
+    print(products_data.iloc[0])
+    products_data['upc_dma_code'] = products_data['upc'].astype(int).astype(str) + ' ' + products_data['dma_code'].astype(int).astype(str)
+    data['upc_dma_code'] = data['upc'].astype(int).astype(str) + ' ' + data['dma_code'].astype(int).astype(str)
+    data['distance'] = data['upc_dma_code'].map(products_data.set_index('upc_dma_code')['distance'])
+    print(data.iloc[0])
+    data.to_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in product_group_descrs]) + '_' + quarterOrMonth + "_pre_model" + "_with_distance.tsv", sep = '\t', encoding = 'utf-8')
 
 quarterOrMonth = sys.argv[1]
-#products = [sys.argv[2]]
-products = [sys.argv[2], sys.argv[3]]
+products = [sys.argv[2]]
+#products = [sys.argv[2], sys.argv[3]]
 generateDistance(products, quarterOrMonth)

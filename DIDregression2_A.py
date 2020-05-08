@@ -24,6 +24,6 @@ def DID2(products, quarterOrMonth):
     f.close()
 
 quarterOrMonth = sys.argv[1]
-products = [sys.argv[2], sys.argv[3]]
-#products = [sys.argv[2]]
+#products = [sys.argv[2], sys.argv[3]]
+products = [sys.argv[2]]
 DID2(products, quarterOrMonth)

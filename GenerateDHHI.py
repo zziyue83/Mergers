@@ -8,7 +8,6 @@ def GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth):
     pre_merger_data = panel_data[panel_data['postmerger_within_one_year']==0]
     pre_merger_data = pre_merger_data[pre_merger_data['owner initial'] != 'unknown']
     pre_merger_data = pre_merger_data[pre_merger_data['owner last'] != 'unknown']
-<<<<<<< HEAD
     HHI_before = pre_merger_data.groupby(['owner initial', 'dma_code', quarterOrMonth]).agg({'volume': 'sum', 'market_size_DMA': 'first'})
     HHI_before = HHI_before.groupby(level=[0,1]).agg({'volume': 'sum', 'market_size_DMA': 'sum'})
     HHI_before['market_share'] = HHI_before['volume']/HHI_before['market_size_DMA']
@@ -17,18 +16,6 @@ def GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth):
     HHI_after = pre_merger_data.groupby(['owner last', 'dma_code', quarterOrMonth]).agg({'volume': 'sum', 'market_size_DMA': 'first'})
     HHI_after = HHI_after.groupby(level=[0,1]).agg({'volume': 'sum', 'market_size_DMA': 'sum'})
     HHI_after['market_share'] = HHI_after['volume']/HHI_after['market_size_DMA']
-=======
-
-    HHI_before = pre_merger_data.groupby(['owner initial','dma_code',quarterOrMonth]).agg({'volume': 'sum', 'market_size': 'first'})
-    HHI_before = HHI_before.groupby(level=[0,1]).agg({'volume': 'sum', 'market_size': 'sum'})
-    HHI_before['market_share'] = HHI_before['volume']/HHI_before['market_size']
-    HHI_before['HHI_before'] = HHI_before['market_share']**2
-    HHI_before = HHI_before.groupby('dma_code').agg({'HHI_before': 'sum'})
-    
-    HHI_after = pre_merger_data.groupby(['owner last','dma_code',quarterOrMonth]).agg({'volume': 'sum', 'market_size': 'first'})
-    HHI_after = HHI_after.groupby(level=[0,1]).agg({'volume': 'sum', 'market_size': 'sum'})
-    HHI_after['market_share'] = HHI_after['volume']/HHI_after['market_size']
->>>>>>> 60263bd182d4190d5acc2accfbd420a51a7136d3
     HHI_after['HHI_after'] = HHI_after['market_share']**2
     HHI_after = HHI_after.groupby('dma_code').agg({'HHI_after': 'sum'})
     DHHI = HHI_before.merge(HHI_after, left_index = True, right_index = True)
@@ -39,14 +26,6 @@ def GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth):
 quarterOrMonth = sys.argv[1]
 mergingyear = sys.argv[2]
 mergingquarterormonth = sys.argv[3]
-<<<<<<< HEAD
-products = [sys.argv[4], sys.argv[5]]
-#products = [sys.argv[4]]
-GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth)
-=======
 #products = [sys.argv[4], sys.argv[5]]
 products = [sys.argv[4]]
 GenerateDHHI(products, quarterOrMonth, mergingyear, mergingquarterormonth)
-# quarter 2008 2 CANDY GUM
-# month 2008 5 CANDY GUM
->>>>>>> 60263bd182d4190d5acc2accfbd420a51a7136d3
