@@ -68,7 +68,7 @@ def CalDMADeltaHHI(oneYearFirmDMA, product, frequency):
     # print(merger)
     # print(merger.owner.unique())
     preMerger = merger.groupby(['dma_code', 'owner'], as_index = False).agg({'volume':'sum', 'dma_size':'first'}, as_index = False).reindex(columns = merger.columns)
-    mktsize = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_mkt_size.tsv")
+    mktsize = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_mkt_size.tsv", delimiter = '\t')
     mktsize = mktsize.set_index('dma_code')
     mktsize_dict = mktsize.to_dict()
     preMerger['dma_size'] = preMerger['dma_code'].map(mktsize_dict['mkt_size'])
