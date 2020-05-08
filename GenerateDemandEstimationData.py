@@ -52,7 +52,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     print(problem)
     logit_results = problem.solve()
     print(logit_results)
-    resultDf = pd.from_dict(data=logit_results.to_dict(), orient='index')
+    resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
     resultDf.to_csv('RegressionResults/'+product+'_plain_logit.csv', dep = ',')
 
     #nested logit regression
@@ -63,7 +63,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     problem = pyblp.Problem(nl_formulation, df)
     nlresults = problem.solve(rho=0.7)
     print(nlresults)
-    resultDf = pd.from_dict(data=nlresults.to_dict(), orient='index')
+    resultDf = pd.DataFrame.from_dict(data=nlresults.to_dict(), orient='index')
     resultDf.to_csv('RegressionResults/'+product+'_nested_logit.csv', dep = ',')
 
 def ReadInstrument(input, skiprows = 0):
