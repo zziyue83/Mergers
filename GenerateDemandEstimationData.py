@@ -68,6 +68,7 @@ def AddExtraFeatures(product, data, characteristics, years):
         features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
         y = int(year)
         year_data = data[data['year'] == y]
+        print(year_data)
         agg_dic = {}
         for characteristic in characteristics:
             agg_dic[characteristic] = 'first'
@@ -76,14 +77,14 @@ def AddExtraFeatures(product, data, characteristics, years):
         features = features[variables]
         features = features.set_index('upc')
         features_map = features.to_dict()
-        print(features)
-        print(features_map['style_descr'])
-        print(year_data['upc'])
+        # print(features)
+        # print(features_map['style_descr'])
+        # print(year_data['upc'])
         # data = data.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','panel_year'])
         for characteristic in characteristics:
             year_data[characteristic] = year_data['upc'].map(features_map[characteristic])
         print('wuhu')
-        print(year_data['style_descr'])
+        # print(year_data['style_descr'])
         data_with_features_ls.append(year_data)
         # print('wuhuwuhu')
     data_with_features = pd.concat(data_with_features_ls)
