@@ -70,6 +70,10 @@ def AddExtraFeatures(product, data, characteristics, years):
         # movement = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", delimiter = '\t' , index_col = "upc" , chunksize = 1000000)
         # features = pd.read_csv("../../Data/nielsen_extracts/RMS/"+year+"/Annual_Files/products_extra_"+year+".tsv", delimiter = '\t')
         features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
+        agg_dic = {}
+        for characteristic in characteristics:
+            agg_dic[characteristic] = 'first'
+        features = features.groupby(['upc', 'panel_year'], as_index = False).agg(agg_dic, as_index = False).reindex(columns = data_chunk.columns)
         variables = characteristics + ['upc','panel_year']
         features = features[variables]
         print(features)
