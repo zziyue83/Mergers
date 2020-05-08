@@ -318,9 +318,10 @@ def generateDistance(products, quarterOrMonth):
     data['upc_dma_code'] = data['upc'].astype(int).astype(str) + ' ' + data['dma_code'].astype(int).astype(str)
     data['distance'] = data['upc_dma_code'].map(products_data.set_index('upc_dma_code')['distance'])
     print(data.iloc[0])
+    data['distance'].fillna((data['distance'].mean()), inplace=True)
     data.to_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in product_group_descrs]) + '_' + quarterOrMonth + "_pre_model" + "_with_distance.tsv", sep = '\t', encoding = 'utf-8')
 
 quarterOrMonth = sys.argv[1]
-products = [sys.argv[2]]
-#products = [sys.argv[2], sys.argv[3]]
+#products = [sys.argv[2]]
+products = [sys.argv[2], sys.argv[3]]
 generateDistance(products, quarterOrMonth)

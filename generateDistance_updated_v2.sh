@@ -7,9 +7,9 @@
 #SBATCH -t 1:00:00
 #SBATCH --mail-user=ziyuechen2022@u.northwestern.edu
 #SBATCH --array=1
-#SBATCH --mem=100G
+#SBATCH --mem=50G
 #SBATCH --nodes=1
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python generateDistance_updated_v2.py quarter Beer
+python generateDistance_updated_v2.py month Candy Gum
