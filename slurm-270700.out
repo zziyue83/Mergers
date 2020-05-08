@@ -1,0 +1,196 @@
+0it [00:00, ?it/s]1it [00:02,  2.08s/it]2it [00:03,  2.03s/it]3it [00:05,  1.98s/it]4it [00:06,  1.58s/it]4it [00:06,  1.62s/it]
+0it [00:00, ?it/s]1it [00:01,  1.95s/it]2it [00:03,  1.91s/it]3it [00:05,  1.89s/it]4it [00:06,  1.59s/it]4it [00:06,  1.62s/it]
+0it [00:00, ?it/s]1it [00:01,  1.84s/it]2it [00:03,  1.83s/it]3it [00:05,  1.86s/it]4it [00:06,  1.53s/it]4it [00:06,  1.58s/it]
+0it [00:00, ?it/s]1it [00:01,  1.93s/it]2it [00:03,  1.93s/it]3it [00:05,  1.90s/it]4it [00:06,  1.51s/it]4it [00:06,  1.58s/it]
+CANDY
+[2006, 2007, 2008, 2009]
+quarter
+                                  owner merging
+0                                  Mars       1
+1                               Wrigley       1
+2             American Licorice Company       0
+3                    Asher’s Chocolates       0
+4                         August Storck       0
+5                   Brach's Confections       0
+6            Bradford Chocolate Factory       0
+7                         Brown & Haley       0
+8                               Cadbury       0
+9                      Callard & Bowser       0
+10                          Ce De Candy       0
+11                            Colombina       0
+12                            CTL Foods       0
+13              Elmer Candy Corporation       0
+14                   Farley's & Sathers       0
+15                    FB Washburn Candy       0
+16                    Ferrara Pan Candy       0
+17                              Ferrero       0
+18  Frankford Candy & Chocolate Company       0
+19              Galerie Candy and Gifts       0
+20               Goetze's Candy Company       0
+21                          Grupo Arcor       0
+22                               Haribo       0
+23                              Hershey       0
+24                   Impact Confections       0
+25                 Jelly Belly Candy Co       0
+26                                Joyva       0
+27                        Just Born Inc       0
+28                     Kraft Foods Inc.       0
+29                     Lindt & Sprüngli       0
+30                      Log House Foods       0
+31                   Maxfield Candy Co.       0
+32                   Mayfair Sales Inc.       0
+33                 Mount Franklin Foods       0
+34                          Mrs. Fields       0
+35                                Necco       0
+36                               Nestlé       0
+37              Old Dominion Peanut Co.       0
+38              Pearson's Candy Company       0
+39                   Perfetti Van Melle       0
+40               Piedmont Candy Company       0
+41               R.L. Albert & Son, Inc       0
+42                         RM Palmer Co       0
+43           Russell Stover Candies Inc       0
+44                        Shari Candies       0
+45                Sherwood Brands, Inc.       0
+46                       Simply Goodies       0
+47               Spangler Candy Company       0
+48       Sun-Maid Growers of California       0
+49                  Sweet Candy Company       0
+50              Tootsie Roll Industries       0
+51                              unknown       0
+52             World's Finest Chocolate       0
+53                  Zachary Confections       0
+0it [00:00, ?it/s]1it [00:04,  4.54s/it]1it [00:04,  4.54s/it]
+0it [00:00, ?it/s]1it [00:03,  3.32s/it]1it [00:03,  3.32s/it]
+0it [00:00, ?it/s]1it [00:03,  3.52s/it]1it [00:03,  3.52s/it]
+0it [00:00, ?it/s]1it [00:03,  3.21s/it]2it [00:03,  1.64s/it]
+GUM
+[2006, 2007, 2008, 2009]
+month
+                                  owner merging
+0                                  Mars       1
+1                               Wrigley       1
+2              A Nut Above The Rest Inc       0
+3                  Action Candy Company       0
+4                        American Foods       0
+5                               Au'some       0
+6                   Brach's Confections       0
+7                    Brand New Products       0
+8                           C. Howard's       0
+9                               Cadbury       0
+10                       Candy Dynamics       0
+11                              Canel's       0
+12                           Casa Dulce       0
+13                       CCA Industries       0
+14                          Ce De Candy       0
+15                      Church & Dwight       0
+16                            CTL Foods       0
+17                          Dulces Vero       0
+18                            Eillien's       0
+19                             El Guapo       0
+20                   Farley's & Sathers       0
+21               Ford Gum & Machine Co.       0
+22  Frankford Candy & Chocolate Company       0
+23              Galerie Candy and Gifts       0
+24                           Gumrunners       0
+25                              Hershey       0
+26                                Hilco       0
+27                         Imaginings 3       0
+28                   Impact Confections       0
+29                         Imperial Toy       0
+30                          It's Delish       0
+31                 Jelly Belly Candy Co       0
+32                             Mad Croc       0
+33                   Mayfair Sales Inc.       0
+34                 Mount Franklin Foods       0
+35              Mueller Sports Medicine       0
+36                                Necco       0
+37                               Nestlé       0
+38                       New Era Brands       0
+39                   Perfetti Van Melle       0
+40                              Philips       0
+41               R.L. Albert & Son, Inc       0
+42                Richardson Brands Co.       0
+43                Schuster Products LLC       0
+44                        Shari Candies       0
+45                Sherwood Brands, Inc.       0
+46                       SP Enterprises       0
+47                            Starbucks       0
+48                              Strauss       0
+49                          Sweet N Fun       0
+50               SweetWorks Confections       0
+51            The Foreign Candy Company       0
+52                          TheraBreath       0
+53                        Thrifty White       0
+54              Tootsie Roll Industries       0
+55                                Topps       0
+56                              unknown       0
+57                                Verve       0
+58                     Zeta Espacial SA       0
+0it [00:00, ?it/s]1it [00:00,  1.25it/s]1it [00:00,  1.25it/s]
+0it [00:00, ?it/s]1it [00:00,  1.26it/s]1it [00:00,  1.26it/s]
+0it [00:00, ?it/s]1it [00:00,  1.23it/s]1it [00:00,  1.23it/s]
+0it [00:00, ?it/s]1it [00:00,  1.12it/s]1it [00:00,  1.12it/s]
+GUM
+[2006, 2007, 2008, 2009]
+quarter
+                                  owner merging
+0                                  Mars       1
+1                               Wrigley       1
+2              A Nut Above The Rest Inc       0
+3                  Action Candy Company       0
+4                        American Foods       0
+5                               Au'some       0
+6                   Brach's Confections       0
+7                    Brand New Products       0
+8                           C. Howard's       0
+9                               Cadbury       0
+10                       Candy Dynamics       0
+11                              Canel's       0
+12                           Casa Dulce       0
+13                       CCA Industries       0
+14                          Ce De Candy       0
+15                      Church & Dwight       0
+16                            CTL Foods       0
+17                          Dulces Vero       0
+18                            Eillien's       0
+19                             El Guapo       0
+20                   Farley's & Sathers       0
+21               Ford Gum & Machine Co.       0
+22  Frankford Candy & Chocolate Company       0
+23              Galerie Candy and Gifts       0
+24                           Gumrunners       0
+25                              Hershey       0
+26                                Hilco       0
+27                         Imaginings 3       0
+28                   Impact Confections       0
+29                         Imperial Toy       0
+30                          It's Delish       0
+31                 Jelly Belly Candy Co       0
+32                             Mad Croc       0
+33                   Mayfair Sales Inc.       0
+34                 Mount Franklin Foods       0
+35              Mueller Sports Medicine       0
+36                                Necco       0
+37                               Nestlé       0
+38                       New Era Brands       0
+39                   Perfetti Van Melle       0
+40                              Philips       0
+41               R.L. Albert & Son, Inc       0
+42                Richardson Brands Co.       0
+43                Schuster Products LLC       0
+44                        Shari Candies       0
+45                Sherwood Brands, Inc.       0
+46                       SP Enterprises       0
+47                            Starbucks       0
+48                              Strauss       0
+49                          Sweet N Fun       0
+50               SweetWorks Confections       0
+51            The Foreign Candy Company       0
+52                          TheraBreath       0
+53                        Thrifty White       0
+54              Tootsie Roll Industries       0
+55                                Topps       0
+56                              unknown       0
+57                                Verve       0
+58                     Zeta Espacial SA       0

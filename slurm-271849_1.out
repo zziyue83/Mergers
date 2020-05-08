@@ -1,0 +1,2 @@
+/var/spool/slurmd/job271849/slurm_script: line 15:  5666 Killed                  python logitEstimation.py quarter CANDY GUM sugar cocoa_beans mint variety_descr
+slurmstepd: error: Detected 1 oom-kill event(s) in step 271849.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.

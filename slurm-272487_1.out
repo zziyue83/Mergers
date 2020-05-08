@@ -1,0 +1,594 @@
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
+  warnings.warn(msg, UserWarning)
+sys:1: DtypeWarning: Columns (18,20,28,30,32,34,36,38,55) have mixed types. Specify dtype option on import or set low_memory=False.
+/software/anaconda3.6/lib/python3.6/site-packages/numpy/lib/arraysetops.py:569: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  mask |= (ar1 == a)
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '2.6.2' or newer of 'numexpr' (version '2.6.1' currently installed).
+  warnings.warn(msg, UserWarning)
+sys:1: DtypeWarning: Columns (18,20,24,28,30,32,34,36,38,55) have mixed types. Specify dtype option on import or set low_memory=False.
+/software/anaconda3.6/lib/python3.6/site-packages/numpy/lib/arraysetops.py:569: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  mask |= (ar1 == a)
+sys:1: DtypeWarning: Columns (18,20,28,30,32,34,36,38,40,55) have mixed types. Specify dtype option on import or set low_memory=False.
+sys:1: DtypeWarning: Columns (18,20,30,32,34,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
+sys:1: DtypeWarning: Columns (18,20,30,34,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
+sys:1: DtypeWarning: Columns (18,20,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
+   Unnamed: 0           t     sugar  Change quarter
+0         NaN  1990-02-01  0.330000     NaN  1990Q1
+1         NaN  1990-04-01  0.316667     NaN  1990Q2
+2         NaN  1990-07-01  0.246667     NaN  1990Q3
+3         NaN  1990-10-01  0.216667     NaN  1990Q4
+4         NaN  1991-01-01  0.193333     NaN  1991Q1
+   Unnamed: 0       upc  dma_code  ...  upc_dma_code     distance     sugar
+0           0  10000001       529  ...  10000001 529   372.617769  0.376667
+1           1  10000001       561  ...  10000001 561  1265.954500  0.290000
+2           2  10000001       618  ...  10000001 618  1626.333591  0.376667
+3           3  10000001       640  ...  10000001 640   850.837264  0.376667
+4           4  10000001       652  ...  10000001 652   954.904401  0.290000
+
+[5 rows x 38 columns]
+   Unnamed: 0           t  cocoa_beans  Change quarter
+0         NaN  2000-02-01     0.895000     NaN  2000Q1
+1         NaN  2000-04-01     0.926667     NaN  2000Q2
+2         NaN  2000-07-01     0.913333     NaN  2000Q3
+3         NaN  2000-10-01     0.883333     NaN  2000Q4
+4         NaN  2001-01-01     1.003333     NaN  2001Q1
+   Unnamed: 0       upc  dma_code  ...     distance     sugar  cocoa_beans
+0           0  10000001       529  ...   372.617769  0.376667     1.556667
+1           1  10000001       561  ...  1265.954500  0.290000     2.596667
+2           2  10000001       618  ...  1626.333591  0.376667     1.556667
+3           3  10000001       640  ...   850.837264  0.376667     1.556667
+4           4  10000001       652  ...   954.904401  0.290000     2.596667
+
+[5 rows x 39 columns]
+upc                                 10000001
+units                                      1
+prmult                                     1
+price                                      1
+feature                                  NaN
+display                                  NaN
+month                                 200601
+dma_code                                 529
+sales                                      1
+brand_code_uc                         642145
+brand_descr                         SPANGLER
+multi                                      1
+size1_amount                               6
+volume                                     6
+upc_ver_uc                                 1
+panel_year                              2006
+flavor_code                                0
+flavor_descr                             NaN
+form_code                               2419
+form_descr                             FRUIT
+formula_code                               0
+formula_descr                            NaN
+container_code                             0
+container_descr                          NaN
+salt_content_code                        NaN
+salt_content_descr                       NaN
+style_code                                 0
+style_descr                              NaN
+type_code                              13794
+type_descr                            BUBBLE
+product_code                               0
+product_descr                            NaN
+variety_code                             765
+variety_descr                  NON-CHOCOLATE
+organic_claim_code                         1
+organic_claim_descr                      NaN
+usda_organic_seal_code                     1
+usda_organic_seal_descr                  NaN
+common_consumer_name_code                NaN
+common_consumer_name_descr               NaN
+strength_code                            NaN
+strength_descr                           NaN
+scent_code                               NaN
+scent_descr                              NaN
+dosage_code                              NaN
+dosage_descr                             NaN
+gender_code                              NaN
+gender_descr                             NaN
+target_skin_condition_code               NaN
+target_skin_condition_descr              NaN
+use_code                                 NaN
+use_descr                                NaN
+size2_code                               NaN
+size2_amount                             NaN
+size2_units                              NaN
+year                                    2006
+product                                CANDY
+upc_year                       10000001 2006
+mint                                NON-MINT
+Name: 0, dtype: object
+upc                                               63000001
+units                                                    2
+prmult                                                   1
+price                                                 0.94
+feature                                                NaN
+display                                                NaN
+month                                               200702
+dma_code                                               556
+sales                                                 1.88
+brand_code_uc                                       654958
+brand_descr                                      TOO TARTS
+multi                                                    1
+size1_amount                                          0.75
+volume                                                 1.5
+upc_ver_uc                                               1
+panel_year                                            2007
+flavor_code                                              0
+flavor_descr                                           NaN
+form_code                                              277
+form_descr                                          LIQUID
+formula_code                                             0
+formula_descr                                          NaN
+container_code                                           0
+container_descr                                        NaN
+salt_content_code                                      NaN
+salt_content_descr                                     NaN
+style_code                                               0
+style_descr                                            NaN
+type_code                                                0
+type_descr                                             NaN
+product_code                                         74890
+product_descr                  EXTRA SR VEWY CHR GOO CANDY
+variety_code                                           765
+variety_descr                                NON-CHOCOLATE
+organic_claim_code                                       1
+organic_claim_descr                                    NaN
+usda_organic_seal_code                                   1
+usda_organic_seal_descr                                NaN
+common_consumer_name_code                              NaN
+common_consumer_name_descr                             NaN
+strength_code                                          NaN
+strength_descr                                         NaN
+scent_code                                             NaN
+scent_descr                                            NaN
+dosage_code                                            NaN
+dosage_descr                                           NaN
+gender_code                                            NaN
+gender_descr                                           NaN
+target_skin_condition_code                             NaN
+target_skin_condition_descr                            NaN
+use_code                                               NaN
+use_descr                                              NaN
+size2_code                                             NaN
+size2_amount                                           NaN
+size2_units                                            NaN
+year                                                  2007
+product                                              CANDY
+upc_year                                     63000001 2007
+mint                                              NON-MINT
+Name: 284900, dtype: object
+upc                                               60901910
+units                                                    2
+prmult                                                   1
+price                                                 2.24
+feature                                                NaN
+display                                                NaN
+month                                               200801
+dma_code                                               501
+sales                                                 4.48
+brand_code_uc                                       592105
+brand_descr                                      MADELAINE
+multi                                                    1
+size1_amount                                             4
+volume                                                   8
+upc_ver_uc                                               1
+panel_year                                            2008
+flavor_code                                              0
+flavor_descr                                           NaN
+form_code                                             5811
+form_descr                                      SOLID LEAF
+formula_code                                             0
+formula_descr                                          NaN
+container_code                                           0
+container_descr                                        NaN
+salt_content_code                                      NaN
+salt_content_descr                                     NaN
+style_code                                               0
+style_descr                                            NaN
+type_code                                             2081
+type_descr                                            MILK
+product_code                                         34538
+product_descr                                      CH LEAF
+variety_code                                           456
+variety_descr                                    CHOCOLATE
+organic_claim_code                                       4
+organic_claim_descr                             NOT STATED
+usda_organic_seal_code                                   2
+usda_organic_seal_descr        NO USDA ORGANIC SEAL ON PKG
+common_consumer_name_code                              NaN
+common_consumer_name_descr                             NaN
+strength_code                                          NaN
+strength_descr                                         NaN
+scent_code                                             NaN
+scent_descr                                            NaN
+dosage_code                                            NaN
+dosage_descr                                           NaN
+gender_code                                            NaN
+gender_descr                                           NaN
+target_skin_condition_code                             NaN
+target_skin_condition_descr                            NaN
+use_code                                               NaN
+use_descr                                              NaN
+size2_code                                             NaN
+size2_amount                                           NaN
+size2_units                                            NaN
+year                                                  2008
+product                                              CANDY
+upc_year                                     60901910 2008
+mint                                              NON-MINT
+Name: 0, dtype: object
+upc                                 10000001
+units                                      1
+prmult                                     1
+price                                    0.5
+feature                                  NaN
+display                                  NaN
+month                                 200902
+dma_code                                 561
+sales                                    0.5
+brand_code_uc                         642145
+brand_descr                         SPANGLER
+multi                                      1
+size1_amount                               6
+volume                                     6
+upc_ver_uc                                 1
+panel_year                              2009
+flavor_code                                0
+flavor_descr                             NaN
+form_code                               2419
+form_descr                             FRUIT
+formula_code                               0
+formula_descr                            NaN
+container_code                             0
+container_descr                          NaN
+salt_content_code                          0
+salt_content_descr                       NaN
+style_code                                 0
+style_descr                              NaN
+type_code                              13794
+type_descr                            BUBBLE
+product_code                               0
+product_descr                            NaN
+variety_code                             765
+variety_descr                  NON-CHOCOLATE
+organic_claim_code                         1
+organic_claim_descr                      NaN
+usda_organic_seal_code                     1
+usda_organic_seal_descr                  NaN
+common_consumer_name_code                NaN
+common_consumer_name_descr               NaN
+strength_code                            NaN
+strength_descr                           NaN
+scent_code                               NaN
+scent_descr                              NaN
+dosage_code                              NaN
+dosage_descr                             NaN
+gender_code                              NaN
+gender_descr                             NaN
+target_skin_condition_code               NaN
+target_skin_condition_descr              NaN
+use_code                                 NaN
+use_descr                                NaN
+size2_code                               NaN
+size2_amount                             NaN
+size2_units                              NaN
+year                                    2009
+product                                CANDY
+upc_year                       10000001 2009
+mint                                NON-MINT
+Name: 36117, dtype: object
+upc                                        36005300
+units                                            15
+prmult                                            1
+price                                          1.49
+feature                                         NaN
+display                                         NaN
+month                                        200601
+dma_code                                        501
+sales                                         22.35
+brand_code_uc                                546460
+brand_descr                    ECO-DENT BETWEEN! CS
+multi                                             1
+size1_amount                                     12
+volume                                          180
+upc_ver_uc                                      NaN
+panel_year                                      NaN
+flavor_code                                     NaN
+flavor_descr                                    NaN
+form_code                                       NaN
+form_descr                                      NaN
+formula_code                                    NaN
+formula_descr                                   NaN
+container_code                                  NaN
+container_descr                                 NaN
+salt_content_code                               NaN
+salt_content_descr                              NaN
+style_code                                      NaN
+style_descr                                     NaN
+type_code                                       NaN
+type_descr                                      NaN
+product_code                                    NaN
+product_descr                                   NaN
+variety_code                                    NaN
+variety_descr                                   NaN
+organic_claim_code                              NaN
+organic_claim_descr                             NaN
+usda_organic_seal_code                          NaN
+usda_organic_seal_descr                         NaN
+common_consumer_name_code                       NaN
+common_consumer_name_descr                      NaN
+strength_code                                   NaN
+strength_descr                                  NaN
+scent_code                                      NaN
+scent_descr                                     NaN
+dosage_code                                     NaN
+dosage_descr                                    NaN
+gender_code                                     NaN
+gender_descr                                    NaN
+target_skin_condition_code                      NaN
+target_skin_condition_descr                     NaN
+use_code                                        NaN
+use_descr                                       NaN
+size2_code                                      NaN
+size2_amount                                    NaN
+size2_units                                     NaN
+year                                           2006
+product                                         GUM
+upc_year                              36005300 2006
+mint                                       NON-MINT
+Name: 0, dtype: object
+upc                                        36005300
+units                                             2
+prmult                                            1
+price                                          1.99
+feature                                         NaN
+display                                         NaN
+month                                        200701
+dma_code                                        616
+sales                                          3.98
+brand_code_uc                                546460
+brand_descr                    ECO-DENT BETWEEN! CS
+multi                                             1
+size1_amount                                     12
+volume                                           24
+upc_ver_uc                                        1
+panel_year                                     2007
+flavor_code                                   51180
+flavor_descr                      NATURAL COOL MINT
+form_code                                       378
+form_descr                                    PIECE
+formula_code                                      0
+formula_descr                                   NaN
+container_code                                    0
+container_descr                                 NaN
+salt_content_code                               NaN
+salt_content_descr                              NaN
+style_code                                        0
+style_descr                                     NaN
+type_code                                         0
+type_descr                                      NaN
+product_code                                      0
+product_descr                                   NaN
+variety_code                                      0
+variety_descr                                   NaN
+organic_claim_code                                1
+organic_claim_descr                             NaN
+usda_organic_seal_code                            1
+usda_organic_seal_descr                         NaN
+common_consumer_name_code                       NaN
+common_consumer_name_descr                      NaN
+strength_code                                   NaN
+strength_descr                                  NaN
+scent_code                                      NaN
+scent_descr                                     NaN
+dosage_code                                     NaN
+dosage_descr                                    NaN
+gender_code                                     NaN
+gender_descr                                    NaN
+target_skin_condition_code                      NaN
+target_skin_condition_descr                     NaN
+use_code                                        NaN
+use_descr                                       NaN
+size2_code                                      NaN
+size2_amount                                    NaN
+size2_units                                     NaN
+year                                           2007
+product                                         GUM
+upc_year                              36005300 2007
+mint                                       NON-MINT
+Name: 0, dtype: object
+upc                                        36005300
+units                                             1
+prmult                                            1
+price                                          1.99
+feature                                         NaN
+display                                         NaN
+month                                        200801
+dma_code                                        616
+sales                                          1.99
+brand_code_uc                                546460
+brand_descr                    ECO-DENT BETWEEN! CS
+multi                                             1
+size1_amount                                     12
+volume                                           12
+upc_ver_uc                                        1
+panel_year                                     2008
+flavor_code                                   51180
+flavor_descr                      NATURAL COOL MINT
+form_code                                       378
+form_descr                                    PIECE
+formula_code                                      0
+formula_descr                                   NaN
+container_code                                    0
+container_descr                                 NaN
+salt_content_code                               NaN
+salt_content_descr                              NaN
+style_code                                        0
+style_descr                                     NaN
+type_code                                         0
+type_descr                                      NaN
+product_code                                      0
+product_descr                                   NaN
+variety_code                                      0
+variety_descr                                   NaN
+organic_claim_code                                1
+organic_claim_descr                             NaN
+usda_organic_seal_code                            1
+usda_organic_seal_descr                         NaN
+common_consumer_name_code                       NaN
+common_consumer_name_descr                      NaN
+strength_code                                   NaN
+strength_descr                                  NaN
+scent_code                                      NaN
+scent_descr                                     NaN
+dosage_code                                     NaN
+dosage_descr                                    NaN
+gender_code                                     NaN
+gender_descr                                    NaN
+target_skin_condition_code                      NaN
+target_skin_condition_descr                     NaN
+use_code                                        NaN
+use_descr                                       NaN
+size2_code                                      NaN
+size2_amount                                    NaN
+size2_units                                     NaN
+year                                           2008
+product                                         GUM
+upc_year                              36005300 2008
+mint                                       NON-MINT
+Name: 0, dtype: object
+upc                                        36005300
+units                                             1
+prmult                                            1
+price                                          1.99
+feature                                         NaN
+display                                         NaN
+month                                        200901
+dma_code                                        616
+sales                                          1.99
+brand_code_uc                                546460
+brand_descr                    ECO-DENT BETWEEN! CS
+multi                                             1
+size1_amount                                     12
+volume                                           12
+upc_ver_uc                                        1
+panel_year                                     2009
+flavor_code                                   51180
+flavor_descr                      NATURAL COOL MINT
+form_code                                       378
+form_descr                                    PIECE
+formula_code                                      0
+formula_descr                                   NaN
+container_code                                    0
+container_descr                                 NaN
+salt_content_code                                 0
+salt_content_descr                              NaN
+style_code                                        0
+style_descr                                     NaN
+type_code                                         0
+type_descr                                      NaN
+product_code                                      0
+product_descr                                   NaN
+variety_code                                      0
+variety_descr                                   NaN
+organic_claim_code                                1
+organic_claim_descr                             NaN
+usda_organic_seal_code                            1
+usda_organic_seal_descr                         NaN
+common_consumer_name_code                       NaN
+common_consumer_name_descr                      NaN
+strength_code                                   NaN
+strength_descr                                  NaN
+scent_code                                      NaN
+scent_descr                                     NaN
+dosage_code                                     NaN
+dosage_descr                                    NaN
+gender_code                                     NaN
+gender_descr                                    NaN
+target_skin_condition_code                      NaN
+target_skin_condition_descr                     NaN
+use_code                                        NaN
+use_descr                                       NaN
+size2_code                                      NaN
+size2_amount                                    NaN
+size2_units                                     NaN
+year                                           2009
+product                                         GUM
+upc_year                              36005300 2009
+mint                                       NON-MINT
+Name: 0, dtype: object
+upc                                 10000001
+units                                      1
+prmult                                     1
+price                                      1
+feature                                  NaN
+display                                  NaN
+month                                 200601
+dma_code                                 529
+sales                                      1
+brand_code_uc                         642145
+brand_descr                         SPANGLER
+multi                                      1
+size1_amount                               6
+volume                                     6
+upc_ver_uc                                 1
+panel_year                              2006
+flavor_code                                0
+flavor_descr                             NaN
+form_code                               2419
+form_descr                             FRUIT
+formula_code                               0
+formula_descr                            NaN
+container_code                             0
+container_descr                          NaN
+salt_content_code                        NaN
+salt_content_descr                       NaN
+style_code                                 0
+style_descr                              NaN
+type_code                              13794
+type_descr                            BUBBLE
+product_code                               0
+product_descr                            NaN
+variety_code                             765
+variety_descr                  NON-CHOCOLATE
+organic_claim_code                         1
+organic_claim_descr                      NaN
+usda_organic_seal_code                     1
+usda_organic_seal_descr                  NaN
+common_consumer_name_code                NaN
+common_consumer_name_descr               NaN
+strength_code                            NaN
+strength_descr                           NaN
+scent_code                               NaN
+scent_descr                              NaN
+dosage_code                              NaN
+dosage_descr                             NaN
+gender_code                              NaN
+gender_descr                             NaN
+target_skin_condition_code               NaN
+target_skin_condition_descr              NaN
+use_code                                 NaN
+use_descr                                NaN
+size2_code                               NaN
+size2_amount                             NaN
+size2_units                              NaN
+year                                    2006
+product                                CANDY
+upc_year                       10000001 2006
+mint                                NON-MINT
+Name: 0, dtype: object
+Traceback (most recent call last):
+  File "logitEstimation.py", line 83, in <module>
+    GenerateDEData(products, quarterOrMonth, inputs, characteristics)
+  File "logitEstimation.py", line 35, in GenerateDEData
+    data[characteristic] = data['upc_year'].map(add_features.set_index('upc_year')[characteristic])
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/core/series.py", line 3828, in map
+    new_values = super()._map_values(arg, na_action=na_action)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/core/base.py", line 1277, in _map_values
+    indexer = mapper.index.get_indexer(values)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2985, in get_indexer
+    "Reindexing only valid with uniquely" " valued Index objects"
+pandas.core.indexes.base.InvalidIndexError: Reindexing only valid with uniquely valued Index objects
