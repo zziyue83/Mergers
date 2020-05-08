@@ -4,7 +4,7 @@ import pyblp
 import numpy as np
 
 def GenerateDEData(product, frequency, inputs):
-    data = pd.read_csv("../../GeneratedData/" + product + "_pre_model_" + frequency + "_with_distance.tsv", delimiter = '\t')
+    data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_" + "_with_distance.tsv", delimiter = '\t')
     print(data['y-m-d'])
     for input in inputs:
         input_prices = ReadInstrument(input)
