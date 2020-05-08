@@ -55,6 +55,17 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     resultDf = pd.from_dict(data=logit_results.to_dict(), orient='index')
     resultDf.to_csv('RegressionResults/'+product+'_plain_logit.csv', dep = ',')
 
+    #nested logit regression
+    demand_estimation_data['nesting_ids'] = 1
+    groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
+    df['demand_instruments20'] = groups['shares'].transform(np.size)
+    nl_formulation = pyblp.Formulation('0 + prices')
+    problem = pyblp.Problem(nl_formulation, df)
+    nlresults = problem.solve(rho=0.7)
+    print(nlresults)
+    resultDf = pd.from_dict(data=nlresults.to_dict(), orient='index')
+    resultDf.to_csv('RegressionResults/'+product+'_nested_logit.csv', dep = ',')
+
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
     instrument['t'] = pd.to_datetime(instrument['time']).dt.to_period('M')
