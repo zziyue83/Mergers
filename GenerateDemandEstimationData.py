@@ -8,7 +8,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     print(data['y-m-d'])
     data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
     data['year'] = pd.to_datetime(data['y-m-d']).dt.to_period('Y')
-    data['year'] = data['year'].astype(int)
+    data['year'] = data['year'].astype(str)
     print(data[['upc','year']])
     years = GenerateYearList(start, end)
     data = AddExtraFeatures(product, data, characteristics, years)
@@ -67,8 +67,8 @@ def AddExtraFeatures(product, data, characteristics, years):
     print(data['year'].unique())
     for year in years:
         features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
-        y = int(year)
-        year_data = data[data['year'] == y]
+        # y = int(year)
+        year_data = data[data['year'] == year]
         print(year_data)
         agg_dic = {}
         for characteristic in characteristics:
