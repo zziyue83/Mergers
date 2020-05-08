@@ -1,0 +1,76 @@
+,0
+step,2
+optimization_time,0.0
+cumulative_optimization_time,0.0
+total_time,1.714350938796997
+cumulative_total_time,4.111950159072876
+converged,True
+cumulative_converged,True
+optimization_iterations,0
+cumulative_optimization_iterations,0
+objective_evaluations,1
+cumulative_objective_evaluations,2
+fp_converged,[]
+cumulative_fp_converged,[]
+fp_iterations,[]
+cumulative_fp_iterations,[]
+contraction_evaluations,[]
+cumulative_contraction_evaluations,[]
+parameters,[[-17.15519213]]
+parameter_covariances,[[7785485.07739492]]
+theta,[]
+sigma,[]
+pi,[]
+rho,[]
+beta,[[-17.15519213]]
+gamma,[]
+sigma_se,[]
+pi_se,[]
+rho_se,[]
+beta_se,[[1.63964766]]
+gamma_se,[]
+sigma_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+pi_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+rho_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+beta_bounds,"(array([[-inf]]), array([[inf]]))"
+gamma_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+delta,"[[ -9.0508126 ]
+ [ -7.90805533]
+ [-10.16232344]
+ ...
+ [-11.0049681 ]
+ [ -9.60558702]
+ [ -8.94254861]]"
+tilde_costs,[]
+clipped_costs,"[[False]
+ [False]
+ [False]
+ ...
+ [False]
+ [False]
+ [False]]"
+xi,"[[-0.30019273]
+ [ 0.72477364]
+ [-1.77648106]
+ ...
+ [-0.38624835]
+ [ 1.10828093]
+ [ 1.50184366]]"
+omega,[]
+micro,[]
+objective,[[4.36116396e-27]]
+xi_by_theta_jacobian,[]
+omega_by_theta_jacobian,[]
+micro_by_theta_jacobian,[]
+gradient,[]
+projected_gradient,[]
+projected_gradient_norm,nan
+hessian,[]
+reduced_hessian,[]
+reduced_hessian_eigenvalues,[]
+W,"[[1.87452533e-06 3.98319792e-23 3.38613277e-22]
+ [3.98319792e-23 0.00000000e+00 0.00000000e+00]
+ [3.38613277e-22 0.00000000e+00 0.00000000e+00]]"
+updated_W,"[[1.87452533e-06 3.98319789e-23 3.38613274e-22]
+ [3.98319789e-23 0.00000000e+00 0.00000000e+00]
+ [3.38613274e-22 0.00000000e+00 0.00000000e+00]]"
