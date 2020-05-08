@@ -78,6 +78,7 @@ def AddExtraFeatures(product, data, characteristics, years):
         features_map = features.to_dict()
         print(features)
         print(features_map['style_descr'])
+        print(year_data['upc'])
         # data = data.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','panel_year'])
         for characteristic in characteristics:
             year_data[characteristic] = year_data['upc'].map(features_map[characteristic])
