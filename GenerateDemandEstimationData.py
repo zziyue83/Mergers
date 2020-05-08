@@ -18,7 +18,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     # print(data.columns)
     # print(data['style_descr'].value_counts())
     # print(pd.isna(data['style_descr']).value_counts())
-    for characteristic in characteristic:
+    for characteristic in characteristics:
         if characteristic == 'style_descr':
             data['style_descr'] = 0 if data['style_descr'] == 'DOMESTIC' else 1
     print(data['style_descr'].value_counts())
