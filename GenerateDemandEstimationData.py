@@ -52,6 +52,8 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     print(problem)
     logit_results = problem.solve()
     print(logit_results)
+    resultDf = pd.from_dict(data=logit_results.to_dict(), orient='index')
+    resultDf.to_csv('RegressionResults/'+product+'_plain_logit.csv', dep = ',')
 
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
