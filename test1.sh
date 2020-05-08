@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="DID1"
+#SBATCH --job-name="test"
 #SBATCH -A b1048
 #SBATCH -p buyin
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -9,9 +9,7 @@
 #SBATCH --array=1
 #SBATCH --mem=20G
 #SBATCH --nodes=1
-
+             
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers  
-python preModelData.py quarter 2008 3 BEER SABMiller Molson Coors MillerCoors
-
-
+python test1.py
