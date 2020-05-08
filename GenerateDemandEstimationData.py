@@ -13,6 +13,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     years = GenerateYearList(start, end)
     data = AddExtraFeatures(product, data, characteristics, years)
     print(data.columns)
+    print(data['style_descr'].value_counts())
     # for input in inputs:
     #     input_prices = ReadInstrument(input)
     #     data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
@@ -63,13 +64,7 @@ def GenerateYearList(start, end):
 def AddExtraFeatures(product, data, characteristics, years):
     years = list(map(str,years))
     data_with_features_ls = []
-    # brandsCumuYear = []
-    # extra_features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
     for year in years:
-        # firstFile = True
-        # savePath = "../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv"
-        # movement = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", delimiter = '\t' , index_col = "upc" , chunksize = 1000000)
-        # features = pd.read_csv("../../Data/nielsen_extracts/RMS/"+year+"/Annual_Files/products_extra_"+year+".tsv", delimiter = '\t')
         features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
         y = int(year)
         year_data = data[data['year'] == y]
@@ -81,20 +76,14 @@ def AddExtraFeatures(product, data, characteristics, years):
         features = features[variables]
         features = features.set_index('upc')
         features_map = features.to_dict()
-        print(features)
+        # print(features)
         # data = data.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','panel_year'])
         for characteristic in characteristics:
             year_data[characteristic] = year_data['upc'].map(features_map[characteristic])
         data_with_features_ls.append(year_data)
-        print('wuhuwuhu')
+        # print('wuhuwuhu')
     data_with_features = pd.concat(data_with_features_ls)
     return data_with_features
-            # if firstFile:
-            #     merged.to_csv(savePath, sep = '\t')
-            #     firstFile = False
-            # else:
-            #     merged.to_csv(savePath, sep = '\t', header = False, mode = 'a')
-    return data
 
 
 
