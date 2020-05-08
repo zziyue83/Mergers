@@ -22,9 +22,14 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
         if characteristic == 'style_descr':
             data['style_descr'] = np.where(data['style_descr'] == 'DOMESTIC', 0, 1)
     print(data['style_descr'].value_counts())
+    #adjust inflation for input prices
+    cpiu = AdjustInflation(frequency)
+    cpiu_map  = cpiu.to_dict()
+    data['price_index'] = data[frequency].map(cpiu_map['price_index'])
     for input in inputs:
         input_prices = ReadInstrument(input)
         data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
+        data['input'] = data['input'] * data['price_index']
         # print(data.head())
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     # x = data['distance']
@@ -58,9 +63,9 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     #nested logit regression
     demand_estimation_data['nesting_ids'] = 1
     groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
-    df['demand_instruments20'] = groups['shares'].transform(np.size)
+    demand_estimation_data['demand_instruments'+str(len(inputs)+1)] = groups['shares'].transform(np.size)
     nl_formulation = pyblp.Formulation('0 + prices')
-    problem = pyblp.Problem(nl_formulation, df)
+    problem = pyblp.Problem(nl_formulation, demand_estimation_data)
     nlresults = problem.solve(rho=0.7)
     print(nlresults)
     resultDf = pd.DataFrame.from_dict(data=nlresults.to_dict(), orient='index')
