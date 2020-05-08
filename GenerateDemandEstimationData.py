@@ -68,15 +68,14 @@ def AddExtraFeatures(product, data, characteristics, years):
         # firstFile = True
         # savePath = "../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv"
         # movement = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", delimiter = '\t' , index_col = "upc" , chunksize = 1000000)
-        features = pd.read_csv("../../Data/nielsen_extracts/RMS/"+year+"/Annual_Files/products_extra_"+year+".tsv", delimiter = '\t', index_col = 'upc')
-        for data_chunk in tqdm(movement):
-            data = data.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','panel_year'])
+        features = pd.read_csv("../../Data/nielsen_extracts/RMS/"+year+"/Annual_Files/products_extra_"+year+".tsv", delimiter = '\t')
+        data = data.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','panel_year'])
             # if firstFile:
             #     merged.to_csv(savePath, sep = '\t')
             #     firstFile = False
             # else:
             #     merged.to_csv(savePath, sep = '\t', header = False, mode = 'a')
-        return data
+    return data
 
 
 
