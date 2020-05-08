@@ -3,12 +3,16 @@ import sys
 import pyblp
 import numpy as np
 
-def GenerateDEData(product, frequency, inputs, start, end):
+def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
     print(data['y-m-d'])
     data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
     data['year'] = pd.to_datetime(data['y-m-d']).dt.to_period('Y')
+    data['year'] = data['year'].astype(int)
     print(data[['upc','year']])
+    years = GenerateYearList(start, end)
+    data = AddExtraFeatures(product, data, characteristics, years)
+    print(data.columns)
     # for input in inputs:
     #     input_prices = ReadInstrument(input)
     #     data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
@@ -56,21 +60,23 @@ def GenerateYearList(start, end):
     e = int(end)
     return list(range(s, e+1))
 
-def AddExtraFeatures(product, years):
+def AddExtraFeatures(product, data, characteristics, years):
     years = list(map(str,years))
-    brandsCumuYear = []
+    # brandsCumuYear = []
+    # extra_features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
     for year in years:
-        firstFile = True
-        savePath = "../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv"
-        movement = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", delimiter = '\t' , index_col = "upc" , chunksize = 1000000)
+        # firstFile = True
+        # savePath = "../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv"
+        # movement = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", delimiter = '\t' , index_col = "upc" , chunksize = 1000000)
         features = pd.read_csv("../../Data/nielsen_extracts/RMS/"+year+"/Annual_Files/products_extra_"+year+".tsv", delimiter = '\t', index_col = 'upc')
         for data_chunk in tqdm(movement):
-            merged = data_chunk.merge(features, how = 'left', left_index = True, right_index = True)
-            if firstFile:
-                merged.to_csv(savePath, sep = '\t')
-                firstFile = False
-            else:
-                merged.to_csv(savePath, sep = '\t', header = False, mode = 'a')
+            data = data.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','panel_year'])
+            # if firstFile:
+            #     merged.to_csv(savePath, sep = '\t')
+            #     firstFile = False
+            # else:
+            #     merged.to_csv(savePath, sep = '\t', header = False, mode = 'a')
+        return data
 
 
 
@@ -81,4 +87,4 @@ end = sys.argv[4]
 # input = 'barley'
 # instrument = ReadInstrument(input)
 # print(instrument['t'])
-GenerateDEData(product, frequency,['wheat','barley'], start, end)
+GenerateDEData(product, frequency,['wheat','barley'], characteristics)
