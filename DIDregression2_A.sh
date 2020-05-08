@@ -12,12 +12,7 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-<<<<<<< HEAD
-<<<<<<< HEAD
-python DIDregression2_A.py quarter CANDY GUM
-=======
 python DIDregression2_A.py quarter BEER
->>>>>>> 60263bd182d4190d5acc2accfbd420a51a7136d3
 =======
 python DIDregression2_A.py month BEER
 >>>>>>> 750777f4f3b39449f848ff024d61e0041a04100a
