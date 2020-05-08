@@ -29,7 +29,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     for input in inputs:
         input_prices = ReadInstrument(input)
         data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
-        data['input'] = data['input'] * data['price_index']
+        data[input] = data[input] * data['price_index']
         # print(data.head())
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     # x = data['distance']
