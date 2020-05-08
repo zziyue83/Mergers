@@ -71,16 +71,21 @@ def CalDMADeltaHHI(oneYearFirmDMA, product, frequency):
     mktsize = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_mkt_size.tsv", delimiter = '\t')
     mktsize = mktsize.set_index('dma_code')
     mktsize_dict = mktsize.to_dict()
+    size_multiplier = 12 if frequency == 'month' else 4
     preMerger['dma_size'] = preMerger['dma_code'].map(mktsize_dict['mkt_size'])
-    preMerger['share'] = preMerger['volume'] / preMerger['dma_size']
+    preMerger['share'] = preMerger['volume'] / (preMerger['dma_size'] * size_multiplier)
     print('potential bugs')
     print(preMerger[['share','dma_size','dma_code']])
     bugs = preMerger[preMerger['share']>1]
+    print('share > 1')
     print(bugs[['share','dma_size','dma_code']])
     preMerger['pre_merger_share_square'] =preMerger['share'] * preMerger['share']
     postMerger = preMerger.groupby(['dma_code'], as_index = False).agg({'volume':'sum', 'dma_size':'first','share':'sum','pre_merger_share_square':'sum'}, as_index = False).reindex(columns = preMerger.columns)
     postMerger['post_merger_share_square'] = postMerger['share'] * postMerger['share']
     postMerger['DHHI'] = postMerger['post_merger_share_square'] - postMerger['pre_merger_share_square']
+    print('sum share > 1')
+    bugs = postMerger[postMerger['share']>1]
+    print(bugs)
     # print(postMerger)
     DMADHHI = postMerger[['dma_code','DHHI']].set_index('dma_code')
     print(DMADHHI)
