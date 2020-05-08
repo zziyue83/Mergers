@@ -73,7 +73,7 @@ def AddExtraFeatures(product, data, characteristics, years):
         agg_dic = {}
         for characteristic in characteristics:
             agg_dic[characteristic] = 'first'
-        features = features.groupby(['upc', 'panel_year'], as_index = False).agg(agg_dic, as_index = False).reindex(columns = data_chunk.columns)
+        features = features.groupby(['upc', 'panel_year'], as_index = False).agg(agg_dic, as_index = False).reindex(columns = features.columns)
         variables = characteristics + ['upc','panel_year']
         features = features[variables]
         print(features)
