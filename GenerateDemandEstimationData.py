@@ -53,7 +53,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     logit_results = problem.solve()
     print(logit_results)
     resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/'+product+'_plain_logit.csv', dep = ',')
+    resultDf.to_csv('RegressionResults/'+product+'_plain_logit.csv', sep = ',')
 
     #nested logit regression
     demand_estimation_data['nesting_ids'] = 1
@@ -64,7 +64,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     nlresults = problem.solve(rho=0.7)
     print(nlresults)
     resultDf = pd.DataFrame.from_dict(data=nlresults.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/'+product+'_nested_logit.csv', dep = ',')
+    resultDf.to_csv('RegressionResults/'+product+'_nested_logit.csv', sep = ',')
 
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
@@ -108,6 +108,27 @@ def AddExtraFeatures(product, data, characteristics, years):
         # print('wuhuwuhu')
     data_with_features = pd.concat(data_with_features_ls)
     return data_with_features
+
+def AdjustInflation(frequency):
+    cpiu = pd.read_excel('cpiu_2000_2020.xlsx', header = 11)
+    cpiu = cpiu.set_index('Year')
+    month_dictionary = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12}
+    cpiu = cpiu.rename(columns = month_dictionary)
+    cpiu = cpiu.drop(['HALF1','HALF2'], axis=1)
+    cpiu = cpiu.stack()
+    # cpiu_202001 = float(cpiu.loc[(2020,1)])
+    cpiu = cpiu.reset_index().rename(columns = {'level_1':'month',0:'cpiu'})
+    if frequency == 'quarter':
+        cpiu['quarter'] = cpiu['month'].apply(lambda x: 1 if x <=3 else 2 if ((x>3) & (x<=6)) else 3 if ((x>6) & (x<=9)) else 4)
+        cpiu = cpiu.groupby(['Year', frequency]).agg({'cpiu': 'mean'})
+    if frequency == 'month':
+        cpiu = cpiu.set_index(['Year', frequency])
+    cpiu_202001 = float(cpiu.loc[(2020,1)])
+    cpiu['price_index'] = cpiu_202001/cpiu['cpiu']
+    cpiu = cpiu.reset_index()
+    cpiu['t'] = cpiu['Year'] * 100 + cpiu[frequency]
+    cpiu = cpiu.set_index('t')
+    return cpiu
 
 
 
