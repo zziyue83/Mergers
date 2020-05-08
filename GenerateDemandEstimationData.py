@@ -62,6 +62,7 @@ def GenerateYearList(start, end):
 
 def AddExtraFeatures(product, data, characteristics, years):
     years = list(map(str,years))
+    data_with_features_ls = []
     # brandsCumuYear = []
     # extra_features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
     for year in years:
@@ -70,14 +71,24 @@ def AddExtraFeatures(product, data, characteristics, years):
         # movement = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+".tsv", delimiter = '\t' , index_col = "upc" , chunksize = 1000000)
         # features = pd.read_csv("../../Data/nielsen_extracts/RMS/"+year+"/Annual_Files/products_extra_"+year+".tsv", delimiter = '\t')
         features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
+        y = int(year)
+        year_data = data[data['year'] = y]
         agg_dic = {}
         for characteristic in characteristics:
             agg_dic[characteristic] = 'first'
         features = features.groupby(['upc', 'panel_year'], as_index = False).agg(agg_dic, as_index = False).reindex(columns = features.columns)
         variables = characteristics + ['upc','panel_year']
         features = features[variables]
+        features = features.set_index('upc')
+        features_map = features.to_dict()
         print(features)
-        data = data.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','panel_year'])
+        # data = data.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','panel_year'])
+        for characteristic in characteristics:
+            year_data[characteristic] = year_data['upc'].map(features_map[characteristic])
+        data_with_features_ls.append(year_data)
+        print('wuhuwuhu')
+    data_with_features = pd.concat(data_with_features_ls)
+    return data_with_features
             # if firstFile:
             #     merged.to_csv(savePath, sep = '\t')
             #     firstFile = False
