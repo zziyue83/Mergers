@@ -6,49 +6,53 @@ from tqdm import tqdm
 
 def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
-    print(data['y-m-d'])
+    # print(data['y-m-d'])
     data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
     data['year'] = pd.to_datetime(data['y-m-d']).dt.to_period('Y')
     data['year'] = data['year'].astype(str)
-    print(data[['upc','year']])
+    # print(data[['upc','year']])
     years = GenerateYearList(start, end)
     data = AddExtraFeatures(product, data, characteristics, years)
-    print(data.columns)
+    data = data.dropna()
+    print(data.shape)
+    # print(data.columns)
+    # print(data['style_descr'].value_counts())
+    # print(pd.isna(data['style_descr']).value_counts())
+    for characteristic in characteristic:
+        if characteristic == 'style_descr':
+            data['style_descr'] = 0 if data['style_descr'] == 'DOMESTIC' else 1
     print(data['style_descr'].value_counts())
-    print(pd.isna(data['style_descr']).value_counts())
-    # for input in inputs:
-    #     input_prices = ReadInstrument(input)
-    #     data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
-    #     print(data.head())
-    # data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
-    # # x = data['distance']
-    # # data['constant'] = 1
-    # # data = data.dropna()
-    # # x = data[['distance','constant']].to_numpy()
-    # #
-    # # z = np.transpose(x)
-    # # y = np.matmul(z, x)
-    # # print(x)
-    # # u = np.linalg.inv(y)
-    # # print(u)
-    # variables = ['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance']
-    # for input in inputs:
-    #     variables.append(input)
-    # print(variables)
-    # demand_estimation_data = data[variables]
-    # # demand_estimation_data = demand_estimation_data.dropna()
-    # print(demand_estimation_data.head())
-    # rename_dic = {'dma_code_'+frequency:'market_ids','log_adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'upc':'product_ids','distance':'demand_instruments0','market_share':'shares'}
-    # for i in range(len(inputs)):
-    #     rename_dic[inputs[i]] = 'demand_instruments'+str(i+1)
-    # demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
-    # print(demand_estimation_data.head())
-    # # pyblp.options.collinear_atol = pyblp.options.collinear_rtol = 0
-    # logit_formulation = pyblp.Formulation('prices')
-    # problem = pyblp.Problem(logit_formulation, demand_estimation_data)
-    # print(problem)
-    # logit_results = problem.solve()
-    # print(logit_results)
+    for input in inputs:
+        input_prices = ReadInstrument(input)
+        data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
+        print(data.head())
+    data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
+    # x = data['distance']
+    # data['constant'] = 1
+    # data = data.dropna()
+    # x = data[['distance','constant']].to_numpy()
+    #
+    # z = np.transpose(x)
+    # y = np.matmul(z, x)
+    # print(x)
+    # u = np.linalg.inv(y)
+    # print(u)
+    variables = ['dma_code_'+frequency,'log_adjusted_price','upc','market_share','distance'] + characteristics + inputs
+    print(variables)
+    demand_estimation_data = data[variables]
+    # demand_estimation_data = demand_estimation_data.dropna()
+    print(demand_estimation_data.head())
+    rename_dic = {'dma_code_'+frequency:'market_ids','log_adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'upc':'product_ids','distance':'demand_instruments0','market_share':'shares'}
+    for i in range(len(inputs)):
+        rename_dic[inputs[i]] = 'demand_instruments'+str(i+1)
+    demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
+    print(demand_estimation_data.head())
+    # pyblp.options.collinear_atol = pyblp.options.collinear_rtol = 0
+    logit_formulation = pyblp.Formulation('prices')
+    problem = pyblp.Problem(logit_formulation, demand_estimation_data)
+    print(problem)
+    logit_results = problem.solve()
+    print(logit_results)
 
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
