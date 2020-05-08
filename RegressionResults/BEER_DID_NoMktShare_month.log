@@ -1,0 +1,103 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2020.5.5)  8 MAY 2020 00:58
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**BEER_DID_NoMktShare_month.tex
+(./BEER_DID_NoMktShare_month.tex
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, dumylang, nohyphenation, lo
+aded.
+(/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen103
+\lightrulewidth=\dimen104
+\cmidrulewidth=\dimen105
+\belowrulesep=\dimen106
+\belowbottomsep=\dimen107
+\aboverulesep=\dimen108
+\abovetopsep=\dimen109
+\cmidrulesep=\dimen110
+\cmidrulekern=\dimen111
+\defaultaddspace=\dimen112
+\@cmidla=\count88
+\@cmidlb=\count89
+\@aboverulesep=\dimen113
+\@belowrulesep=\dimen114
+\@thisruleclass=\count90
+\@lastruleclass=\count91
+\@thisrulewidth=\dimen115
+)
+No file BEER_DID_NoMktShare_month.aux.
+\openout1 = `BEER_DID_NoMktShare_month.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 3.
+LaTeX Font Info:    ... okay on input line 3.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 3.
+LaTeX Font Info:    ... okay on input line 3.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 3.
+LaTeX Font Info:    ... okay on input line 3.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 3.
+LaTeX Font Info:    ... okay on input line 3.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 3.
+LaTeX Font Info:    ... okay on input line 3.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 3.
+LaTeX Font Info:    ... okay on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 4.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 4.
+
+Overfull \hbox (39.36453pt too wide) in paragraph at lines 4--34
+ [] 
+ []
+
+
+Overfull \hbox (109.07726pt too wide) in paragraph at lines 4--34
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 36--40
+
+ []
+
+[1
+
+{/usr/share/texlive/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+(./BEER_DID_NoMktShare_month.aux) ) 
+Here is how much of TeX's memory you used:
+ 285 strings out of 495063
+ 3301 string characters out of 3182202
+ 51832 words of memory out of 3000000
+ 3550 multiletter control sequences out of 15000+200000
+ 3948 words of font info for 15 fonts, out of 3000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 23i,7n,17p,203b,182s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr10.pfb>
+Output written on BEER_DID_NoMktShare_month.pdf (1 page, 37610 bytes).
+PDF statistics:
+ 16 PDF objects out of 1000 (max. 8388607)
+ 10 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+
