@@ -72,7 +72,7 @@ def AddExtraFeatures(product, data, characteristics, years):
         # features = pd.read_csv("../../Data/nielsen_extracts/RMS/"+year+"/Annual_Files/products_extra_"+year+".tsv", delimiter = '\t')
         features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
         y = int(year)
-        year_data = data[data['year'] = y]
+        year_data = data[data['year'] == y]
         agg_dic = {}
         for characteristic in characteristics:
             agg_dic[characteristic] = 'first'
