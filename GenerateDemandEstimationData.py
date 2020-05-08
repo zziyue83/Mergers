@@ -3,7 +3,7 @@ import sys
 import pyblp
 import numpy as np
 
-def GenerateDEData(product, frequency, inputs):
+def GenerateDEData(product, frequency, inputs, start, end):
     data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
     print(data['y-m-d'])
     data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
@@ -81,4 +81,4 @@ end = sys.argv[4]
 # input = 'barley'
 # instrument = ReadInstrument(input)
 # print(instrument['t'])
-GenerateDEData(product, frequency, inputs = ['wheat','barley'], start, end)
+GenerateDEData(product, frequency,['wheat','barley'], start, end)
