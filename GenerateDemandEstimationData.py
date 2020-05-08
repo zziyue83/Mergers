@@ -44,7 +44,7 @@ def GenerateDEData(product, frequency, inputs):
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
     instrument['t'] = pd.to_datetime(instrument['time']).dt.to_period('M')
-    instrument = instrument.groupby('t',as_index = False).agg({'value':'mean','date':'first'},as_index = False).reindex(columns = instrument.columns)
+    instrument = instrument.groupby('t',as_index = False).agg({'price':'mean','time':'first'},as_index = False).reindex(columns = instrument.columns)
     instrument = instrument.rename(columns = {'price':input})
     print(instrument.head())
     return instrument[[input,'t']]
