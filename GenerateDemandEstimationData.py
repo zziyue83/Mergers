@@ -15,6 +15,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     data = AddExtraFeatures(product, data, characteristics, years)
     print(data.columns)
     print(data['style_descr'].value_counts())
+    print(pd.isna(data['style_descr']).value_counts())
     # for input in inputs:
     #     input_prices = ReadInstrument(input)
     #     data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
