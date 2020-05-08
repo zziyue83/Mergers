@@ -13,7 +13,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     years = GenerateYearList(start, end)
     data = AddExtraFeatures(product, data, characteristics, years)
     print(data.columns)
-    print(data['style_descr'].value_counts())
+    print(data['style_descr'])
     # for input in inputs:
     #     input_prices = ReadInstrument(input)
     #     data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
