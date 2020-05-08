@@ -15,7 +15,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     data = AddExtraFeatures(product, data, characteristics, years)
     data = data.dropna()
     print(data.shape)
-    # print(data.columns)
+    print(data.columns)
     # print(data['style_descr'].value_counts())
     # print(pd.isna(data['style_descr']).value_counts())
     for characteristic in characteristics:
