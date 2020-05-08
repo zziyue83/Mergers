@@ -14,6 +14,7 @@ def CalDMAMktSize(product, years, size_multiplier, frequency):
     for year in years:
         firstFile = True
         movement = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_upc_"+year+".tsv", delimiter = '\t', chunksize = 100000)
+        movement = movement[[frequency,'dma_code','volume']]
         for data_chunk in tqdm(movement):
             area_quarter = data_chunk.groupby([frequency,'dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
             area_quarter = area_quarter[[frequency,'dma_code','volume']]

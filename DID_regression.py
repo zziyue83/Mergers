@@ -73,6 +73,10 @@ def CalDMADeltaHHI(oneYearFirmDMA, product, frequency):
     mktsize_dict = mktsize.to_dict()
     preMerger['dma_size'] = preMerger['dma_code'].map(mktsize_dict['mkt_size'])
     preMerger['share'] = preMerger['volume'] / preMerger['dma_size']
+    print('potential bugs')
+    print(preMerger[['share','dma_size','dma_code']])
+    bugs = preMerger[preMerger['share']>1]
+    print(bugs[['share','dma_size','dma_code']])
     preMerger['pre_merger_share_square'] =preMerger['share'] * preMerger['share']
     postMerger = preMerger.groupby(['dma_code'], as_index = False).agg({'volume':'sum', 'dma_size':'first','share':'sum','pre_merger_share_square':'sum'}, as_index = False).reindex(columns = preMerger.columns)
     postMerger['post_merger_share_square'] = postMerger['share'] * postMerger['share']
