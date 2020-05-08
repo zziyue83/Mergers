@@ -68,6 +68,10 @@ def CalDMADeltaHHI(oneYearFirmDMA, product, frequency):
     # print(merger)
     # print(merger.owner.unique())
     preMerger = merger.groupby(['dma_code', 'owner'], as_index = False).agg({'volume':'sum', 'dma_size':'first'}, as_index = False).reindex(columns = merger.columns)
+    mktsize = pd.read_csv("../../GeneratedData/"+product+"_dma_"+frequency+"_mkt_size.tsv")
+    mktsize = mktsize.set_index('dma_code')
+    mktsize_dict = mktsize.to_dict()
+    preMerger['dma_size'] = preMerger['dma_code'].map(mktsize_dict['mkt_size'])
     preMerger['share'] = preMerger['volume'] / preMerger['dma_size']
     preMerger['pre_merger_share_square'] =preMerger['share'] * preMerger['share']
     postMerger = preMerger.groupby(['dma_code'], as_index = False).agg({'volume':'sum', 'dma_size':'first','share':'sum','pre_merger_share_square':'sum'}, as_index = False).reindex(columns = preMerger.columns)
@@ -102,7 +106,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
                           \\begin{document}"""
         endtex = "\end{document}"
         addon = '_GUM' if product == 'CANDY' else ''
-        f = open(product + addon + '_DID_NoMktShare_'+frequency+'.tex', 'w')
+        f = open('RegressionResults/'+product + addon + '_DID_NoMktShare_'+frequency+'.tex', 'w')
         f.write(beginningtex)
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
@@ -137,7 +141,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
                           \\begin{document}"""
         endtex = "\end{document}"
         addon = '_GUM' if product == 'CANDY' else ''
-        f = open(product + addon + '_DID_NoMktShare_'+frequency+'_demographics_inflation_adjusted'+'.tex', 'w')
+        f = open('RegressionResults/'+product + addon + '_DID_NoMktShare_'+frequency+'_demographics_inflation_adjusted'+'.tex', 'w')
         f.write(beginningtex)
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
@@ -182,7 +186,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
                           \\begin{document}"""
         endtex = "\end{document}"
         addon = '_GUM' if product == 'CANDY' else ''
-        f = open(product + addon + '_DID_MktShare_'+frequency+'.tex', 'w')
+        f = open('RegressionResults/'+product + addon + '_DID_MktShare_'+frequency+'.tex', 'w')
         f.write(beginningtex)
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
@@ -217,7 +221,7 @@ def DID_regression(product, frequency, share, mergingt, mergers, inflation = Fal
                           \\begin{document}"""
         endtex = "\end{document}"
         addon = '_GUM' if product == 'CANDY' else ''
-        f = open(product + addon + '_DID_MktShare_'+frequency+'_demographics_inflation_adjusted'+'.tex', 'w')
+        f = open('RegressionResults/'+product + addon + '_DID_MktShare_'+frequency+'_demographics_inflation_adjusted'+'.tex', 'w')
         f.write(beginningtex)
         f.write(fe_res.summary.as_latex())
         f.write(endtex)
