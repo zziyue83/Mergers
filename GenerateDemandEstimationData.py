@@ -64,6 +64,7 @@ def GenerateYearList(start, end):
 def AddExtraFeatures(product, data, characteristics, years):
     years = list(map(str,years))
     data_with_features_ls = []
+    print(data['year'].unique())
     for year in years:
         features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
         y = int(year)
