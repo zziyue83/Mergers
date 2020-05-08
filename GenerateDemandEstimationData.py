@@ -2,6 +2,7 @@ import pandas as pd
 import sys
 import pyblp
 import numpy as np
+from tqdm import tqdm
 
 def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
@@ -13,7 +14,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     years = GenerateYearList(start, end)
     data = AddExtraFeatures(product, data, characteristics, years)
     print(data.columns)
-    print(data['style_descr'])
+    print(data['style_descr'].value_counts())
     # for input in inputs:
     #     input_prices = ReadInstrument(input)
     #     data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
@@ -65,11 +66,11 @@ def AddExtraFeatures(product, data, characteristics, years):
     years = list(map(str,years))
     data_with_features_ls = []
     print(data['year'].unique())
-    for year in years:
+    for year in tqdm(years):
         features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
         # y = int(year)
         year_data = data[data['year'] == year]
-        print(year_data)
+        # print(year_data)
         agg_dic = {}
         for characteristic in characteristics:
             agg_dic[characteristic] = 'first'
@@ -84,7 +85,7 @@ def AddExtraFeatures(product, data, characteristics, years):
         # data = data.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','panel_year'])
         for characteristic in characteristics:
             year_data[characteristic] = year_data['upc'].map(features_map[characteristic])
-        print('wuhu')
+        # print('wuhu')
         # print(year_data['style_descr'])
         data_with_features_ls.append(year_data)
         # print('wuhuwuhu')
