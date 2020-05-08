@@ -20,7 +20,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     # print(pd.isna(data['style_descr']).value_counts())
     for characteristic in characteristics:
         if characteristic == 'style_descr':
-            data['style_descr'] = 0 if data['style_descr'] == 'DOMESTIC' else 1
+            data['style_descr'] = np.where(data['style_descr'] == 'DOMESTIC', 0, 1)
     print(data['style_descr'].value_counts())
     for input in inputs:
         input_prices = ReadInstrument(input)
