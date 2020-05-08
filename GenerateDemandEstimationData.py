@@ -71,12 +71,13 @@ def AddExtraFeatures(product, data, characteristics, years):
         agg_dic = {}
         for characteristic in characteristics:
             agg_dic[characteristic] = 'first'
-        features = features.groupby(['upc', 'panel_year'], as_index = False).agg(agg_dic, as_index = False).reindex(columns = features.columns)
-        variables = characteristics + ['upc','panel_year']
+        features = features.groupby(['upc'], as_index = False).agg(agg_dic, as_index = False).reindex(columns = features.columns)
+        variables = characteristics + ['upc']
         features = features[variables]
         features = features.set_index('upc')
         features_map = features.to_dict()
-        # print(features)
+        print(features)
+        print(features_map['style_descr'])
         # data = data.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','panel_year'])
         for characteristic in characteristics:
             year_data[characteristic] = year_data['upc'].map(features_map[characteristic])
