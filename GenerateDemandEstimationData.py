@@ -133,4 +133,4 @@ end = sys.argv[4]
 # input = 'barley'
 # instrument = ReadInstrument(input)
 # print(instrument['t'])
-GenerateDEData(product, frequency,['wheat','barley'], ['style_descr'], start, end)
+GenerateDEData(product, frequency,['wheat','barley'], [], start, end)
