@@ -28,21 +28,12 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
         data[input] = data[input] * data['price_index']
         # print(data.head())
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
-    # x = data['distance']
-    # data['constant'] = 1
-    # data = data.dropna()
-    # x = data[['distance','constant']].to_numpy()
-    #
-    # z = np.transpose(x)
-    # y = np.matmul(z, x)
-    # print(x)
-    # u = np.linalg.inv(y)
-    # print(u)
-    variables = ['dma_code_'+frequency,'adjusted_price','upc','market_share','distance','y-m'] + characteristics + inputs
+    data['product_ids'] = data['upc'].astype(str) + data['dma_code'].astype(str)
+    variables = ['dma_code_'+frequency,'adjusted_price','product_ids','market_share','distance','y-m'] + characteristics + inputs
     print(variables)
     demand_estimation_data = data[variables]
     print(demand_estimation_data.head())
-    rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'upc':'product_ids','distance':'demand_instruments0','market_share':'shares','y-m':'time'}
+    rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','y-m':'time'}
     for i in range(len(inputs)):
         rename_dic[inputs[i]] = 'demand_instruments'+str(i+1)
     demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
@@ -62,7 +53,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     demand_estimation_data['nesting_ids'] = 1
     groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
     demand_estimation_data['demand_instruments'+str(len(inputs)+1)] = groups['shares'].transform(np.size)
-    nl_formulation = pyblp.Formulation('0 + prices', absorb='C(product_ids) + C(time)')
+    nl_formulation = pyblp.Formulation('0 + prices + style_descr', absorb='C(product_ids) + C(time)')
     problem = pyblp.Problem(nl_formulation, demand_estimation_data)
     nlresults = problem.solve(rho=0.7)
     print(nlresults)

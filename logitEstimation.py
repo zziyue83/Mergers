@@ -14,7 +14,8 @@ def AddExtraFeatures(products):
             features_year['product'] = product
             features_year['upc_year'] = features_year['upc'].astype(str) + ' ' + features_year['year'].astype(str)
             if (product == 'CANDY') or (product == 'GUM'):
-                features_year['mint'] = np.where(features_year['flavor_descr'].str.contains('MINT'), 'NON-MINT', 'MINT')
+                features_year['mint'] = np.where((features_year['flavor_descr'].str.contains('MINT')) & (features_year['variety_descr'].notna()), 'MINT', 'NON-MINT')
+                features_year['chocolate'] = np.where((features_year['variety_descr']=='CHOCOLATE') & (features_year['variety_descr'].notna()), 'CHOCOLATE', 'NON-CHOCOLATE')
                 print(features_year.iloc[0])
             if add_features.empty:
                 add_features = features_year
@@ -28,6 +29,7 @@ def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
     for input in inputs:
         input_prices = ReadInstrument(input, quarterOrMonth)
         data[input] = data[quarterOrMonth].map(input_prices[input])
+        data[input] = data[input]*data['price_index']
         print(data.head())
     add_features = AddExtraFeatures(products)
     data['upc_year'] = data['upc'].astype(str) + ' ' + data['year'].astype(str)
@@ -36,30 +38,29 @@ def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
         data[characteristic] = data['upc_year'].map(add_features.drop_duplicates('upc_year').set_index('upc_year')[characteristic])
     print(data.iloc[0])
     data['dma_code_' + quarterOrMonth] = data['dma_code'].astype(str) + data[quarterOrMonth].astype(str)
-    variables = ['dma_code_' + quarterOrMonth,'log_adjusted_price','upc','market_share','distance']
+    variables = ['dma_code_' + quarterOrMonth,'log_adjusted_price','upc','market_share','distance','time']
     for input in inputs:
         variables.append(input)
-    for characteristic in characteristics:
-        variables.append(characteristic)
     print(variables)
     demand_estimation_data = data[variables]
     demand_estimation_data = demand_estimation_data.dropna()
     print(demand_estimation_data.head())
-    rename_dic = {'dma_code_'+quarterOrMonth:'market_ids','log_adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',quarterOrMonth+'_since_start':quarterOrMonth,'upc':'product_ids','distance':'demand_instruments0','market_share':'shares'}
-    j = -1
+    rename_dic = {'dma_code_'+quarterOrMonth:'market_ids','log_adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids','upc':'product_ids','distance':'demand_instruments0','market_share':'shares'}
     for i in range(len(inputs)):
-        rename_dic[inputs[i]] = 'demand_instruments'+str(j+1)
-    for i in range(len(characteristics)):
-        rename_dic[characteristics[i]] = 'demand_instruments'+str(j+1)
+        rename_dic[inputs[i]] = 'demand_instruments'+str(i)
     demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
     print(demand_estimation_data.iloc[0])
     print(demand_estimation_data.head())
     # pyblp.options.collinear_atol = pyblp.options.collinear_rtol = 0
-    logit_formulation = pyblp.Formulation('prices')
+    
+    logit_formulation = pyblp.Formulation('0 + prices + mint + chocolate', absorb = 'C(product_ids) + C(time)')
+    
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
     print(problem)
     logit_results = problem.solve()
     print(logit_results)
+    resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
+    resultDf.to_csv('RegressionResults/' + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + '_plain_logit.csv', sep = ',')
 
 def ReadInstrument(input, quarterOrMonth, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')

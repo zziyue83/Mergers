@@ -12,6 +12,8 @@ sys:1: DtypeWarning: Columns (18,20,28,30,32,34,36,38,40,55) have mixed types. S
 sys:1: DtypeWarning: Columns (18,20,30,32,34,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
 sys:1: DtypeWarning: Columns (18,20,30,34,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
 sys:1: DtypeWarning: Columns (18,20,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/core/ops/__init__.py:1115: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  result = method(y)
             sugar
 quarter          
 1990Q1   0.330000
@@ -101,6 +103,7 @@ year                                    2006
 product                                CANDY
 upc_year                       10000001 2006
 mint                                NON-MINT
+chocolate                      NON-CHOCOLATE
 Name: 0, dtype: object
 upc                                               63000001
 units                                                    2
@@ -161,6 +164,7 @@ year                                                  2007
 product                                              CANDY
 upc_year                                     63000001 2007
 mint                                              NON-MINT
+chocolate                                    NON-CHOCOLATE
 Name: 284900, dtype: object
 upc                                               60901910
 units                                                    2
@@ -221,6 +225,7 @@ year                                                  2008
 product                                              CANDY
 upc_year                                     60901910 2008
 mint                                              NON-MINT
+chocolate                                        CHOCOLATE
 Name: 0, dtype: object
 upc                                 10000001
 units                                      1
@@ -281,6 +286,7 @@ year                                    2009
 product                                CANDY
 upc_year                       10000001 2009
 mint                                NON-MINT
+chocolate                      NON-CHOCOLATE
 Name: 36117, dtype: object
 upc                                        36005300
 units                                            15
@@ -341,6 +347,7 @@ year                                           2006
 product                                         GUM
 upc_year                              36005300 2006
 mint                                       NON-MINT
+chocolate                             NON-CHOCOLATE
 Name: 0, dtype: object
 upc                                        36005300
 units                                             2
@@ -401,6 +408,7 @@ year                                           2007
 product                                         GUM
 upc_year                              36005300 2007
 mint                                       NON-MINT
+chocolate                             NON-CHOCOLATE
 Name: 0, dtype: object
 upc                                        36005300
 units                                             1
@@ -461,6 +469,7 @@ year                                           2008
 product                                         GUM
 upc_year                              36005300 2008
 mint                                       NON-MINT
+chocolate                             NON-CHOCOLATE
 Name: 0, dtype: object
 upc                                        36005300
 units                                             1
@@ -521,6 +530,7 @@ year                                           2009
 product                                         GUM
 upc_year                              36005300 2009
 mint                                       NON-MINT
+chocolate                             NON-CHOCOLATE
 Name: 0, dtype: object
 upc                                 10000001
 units                                      1
@@ -581,6 +591,7 @@ year                                    2006
 product                                CANDY
 upc_year                       10000001 2006
 mint                                NON-MINT
+chocolate                      NON-CHOCOLATE
 Name: 0, dtype: object
 Unnamed: 0                                                 0
 upc                                                 10000001
@@ -623,10 +634,10 @@ sugar                                               0.376667
 cocoa_beans                                          1.55667
 upc_year                                       10000001 2006
 mint                                                NON-MINT
-variety_descr                                  NON-CHOCOLATE
+chocolate                                      NON-CHOCOLATE
 Name: 0, dtype: object
-['dma_code_quarter', 'log_adjusted_price', 'upc', 'market_share', 'distance', 'sugar', 'cocoa_beans', 'mint', 'variety_descr']
-  dma_code_quarter  log_adjusted_price  ...      mint  variety_descr
+['dma_code_quarter', 'log_adjusted_price', 'upc', 'market_share', 'distance', 'sugar', 'cocoa_beans', 'mint', 'chocolate']
+  dma_code_quarter  log_adjusted_price  ...      mint      chocolate
 0        5292006Q1           -1.531882  ...  NON-MINT  NON-CHOCOLATE
 1        5612009Q1           -2.288717  ...  NON-MINT  NON-CHOCOLATE
 2        6182006Q1           -2.225029  ...  NON-MINT  NON-CHOCOLATE
@@ -654,14 +665,42 @@ Name: 0, dtype: object
 [5 rows x 9 columns]
 Initializing the problem ...
 Traceback (most recent call last):
-  File "logitEstimation.py", line 84, in <module>
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2897, in get_loc
+    return self._engine.get_loc(key)
+  File "pandas/_libs/index.pyx", line 107, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 126, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 152, in pandas._libs.index.IndexEngine._get_loc_duplicates
+  File "pandas/_libs/index.pyx", line 169, in pandas._libs.index.IndexEngine._maybe_get_bool_indexer
+KeyError: 'time'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/configurations/formulation.py", line 226, in _build_ids
+    data_mapping[name] = np.asarray(data[name]).flatten()
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/core/frame.py", line 2995, in __getitem__
+    indexer = self.columns.get_loc(key)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2899, in get_loc
+    return self._engine.get_loc(self._maybe_cast_indexer(key))
+  File "pandas/_libs/index.pyx", line 107, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 126, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 152, in pandas._libs.index.IndexEngine._get_loc_duplicates
+  File "pandas/_libs/index.pyx", line 169, in pandas._libs.index.IndexEngine._maybe_get_bool_indexer
+KeyError: 'time'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "logitEstimation.py", line 87, in <module>
     GenerateDEData(products, quarterOrMonth, inputs, characteristics)
-  File "logitEstimation.py", line 59, in GenerateDEData
+  File "logitEstimation.py", line 60, in GenerateDEData
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
   File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/economies/problem.py", line 1193, in __init__
     products = Products(product_formulations, product_data, add_exogenous=add_exogenous)
-  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/primitives.py", line 211, in __new__
-    return structure_matrices({**product_mapping, **underlying_data})
-  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/utilities/basics.py", line 124, in structure_matrices
-    structured[dtype[0] if isinstance(dtype[0], str) else dtype[0][1]] = matrix
-ValueError: could not convert string to float: 'NON-CHOCOLATE'
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/primitives.py", line 130, in __new__
+    demand_ids = product_formulations[0]._build_ids(product_data)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/configurations/formulation.py", line 230, in _build_ids
+    raise patsy.PatsyError(f"Failed to load data for '{name}'.", origin) from exception
+patsy.PatsyError: Failed to load data for 'time'.
+    C(product_ids) + C(time)
+    ^^^^^^^^^^^^^^^^^^^^^^^^
