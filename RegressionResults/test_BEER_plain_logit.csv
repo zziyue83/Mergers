@@ -2,8 +2,8 @@
 step,2
 optimization_time,0.0
 cumulative_optimization_time,0.0
-total_time,2.6339075565338135
-cumulative_total_time,6.040308237075806
+total_time,2.055640697479248
+cumulative_total_time,4.614251136779785
 converged,True
 cumulative_converged,True
 optimization_iterations,0
@@ -16,31 +16,37 @@ fp_iterations,[]
 cumulative_fp_iterations,[]
 contraction_evaluations,[]
 cumulative_contraction_evaluations,[]
-parameters,[[0.3593866]]
-parameter_covariances,[[1.65473183e+19]]
+parameters,"[[-17.15520042]
+ [ -0.02726456]]"
+parameter_covariances,"[[7785446.60908179  -62920.79219004]
+ [ -62920.79219004   32318.7873957 ]]"
 theta,[]
 sigma,[]
 pi,[]
 rho,[]
-beta,[[0.3593866]]
+beta,"[[-17.15520042]
+ [ -0.02726456]]"
 gamma,[]
 sigma_se,[]
 pi_se,[]
 rho_se,[]
-beta_se,[[2361271.8106445]]
+beta_se,"[[1.63964361]
+ [0.10564166]]"
 gamma_se,[]
 sigma_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
 pi_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
 rho_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
-beta_bounds,"(array([[-inf]]), array([[inf]]))"
+beta_bounds,"(array([[-inf],
+       [-inf]]), array([[inf],
+       [inf]]))"
 gamma_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
-delta,"[[-13.88753102]
- [-14.44223867]
- [-16.19757317]
+delta,"[[ -9.0508126 ]
+ [ -7.90805533]
+ [-10.16232344]
  ...
- [ -7.08012728]
- [ -8.46067335]
- [-11.20297645]]"
+ [-11.0049681 ]
+ [ -9.60558702]
+ [ -8.94254861]]"
 tilde_costs,[]
 clipped_costs,"[[False]
  [False]
@@ -49,16 +55,16 @@ clipped_costs,"[[False]
  [False]
  [False]
  [False]]"
-xi,"[[ 0.37401722]
- [-0.37401722]
- [-0.66058221]
+xi,"[[-0.30019284]
+ [ 0.72477347]
+ [-1.77648135]
  ...
- [ 1.75774338]
- [ 0.68682372]
- [-2.29635755]]"
+ [-0.386248  ]
+ [ 1.10828132]
+ [ 1.50184392]]"
 omega,[]
 micro,[]
-objective,[[6.15433241e-29]]
+objective,[[3.0604946e-27]]
 xi_by_theta_jacobian,[]
 omega_by_theta_jacobian,[]
 micro_by_theta_jacobian,[]
@@ -68,5 +74,11 @@ projected_gradient_norm,nan
 hessian,[]
 reduced_hessian,[]
 reduced_hessian_eigenvalues,[]
-W,[[1.11837051e+32]]
-updated_W,[[1.11837051e+32]]
+W,"[[ 1.87452541e-06 -1.97574893e-16 -1.67752966e-15 -3.04266123e-05]
+ [-1.97574893e-16  1.06596449e-18  9.05062393e-18  1.64156179e-07]
+ [-1.67752966e-15  9.05062393e-18  7.68452984e-17  1.39380019e-06]
+ [-3.04266123e-05  1.64156179e-07  1.39380019e-06  2.52803880e+04]]"
+updated_W,"[[ 1.87452541e-06 -1.97578279e-16 -1.67752961e-15 -3.04266118e-05]
+ [-1.97578279e-16  1.06599096e-18  9.05072971e-18  1.64159816e-07]
+ [-1.67752961e-15  9.05072971e-18  7.68452956e-17  1.39380016e-06]
+ [-3.04266118e-05  1.64159816e-07  1.39380016e-06  2.52803879e+04]]"
