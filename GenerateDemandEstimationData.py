@@ -85,12 +85,12 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
         data[input] = data[input] * data['price_index']
         # print(data.head())
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
-    data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
-    variables = ['dma_code_'+frequency,'adjusted_price','product_ids','market_share','distance','y-m'] + characteristics + inputs
+    # data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
+    variables = ['dma_code_'+frequency,'adjusted_price','product_ids','market_share','distance','y-m','upc'] + characteristics + inputs
     print(variables)
     demand_estimation_data = data[variables]
     print(demand_estimation_data.head())
-    rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','y-m':'time'}
+    rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','upc':'product_ids','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','y-m':'time'}
     for i in range(len(inputs)):
         rename_dic[inputs[i]] = 'demand_instruments'+str(i+1)
     demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
