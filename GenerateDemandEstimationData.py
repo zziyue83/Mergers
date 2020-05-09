@@ -42,7 +42,65 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     #plain logit regression
     formulation = '0 + prices '
     for characteristic in characteristics:
-        formulation += '+ '+ characteristic + ' '
+        formulation = formulation + '+ '+ characteristic + ' '
+    logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(time)')
+    problem = pyblp.Problem(logit_formulation, demand_estimation_data)
+    print(problem)
+    logit_results = problem.solve()
+    print(logit_results)
+    resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
+    resultDf.to_csv('RegressionResults/'+product+'_plain_logit.csv', sep = ',')
+
+    #nested logit regression
+    # demand_estimation_data['nesting_ids'] = 1
+    # groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
+    # demand_estimation_data['demand_instruments'+str(len(inputs)+1)] = groups['shares'].transform(np.size)
+    # nl_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(time)')
+    # problem = pyblp.Problem(nl_formulation, demand_estimation_data)
+    # nlresults = problem.solve(rho=0.7)
+    # print(nlresults)
+    # resultDf = pd.DataFrame.from_dict(data=nlresults.to_dict(), orient='index')
+    # resultDf.to_csv('RegressionResults/'+product+'_nested_logit.csv', sep = ',')
+
+def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
+    data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
+    # print(data['y-m-d'])
+    data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
+    data['year'] = pd.to_datetime(data['y-m-d']).dt.to_period('Y')
+    data['year'] = data['year'].astype(str)
+    # print(data[['upc','year']])
+    years = GenerateYearList(start, end)
+    # data = AddExtraFeatures(product, data, characteristics, years)
+    data = data.dropna()
+    print(data.shape)
+    print(data.columns)
+    # print(data['style_descr'].value_counts())
+    # print(pd.isna(data['style_descr']).value_counts())
+    for characteristic in characteristics:
+        if characteristic == 'style_descr':
+            data['style_descr'] = np.where(data['style_descr'] == 'DOMESTIC', 0, 1)
+    for input in inputs:
+        input_prices = ReadInstrument(input)
+        data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
+        data[input] = data[input] * data['price_index']
+        # print(data.head())
+    data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
+    data['product_ids'] = data['upc'].astype(str) + data['dma_code'].astype(str)
+    variables = ['dma_code_'+frequency,'adjusted_price','product_ids','market_share','distance','y-m'] + characteristics + inputs
+    print(variables)
+    demand_estimation_data = data[variables]
+    print(demand_estimation_data.head())
+    rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','y-m':'time'}
+    for i in range(len(inputs)):
+        rename_dic[inputs[i]] = 'demand_instruments'+str(i+1)
+    demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
+    print(demand_estimation_data.head())
+    # pyblp.options.collinear_atol = pyblp.options.collinear_rtol = 0
+
+    #plain logit regression
+    formulation = '0 + prices '
+    for characteristic in characteristics:
+        formulation = formulation + '+ '+ characteristic + ' '
     logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(time)')
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
     print(problem)
@@ -135,4 +193,5 @@ end = sys.argv[4]
 # input = 'barley'
 # instrument = ReadInstrument(input)
 # print(instrument['t'])
-GenerateDEData(product, frequency,['wheat','barley'], ['style_descr'], start, end)
+# GenerateDEData(product, frequency,['wheat','barley'], ['style_descr'], start, end)
+TestGenerateDEData(product, frequency,[], [], start, end)
