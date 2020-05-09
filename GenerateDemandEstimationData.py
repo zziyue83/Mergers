@@ -12,7 +12,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     data['year'] = data['year'].astype(str)
     # print(data[['upc','year']])
     years = GenerateYearList(start, end)
-    data = AddExtraFeatures(product, data, characteristics, years)
+    # data = AddExtraFeatures(product, data, characteristics, years)
     data = data.dropna()
     print(data.shape)
     print(data.columns)
