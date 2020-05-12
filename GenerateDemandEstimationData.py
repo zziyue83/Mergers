@@ -28,7 +28,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
         # print(data.head())
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     data['product_ids'] = data['upc'].astype(str) + data['dma_code'].astype(str)
-    variables = ['dma_code_'+frequency,'adjusted_price','product_ids','market_share','distance','y-m'] + characteristics + inputs
+    variables = ['dma_code_'+frequency,'adjusted_price','product_ids','market_share','distance','y-m','Firm'] + characteristics + inputs
     print(variables)
     demand_estimation_data = data[variables]
     print(demand_estimation_data.head())
@@ -86,7 +86,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
         # print(data.head())
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     # data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
-    variables = ['dma_code_'+frequency,'adjusted_price','market_share','y-m','upc','dma_code'] + characteristics + inputs
+    variables = ['dma_code_'+frequency,'adjusted_price','market_share','y-m','upc','dma_code','Firm','brand_descr'] + characteristics + inputs
     # variables = ['dma_code_'+frequency,'adjusted_price','market_share','distance','y-m','product_ids'] + characteristics + inputs
     print(variables)
     demand_estimation_data = data[variables]
