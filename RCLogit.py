@@ -24,27 +24,47 @@ def RCLogit(product, frequency, inputs, characteristics, start, end):
         # print(data.head())
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     # data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
-    variables = ['dma_code_'+frequency,'adjusted_price','market_share','y-m','upc','dma_code'] + characteristics + inputs
+    variables = ['dma_code_'+frequency,'adjusted_price','market_share','y-m','upc','dma_code','Firm','brand_descr'] + characteristics + inputs
     # variables = ['dma_code_'+frequency,'adjusted_price','market_share','distance','y-m','product_ids'] + characteristics + inputs
     print(variables)
     demand_estimation_data = data[variables]
     print(demand_estimation_data.head())
     rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','upc':'product_ids','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','y-m':'time','dma_code':'city_ids'}
-    # rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','y-m':'time'}
     for i in range(len(inputs)):
         rename_dic[inputs[i]] = 'demand_instruments'+str(i)
     demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
     print(demand_estimation_data.head())
-    # pyblp.options.collinear_atol = pyblp.options.collinear_rtol = 0
 
     #random coeffcient logit regression
-    formulation = '0 + prices'
+    x2formulation = '1 + prices'
     for characteristic in characteristics:
         formulation = ' ' + formulation + '+ '+ characteristic
 
-    X1_formulation = pyblp.Formulation('0 + prices', absorb='C(product_ids)')
-    X2_formulation = pyblp.Formulation('1 + prices + sugar + mushy')
+    X1_formulation = pyblp.Formulation('0 + prices', absorb='C(product_ids)+C(time)')
+    X2_formulation = pyblp.Formulation(x2formulation)
     product_formulations = (X1_formulation, X2_formulation)
+
+    mc_integration = pyblp.Integration('monte_carlo', size=50, specification_options={'seed': 0})
+
+    pr_integration = pyblp.Integration('product', size=5)
+
+    mc_problem = pyblp.Problem(product_formulations, product_data, integration=mc_integration)
+    print(mc_problem)
+    pr_problem = pyblp.Problem(product_formulations, product_data, integration=pr_integration)
+    print(pr_problem)
+
+    bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
+
+    # here 3 should be replaced by K2, which is printed above in mc_problem as linear demand estimators. For beer K2 is 3. using the identity matrix as covariance matrix
+    results1 = mc_problem.solve(sigma=np.eye(3), optimization=bfgs)
+    print(results1)
+    resultDf = pd.DataFrame.from_dict(data=results1.to_dict(), orient='index')
+    resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_monte_carlo.csv', sep = ',')
+
+    results2 = pr_problem.solve(sigma=np.eye(3), optimization=bfgs)
+    print(results2)
+    resultDf = pd.DataFrame.from_dict(data=results2.to_dict(), orient='index')
+    resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_product_rules.csv', sep = ',')
 
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
