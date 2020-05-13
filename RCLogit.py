@@ -108,4 +108,4 @@ frequency = sys.argv[1]
 product = sys.argv[2]
 start = sys.argv[3]
 end = sys.argv[4]
-TestGenerateDEData(product, frequency,['wheat','barley'], ['style_descr'], start, end)
+RCLogit(product, frequency,['wheat','barley'], ['style_descr'], start, end)
