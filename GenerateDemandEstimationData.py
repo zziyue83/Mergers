@@ -106,7 +106,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     formulation = '0 + prices '
     for characteristic in characteristics:
         formulation = formulation + '+ '+ characteristic + ' '
-    logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(time)')
+    logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(market_ids) + C(city_ids)')
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
     print(problem)
     logit_results = problem.solve()
@@ -118,7 +118,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     demand_estimation_data['nesting_ids'] = 1
     groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
     demand_estimation_data['demand_instruments'+str(len(inputs)+1)] = groups['shares'].transform(np.size)
-    nl_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(time)')
+    nl_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(market_ids) + C(city_ids)')
     problem = pyblp.Problem(nl_formulation, demand_estimation_data)
     nlresults = problem.solve(rho=0.7)
     print(nlresults)
