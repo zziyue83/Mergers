@@ -38,7 +38,7 @@ def RCLogit(product, frequency, inputs, characteristics, start, end):
     #random coeffcient logit regression
     x2formulation = '1 + prices'
     for characteristic in characteristics:
-        formulation = ' ' + formulation + '+ '+ characteristic
+        x2formulation = ' ' + x2formulation + '+ '+ characteristic
 
     X1_formulation = pyblp.Formulation('0 + prices', absorb='C(product_ids)+C(time)')
     X2_formulation = pyblp.Formulation(x2formulation)
