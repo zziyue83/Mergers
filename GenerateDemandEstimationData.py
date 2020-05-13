@@ -120,7 +120,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     nlresults = problem.solve(rho=0.7)
     print(nlresults)
     resultDf = pd.DataFrame.from_dict(data=nlresults.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/'+product+'_nested_logit.csv', sep = ',')
+    resultDf.to_csv('RegressionResults/test_'+product+'_nested_logit.csv', sep = ',')
 
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')

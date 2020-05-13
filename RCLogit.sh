@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="demand estimation"
+#SBATCH --job-name="demand estimation random coeffcient logit regression"
 #SBATCH -A b1048
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -N 1
