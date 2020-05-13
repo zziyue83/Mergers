@@ -4,7 +4,7 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH -t 4:00:00
+#SBATCH -t 48:00:00
 #SBATCH -p buyin
 #SBATCH --mail-user=yintianzhan2021@u.northwestern.edu
 #SBATCH --mem=40G
