@@ -9,7 +9,7 @@ def RCLogit(product, frequency, inputs, characteristics, start, end):
     data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
     data['year'] = pd.to_datetime(data['y-m-d']).dt.to_period('Y')
     data['year'] = data['year'].astype(str)
-    data = data[data['post_merger'] == 0]
+    data = data[data['postmerger'] == 0]
     years = GenerateYearList(start, end)
     data = AddExtraFeatures(product, data, characteristics, years)
     data = data.dropna()
