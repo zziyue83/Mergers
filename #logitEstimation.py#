@@ -36,7 +36,7 @@ def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
     print(nested_logit_results)
     resultDf_nested = pd.DataFrame.from_dict(data=nested_logit_results.to_dict(), orient='index')
     resultDf_nested.to_csv('RegressionResults/' + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + '_nested_logit1.csv', sep = ',')
-    
+q    
 
 quarterOrMonth = sys.argv[1]
 #products = [sys.argv[2]]

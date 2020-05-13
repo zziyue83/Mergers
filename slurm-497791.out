@@ -1,0 +1,298 @@
+  0%|          | 0/4 [00:00<?, ?it/s]sys:1: DtypeWarning: Columns (18,22,30,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
+GenerateDemandEstimationData.py:160: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  year_data[characteristic] = year_data['upc'].map(features_map[characteristic])
+ 25%|██▌       | 1/4 [00:03<00:11,  3.73s/it] 50%|█████     | 2/4 [00:08<00:07,  3.94s/it]sys:1: DtypeWarning: Columns (18,22,24,28,30,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
+ 75%|███████▌  | 3/4 [00:12<00:04,  4.19s/it]sys:1: DtypeWarning: Columns (22,30) have mixed types. Specify dtype option on import or set low_memory=False.
+100%|██████████| 4/4 [00:17<00:00,  4.43s/it]100%|██████████| 4/4 [00:17<00:00,  4.48s/it]
+['2007' '2008' '2009' '2006']
+(2895907, 38)
+Index(['Unnamed: 0', 'upc', 'dma_code', 'month', 'volume', 'price',
+       'size1_amount', 'size1_units', 'brand_descr', 'owner initial',
+       'owner last', 'y-m-d', 'year', '# month', 'market_size',
+       'market_size_DMA', 'market_share', 'postmerger', 'month_since_start',
+       'involved', 'involvedpostmerger', 'product-region', 'time', 'cpiu',
+       'price_index', 'adjusted_price', 'log_adjusted_price',
+       'hhinc_per_person_mean', 'hhinc_per_person_median', 'employment_rate',
+       'adjusted_hhinc_per_person_mean', 'log_adjusted_hhinc_per_person_mean',
+       'log_employment_rate', 'product', 'upc_dma_code', 'distance', 'y-m',
+       'style_descr'],
+      dtype='object')
+        time     wheat        t
+0   7/1/1959  1.954636  1959-07
+1   8/3/1959  1.958810  1959-08
+2   9/1/1959  1.962905  1959-09
+3  10/1/1959  1.981318  1959-10
+4  11/2/1959  2.005690  1959-11
+       time  barley        t
+0  4/1/2000   76.95  2000-04
+1  5/1/2000   78.26  2000-05
+2  6/1/2000   78.48  2000-06
+3  7/1/2000   78.68  2000-07
+4  8/1/2000   75.13  2000-08
+['dma_code_month', 'adjusted_price', 'market_share', 'y-m', 'upc', 'dma_code', 'owner initial', 'brand_descr', 'style_descr', 'wheat', 'barley']
+  dma_code_month  adjusted_price  ...     wheat      barley
+0      500200601        0.134551  ...  4.356919  134.774562
+1      501200601        0.127685  ...  4.356919  134.774562
+2      502200601        0.113288  ...  4.356919  134.774562
+3      503200601        0.109541  ...  4.356919  134.774562
+4      504200601        0.129549  ...  4.356919  134.774562
+
+[5 rows x 11 columns]
+  market_ids    prices  ...  demand_instruments0 demand_instruments1
+0  500200601  0.134551  ...             4.356919          134.774562
+1  501200601  0.127685  ...             4.356919          134.774562
+2  502200601  0.113288  ...             4.356919          134.774562
+3  503200601  0.109541  ...             4.356919          134.774562
+4  504200601  0.129549  ...             4.356919          134.774562
+
+[5 rows x 11 columns]
+Initializing the problem ...
+Absorbing demand-side fixed effects ...
+Initialized the problem after 00:02:28.
+
+Dimensions:
+====================================
+ T       N      F    K1    MD    ED 
+----  -------  ---  ----  ----  ----
+9721  2895907  28    2     3     2  
+====================================
+
+Formulations:
+===============================================
+     Column Indices:          0          1     
+--------------------------  ------  -----------
+X1: Linear Characteristics  prices  style_descr
+===============================================
+Dimensions:
+====================================
+ T       N      F    K1    MD    ED 
+----  -------  ---  ----  ----  ----
+9721  2895907  28    2     3     2  
+====================================
+
+Formulations:
+===============================================
+     Column Indices:          0          1     
+--------------------------  ------  -----------
+X1: Linear Characteristics  prices  style_descr
+===============================================
+Solving the problem ...
+Updating the weighting matrix ...
+Computed results after 00:00:03.
+
+Problem Results Summary:
+=====================================
+GMM     Objective    Weighting Matrix
+Step      Value      Condition Number
+----  -------------  ----------------
+ 1    +2.711257E-10   +4.818633E+23  
+=====================================
+
+Estimating standard errors ...
+Computed results after 00:00:02.
+
+Problem Results Summary:
+========================================================
+GMM     Objective    Weighting Matrix  Covariance Matrix
+Step      Value      Condition Number  Condition Number 
+----  -------------  ----------------  -----------------
+ 2    +7.678164E-32   +3.023910E+29      +6.037557E+17  
+========================================================
+
+Cumulative Statistics:
+========================
+Computation   Objective 
+   Time      Evaluations
+-----------  -----------
+ 00:00:05         2     
+========================
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices         style_descr  
+---------------  ---------------
+ -1.343875E-03    -1.660740E-01 
+(+8.964950E-04)  (+1.107875E-01)
+================================
+Problem Results Summary:
+========================================================
+GMM     Objective    Weighting Matrix  Covariance Matrix
+Step      Value      Condition Number  Condition Number 
+----  -------------  ----------------  -----------------
+ 2    +7.678164E-32   +3.023910E+29      +6.037557E+17  
+========================================================
+
+Cumulative Statistics:
+========================
+Computation   Objective 
+   Time      Evaluations
+-----------  -----------
+ 00:00:05         2     
+========================
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices         style_descr  
+---------------  ---------------
+ -1.343875E-03    -1.660740E-01 
+(+8.964950E-04)  (+1.107875E-01)
+================================
+Initializing the problem ...
+Absorbing demand-side fixed effects ...
+Initialized the problem after 00:02:30.
+
+Dimensions:
+=========================================
+ T       N      F    K1    MD    ED    H 
+----  -------  ---  ----  ----  ----  ---
+9721  2895907  28    2     3     2     1 
+=========================================
+
+Formulations:
+===============================================
+     Column Indices:          0          1     
+--------------------------  ------  -----------
+X1: Linear Characteristics  prices  style_descr
+===============================================
+Solving the problem ...
+
+Rho Initial Values:
+=============
+ All Groups  
+-------------
++7.000000E-01
+=============
+
+Rho Lower Bounds:
+=============
+ All Groups  
+-------------
++0.000000E+00
+=============
+
+Rho Upper Bounds:
+=============
+ All Groups  
+-------------
++9.900000E-01
+=============
+
+Starting optimization ...
+
+GMM   Optimization   Objective   Fixed Point  Contraction    Objective      Objective      Projected                 
+Step   Iterations   Evaluations  Iterations   Evaluations      Value       Improvement   Gradient Norm      Theta    
+----  ------------  -----------  -----------  -----------  -------------  -------------  -------------  -------------
+ 1         0             1            0            0       +1.972736E-11                 +1.939326E-03  +7.000000E-01
+ 1         0             2            0            0       +1.943255E-11  +2.948111E-13  +1.925379E-03  +7.019393E-01
+ 1         0             3            0            0       +1.966478E-11                 +1.936510E-03  +7.004104E-01
+ 1         0             4            0            0       +1.971414E-11                 +1.940946E-03  +7.000867E-01
+ 1         0             5            0            0       +1.972458E-11                 +1.938978E-03  +7.000183E-01
+ 1         0             6            0            0       +1.972678E-11                 +1.940565E-03  +7.000039E-01
+ 1         0             7            0            0       +1.972724E-11                 +1.939322E-03  +7.000008E-01
+ 1         0             8            0            0       +1.972733E-11                 +1.940904E-03  +7.000002E-01
+ 1         0             9            0            0       +1.972736E-11                 +1.941578E-03  +7.000000E-01
+ 1         0            10            0            0       +1.972737E-11                 +1.939334E-03  +7.000000E-01
+ 1         0            11            0            0       +1.972737E-11                 +1.940141E-03  +7.000000E-01
+ 1         0            12            0            0       +1.972736E-11                 +1.939905E-03  +7.000000E-01
+ 1         0            13            0            0       +1.972736E-11                 +1.942417E-03  +7.000000E-01
+ 1         0            14            0            0       +1.972736E-11                 +1.940486E-03  +7.000000E-01
+ 1         0            15            0            0       +1.972736E-11                 +1.941187E-03  +7.000000E-01
+ 1         0            16            0            0       +1.972736E-11                 +1.941096E-03  +7.000000E-01
+ 1         0            17            0            0       +1.972736E-11                 +1.940122E-03  +7.000000E-01
+ 1         0            18            0            0       +1.972736E-11                 +1.940087E-03  +7.000000E-01
+ 1         0            19            0            0       +1.972736E-11                 +1.940541E-03  +7.000000E-01
+ 1         0            20            0            0       +1.972737E-11                 +1.940222E-03  +7.000000E-01
+ 1         0            21            0            0       +1.972736E-11                 +1.939326E-03  +7.000000E-01
+
+The optimization routine failed to converge. This problem can sometimes be mitigated by choosing more reasonable initial parameter values, setting more conservative bounds, or configuring other optimization settings.
+
+
+Optimization failed after 00:30:55.
+Computing the Hessian and and updating the weighting matrix ...
+Computed results after 00:04:27.
+
+Problem Results Summary:
+===================================================================
+GMM     Objective      Projected       Reduced     Weighting Matrix
+Step      Value      Gradient Norm     Hessian     Condition Number
+----  -------------  -------------  -------------  ----------------
+ 1    +1.972736E-11  +1.939326E-03  +5.455204E+01   +4.818633E+23  
+===================================================================
+
+Starting optimization ...
+
+GMM   Optimization   Objective   Fixed Point  Contraction    Objective      Objective      Projected                 
+Step   Iterations   Evaluations  Iterations   Evaluations      Value       Improvement   Gradient Norm      Theta    
+----  ------------  -----------  -----------  -----------  -------------  -------------  -------------  -------------
+ 2         0             1            0            0       +7.901401E-29                 +3.789792E-14  +7.000000E-01
+
+Optimization completed after 00:01:28.
+Computing the Hessian and estimating standard errors ...
+Computed results after 00:04:24.
+
+Problem Results Summary:
+======================================================================================
+GMM     Objective      Projected       Reduced     Weighting Matrix  Covariance Matrix
+Step      Value      Gradient Norm     Hessian     Condition Number  Condition Number 
+----  -------------  -------------  -------------  ----------------  -----------------
+ 2    +7.901401E-29  +3.789792E-14  -5.761879E-06   +9.081007E+26      +1.283595E+20  
+======================================================================================
+
+Cumulative Statistics:
+======================================
+Computation  Optimization   Objective 
+   Time       Iterations   Evaluations
+-----------  ------------  -----------
+ 00:41:14         0            24     
+======================================
+
+Rho Estimates (Robust SEs in Parentheses):
+===============
+  All Groups   
+---------------
+ +7.000000E-01 
+(+6.988736E-03)
+===============
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices         style_descr  
+---------------  ---------------
+ -1.921508E-04    -2.374570E-02 
+(+2.781213E-04)  (+3.436980E-02)
+================================
+Problem Results Summary:
+======================================================================================
+GMM     Objective      Projected       Reduced     Weighting Matrix  Covariance Matrix
+Step      Value      Gradient Norm     Hessian     Condition Number  Condition Number 
+----  -------------  -------------  -------------  ----------------  -----------------
+ 2    +7.901401E-29  +3.789792E-14  -5.761879E-06   +9.081007E+26      +1.283595E+20  
+======================================================================================
+
+Cumulative Statistics:
+======================================
+Computation  Optimization   Objective 
+   Time       Iterations   Evaluations
+-----------  ------------  -----------
+ 00:41:14         0            24     
+======================================
+
+Rho Estimates (Robust SEs in Parentheses):
+===============
+  All Groups   
+---------------
+ +7.000000E-01 
+(+6.988736E-03)
+===============
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices         style_descr  
+---------------  ---------------
+ -1.921508E-04    -2.374570E-02 
+(+2.781213E-04)  (+3.436980E-02)
+================================
