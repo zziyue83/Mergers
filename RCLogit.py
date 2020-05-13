@@ -48,9 +48,9 @@ def RCLogit(product, frequency, inputs, characteristics, start, end):
 
     pr_integration = pyblp.Integration('product', size=5)
 
-    mc_problem = pyblp.Problem(product_formulations, product_data, integration=mc_integration)
+    mc_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=mc_integration)
     print(mc_problem)
-    pr_problem = pyblp.Problem(product_formulations, product_data, integration=pr_integration)
+    pr_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=pr_integration)
     print(pr_problem)
 
     bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
