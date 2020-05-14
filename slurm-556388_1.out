@@ -1,0 +1,16 @@
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
+  warnings.warn(msg, UserWarning)
+Empty DataFrame
+Columns: [dma_code_month, dma_code, owner initial, log_adjusted_price, upc, market_share, distance, time, sugar, cocoa_beans, mint, chocolate]
+Index: []
+Initializing the problem ...
+Traceback (most recent call last):
+  File "plainLogit.py", line 35, in <module>
+    GenerateDEData(products, quarterOrMonth, inputs, characteristics)
+  File "plainLogit.py", line 21, in GenerateDEData
+    problem = pyblp.Problem(logit_formulation, demand_estimation_data)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/economies/problem.py", line 1193, in __init__
+    products = Products(product_formulations, product_data, add_exogenous=add_exogenous)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/primitives.py", line 140, in __new__
+    raise KeyError("product_data must have a market_ids field.")
+KeyError: 'product_data must have a market_ids field.'
