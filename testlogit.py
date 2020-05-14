@@ -4,7 +4,10 @@ import numpy as np
 import pyblp
 
 def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
-    data = pd.read_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + "_pre_estimation.tsv", delimiter = '\t')
+    datachunks = pd.read_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + "_pre_estimation.tsv", delimiter = '\t',chunksize = 100000)
+    for df in datachunks:
+        data = df
+        break
     data = data[data['postmerger'] == 0]
     variables = ['dma_code_' + quarterOrMonth,'dma_code','owner initial','log_adjusted_price','upc','market_share','distance'] + inputs + characteristics
     demand_estimation_data = data[variables]
