@@ -12,7 +12,7 @@ def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
     variables = ['dma_code_' + quarterOrMonth,'dma_code','owner initial','log_adjusted_price','upc','market_share','distance'] + inputs + characteristics
     demand_estimation_data = data[variables]
     print(demand_estimation_data)
-    a = demand_estimation_data[demand_estimation_data.isnull()]
+    # a = demand_estimation_data[demand_estimation_data.isnull()]
     print(a)
     print(a.iloc[0])
     demand_estimation_data = demand_estimation_data.dropna()
