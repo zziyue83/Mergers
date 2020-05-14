@@ -13,8 +13,8 @@ def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
     demand_estimation_data = data[variables]
     print(demand_estimation_data)
     # a = demand_estimation_data[demand_estimation_data.isnull()]
-    print(a)
-    print(a.iloc[0])
+    # print(a)
+    # print(a.iloc[0])
     demand_estimation_data = demand_estimation_data.dropna()
     print(demand_estimation_data.head())
     rename_dic = {'dma_code_' + quarterOrMonth:'market_ids','dma_code':'city_ids','log_adjusted_price':'prices','owner initial':'firm_ids','brand_descr':'brand_ids','upc':'product_ids','distance':'demand_instruments0','market_share':'shares'}
