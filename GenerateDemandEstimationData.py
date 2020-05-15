@@ -106,11 +106,11 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     # pyblp.options.collinear_atol = pyblp.options.collinear_rtol = 0
 
     #plain logit regression
-    formulation = '0 + prices '
+    formulation = '0 + prices'
     for characteristic in characteristics:
-        formulation = formulation + '+ '+ characteristic + ' '
+        formulation = formulation + ' + '+ characteristic
     for dma_time_indicator in dma_time_indicators:
-        formulation = formulation + '+ '+ dma_time_indicator + ' '
+        formulation = formulation + ' + '+ dma_time_indicator
     # logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(market_ids) + C(city_ids)')
     logit_formulation = pyblp.Formulation(formulation, absorb='C(market_ids) + C(city_ids)')
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
