@@ -64,14 +64,15 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
 
 def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
-    data= data[:100000]
+    data = data[data['postmerger'] == 0]
+    # data= data[:100000]
     # print(data.head())
     # print(data['y-m-d'])
     data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
     data['year'] = pd.to_datetime(data['y-m-d']).dt.to_period('Y')
     data['year'] = data['year'].astype(str)
     # print(data[['upc','year']])
-    data, dma_time_indicators = AddDMATimeIndicator(data,frequency)
+    # data, dma_time_indicators = AddDMATimeIndicator(data,frequency)
     print('Added dma-time indicators')
     years = GenerateYearList(start, end)
     data = AddExtraFeatures(product, data, characteristics, years)
@@ -94,7 +95,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     print(data['dma_code_'+frequency])
     # data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
-    variables = ['dma_code_'+frequency,'adjusted_price','market_share','month_since_start','upc','dma_code','owner initial','brand_descr'] + characteristics + inputs + dma_time_indicators
+    variables = ['dma_code_'+frequency,'adjusted_price','market_share','month_since_start','upc','dma_code','owner initial','brand_descr'] + characteristics + inputs
     # variables = ['dma_code_'+frequency,'adjusted_price','market_share','distance','y-m','product_ids'] + characteristics + inputs
     print(variables)
     demand_estimation_data = data[variables]
