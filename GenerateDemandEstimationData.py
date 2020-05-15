@@ -109,14 +109,14 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
 
     #plain logit regression
     formulation = '0 + prices'
-    for characteristic in characteristics:
-        formulation = formulation + ' + '+ characteristic
+    # for characteristic in characteristics:
+    #     formulation = formulation + ' + '+ characteristic
     for dma_time_indicator in dma_time_indicators:
         formulation = formulation + ' + '+ dma_time_indicator
     # print(formulation)
-    # logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(market_ids) + C(city_ids)')
+    # logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids)')
     print(demand_estimation_data['market_ids'])
-    logit_formulation = pyblp.Formulation(formulation)
+    logit_formulation = pyblp.Formulation(formulation,absorb='C(product_ids)'')
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
     print(problem)
     logit_results = problem.solve()
