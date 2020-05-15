@@ -85,7 +85,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
         data[input] = data[input] * data['price_index']
         # print(data.head())
     print(data[['y-m','postmerger']])
-    data = data[data['postmerger'] == 0]
+    # data = data[data['postmerger'] == 0]
     print(data[['y-m','postmerger']])
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     # data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
@@ -113,7 +113,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     logit_results = problem.solve()
     print(logit_results)
     resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/test_'+product+'_plain_logit_mktfe.csv', sep = ',')
+    resultDf.to_csv('RegressionResults/test_'+product+'_plain_logit_mktfe_dmatrend_alldata.csv', sep = ',')
 
     # #nested logit regression
     # demand_estimation_data['nesting_ids'] = 1
