@@ -85,7 +85,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
         data[input] = data[input] * data['price_index']
         # print(data.head())
     print(data[['y-m','postmerger']])
-    data = data[data['postmerger'] == 0]
+    # data = data[data['postmerger'] == 0]
     print(data[['y-m','postmerger']])
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     # data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
