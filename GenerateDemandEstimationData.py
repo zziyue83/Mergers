@@ -113,7 +113,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     logit_results = problem.solve()
     print(logit_results)
     resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/test_'+product+'_plain_logit_mktfe_dmatrend_alldata.csv', sep = ',')
+    resultDf.to_csv('RegressionResults/test_'+product+'_plain_logit_mktfe_dmatrend.csv', sep = ',')
 
     # #nested logit regression
     # demand_estimation_data['nesting_ids'] = 1
