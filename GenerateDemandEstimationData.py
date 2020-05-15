@@ -85,16 +85,16 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
         data[input] = data[input] * data['price_index']
         # print(data.head())
     print(data[['y-m','postmerger']])
-    # data = data[data['postmerger'] == 0]
+    data = data[data['postmerger'] == 0]
     print(data[['y-m','postmerger']])
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     # data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
-    variables = ['dma_code_'+frequency,'adjusted_price','market_share','y-m','upc','dma_code','owner initial','brand_descr'] + characteristics + inputs
+    variables = ['dma_code_'+frequency,'adjusted_price','market_share','month_since_start','upc','dma_code','owner initial','brand_descr'] + characteristics + inputs
     # variables = ['dma_code_'+frequency,'adjusted_price','market_share','distance','y-m','product_ids'] + characteristics + inputs
     print(variables)
     demand_estimation_data = data[variables]
     print(demand_estimation_data.head())
-    rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','upc':'product_ids','owner initial':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','y-m':'time','dma_code':'city_ids'}
+    rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','upc':'product_ids','owner initial':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','month_since_start':'time','dma_code':'city_ids'}
     # rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','Firm':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','y-m':'time'}
     for i in range(len(inputs)):
         rename_dic[inputs[i]] = 'demand_instruments'+str(i)
