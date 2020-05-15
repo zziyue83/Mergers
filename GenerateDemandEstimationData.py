@@ -109,7 +109,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     # pyblp.options.collinear_atol = pyblp.options.collinear_rtol = 0
 
     #plain logit regression
-    formulation = '0 + prices + month_since_start'
+    formulation = '0 + prices + time'
     for characteristic in characteristics:
         formulation = formulation + ' + '+ characteristic
     # for dma_time_indicator in dma_time_indicators:
