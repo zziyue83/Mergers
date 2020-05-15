@@ -111,15 +111,16 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
         formulation = formulation + ' + '+ characteristic
     for dma_time_indicator in dma_time_indicators:
         formulation = formulation + ' + '+ dma_time_indicator
-    print(formulation)
+    # print(formulation)
     # logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(market_ids) + C(city_ids)')
+    print(demand_estimation_data['market_ids'])
     logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(city_ids)')
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
     print(problem)
     logit_results = problem.solve()
     print(logit_results)
     resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/test_'+product+'_plain_logit_mktfe_dmatrend_alldata.csv', sep = ',')
+    resultDf.to_csv('RegressionResults/test_'+product+'_plain_logit_mktfe_dmatrend.csv', sep = ',')
 
     # #nested logit regression
     # demand_estimation_data['nesting_ids'] = 1
