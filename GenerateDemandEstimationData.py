@@ -179,7 +179,7 @@ def AddDMATimeIndicator(data,frequency):
     dmas = data['dma_code'].unique()
     dma_time_indicators = []
     for dma in dmas:
-        dma_time_indicator = str(dma)
+        dma_time_indicator = 'dma_'+str(dma)+'_time'
         dma_time_indicators.append(dma_time_indicator)
         data[dma_time_indicator] = data['dma_code'].map({dma:1},na_action=0) * data[frequency+'_since_start']
     return data, dma_time_indicators
