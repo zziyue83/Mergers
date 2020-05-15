@@ -65,6 +65,7 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
 def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
     data= data[:100000]
+    print(data.head())
     # print(data['y-m-d'])
     data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
     data['year'] = pd.to_datetime(data['y-m-d']).dt.to_period('Y')
