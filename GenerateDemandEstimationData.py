@@ -69,6 +69,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     data['year'] = pd.to_datetime(data['y-m-d']).dt.to_period('Y')
     data['year'] = data['year'].astype(str)
     # print(data[['upc','year']])
+    data, dma_time_indicators = AddDMATimeIndicator(data)
     years = GenerateYearList(start, end)
     data = AddExtraFeatures(product, data, characteristics, years)
     data = data.dropna()
@@ -89,7 +90,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     print(data[['y-m','postmerger']])
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     # data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
-    variables = ['dma_code_'+frequency,'adjusted_price','market_share','month_since_start','upc','dma_code','owner initial','brand_descr'] + characteristics + inputs
+    variables = ['dma_code_'+frequency,'adjusted_price','market_share','month_since_start','upc','dma_code','owner initial','brand_descr'] + characteristics + inputs + dma_time_indicators
     # variables = ['dma_code_'+frequency,'adjusted_price','market_share','distance','y-m','product_ids'] + characteristics + inputs
     print(variables)
     demand_estimation_data = data[variables]
@@ -106,14 +107,16 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     formulation = '0 + prices '
     for characteristic in characteristics:
         formulation = formulation + '+ '+ characteristic + ' '
+    for dma_time_indicator in dma_time_indicators:
+        formulation = formulation + '+ '+ dma_time_indicator + ' '
     # logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(market_ids) + C(city_ids)')
-    logit_formulation = pyblp.Formulation(formulation, absorb='C(market_ids) + C(city_ids)*C(time)')
+    logit_formulation = pyblp.Formulation(formulation, absorb='C(market_ids) + C(city_ids)')
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
     print(problem)
     logit_results = problem.solve()
     print(logit_results)
     resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/test_'+product+'_plain_logit_mktfe_dmatrend.csv', sep = ',')
+    resultDf.to_csv('RegressionResults/test_'+product+'_plain_logit_mktfe_dmatrend_alldata.csv', sep = ',')
 
     # #nested logit regression
     # demand_estimation_data['nesting_ids'] = 1
@@ -142,7 +145,7 @@ def GenerateYearList(start, end):
 def AddExtraFeatures(product, data, characteristics, years):
     years = list(map(str,years))
     data_with_features_ls = []
-    print(data['year'].unique())
+    # print(data['year'].unique())
     for year in tqdm(years):
         features = pd.read_csv("../../GeneratedData/"+product+"_dma_month_upc_"+year+"_with_features.tsv", delimiter = '\t')
         # y = int(year)
@@ -168,6 +171,15 @@ def AddExtraFeatures(product, data, characteristics, years):
         # print('wuhuwuhu')
     data_with_features = pd.concat(data_with_features_ls)
     return data_with_features
+
+def AddDMATimeIndicator(data,frequency):
+    dmas = data['dma_code'].unique()
+    dma_time_indicators = []
+    for dma in dmas:
+        dma_time_indicator = str(dma) + '_time'
+        dma_time_indicators.append(dma_time_indicator)
+        data[dma_time_indicator] = data['dma_code'].map({dma:1},na_action=0) * data[frequency+'_since_start']
+    return data, dma_time_indicators
 
 # def AdjustInflation(frequency):
 #     cpiu = pd.read_excel('cpiu_2000_2020.xlsx', header = 11)
