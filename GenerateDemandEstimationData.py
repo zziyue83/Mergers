@@ -184,8 +184,8 @@ def AddDMATimeIndicator(data,frequency):
     for dma in dmas:
         dma_time_indicator = 'dma_'+str(dma)+'_time'
         dma_time_indicators.append(dma_time_indicator)
-        data[dma_time_indicator] = data['dma_code'].map({dma:1}) * data[frequency+'_since_start']
-        data[dma_time_indicator] = data[dma_time_indicator].fillna(0)
+        data[dma_time_indicator] = data['dma_code'].map({dma:1})
+        data[dma_time_indicator] = data[dma_time_indicator].fillna(0)  * data[frequency+'_since_start']
     return data, dma_time_indicators
 
 # def AdjustInflation(frequency):
