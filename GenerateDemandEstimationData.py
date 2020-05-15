@@ -116,7 +116,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     # print(formulation)
     # logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(market_ids) + C(city_ids)')
     print(demand_estimation_data['market_ids'])
-    logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(city_ids)')
+    logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids)')
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
     print(problem)
     logit_results = problem.solve()
