@@ -111,6 +111,7 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
         formulation = formulation + ' + '+ characteristic
     for dma_time_indicator in dma_time_indicators:
         formulation = formulation + ' + '+ dma_time_indicator
+    print(formulation)
     # logit_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(market_ids) + C(city_ids)')
     logit_formulation = pyblp.Formulation(formulation, absorb='C(market_ids) + C(city_ids)')
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
