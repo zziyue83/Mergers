@@ -41,7 +41,7 @@ def RCLogit(product, frequency, inputs, characteristics, start, end):
     for characteristic in characteristics:
         x2formulation = ' ' + x2formulation + '+ '+ characteristic
 
-    X1_formulation = pyblp.Formulation('0 + prices', absorb='C(product_ids)+C(time)')
+    X1_formulation = pyblp.Formulation('0 + prices + time', absorb='C(product_ids)+C(city_ids)')
     X2_formulation = pyblp.Formulation(x2formulation)
     product_formulations = (X1_formulation, X2_formulation)
 
