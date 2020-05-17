@@ -25,7 +25,7 @@ def RCLogit(product, frequency, inputs, characteristics, start, end):
         # print(data.head())
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     # data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
-    variables = ['dma_code_'+frequency,'adjusted_price','market_share','y-m','upc','dma_code','owner initial','brand_descr'] + characteristics + inputs
+    variables = ['dma_code_'+frequency,'adjusted_price','market_share','y-m','upc','dma_code','owner initial','brand_descr','distance'] + characteristics + inputs
     # variables = ['dma_code_'+frequency,'adjusted_price','market_share','distance','y-m','product_ids'] + characteristics + inputs
     print(variables)
     demand_estimation_data = data[variables]
@@ -45,27 +45,36 @@ def RCLogit(product, frequency, inputs, characteristics, start, end):
     X2_formulation = pyblp.Formulation(x2formulation)
     product_formulations = (X1_formulation, X2_formulation)
 
-    mc_integration = pyblp.Integration('monte_carlo', size=50, specification_options={'seed': 0})
+    # mc_integration = pyblp.Integration('monte_carlo', size=50, specification_options={'seed': 0})
+    #
+    # pr_integration = pyblp.Integration('product', size=5)
 
-    pr_integration = pyblp.Integration('product', size=5)
+    grid_integration = pyblp.Integration('grid', size=7)
 
-    mc_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=mc_integration)
-    print(mc_problem)
-    pr_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=pr_integration)
-    print(pr_problem)
+    # mc_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=mc_integration)
+    # print(mc_problem)
+    # pr_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=pr_integration)
+    # print(pr_problem)
+    grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
+    print(grid_problem)
 
     bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
 
     # here 3 should be replaced by K2, which is printed above in mc_problem as linear demand estimators. For beer K2 is 3. using the identity matrix as covariance matrix
-    results1 = mc_problem.solve(sigma=np.eye(3), optimization=bfgs)
-    print(results1)
-    resultDf = pd.DataFrame.from_dict(data=results1.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_monte_carlo.csv', sep = ',')
+    # results1 = mc_problem.solve(sigma=np.eye(3), optimization=bfgs)
+    # print(results1)
+    # resultDf = pd.DataFrame.from_dict(data=results1.to_dict(), orient='index')
+    # resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_monte_carlo.csv', sep = ',')
+    #
+    # results2 = pr_problem.solve(sigma=np.eye(3), optimization=bfgs)
+    # print(results2)
+    # resultDf = pd.DataFrame.from_dict(data=results2.to_dict(), orient='index')
+    # resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_product_rules.csv', sep = ',')
 
-    results2 = pr_problem.solve(sigma=np.eye(3), optimization=bfgs)
-    print(results2)
-    resultDf = pd.DataFrame.from_dict(data=results2.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_product_rules.csv', sep = ',')
+    results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs)
+    print(results)
+    resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
+    resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_grid.csv', sep = ',')
 
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
