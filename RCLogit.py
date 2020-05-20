@@ -118,30 +118,30 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end):
     print(demand_estimation_data.head())
 
 
-    # #random coeffcient logit regression
-    # x2formulation = '1 + prices'
-    # for characteristic in characteristics:
-    #     x2formulation = ' ' + x2formulation + '+ '+ characteristic
+    #random coeffcient logit regression
+    x2formulation = '1 + prices'
+    for characteristic in characteristics:
+        x2formulation = ' ' + x2formulation + '+ '+ characteristic
+
+    X1_formulation = pyblp.Formulation('0 + prices + time', absorb='C(product_ids)+C(city_ids)')
+    X2_formulation = pyblp.Formulation(x2formulation)
+    product_formulations = (X1_formulation, X2_formulation)
+
+    # mc_integration = pyblp.Integration('monte_carlo', size=50, specification_options={'seed': 0})
     #
-    # X1_formulation = pyblp.Formulation('0 + prices + time', absorb='C(product_ids)+C(city_ids)')
-    # X2_formulation = pyblp.Formulation(x2formulation)
-    # product_formulations = (X1_formulation, X2_formulation)
-    #
-    # # mc_integration = pyblp.Integration('monte_carlo', size=50, specification_options={'seed': 0})
-    # #
-    # # pr_integration = pyblp.Integration('product', size=5)
-    #
-    # grid_integration = pyblp.Integration('grid', size=7)
-    #
-    # grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
-    # print(grid_problem)
-    #
-    # bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
-    #
-    # results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs)
-    # print(results)
-    # resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
-    # resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_grid.csv', sep = ',')
+    # pr_integration = pyblp.Integration('product', size=5)
+
+    grid_integration = pyblp.Integration('grid', size=7)
+
+    grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
+    print(grid_problem)
+
+    bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
+
+    results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs)
+    print(results)
+    resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
+    resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_grid.csv', sep = ',')
 
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
