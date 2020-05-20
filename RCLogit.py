@@ -76,6 +76,73 @@ def RCLogit(product, frequency, inputs, characteristics, start, end):
     resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
     resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_grid.csv', sep = ',')
 
+def SampleRCLogit(product, frequency, inputs, characteristics, start, end):
+    data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
+    data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
+    data['year'] = pd.to_datetime(data['y-m-d']).dt.to_period('Y')
+    data['year'] = data['year'].astype(str)
+    data = data[data['postmerger'] == 0]
+    years = GenerateYearList(start, end)
+    data = AddExtraFeatures(product, data, characteristics, years)
+    data = data.dropna()
+    print(data.shape)
+    print(data.columns)
+    for characteristic in characteristics:
+        if characteristic == 'style_descr':
+            data['style_descr'] = np.where(data['style_descr'] == 'DOMESTIC', 0, 1)
+    for input in inputs:
+        input_prices = ReadInstrument(input)
+        data = data.merge(input_prices, how = 'inner', left_on = 'y-m', right_on = 't')
+        data[input] = data[input] * data['price_index']
+        # print(data.head())
+    data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
+    # data['product_ids'] = data['upc'].astype(str) + '_' + data['dma_code'].astype(str)
+    variables = ['dma_code_'+frequency,'adjusted_price','market_share','y-m','upc','dma_code','owner initial','brand_descr','distance'] + characteristics + inputs
+    # variables = ['dma_code_'+frequency,'adjusted_price','market_share','distance','y-m','product_ids'] + characteristics + inputs
+
+    print(variables)
+    demand_estimation_data = data[variables]
+    print(demand_estimation_data.head())
+    rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','upc':'product_ids','owner initial':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','y-m':'time','dma_code':'city_ids'}
+    for i in range(len(inputs)):
+        rename_dic[inputs[i]] = 'demand_instruments'+str(i)
+    demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
+    print(demand_estimation_data.head())
+
+    #marktet_ids random sampling
+    market_ids = demand_estimation_data['market_ids'].unique()
+    np.random.seed(1000)
+    sample = np.random.choice(market_ids,int(0.05*len(market_ids)),replace=False)
+    print(sample)
+    demand_estimation_data = demand_estimation_data[demand_estimation_data['market_ids'].isin(sample)]
+    print(demand_estimation_data.head())
+
+
+    # #random coeffcient logit regression
+    # x2formulation = '1 + prices'
+    # for characteristic in characteristics:
+    #     x2formulation = ' ' + x2formulation + '+ '+ characteristic
+    #
+    # X1_formulation = pyblp.Formulation('0 + prices + time', absorb='C(product_ids)+C(city_ids)')
+    # X2_formulation = pyblp.Formulation(x2formulation)
+    # product_formulations = (X1_formulation, X2_formulation)
+    #
+    # # mc_integration = pyblp.Integration('monte_carlo', size=50, specification_options={'seed': 0})
+    # #
+    # # pr_integration = pyblp.Integration('product', size=5)
+    #
+    # grid_integration = pyblp.Integration('grid', size=7)
+    #
+    # grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
+    # print(grid_problem)
+    #
+    # bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
+    #
+    # results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs)
+    # print(results)
+    # resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
+    # resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_grid.csv', sep = ',')
+
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
     instrument['t'] = pd.to_datetime(instrument['time']).dt.to_period('M')
@@ -118,4 +185,5 @@ frequency = sys.argv[1]
 product = sys.argv[2]
 start = sys.argv[3]
 end = sys.argv[4]
-RCLogit(product, frequency,['wheat','barley'], ['style_descr'], start, end)
+# RCLogit(product, frequency,['wheat','barley'], ['style_descr'], start, end)
+SampleRCLogit(product, frequency,['wheat','barley'], ['style_descr'], start, end)
