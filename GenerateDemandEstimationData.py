@@ -5,6 +5,8 @@ import numpy as np
 from tqdm import tqdm
 
 def GenerateDEData(product, frequency, inputs, characteristics, start, end):
+    log = open("random_coefficient_logit_regression.log", "a")
+    sys.stdout = log
     data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
     # print(data['y-m-d'])
     data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
@@ -63,6 +65,8 @@ def GenerateDEData(product, frequency, inputs, characteristics, start, end):
     # resultDf.to_csv('RegressionResults/'+product+'_nested_logit.csv', sep = ',')
 
 def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
+    log = open("plain_nested_logit_regression.log", "a")
+    sys.stdout = log
     data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
     data = data[data['postmerger'] == 0]
     # data= data[:100000]
@@ -120,21 +124,21 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     logit_formulation = pyblp.Formulation(formulation,absorb='C(product_ids) + C(city_ids)')
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
     print(problem)
-    logit_results = problem.solve()
-    print(logit_results)
-    resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/'+product+'_'+str(frequency)+'_plain_logit.csv', sep = ',')
-
-    #nested logit regression
-    demand_estimation_data['nesting_ids'] = 1
-    groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
-    demand_estimation_data['demand_instruments'+str(len(inputs)+1)] = groups['shares'].transform(np.size)
-    nl_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(city_ids)')
-    problem = pyblp.Problem(nl_formulation, demand_estimation_data)
-    nlresults = problem.solve(rho=0.7)
-    print(nlresults)
-    resultDf = pd.DataFrame.from_dict(data=nlresults.to_dict(), orient='index')
-    resultDf.to_csv('RegressionResults/'+product+'_'+str(frequency)+'_nested_logit.csv', sep = ',')
+    # logit_results = problem.solve()
+    # print(logit_results)
+    # resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
+    # resultDf.to_csv('RegressionResults/'+product+'_'+str(frequency)+'_plain_logit.csv', sep = ',')
+    #
+    # #nested logit regression
+    # demand_estimation_data['nesting_ids'] = 1
+    # groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
+    # demand_estimation_data['demand_instruments'+str(len(inputs)+1)] = groups['shares'].transform(np.size)
+    # nl_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(city_ids)')
+    # problem = pyblp.Problem(nl_formulation, demand_estimation_data)
+    # nlresults = problem.solve(rho=0.7)
+    # print(nlresults)
+    # resultDf = pd.DataFrame.from_dict(data=nlresults.to_dict(), orient='index')
+    # resultDf.to_csv('RegressionResults/'+product+'_'+str(frequency)+'_nested_logit.csv', sep = ',')
 
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
