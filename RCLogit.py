@@ -55,7 +55,13 @@ def RCLogit(product, frequency, inputs, characteristics, start, end):
     # print(mc_problem)
     # pr_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=pr_integration)
     # print(pr_problem)
-    grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
+    if not demographics:
+        grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
+    else:
+        agent_data = pd.read_csv('Clean/agent_date.csv',delimiter = ',')
+        agent_data['market_ids'] = agent_data['dma_code'].astype(str)+agent_data[frequency].astype(str)
+        agent_formulation = pyblp.Formulation('0 + HINCP + AGEP + RAC1P')
+        grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, agent_formulation, agent_data, integration=grid_integration)
     print(grid_problem)
 
     bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
@@ -76,7 +82,7 @@ def RCLogit(product, frequency, inputs, characteristics, start, end):
     resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
     resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_grid.csv', sep = ',')
 
-def SampleRCLogit(product, frequency, inputs, characteristics, start, end):
+def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demographics=False):
     data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
     data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
     data['year'] = pd.to_datetime(data['y-m-d']).dt.to_period('Y')
@@ -133,7 +139,13 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end):
 
     grid_integration = pyblp.Integration('grid', size=7)
 
-    grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
+    if not demographics:
+        grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
+    else:
+        agent_data = pd.read_csv('Clean/agent_date.csv',delimiter = ',')
+        agent_data['market_ids'] = agent_data['dma_code'].astype(str)+agent_data[frequency].astype(str)
+        agent_formulation = pyblp.Formulation('0 + HINCP + AGEP + RAC1P')
+        grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, agent_formulation, agent_data, integration=grid_integration)
     print(grid_problem)
 
     bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
