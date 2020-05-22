@@ -1,0 +1,134 @@
+,0
+step,2
+optimization_time,65.5891342163086
+cumulative_optimization_time,199.02926230430603
+total_time,234.4053111076355
+cumulative_total_time,544.4375665187836
+converged,True
+cumulative_converged,True
+optimization_iterations,0
+cumulative_optimization_iterations,1
+objective_evaluations,2
+cumulative_objective_evaluations,5
+fp_converged,"[[1]
+ [1]
+ [1]
+ ...
+ [1]
+ [1]
+ [1]]"
+cumulative_fp_converged,"[[1 1 1]
+ [1 1 1]
+ [1 1 1]
+ ...
+ [1 1 1]
+ [1 1 1]
+ [1 1 1]]"
+fp_iterations,"[[0]
+ [0]
+ [0]
+ ...
+ [0]
+ [0]
+ [0]]"
+cumulative_fp_iterations,"[[0 0 0]
+ [0 0 0]
+ [0 0 0]
+ ...
+ [0 0 0]
+ [0 0 0]
+ [0 0 0]]"
+contraction_evaluations,"[[0]
+ [0]
+ [0]
+ ...
+ [0]
+ [0]
+ [0]]"
+cumulative_contraction_evaluations,"[[0 0 0]
+ [0 0 0]
+ [0 0 0]
+ ...
+ [0 0 0]
+ [0 0 0]
+ [0 0 0]]"
+parameters,"[[ 9.90000000e-01]
+ [-4.44650982e+02]
+ [-1.56411970e-02]]"
+parameter_covariances,"[[ 2.02049604e+04 -2.51651810e+06 -1.26324078e+02]
+ [-2.51651810e+06  7.76424667e+08  5.19544321e+04]
+ [-1.26324078e+02  5.19544321e+04  3.90863511e+00]]"
+theta,[0.99]
+sigma,[]
+pi,[]
+rho,[[0.99]]
+beta,"[[-4.44650982e+02]
+ [-1.56411970e-02]]"
+gamma,[]
+sigma_se,[]
+pi_se,[]
+rho_se,[[0.10833689]]
+beta_se,"[[2.1237189e+01]
+ [1.5068150e-03]]"
+gamma_se,[]
+sigma_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+pi_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+rho_bounds,"(array([[0.]]), array([[0.99]]))"
+beta_bounds,"(array([[-inf],
+       [-inf]]), array([[inf],
+       [inf]]))"
+gamma_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+delta,"[[-1.13866766]
+ [-1.28783811]
+ [-0.55510653]
+ ...
+ [-0.50374205]
+ [-0.30819651]
+ [-0.65926546]]"
+tilde_costs,[]
+clipped_costs,"[[False]
+ [False]
+ [False]
+ ...
+ [False]
+ [False]
+ [False]]"
+xi,"[[-1.37247329]
+ [-2.09147626]
+ [-4.44752205]
+ ...
+ [ 2.82954635]
+ [ 8.12175324]
+ [14.36433044]]"
+omega,[]
+micro,[]
+objective,[[114.74994796]]
+xi_by_theta_jacobian,"[[ 7.9920656 ]
+ [ 6.6870881 ]
+ [ 9.70425951]
+ ...
+ [11.01418194]
+ [14.96222302]
+ [10.39994268]]"
+omega_by_theta_jacobian,"[[nan]
+ [nan]
+ [nan]
+ ...
+ [nan]
+ [nan]
+ [nan]]"
+micro_by_theta_jacobian,[]
+gradient,[[-152.35884741]]
+projected_gradient,[[0.]]
+projected_gradient_norm,0.0
+hessian,[[188.3246212]]
+reduced_hessian,[[0.]]
+reduced_hessian_eigenvalues,[0.]
+W,"[[ 1.85448472e-07 -2.77726616e-07  1.33795540e-09  9.63497411e-08]
+ [-2.77726616e-07  3.40415457e-02 -4.76438704e-04 -7.03608284e-03]
+ [ 1.33795540e-09 -4.76438704e-04  5.23140946e-04 -2.89631626e-03]
+ [ 9.63497411e-08 -7.03608284e-03 -2.89631626e-03  1.96478353e-02]]"
+updated_W,"[[ 1.68747577e-07 -2.51838953e-07  1.25051034e-09  8.67400151e-08]
+ [-2.51838953e-07  3.09819225e-02 -4.34074175e-04 -6.40162527e-03]
+ [ 1.25051034e-09 -4.34074175e-04  4.76264731e-04 -2.63671204e-03]
+ [ 8.67400151e-08 -6.40162527e-03 -2.63671204e-03  1.78860506e-02]]"

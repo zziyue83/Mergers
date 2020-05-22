@@ -45,7 +45,7 @@ def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
 def ReadInstrument(input, quarterOrMonth, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
     if quarterOrMonth == 'month':
-        instrument[quarterOrMonth] = pd.to_datetime(instrument['t']).dt.to_period('M').astype(str)
+        instrument[quarterOrMonth] = pd.to_datetime(instrument['t']).dt.strftime("%Y%m").astype(int)
     if quarterOrMonth == 'quarter':
         instrument[quarterOrMonth] = pd.to_datetime(instrument['t']).dt.to_period('Q').astype(str)
     else:

@@ -1,0 +1,101 @@
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
+  warnings.warn(msg, UserWarning)
+  dma_code_month  dma_code           owner initial  ... time     sugar  cocoa_beans
+0     529 200601       529  Spangler Candy Company  ...    0  0.455319     2.042433
+1     529 200603       529  Spangler Candy Company  ...    2  0.490636     2.001277
+3     618 200601       618  Spangler Candy Company  ...    0  0.455319     2.042433
+4     640 200602       640  Spangler Candy Company  ...    1  0.519318     2.012356
+6     693 200603       693  Spangler Candy Company  ...    2  0.490636     2.001277
+
+[5 rows x 11 columns]
+Initializing the problem ...
+Absorbing demand-side fixed effects ...
+Initialized the problem after 00:04:57.
+
+Dimensions:
+=====================================
+ T       N       F    K1    MD    ED 
+----  --------  ---  ----  ----  ----
+5740  15581618  89    2     4     2  
+=====================================
+
+Formulations:
+========================================
+     Column Indices:          0      1  
+--------------------------  ------  ----
+X1: Linear Characteristics  prices  time
+========================================
+Dimensions:
+=====================================
+ T       N       F    K1    MD    ED 
+----  --------  ---  ----  ----  ----
+5740  15581618  89    2     4     2  
+=====================================
+
+Formulations:
+========================================
+     Column Indices:          0      1  
+--------------------------  ------  ----
+X1: Linear Characteristics  prices  time
+========================================
+Solving the problem ...
+Updating the weighting matrix ...
+Computed results after 00:00:10.
+
+Problem Results Summary:
+=====================================
+GMM     Objective    Weighting Matrix
+Step      Value      Condition Number
+----  -------------  ----------------
+ 1    +9.719855E+04   +1.242542E+08  
+=====================================
+
+Estimating standard errors ...
+Computed results after 00:00:08.
+
+Problem Results Summary:
+========================================================
+GMM     Objective    Weighting Matrix  Covariance Matrix
+Step      Value      Condition Number  Condition Number 
+----  -------------  ----------------  -----------------
+ 2    +2.699505E+04   +1.447113E+08      +4.701575E+05  
+========================================================
+
+Cumulative Statistics:
+========================
+Computation   Objective 
+   Time      Evaluations
+-----------  -----------
+ 00:00:18         2     
+========================
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices            time      
+---------------  ---------------
+ -2.675163E+00    -2.634538E-02 
+(+4.846983E-02)  (+1.221532E-04)
+================================
+Problem Results Summary:
+========================================================
+GMM     Objective    Weighting Matrix  Covariance Matrix
+Step      Value      Condition Number  Condition Number 
+----  -------------  ----------------  -----------------
+ 2    +2.699505E+04   +1.447113E+08      +4.701575E+05  
+========================================================
+
+Cumulative Statistics:
+========================
+Computation   Objective 
+   Time      Evaluations
+-----------  -----------
+ 00:00:18         2     
+========================
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices            time      
+---------------  ---------------
+ -2.675163E+00    -2.634538E-02 
+(+4.846983E-02)  (+1.221532E-04)
+================================

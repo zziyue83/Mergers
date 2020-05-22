@@ -1,0 +1,51 @@
+/home/zcw7438/.local/lib/python3.6/site-packages/pandas/compat/_optional.py:106: UserWarning: Pandas requires version '1.2.1' or newer of 'bottleneck' (version '1.2.0' currently installed).
+  warnings.warn(msg, UserWarning)
+  dma_code_month  dma_code  ... mint chocolate
+0     529 200601       529  ...    0         0
+1     529 200603       529  ...    0         0
+3     618 200601       618  ...    0         0
+4     640 200602       640  ...    0         0
+6     693 200603       693  ...    0         0
+
+[5 rows x 13 columns]
+    1 + prices+ mint+ chocolate+ CANDY+ GUM
+Traceback (most recent call last):
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2897, in get_loc
+    return self._engine.get_loc(key)
+  File "pandas/_libs/index.pyx", line 107, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 131, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1607, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1614, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'CANDY'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/configurations/formulation.py", line 173, in _build_matrix
+    data_mapping[name] = np.asarray(data[name]).flatten()
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/core/frame.py", line 2995, in __getitem__
+    indexer = self.columns.get_loc(key)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2899, in get_loc
+    return self._engine.get_loc(self._maybe_cast_indexer(key))
+  File "pandas/_libs/index.pyx", line 107, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 131, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1607, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1614, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'CANDY'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "randomCoefficients.py", line 58, in <module>
+    GenerateDEData(products, quarterOrMonth, inputs, characteristics)
+  File "randomCoefficients.py", line 35, in GenerateDEData
+    grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/economies/problem.py", line 1193, in __init__
+    products = Products(product_formulations, product_data, add_exogenous=add_exogenous)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/primitives.py", line 91, in __new__
+    X2, X2_formulations, X2_data = product_formulations[1]._build_matrix(product_data)
+  File "/home/zcw7438/.local/lib/python3.6/site-packages/pyblp/configurations/formulation.py", line 176, in _build_matrix
+    raise patsy.PatsyError(f"Failed to load data for '{name}'.", origin) from exception
+patsy.PatsyError: Failed to load data for 'CANDY'.
+        1 + prices+ mint+ chocolate+ CANDY+ GUM
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -6,21 +6,18 @@ import pyblp
 def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
     data = pd.read_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + "_pre_estimation.tsv", delimiter = '\t')
     data = data[data['postmerger'] == 0]
-    variables = ['dma_code_' + quarterOrMonth,'dma_code','owner initial','log_adjusted_price','upc','market_share','distance'] + inputs + characteristics
+    variables = ['dma_code_' + quarterOrMonth,'dma_code','owner initial','brand_descr','adjusted_price','upc','market_share','distance','time'] + inputs
     demand_estimation_data = data[variables]
-    print(demand_estimation_data)
-    print(demand_estimation_data.isna())
-    print(demand_estimation_data.iloc[0].isna())
     demand_estimation_data = demand_estimation_data.dropna()
     print(demand_estimation_data.head())
-    rename_dic = {'dma_code_' + quarterOrMonth:'market_ids','dma_code':'city_ids','log_adjusted_price':'prices','owner initial':'firm_ids','brand_descr':'brand_ids','upc':'product_ids','distance':'demand_instruments0','market_share':'shares'}
+    rename_dic = {'dma_code_' + quarterOrMonth:'market_ids','dma_code':'city_ids','adjusted_price':'prices','owner initial':'firm_ids','brand_descr':'brand_ids','upc':'product_ids','distance':'demand_instruments0','market_share':'shares'}
     for i in range(len(inputs)):
         rename_dic[inputs[i]] = 'demand_instruments'+str(i+1)
     demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
-
+    
     # Plain Logit
-    logit_formulation = pyblp.Formulation('0 + prices + mint + chocolate', absorb = 'C(product_ids) + C(city_ids) + C(market_ids)')
-
+    logit_formulation = pyblp.Formulation('0 + prices + time', absorb = 'C(product_ids) + C(city_ids)')
+    
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
     print(problem)
     logit_results = problem.solve()

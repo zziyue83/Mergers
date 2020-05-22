@@ -1,0 +1,84 @@
+,0
+step,2
+optimization_time,0.0
+cumulative_optimization_time,0.0
+total_time,8.236678123474121
+cumulative_total_time,18.28866457939148
+converged,True
+cumulative_converged,True
+optimization_iterations,0
+cumulative_optimization_iterations,0
+objective_evaluations,1
+cumulative_objective_evaluations,2
+fp_converged,[]
+cumulative_fp_converged,[]
+fp_iterations,[]
+cumulative_fp_iterations,[]
+contraction_evaluations,[]
+cumulative_contraction_evaluations,[]
+parameters,"[[-2.67516309]
+ [-0.02634538]]"
+parameter_covariances,"[[3.66062739e+04 7.52381324e+01]
+ [7.52381324e+01 2.32499780e-01]]"
+theta,[]
+sigma,[]
+pi,[]
+rho,[]
+beta,"[[-2.67516309]
+ [-0.02634538]]"
+gamma,[]
+sigma_se,[]
+pi_se,[]
+rho_se,[]
+beta_se,"[[0.04846983]
+ [0.00012215]]"
+gamma_se,[]
+sigma_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+pi_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+rho_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+beta_bounds,"(array([[-inf],
+       [-inf]]), array([[inf],
+       [inf]]))"
+gamma_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+delta,"[[-15.32447819]
+ [-15.2559389 ]
+ [-13.27087096]
+ ...
+ [ -9.15230597]
+ [ -8.05412533]
+ [ -9.19657891]]"
+tilde_costs,[]
+clipped_costs,"[[False]
+ [False]
+ [False]
+ ...
+ [False]
+ [False]
+ [False]]"
+xi,"[[-0.59505484]
+ [-0.47817935]
+ [ 1.27893453]
+ ...
+ [ 0.6216565 ]
+ [ 1.74352428]
+ [ 0.62688912]]"
+omega,[]
+micro,[]
+objective,[[26995.04824207]]
+xi_by_theta_jacobian,[]
+omega_by_theta_jacobian,[]
+micro_by_theta_jacobian,[]
+gradient,[]
+projected_gradient,[]
+projected_gradient_norm,nan
+hessian,[]
+reduced_hessian,[]
+reduced_hessian_eigenvalues,[]
+W,"[[ 1.06921116e-06 -8.99911801e-05 -2.38992010e-05  1.32107954e-07]
+ [-8.99911801e-05  1.49033358e+02 -2.79630690e+01  2.10966193e+00]
+ [-2.38992010e-05 -2.79630690e+01  1.57309034e+01 -8.34743198e-01]
+ [ 1.32107954e-07  2.10966193e+00 -8.34743198e-01  5.40740044e-02]]"
+updated_W,"[[ 1.10204607e-06 -8.90125838e-05 -2.27320740e-05  1.11851304e-07]
+ [-8.90125838e-05  1.53008726e+02 -2.87523561e+01  2.16890122e+00]
+ [-2.27320740e-05 -2.87523561e+01  1.61434558e+01 -8.56372872e-01]
+ [ 1.11851304e-07  2.16890122e+00 -8.56372872e-01  5.54677365e-02]]"
