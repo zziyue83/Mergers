@@ -124,21 +124,21 @@ def TestGenerateDEData(product, frequency, inputs, characteristics, start, end):
     logit_formulation = pyblp.Formulation(formulation,absorb='C(product_ids) + C(city_ids)')
     problem = pyblp.Problem(logit_formulation, demand_estimation_data)
     print(problem)
-    # logit_results = problem.solve()
-    # print(logit_results)
-    # resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
-    # resultDf.to_csv('RegressionResults/'+product+'_'+str(frequency)+'_plain_logit.csv', sep = ',')
-    #
-    # #nested logit regression
-    # demand_estimation_data['nesting_ids'] = 1
-    # groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
-    # demand_estimation_data['demand_instruments'+str(len(inputs)+1)] = groups['shares'].transform(np.size)
-    # nl_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(city_ids)')
-    # problem = pyblp.Problem(nl_formulation, demand_estimation_data)
-    # nlresults = problem.solve(rho=0.7)
-    # print(nlresults)
-    # resultDf = pd.DataFrame.from_dict(data=nlresults.to_dict(), orient='index')
-    # resultDf.to_csv('RegressionResults/'+product+'_'+str(frequency)+'_nested_logit.csv', sep = ',')
+    logit_results = problem.solve()
+    print(logit_results)
+    resultDf = pd.DataFrame.from_dict(data=logit_results.to_dict(), orient='index')
+    resultDf.to_csv('RegressionResults/'+product+'_'+str(frequency)+'_plain_logit.csv', sep = ',')
+
+    #nested logit regression
+    demand_estimation_data['nesting_ids'] = 1
+    groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
+    demand_estimation_data['demand_instruments'+str(len(inputs)+1)] = groups['shares'].transform(np.size)
+    nl_formulation = pyblp.Formulation(formulation, absorb='C(product_ids) + C(city_ids)')
+    problem = pyblp.Problem(nl_formulation, demand_estimation_data)
+    nlresults = problem.solve(rho=0.7)
+    print(nlresults)
+    resultDf = pd.DataFrame.from_dict(data=nlresults.to_dict(), orient='index')
+    resultDf.to_csv('RegressionResults/'+product+'_'+str(frequency)+'_nested_logit.csv', sep = ',')
 
 def ReadInstrument(input, skiprows = 0):
     instrument = pd.read_csv(input+'.csv', skiprows = skiprows, delimiter = ',')
