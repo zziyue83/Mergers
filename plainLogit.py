@@ -3,6 +3,9 @@ import sys
 import numpy as np
 import pyblp
 
+log = open("plain_logit_candy_gum.log", "a")
+sys.stdout = log
+
 def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
     data = pd.read_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + "_pre_estimation.tsv", delimiter = '\t')
     data = data[data['postmerger'] == 0]

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="nested"
+#SBATCH --job-name="nested with 2 groups"
 #SBATCH -A b1048
 #SBATCH -p buyin
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -12,4 +12,4 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers
-python nestedLogit.py month CANDY GUM sugar cocoa_beans
+python candy_gum_nested_into_two_groups_1.py month CANDY GUM sugar cocoa_beans

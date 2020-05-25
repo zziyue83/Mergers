@@ -1,10 +1,0 @@
-  0%|          | 0/4 [00:00<?, ?it/s]sys:1: DtypeWarning: Columns (18,22,30,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
-RCLogit.py:177: SettingWithCopyWarning: 
-A value is trying to be set on a copy of a slice from a DataFrame.
-Try using .loc[row_indexer,col_indexer] = value instead
-
-See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-  year_data[characteristic] = year_data['upc'].map(features_map[characteristic])
- 25%|██▌       | 1/4 [00:02<00:08,  2.80s/it] 50%|█████     | 2/4 [00:06<00:06,  3.19s/it]sys:1: DtypeWarning: Columns (18,22,24,28,30,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
- 75%|███████▌  | 3/4 [00:11<00:03,  3.52s/it]sys:1: DtypeWarning: Columns (22,30) have mixed types. Specify dtype option on import or set low_memory=False.
-100%|██████████| 4/4 [00:15<00:00,  3.77s/it]100%|██████████| 4/4 [00:15<00:00,  3.89s/it]

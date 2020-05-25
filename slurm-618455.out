@@ -1,10 +1,0 @@
-  0%|          | 0/4 [00:00<?, ?it/s]sys:1: DtypeWarning: Columns (18,22,30,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
-GenerateDemandEstimationData.py:174: SettingWithCopyWarning: 
-A value is trying to be set on a copy of a slice from a DataFrame.
-Try using .loc[row_indexer,col_indexer] = value instead
-
-See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-  year_data[characteristic] = year_data['upc'].map(features_map[characteristic])
- 25%|██▌       | 1/4 [00:05<00:17,  5.83s/it] 50%|█████     | 2/4 [00:13<00:12,  6.39s/it]sys:1: DtypeWarning: Columns (18,22,24,28,30,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
- 75%|███████▌  | 3/4 [00:21<00:06,  6.95s/it]sys:1: DtypeWarning: Columns (22,30) have mixed types. Specify dtype option on import or set low_memory=False.
-100%|██████████| 4/4 [00:30<00:00,  7.46s/it]100%|██████████| 4/4 [00:30<00:00,  7.61s/it]slurmstepd: error: *** JOB 618455 ON qnode6017 CANCELLED AT 2020-05-16T23:18:24 ***
