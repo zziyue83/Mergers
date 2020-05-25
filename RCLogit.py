@@ -122,7 +122,7 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
     #marktet_ids random sampling
     market_ids = demand_estimation_data['market_ids'].unique()
     np.random.seed(1000)
-    sample = np.random.choice(market_ids,int(0.05*len(market_ids)),replace=False)
+    sample = np.random.choice(market_ids,int(0.01*len(market_ids)),replace=False)
     print(sample)
     demand_estimation_data = demand_estimation_data[demand_estimation_data['market_ids'].isin(sample)]
     print(demand_estimation_data.head())
@@ -148,13 +148,13 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
     else:
         agent_data = pd.read_csv('Clean/agent_date.csv',delimiter = ',')
         agent_data['market_ids'] = agent_data['dma_code'].astype(str)+agent_data[frequency].astype(str)
-        agent_formulation = pyblp.Formulation('0 + HINCP + AGEP + RAC1P')
+        agent_formulation = pyblp.Formulation('0 + HINCP + AGEP')
         grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, agent_formulation, agent_data, integration=grid_integration)
     print(grid_problem)
 
     bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
 
-    results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs)
+    results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs,method='1s')
     print(results)
     resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
     resultDf.to_csv('RegressionResults/test_'+product+'_rc_logit_grid.csv', sep = ',')
