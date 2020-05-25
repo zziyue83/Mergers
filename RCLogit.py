@@ -114,7 +114,7 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
         print(variables)
         demand_estimation_data = data[variables]
         print(demand_estimation_data.head())
-        rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','upc':'product_ids','owner initial':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':frequency,'distance':'demand_instruments0','market_share':'shares','y-m':'time','dma_code':'city_ids'}
+        rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','upc':'product_ids','owner initial':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':'time','distance':'demand_instruments0','market_share':'shares','y-m':'time','dma_code':'city_ids'}
         for i in range(len(inputs)):
             rename_dic[inputs[i]] = 'demand_instruments'+str(i)
         demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
@@ -123,7 +123,7 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
         #marktet_ids random sampling
         market_ids = demand_estimation_data['market_ids'].unique()
         np.random.seed(1000)
-        sample = np.random.choice(market_ids,int(0.05*len(market_ids)),replace=False)
+        sample = np.random.choice(market_ids,int(0.01*len(market_ids)),replace=False)
         print(sample)
         demand_estimation_data = demand_estimation_data[demand_estimation_data['market_ids'].isin(sample)]
         print(demand_estimation_data.head())
