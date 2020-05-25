@@ -122,8 +122,8 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
 
         #marktet_ids random sampling
         market_ids = demand_estimation_data['market_ids'].unique()
-        np.random.seed(100)
-        sample = np.random.choice(market_ids,int(0.01*len(market_ids)),replace=False)
+        np.random.seed(1000)
+        sample = np.random.choice(market_ids,int(0.05*len(market_ids)),replace=False)
         print(sample)
         demand_estimation_data = demand_estimation_data[demand_estimation_data['market_ids'].isin(sample)]
         print(demand_estimation_data.head())
