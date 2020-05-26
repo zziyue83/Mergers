@@ -155,7 +155,7 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
         print('finished initializing the problem')
         bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10, 'maxiter' : 5})
 
-        results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs)
+        results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs,method='1s')
         print(results)
         resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
         resultDf.to_csv('RegressionResults/'+product+'_rc_logit_sampling.csv', sep = ',')
