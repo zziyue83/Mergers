@@ -114,7 +114,7 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
         print(variables)
         demand_estimation_data = data[variables]
         print(demand_estimation_data.head())
-        rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','upc':'product_ids','owner initial':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':'time','distance':'demand_instruments0','market_share':'shares','y-m':'time','dma_code':'city_ids'}
+        rename_dic = {'dma_code_'+frequency:'market_ids','adjusted_price':'prices','upc':'product_ids','owner initial':'firm_ids','brand_descr':'brand_ids',frequency+'_since_start':'time','distance':'demand_instruments0','market_share':'shares','dma_code':'city_ids'}
         for i in range(len(inputs)):
             rename_dic[inputs[i]] = 'demand_instruments'+str(i)
         demand_estimation_data = demand_estimation_data.rename(columns = rename_dic)
@@ -152,13 +152,14 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
             agent_formulation = pyblp.Formulation('0 + HINCP + AGEP')
             grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, agent_formulation, agent_data, integration=grid_integration)
         print(grid_problem)
+        print('finished initializing the problem')
+        # bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
+        #
+        # results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs,method='1s')
+        # print(results)
+        # resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
+        # resultDf.to_csv('RegressionResults/'+product+'_rc_logit_sampling.csv', sep = ',')
 
-        bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
-
-        results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs,method='1s')
-        print(results)
-        resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
-        resultDf.to_csv('RegressionResults/'+product+'_rc_logit_sampling.csv', sep = ',')
     except Exception as error:
         print(error)
 
