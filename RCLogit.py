@@ -153,12 +153,12 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
             grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, agent_formulation, agent_data, integration=grid_integration)
         print(grid_problem)
         print('finished initializing the problem')
-        # bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
-        #
-        # results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs,method='1s')
-        # print(results)
-        # resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
-        # resultDf.to_csv('RegressionResults/'+product+'_rc_logit_sampling.csv', sep = ',')
+        bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10, 'maxiter' : 5})
+
+        results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs)
+        print(results)
+        resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
+        resultDf.to_csv('RegressionResults/'+product+'_rc_logit_sampling.csv', sep = ',')
 
     except Exception as error:
         print(error)
