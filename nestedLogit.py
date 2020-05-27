@@ -19,12 +19,13 @@ def GenerateDEData(products, quarterOrMonth, inputs):
 
     # Nested Logit
     demand_estimation_data['nesting_ids'] = 1
-    groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
-    demand_estimation_data['demand_instruments' + str(len(inputs)+1)] = groups['shares'].transform(np.size)
+    #groups = demand_estimation_data.groupby(['market_ids', 'nesting_ids'])
+    #demand_estimation_data['demand_instruments' + str(len(inputs)+1)] = groups['shares'].transform(np.size)
     nl_formulation = pyblp.Formulation('0 + prices + time', absorb = 'C(product_ids) + C(city_ids)')
     problem_nested = pyblp.Problem(nl_formulation, demand_estimation_data)
     nested_logit_results = problem_nested.solve(rho=0.7)
     print(nested_logit_results)
+    
     resultDf_nested = pd.DataFrame.from_dict(data=nested_logit_results.to_dict(), orient='index')
     resultDf_nested.to_csv('RegressionResults/' + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + '_nested_logit.csv', sep = ',')
 
