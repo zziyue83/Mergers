@@ -86,7 +86,7 @@ from tqdm import tqdm
 
 def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demographics=False):
     try:
-        log = open("one_iteration_random_coefficient_logit_regression_"+product+".log", "w")
+        log = open("small_sample_one_iteration_random_coefficient_logit_regression_"+product+".log", "w")
         sys.stdout = log
         data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
         data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
@@ -123,7 +123,7 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
         #marktet_ids random sampling
         market_ids = demand_estimation_data['market_ids'].unique()
         np.random.seed(1000)
-        sample = np.random.choice(market_ids,int(0.01*len(market_ids)),replace=False)
+        sample = np.random.choice(market_ids,int(0.001*len(market_ids)),replace=False)
         print(sample)
         demand_estimation_data = demand_estimation_data[demand_estimation_data['market_ids'].isin(sample)]
         print(demand_estimation_data.head())
