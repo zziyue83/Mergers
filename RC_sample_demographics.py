@@ -8,7 +8,7 @@ sys.stdout = log
 
 def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
     data = pd.read_csv("../../GeneratedData/" + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + "_pre_estimation.tsv", delimiter = '\t')
-    random_subset = data.sample(frac=0.05)
+    random_subset = data.sample(frac = 0.05)
     random_subset = random_subset[random_subset['postmerger'] == 0]
     variables = ['dma_code_' + quarterOrMonth,'dma_code','owner initial','brand_descr','adjusted_price','upc','market_share','distance','time'] + inputs + characteristics
     demand_estimation_data = random_subset[variables]
@@ -24,29 +24,26 @@ def GenerateDEData(products, quarterOrMonth, inputs, characteristics):
     for characteristic in characteristics:
         x2formulation = x2formulation + ' + '+ characteristic
     print(x2formulation)
-
     X1_formulation = pyblp.Formulation('0 + prices + time', absorb='C(product_ids)+C(city_ids)')
     X2_formulation = pyblp.Formulation(x2formulation)
     product_formulations = (X1_formulation, X2_formulation)
     grid_integration = pyblp.Integration('grid', size=7)
+    #grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
     
     # adding demographics
     agent_data = pd.read_csv('Clean/agent_date.csv',delimiter = ',')
     agent_data['market_ids'] = agent_data['dma_code'].astype(str) + ' ' + agent_data[quarterOrMonth].astype(str)
     agent_formulation = pyblp.Formulation('0 + HINCP + AGEP + RAC1P')
-    
     grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, agent_formulation, agent_data, integration=grid_integration)
     print(grid_problem)
-    bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10})
     
+    bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10, 'maxiter' : 10})
     dim = 2 + len(characteristics)
     print(dim)
-    
-    results1 = grid_problem.solve(sigma=np.ones((dim, dim)), optimization=bfgs)
-    print(results1)
-    resultDf1 = pd.DataFrame.from_dict(data=results1.to_dict(), orient='index')
-    resultDf1.to_csv('RegressionResults/test_' + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + '_rc_logit_grid_ones_5%_with_demographics.csv', sep = ',')
-    
+    #results1 = grid_problem.solve(sigma=np.ones((dim, dim)), optimization=bfgs)
+    #print(results1)
+    #resultDf1 = pd.DataFrame.from_dict(data=results1.to_dict(), orient='index')
+    #resultDf1.to_csv('RegressionResults/test_' + '_'.join([str(elem) for elem in products]) + '_' + quarterOrMonth + '_rc_logit_grid_ones_5%_with_demographics.csv', sep = ',')
     results2 = grid_problem.solve(sigma=np.eye(dim), optimization=bfgs)
     print(results2)
     resultDf2 = pd.DataFrame.from_dict(data=results2.to_dict(), orient='index')
