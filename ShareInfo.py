@@ -9,19 +9,27 @@ def ShareInfo(product,frequency):
     markets = share_info.groupby('dma_code_'+frequency)
 
     median = markets.median()
-    median = median.rename({'market_share':'median'})
+    median = median.rename(columns={'market_share':'median'})
     print(median)
     min = markets.min()
-    min = min.rename({'market_share':'min'})
+    min = min.rename(columns={'market_share':'min'})
     print(min)
     max = markets.max()
-    max = max.rename({'market_share':'max'})
+    max = max.rename(columns={'market_share':'max'})
     print(max)
     mean = markets.mean()
-    mean = mean.rename({'market_share':'mean'})
+    mean = mean.rename(columns={'market_share':'mean'})
     print(mean)
     sum = markets.sum()
-    sum = sum.rename({'market_share':'sum'})
+    sum = sum.rename(columns={'market_share':'sum'})
     print(sum)
+
+    median['min'] = min['min']
+    median['max'] = max['max']
+    median['mean'] = mean['mean']
+    median['sum'] = sum['sum']
+    print(median.head())
+
+    median.to_csv('ShareInfo.csv',delimiter = ',')
 
 ShareInfo('BEER','month')
