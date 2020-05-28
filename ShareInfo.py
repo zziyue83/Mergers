@@ -33,3 +33,4 @@ def ShareInfo(product,frequency):
     median.to_csv('ShareInfo_'+product+'.csv',sep = ',')
 
 ShareInfo('BEER','month')
+ShareInfo('CANDY_GUM','month')
