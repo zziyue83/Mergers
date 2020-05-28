@@ -30,6 +30,6 @@ def ShareInfo(product,frequency):
     median['sum'] = sum['sum']
     print(median.head())
 
-    median.to_csv('ShareInfo.csv',sep = ',')
+    median.to_csv('ShareInfo_'+product+'.csv',sep = ',')
 
 ShareInfo('BEER','month')
