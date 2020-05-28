@@ -1,9 +1,9 @@
 ,0
 step,2
-optimization_time,3513.1168234348297
-cumulative_optimization_time,11826.228674411774
-total_time,14019.6469540596
-cumulative_total_time,32892.10557603836
+optimization_time,4596.343276500702
+cumulative_optimization_time,13649.359533786774
+total_time,18214.60408258438
+cumulative_total_time,40955.24296975136
 converged,True
 cumulative_converged,True
 optimization_iterations,0

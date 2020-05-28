@@ -1,0 +1,102 @@
+,0
+step,2
+optimization_time,0.0
+cumulative_optimization_time,0.0
+total_time,9.406559944152832
+cumulative_total_time,20.7577223777771
+converged,True
+cumulative_converged,True
+optimization_iterations,0
+cumulative_optimization_iterations,0
+objective_evaluations,1
+cumulative_objective_evaluations,2
+fp_converged,[]
+cumulative_fp_converged,[]
+fp_iterations,[]
+cumulative_fp_iterations,[]
+contraction_evaluations,[]
+cumulative_contraction_evaluations,[]
+parameters,"[[2.28479585]
+ [0.01975203]
+ [0.98965107]]"
+parameter_covariances,"[[9.29081821e+03 1.79170297e+01 1.28795465e+01]
+ [1.79170297e+01 5.11167710e-02 3.47808046e-02]
+ [1.28795465e+01 3.47808046e-02 5.09917473e-01]]"
+theta,[]
+sigma,[]
+pi,[]
+rho,[]
+beta,"[[2.28479585]
+ [0.01975203]
+ [0.98965107]]"
+gamma,[]
+sigma_se,[]
+pi_se,[]
+rho_se,[]
+beta_se,"[[2.44185969e-02]
+ [5.72763626e-05]
+ [1.80902126e-04]]"
+gamma_se,[]
+sigma_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+pi_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+rho_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+beta_bounds,"(array([[-inf],
+       [-inf],
+       [-inf]]), array([[inf],
+       [inf],
+       [inf]]))"
+gamma_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+delta,"[[-15.32447819]
+ [-15.2559389 ]
+ [-13.27087096]
+ ...
+ [ -9.15230597]
+ [ -8.05412533]
+ [ -9.19657891]]"
+tilde_costs,[]
+clipped_costs,"[[False]
+ [False]
+ [False]
+ ...
+ [False]
+ [False]
+ [False]]"
+xi,"[[-0.45465909]
+ [-0.25897023]
+ [-0.10805271]
+ ...
+ [-0.35171674]
+ [ 0.79931691]
+ [-0.79114283]]"
+omega,[]
+micro,[]
+objective,[[46969.8459038]]
+xi_by_theta_jacobian,[]
+omega_by_theta_jacobian,[]
+micro_by_theta_jacobian,[]
+gradient,[]
+projected_gradient,[]
+projected_gradient_norm,nan
+hessian,[]
+reduced_hessian,[]
+reduced_hessian_eigenvalues,[]
+W,"[[ 3.51096620e-06 -6.65249321e-04 -2.22229051e-04  3.27905969e-07
+  -1.66622615e-05]
+ [-6.65249321e-04  5.30581975e+02 -8.89114474e+01  6.95341639e+00
+   5.15150877e-01]
+ [-2.22229051e-04 -8.89114474e+01  5.18307115e+01 -2.83973469e+00
+  -1.98269336e-01]
+ [ 3.27905969e-07  6.95341639e+00 -2.83973469e+00  1.91263557e-01
+   3.16039583e-02]
+ [-1.66622615e-05  5.15150877e-01 -1.98269336e-01  3.16039583e-02
+   3.23981326e-01]]"
+updated_W,"[[ 4.20580908e-06 -7.53664754e-04 -2.51533937e-04  4.23118087e-07
+  -1.82354330e-05]
+ [-7.53664754e-04  6.29688523e+02 -1.05427488e+02  8.25351077e+00
+   5.75366878e-01]
+ [-2.51533937e-04 -1.05427488e+02  6.08663985e+01 -3.34048568e+00
+  -2.20299098e-01]
+ [ 4.23118087e-07  8.25351077e+00 -3.34048568e+00  2.25322289e-01
+   3.63852926e-02]
+ [-1.82354330e-05  5.75366878e-01 -2.20299098e-01  3.63852926e-02
+   3.87781787e-01]]"
