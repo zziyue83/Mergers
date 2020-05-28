@@ -86,7 +86,7 @@ from tqdm import tqdm
 
 def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demographics=False):
     try:
-        log = open("random_coefficient_logit_regression_"+product+".log", "a")
+        log = open("one_iteration_random_coefficient_logit_regression_"+product+".log", "w")
         sys.stdout = log
         data = pd.read_csv("../../GeneratedData/" + product + '_'+ frequency + "_pre_model_with_distance.tsv", delimiter = '\t')
         data['y-m'] = pd.to_datetime(data['y-m-d']).dt.to_period('M')
@@ -153,7 +153,7 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
             grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, agent_formulation, agent_data, integration=grid_integration)
         print(grid_problem)
         print('finished initializing the problem')
-        bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10, 'maxiter' : 5})
+        bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10, 'maxiter' : 1})
 
         results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs,method='1s')
         print(results)

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="sample random coeffcient logit regression"
+#SBATCH --job-name="1 iteration"
 #SBATCH -A b1048
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -N 1
