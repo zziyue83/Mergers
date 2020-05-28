@@ -6,7 +6,10 @@ def ShareInfo(product,frequency):
     print(data.head())
     data['dma_code_'+frequency] = data['dma_code'].astype(str)+data[frequency].astype(str)
     share_info = data[['dma_code_'+frequency,'market_share']]
-    mean = share_info.groupby('dma_code_'+frequency).mean()
-    print(mean)
+    markets = share_info.groupby('dma_code_'+frequency)
+    median = markets.median()
+    print(median)
+    min = markets.min()
+    print(min)
 
 ShareInfo('BEER','month')
