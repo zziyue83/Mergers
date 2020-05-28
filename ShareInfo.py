@@ -11,5 +11,11 @@ def ShareInfo(product,frequency):
     print(median)
     min = markets.min()
     print(min)
+    max = markets.max()
+    print(max)
+    mean = markets.mean()
+    print(mean)
+    sum = markets.sum()
+    print(sum)
 
 ShareInfo('BEER','month')
