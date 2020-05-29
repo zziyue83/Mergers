@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="1 iteration small sample"
+#SBATCH --job-name="3 iterations sample rclogit"
 #SBATCH -A b1048
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -N 1
