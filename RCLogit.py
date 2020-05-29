@@ -98,6 +98,10 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
         data = data.dropna()
         print(data.shape)
         print(data.columns)
+        print(data[data['dma_code'] == 651])
+
+        data = data[data['market_share'] > 1e-6]
+        data = data[data['dma_code'] != 651]
         for characteristic in characteristics:
             if characteristic == 'style_descr':
                 data['style_descr'] = np.where(data['style_descr'] == 'DOMESTIC', 0, 1)
@@ -142,23 +146,23 @@ def SampleRCLogit(product, frequency, inputs, characteristics, start, end, demog
         #
         # pr_integration = pyblp.Integration('product', size=5)
 
-        grid_integration = pyblp.Integration('grid', size=7)
-
-        if not demographics:
-            grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
-        else:
-            agent_data = pd.read_csv('Clean/agent_date.csv',delimiter = ',')
-            agent_data['market_ids'] = agent_data['dma_code'].astype(str)+agent_data[frequency].astype(str)
-            agent_formulation = pyblp.Formulation('0 + HINCP + AGEP')
-            grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, agent_formulation, agent_data, integration=grid_integration)
-        print(grid_problem)
-        print('finished initializing the problem')
-        bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10, 'maxiter' : 1})
-
-        results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs,method='1s')
-        print(results)
-        resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
-        resultDf.to_csv('RegressionResults/'+product+'_rc_logit_sampling.csv', sep = ',')
+        # grid_integration = pyblp.Integration('grid', size=7)
+        #
+        # if not demographics:
+        #     grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, integration=grid_integration)
+        # else:
+        #     agent_data = pd.read_csv('Clean/agent_date.csv',delimiter = ',')
+        #     agent_data['market_ids'] = agent_data['dma_code'].astype(str)+agent_data[frequency].astype(str)
+        #     agent_formulation = pyblp.Formulation('0 + HINCP + AGEP')
+        #     grid_problem = pyblp.Problem(product_formulations, demand_estimation_data, agent_formulation, agent_data, integration=grid_integration)
+        # print(grid_problem)
+        # print('finished initializing the problem')
+        # bfgs = pyblp.Optimization('bfgs', {'gtol': 1e-10, 'maxiter' : 3})
+        #
+        # results = grid_problem.solve(sigma=np.eye(3), optimization=bfgs,method='1s')
+        # print(results)
+        # resultDf = pd.DataFrame.from_dict(data=results.to_dict(), orient='index')
+        # resultDf.to_csv('RegressionResults/'+product+'_rc_logit_sampling.csv', sep = ',')
 
     except Exception as error:
         print(error)
