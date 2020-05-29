@@ -1,0 +1,99 @@
+  dma_code_month  dma_code  ...     sugar cocoa_beans
+0     529 200601       529  ...  0.455319    2.042433
+1     529 200603       529  ...  0.490636    2.001277
+3     618 200601       618  ...  0.455319    2.042433
+4     640 200602       640  ...  0.519318    2.012356
+6     693 200603       693  ...  0.490636    2.001277
+
+[5 rows x 12 columns]
+Initializing the problem ...
+Absorbing demand-side fixed effects ...
+Initialized the problem after 00:04:54.
+
+Dimensions:
+=====================================
+ T       N       F    K1    MD    ED 
+----  --------  ---  ----  ----  ----
+5740  15581618  89    2     4     2  
+=====================================
+
+Formulations:
+===============================================
+     Column Indices:          0          1     
+--------------------------  ------  -----------
+X1: Linear Characteristics  prices  nestedshare
+===============================================
+Dimensions:
+=====================================
+ T       N       F    K1    MD    ED 
+----  --------  ---  ----  ----  ----
+5740  15581618  89    2     4     2  
+=====================================
+
+Formulations:
+===============================================
+     Column Indices:          0          1     
+--------------------------  ------  -----------
+X1: Linear Characteristics  prices  nestedshare
+===============================================
+Solving the problem ...
+Updating the weighting matrix ...
+Computed results after 00:00:10.
+
+Problem Results Summary:
+=====================================
+GMM     Objective    Weighting Matrix
+Step      Value      Condition Number
+----  -------------  ----------------
+ 1    +1.877419E+04   +5.214680E+07  
+=====================================
+
+Estimating standard errors ...
+Computed results after 00:00:09.
+
+Problem Results Summary:
+========================================================
+GMM     Objective    Weighting Matrix  Covariance Matrix
+Step      Value      Condition Number  Condition Number 
+----  -------------  ----------------  -----------------
+ 2    +1.293733E+04   +8.567090E+07      +5.757461E+03  
+========================================================
+
+Cumulative Statistics:
+========================
+Computation   Objective 
+   Time      Evaluations
+-----------  -----------
+ 00:00:19         2     
+========================
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices         nestedshare  
+---------------  ---------------
+ -3.727976E+00    +9.738638E-01 
+(+2.124708E-02)  (+2.800295E-04)
+================================
+Problem Results Summary:
+========================================================
+GMM     Objective    Weighting Matrix  Covariance Matrix
+Step      Value      Condition Number  Condition Number 
+----  -------------  ----------------  -----------------
+ 2    +1.293733E+04   +8.567090E+07      +5.757461E+03  
+========================================================
+
+Cumulative Statistics:
+========================
+Computation   Objective 
+   Time      Evaluations
+-----------  -----------
+ 00:00:19         2     
+========================
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices         nestedshare  
+---------------  ---------------
+ -3.727976E+00    +9.738638E-01 
+(+2.124708E-02)  (+2.800295E-04)
+================================

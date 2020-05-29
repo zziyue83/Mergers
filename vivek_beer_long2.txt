@@ -1,0 +1,203 @@
+['2007' '2008' '2006']
+(1721493, 38)
+Index(['Unnamed: 0', 'upc', 'dma_code', 'month', 'volume', 'price',
+       'size1_amount', 'size1_units', 'brand_descr', 'owner initial',
+       'owner last', 'y-m-d', 'year', '# month', 'market_size',
+       'market_size_DMA', 'market_share', 'postmerger', 'month_since_start',
+       'involved', 'involvedpostmerger', 'product-region', 'time', 'cpiu',
+       'price_index', 'adjusted_price', 'log_adjusted_price',
+       'hhinc_per_person_mean', 'hhinc_per_person_median', 'employment_rate',
+       'adjusted_hhinc_per_person_mean', 'log_adjusted_hhinc_per_person_mean',
+       'log_employment_rate', 'product', 'upc_dma_code', 'distance', 'y-m',
+       'style_descr'],
+      dtype='object')
+         Unnamed: 0         upc  dma_code  ...     distance      y-m  style_descr
+1583267     1583267  4133103984       651  ...  1440.047204  2006-06     DOMESTIC
+1583268     1583268  4133103984       651  ...  1440.047204  2006-07     DOMESTIC
+1583269     1583269  4133103984       651  ...  1440.047204  2006-08     DOMESTIC
+1583270     1583270  4133103984       651  ...  1440.047204  2006-11     DOMESTIC
+1583271     1583271  4133103984       651  ...  1440.047204  2006-12     DOMESTIC
+1583272     1583272  4133103984       651  ...  1440.047204  2007-03     DOMESTIC
+1583273     1583273  4133103984       651  ...  1440.047204  2007-04     DOMESTIC
+1583274     1583274  4133103984       651  ...  1440.047204  2007-06     DOMESTIC
+1583275     1583275  4133103984       651  ...  1440.047204  2007-09     DOMESTIC
+1583276     1583276  4133103984       651  ...  1440.047204  2007-11     DOMESTIC
+1583277     1583277  4133103984       651  ...  1440.047204  2008-01     DOMESTIC
+1583278     1583278  4133103984       651  ...  1440.047204  2008-02     DOMESTIC
+1583279     1583279  4133103984       651  ...  1440.047204  2008-05     DOMESTIC
+1583280     1583280  4133103984       651  ...  1440.047204  2008-06     DOMESTIC
+
+[14 rows x 38 columns]
+         Unnamed: 0          upc  dma_code  ...     distance      y-m  style_descr
+1585844     1585844   4133103985       543  ...  1440.047204  2006-01     DOMESTIC
+1585845     1585845   4133103985       543  ...  1440.047204  2006-02     DOMESTIC
+1585846     1585846   4133103985       543  ...  1440.047204  2006-03     DOMESTIC
+1585847     1585847   4133103985       543  ...  1440.047204  2006-04     DOMESTIC
+1585848     1585848   4133103985       543  ...  1440.047204  2006-05     DOMESTIC
+...             ...          ...       ...  ...          ...      ...          ...
+2949172     2949172  78615000014       543  ...  1440.047204  2008-02     IMPORTED
+2949173     2949173  78615000014       543  ...  1440.047204  2008-03     IMPORTED
+2949174     2949174  78615000014       543  ...  1440.047204  2008-04     IMPORTED
+2949175     2949175  78615000014       543  ...  1440.047204  2008-05     IMPORTED
+2949176     2949176  78615000014       543  ...  1440.047204  2008-06     IMPORTED
+
+[5342 rows x 38 columns]
+        time     wheat        t
+0   7/1/1959  1.954636  1959-07
+1   8/3/1959  1.958810  1959-08
+2   9/1/1959  1.962905  1959-09
+3  10/1/1959  1.981318  1959-10
+4  11/2/1959  2.005690  1959-11
+       time  barley        t
+0  4/1/2000   76.95  2000-04
+1  5/1/2000   78.26  2000-05
+2  6/1/2000   78.48  2000-06
+3  7/1/2000   78.68  2000-07
+4  8/1/2000   75.13  2000-08
+['dma_code_month', 'adjusted_price', 'market_share', 'upc', 'dma_code', 'owner initial', 'brand_descr', 'distance', 'month_since_start', 'style_descr', 'wheat', 'barley']
+  dma_code_month  adjusted_price  ...     wheat      barley
+0      500200601        0.134551  ...  4.356919  134.774562
+1      501200601        0.127685  ...  4.356919  134.774562
+2      502200601        0.113288  ...  4.356919  134.774562
+3      503200601        0.109541  ...  4.356919  134.774562
+4      504200601        0.129549  ...  4.356919  134.774562
+
+[5 rows x 12 columns]
+  market_ids    prices  ...  demand_instruments1  demand_instruments2
+0  500200601  0.134551  ...             4.356919           134.774562
+1  501200601  0.127685  ...             4.356919           134.774562
+2  502200601  0.113288  ...             4.356919           134.774562
+3  503200601  0.109541  ...             4.356919           134.774562
+4  504200601  0.129549  ...             4.356919           134.774562
+
+[5 rows x 12 columns]
+['611200709' '752200708' '515200612' '613200607' '613200605' '538200608'
+ '724200603' '632200610' '545200803' '810200708' '501200802' '642200605'
+ '640200805' '533200710' '803200711' '770200805' '544200702' '821200707'
+ '561200606' '609200604' '722200711' '711200705' '622200707' '702200601'
+ '625200711' '529200610' '501200803' '825200709' '552200607' '521200709'
+ '698200611' '503200804' '698200802' '622200708' '574200609' '631200710'
+ '551200802' '711200610' '679200604' '549200703' '512200806' '762200607'
+ '511200711' '868200712' '669200605' '724200712' '618200609' '582200805'
+ '602200605' '802200806' '536200608' '506200606' '581200711' '766200611'
+ '512200804' '675200804' '807200708' '566200610' '821200612' '790200607']
+     market_ids    prices  ...  demand_instruments1  demand_instruments2
+398   702200601  0.083776  ...             4.356919           134.774562
+556   702200601  0.078461  ...             4.356919           134.774562
+1050  702200601  0.067620  ...             4.356919           134.774562
+1213  702200601  0.061468  ...             4.356919           134.774562
+1404  702200601  0.084017  ...             4.356919           134.774562
+
+[5 rows x 12 columns]
+Initializing the problem ...
+Absorbing demand-side fixed effects ...
+Initialized the problem after 00:00:01.
+
+Dimensions:
+==============================================
+ T     N     F     I     K1    K2    MD    ED 
+---  -----  ---  -----  ----  ----  ----  ----
+60   17924  27   40860   2     3     4     2  
+==============================================
+
+Formulations:
+==========================================================
+       Column Indices:           0       1          2     
+-----------------------------  ------  ------  -----------
+ X1: Linear Characteristics    prices   time              
+X2: Nonlinear Characteristics    1     prices  style_descr
+==========================================================
+Dimensions:
+==============================================
+ T     N     F     I     K1    K2    MD    ED 
+---  -----  ---  -----  ----  ----  ----  ----
+60   17924  27   40860   2     3     4     2  
+==============================================
+
+Formulations:
+==========================================================
+       Column Indices:           0       1          2     
+-----------------------------  ------  ------  -----------
+ X1: Linear Characteristics    prices   time              
+X2: Nonlinear Characteristics    1     prices  style_descr
+==========================================================
+finished initializing the problem
+Starting a pool of 12 processes ...
+Started the process pool after 00:00:00.
+Solving the problem ...
+
+Nonlinear Coefficient Initial Values:
+========================================================
+  Sigma:           1           prices       style_descr 
+-----------  -------------  -------------  -------------
+     1       +1.000000E+00                              
+  prices     +0.000000E+00  +1.000000E+00               
+style_descr  +0.000000E+00  +0.000000E+00  +1.000000E+00
+========================================================
+
+Nonlinear Coefficient Lower Bounds:
+========================================================
+  Sigma:           1           prices       style_descr 
+-----------  -------------  -------------  -------------
+     1       +0.000000E+00                              
+  prices     +0.000000E+00  +0.000000E+00               
+style_descr  +0.000000E+00  +0.000000E+00  +0.000000E+00
+========================================================
+
+Nonlinear Coefficient Upper Bounds:
+========================================================
+  Sigma:           1           prices       style_descr 
+-----------  -------------  -------------  -------------
+     1           +INF                                   
+  prices     +0.000000E+00      +INF                    
+style_descr  +0.000000E+00  +0.000000E+00      +INF     
+========================================================
+
+Starting optimization ...
+
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+
+GMM   Optimization   Objective   Fixed Point  Contraction  Clipped    Objective      Objective      Projected                                               
+Step   Iterations   Evaluations  Iterations   Evaluations  Shares       Value       Improvement   Gradient Norm                     Theta                   
+----  ------------  -----------  -----------  -----------  -------  -------------  -------------  -------------  -------------------------------------------
+ 1         0             1          91468       274515        0     +6.881691E+01                 +5.244757E+01  +1.000000E+00, +1.000000E+00, +1.000000E+00
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+
+ 1         0             2          95880       287758        0     +4.311959E+01  +2.569732E+01  +1.689084E+01  +3.159978E-01, +7.464611E-01, +3.159978E-01
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+
+ 1         1             3          95566       286818        0     +4.026083E+01  +2.858767E+00  +2.303017E-01  +1.815415E-03, +6.309213E-01, +3.455150E-02
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+
+ 1         2             4          95502       286623        0     +4.025862E+01  +2.209023E-03  +2.279342E-01  +0.000000E+00, +6.244473E-01, +2.759114E-02
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+
+ 1         3             5          96637       290028        0     +4.024340E+01  +1.521724E-02  +2.041007E-01  +0.000000E+00, +5.591896E-01, +0.000000E+00
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+
+ 1         4             6          96633       290018        0     +4.018700E+01  +5.640261E-02  +2.192292E-02  +0.000000E+00, +6.007299E-02, +0.000000E+00
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+
+ 1         5             7          96657       290090        0     +4.018634E+01  +6.584869E-04  +3.745654E-06  +0.000000E+00, +1.026383E-05, +0.000000E+00
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+
+ 1         6             8          96635       290023        0     +4.018634E+01  +1.890754E-11  +6.702997E-12  +0.000000E+00, +1.836116E-11, +0.000000E+00
+
+Optimization completed after 02:06:25.
+Computing the Hessian and estimating standard errors ...
