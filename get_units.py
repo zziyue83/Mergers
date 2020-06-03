@@ -67,59 +67,78 @@ def generate_units_table(code, years, groups, modules):
 			# Spit out the frequency table of units at the group, module level
 			writer.writerow(ROW GOES HERE)
 
-def aggregate_movement(code, years, groups, modules, share_cutoff):
+def aggregate_movement(code, years, groups, modules, month_or_quarter):
 
 	# NOTES: Need to read in the units_edited.csv file to edit units, and normalize them below
-	#        Need to make sure this spits out just two files per merger, for month and quarter, rather than year by year
 	#        Spit out things like brand descriptions separately
-	#        Shares need to be computed and products filtered by share.
+	#        Shares need to be computed and products filtered by share -- but maybe do this separately?
+
+	area_time_upc_list = []
 
 	for year in years:
 		store_table = load_store_table(year)
         store_map = store_table.to_dict()
         dma_map = store_map['dma_code']
-        area_month_upc_list = []
-
+        
 		for group, module in zip(groups, modules):
 			movement_table = load_chunked_year_module_movement_table(year, group, module)
 
+			# Add in year somehwere?
+
 			for data_chunk in tqdm(movementTable):
-                data_chunk['month'] = data_chunk['week_end']/100
-                data_chunk['month'] = data_chunk['month'].astype(int)
+				if month_or_quarter == "month":
+                	data_chunk[month_or_quarter] = data_chunk['week_end']/100
+                	data_chunk[month_or_quarter] = data_chunk['time'].astype(int)
+                elif month_or_quarter == "quarter":
+                	# Make time = quarter now
                 data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
                 data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
-                area_month_upc = data_chunk.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
-                area_month_upc_list.append(area_month_upc)
+                area_time_upc = data_chunk.groupby([month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
+                area_time_upc_list.append(area_time_upc)
 
-            area_month_upc = pd.concat(area_month_upc_list)
-            area_month_upc = area_month_upc.groupby(['month', 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_month_upc.columns)
-            area_month_upc['brand_code_uc'] = area_month_upc['upc'].map(productMap['brand_code_uc'])
-            area_month_upc['brand_descr'] = area_month_upc['upc'].map(productMap['brand_descr'])
-            area_month_upc['multi'] = area_month_upc['upc'].map(productMap['multi'])
-            area_month_upc['size1_amount'] = area_month_upc['upc'].map(productMap['size1_amount'])
-            area_month_upc['size1_units'] = area_month_upc['upc'].map(productMap['size1_units'])
-            area_month_upc['volume'] = area_month_upc['units'] * area_month_upc['size1_amount'] * area_month_upc['multi']
-            area_month_upc['raw_price']  = area_month_upc['price']
-            area_month_upc['price'] = area_month_upc['sales'] / area_month_upc['volume']
-            area_month_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
-            if firstFile:
-                area_month_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8')
-                firstFile = False
-            else:
-                area_month_upc.to_csv(savePath, sep = '\t', encoding = 'utf-8', mode = 'a', header = False)
-            print("Saved dma_month_upc data for year "+year+", group: "+group+", product: "+product+", file: "+file)
-            print(area_month_upc.shape)
+        area_time_upc = pd.concat(area_time_upc_list)
+        area_time_upc = area_time_upc.groupby([month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
+        area_time_upc['brand_code_uc'] = area_time_upc['upc'].map(productMap['brand_code_uc'])
+        area_time_upc['brand_descr'] = area_time_upc['upc'].map(productMap['brand_descr'])
+        area_time_upc['multi'] = area_time_upc['upc'].map(productMap['multi'])
+        area_time_upc['size1_amount'] = area_time_upc['upc'].map(productMap['size1_amount'])
+        area_time_upc['size1_units'] = area_time_upc['upc'].map(productMap['size1_units'])
+        area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi']
+        area_time_upc['raw_price']  = area_time_upc['price']
+        area_time_upc['price'] = area_time_upc['sales'] / area_time_upc['volume']
+        area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
+        # Get shares???
+        # Normalize by units???
 
+    return area_time_upc
+
+def find_acceptable_upcs(area_month_upc, share_cutoff):
 	
+    # Now for each UPC, find the max market share across all DMA-month.  If it's less than the share cutoff, then drop that upc
+    upc = area_month_upc.groupby('upc') # and find max?
+
+    return acceptable_upcs
+
 
 
 code = sys.argv[1]
+what_to_do = sys.argv[2]
 info_dict = parse_info(code)
 
 groups, modules = get_groups_and_modules(info_dict["MarketDefinition"])
 years = get_years(info_dict["DateCompleted"])
 
-#generate_units_table()
+if what_to_do == "units":
+	generate_units_table()
+elif what_to_do == "select":
+	area_month_upc = aggregate_movement(code, years, groups, modules, "month")
+	area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter")
+	
+	acceptable_upcs = find_acceptable_upcs(area_month_upc, info_dict["InitialShareCutoff"])
+	# Now print out the stuff that's acceptable UPCs to generate the data_month and data_quarter files
+
+
+
 
 
 print(info_dict)
