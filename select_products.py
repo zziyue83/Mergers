@@ -73,5 +73,12 @@ area_month_upc = aggregate_movement(code, years, groups, modules, "month")
 area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter")
 
 acceptable_upcs = find_acceptable_upcs(area_month_upc['upc', 'shares'], info_dict["InitialShareCutoff"])
-# Now print out the stuff that's acceptable UPCs to generate the data_month and data_quarter files
+
+# Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
+# Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
+# Now filter area_month_upc and area_quarter_upc so that only acceptable_upcs survive
+# Print out data_month.csv and data_quarter.csv
+# Aggregate data_month (sum shares) by dma-month to get total market shares and spit that out as market_coverage.csv
+# How do you do Nielsen Characteristics excel file?
+
 
