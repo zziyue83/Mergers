@@ -72,7 +72,7 @@ def aggregate_movement(code, years, groups, modules, share_cutoff):
 	# NOTES: Need to read in the units_edited.csv file to edit units, and normalize them below
 	#        Need to make sure this spits out just two files per merger, for month and quarter, rather than year by year
 	#        Spit out things like brand descriptions separately
-	#        Shares need to be computed.
+	#        Shares need to be computed and products filtered by share.
 
 	for year in years:
 		store_table = load_store_table(year)
