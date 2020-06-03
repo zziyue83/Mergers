@@ -2,6 +2,7 @@ import re
 import sys
 from datetime import datetime
 import auxiliary as aux
+import tqdm
 
 def load_store_table(year):
     store_path = "../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"

@@ -3,6 +3,7 @@ import sys
 from datetime import datetime
 import unicodecsv as csv
 import auxiliary as aux
+import tqdm
 
 def generate_units_table(code, years, groups, modules):
 
@@ -14,7 +15,6 @@ def generate_units_table(code, years, groups, modules):
 		for group, module in zip(groups, modules):
 
 			all_units_frequency_list = []
-			row_to_write = [group, module]
 
 			for year in years:
 				movement_table = aux.load_chunked_year_module_movement_table(year, group, module)
@@ -24,6 +24,7 @@ def generate_units_table(code, years, groups, modules):
 					units_frequency = movement_table.groupby(['size1_amount', 'size1_units']).count()
 					all_units_frequency_list.append(units_frequency)
 
+			# Sum frequency table to get the total frequency table
 			all_units_frequency = pd.concat(all_units_frequency_list)
 			agg_all_units_frequency = all_units_frequency.groupby(['size1_amount', 'size1_units']).sum()
 
@@ -34,7 +35,7 @@ def generate_units_table(code, years, groups, modules):
 
 				median = GET MEDIAN
 
-				# CHECK THIS
+				# CHECK THIS -- figure out how argmax works
 				where_mode = this_unit.argmax()
 				where_mode = where_mode[0] # do I need this?
 				mode = this_unit.size1_amount[where_mode]
