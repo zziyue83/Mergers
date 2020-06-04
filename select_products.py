@@ -19,14 +19,27 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	these_units['conversion'] = 0
 
 	# Anything that has convert = 1 must be in the master folder
-	convertible = these_units.unit[these_units.convert == 1]
+	convertible = these_units.unit[these_units.convert == 1] # YINTIAN/AISLING -- there's some sliciing issue here you should look at!
 	for this_unit in convertible.unique():
-		convert_factor master_conversion.conversion[master_conversion.initial_unit == this_unit]
+		convert_factor = master_conversion.conversion[master_conversion.initial_unit == this_unit]
 		these_units.conversion[these_units.unit == this_unit] = convert_factor
+		convertible.conversion[convertible.unit == this_unit] = convert_factor
 
-	# How does the convert == 0 work???
+	# The "method" for convert = 0 is mapped to the "method" for the convert = 1
+	# with the largest quantity
+	where_largest = convertible.total_quantity.idxmax()
+	if method == 'mode':
+		base_size = convertible.mode[where_largest]
+		other_size = these_units.mode[these_units.convert == 0]
+	else:
+		base_size = convertible.median[where_largest]
+		other_size = these_units.median[these_units.convert == 0]
 
-	conversion_map = conversions.to_dict()
+	these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
+	these_units = these_units[['initial_size', 'conversion']]
+	these_units = these_units.rename(columns = {'initial_size' : 'size1_units'})
+
+	conversion_map = these_units.to_dict()
 	return conversion_map
 
 def aggregate_movement(code, years, groups, modules, month_or_quarter, conversion_map):
@@ -58,20 +71,28 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
                 area_time_upc = data_chunk.groupby([month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
                 area_time_upc_list.append(area_time_upc)
 
-        area_time_upc = pd.concat(area_time_upc_list)
-        area_time_upc = area_time_upc.groupby([month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
-        area_time_upc['brand_code_uc'] = area_time_upc['upc'].map(productMap['brand_code_uc'])
-        area_time_upc['brand_descr'] = area_time_upc['upc'].map(productMap['brand_descr'])
-        area_time_upc['multi'] = area_time_upc['upc'].map(productMap['multi'])
-        area_time_upc['size1_amount'] = area_time_upc['upc'].map(productMap['size1_amount'])
-        area_time_upc['size1_units'] = area_time_upc['upc'].map(productMap['size1_units'])
-        area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi']
-        area_time_upc['raw_price']  = area_time_upc['price']
-        area_time_upc['prices'] = area_time_upc['sales'] / area_time_upc['volume']
-        area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
-        # Get shares???
-        # Normalize by units???
+    area_time_upc = pd.concat(area_time_upc_list)
+    area_time_upc = area_time_upc.groupby([month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
+    area_time_upc['brand_code_uc'] = area_time_upc['upc'].map(productMap['brand_code_uc'])
+    area_time_upc['brand_descr'] = area_time_upc['upc'].map(productMap['brand_descr'])
+    area_time_upc['multi'] = area_time_upc['upc'].map(productMap['multi'])
+    area_time_upc['size1_amount'] = area_time_upc['upc'].map(productMap['size1_amount'])
+    area_time_upc['size1_units'] = area_time_upc['upc'].map(productMap['size1_units'])
+    area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion']) # YINTIAN/AISLING -- check this!!!
+    area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi'] * area_time_upc['conversion']
+    area_time_upc['raw_price']  = area_time_upc['price']
+    area_time_upc['prices'] = area_time_upc['sales'] / area_time_upc['volume']
+    area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
 
+    # Get the market sizes here, by summing volume within dma-time and then taking 1.5 times max within-dma
+    short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume']]
+    market_sizes = area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
+    market_sizes = market_sizes.rename({'volume : market_size'})
+    market_sizes['market_size'] = 1.5 * market_sizes['market_size']
+
+    # Shares = volume / market size
+    # MAP MARKET SIZES BACK AND GET SHARES!!!
+        
     return area_time_upc
 
 def get_acceptable_upcs(area_month_upc, share_cutoff):
