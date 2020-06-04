@@ -49,6 +49,9 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	#        Shares need to be computed and products filtered by share -- but maybe do this separately?
 
 	area_time_upc_list = []
+	product_map = aux.get_product_map(groups.unique())
+	add_from_map = ['brand_code_uc', 'brand_descr', 'multi', 'size1_units', 'size1_amount']
+	aggregation_function = {'week_end' : 'first', 'units' : 'sum', 'prmult' : 'mean', 'price' : 'mean', 'feature' : 'first', 'display' : 'first', 'store_code_uc' : 'first', 'sales' : 'sum'}
 
 	for year in years:
 		store_table = load_store_table(year)
@@ -58,7 +61,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 		for group, module in zip(groups, modules):
 			movement_table = aux.load_chunked_year_module_movement_table(year, group, module)
 
-			# Add in year somehwere?
+			# Add in year somehwere?????
 
 			for data_chunk in tqdm(movement_table):
 				if month_or_quarter == "month":
@@ -66,6 +69,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
                 	data_chunk[month_or_quarter] = data_chunk['time'].astype(int)
                 elif month_or_quarter == "quarter":
                 	# Make time = quarter now
+                	
                 data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
                 data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
                 area_time_upc = data_chunk.groupby([month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
@@ -73,11 +77,8 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
     area_time_upc = pd.concat(area_time_upc_list)
     area_time_upc = area_time_upc.groupby([month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
-    area_time_upc['brand_code_uc'] = area_time_upc['upc'].map(productMap['brand_code_uc'])
-    area_time_upc['brand_descr'] = area_time_upc['upc'].map(productMap['brand_descr'])
-    area_time_upc['multi'] = area_time_upc['upc'].map(productMap['multi'])
-    area_time_upc['size1_amount'] = area_time_upc['upc'].map(productMap['size1_amount'])
-    area_time_upc['size1_units'] = area_time_upc['upc'].map(productMap['size1_units'])
+    for to_add in add_from_map:
+    	area_time_upc[to_add] = area_time_upc['upc'].map(product_map(to_add))
     area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion']) # YINTIAN/AISLING -- check this!!!
     area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi'] * area_time_upc['conversion']
     area_time_upc['raw_price']  = area_time_upc['price']
@@ -90,8 +91,9 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     market_sizes = market_sizes.rename({'volume : market_size'})
     market_sizes['market_size'] = 1.5 * market_sizes['market_size']
 
-    # Shares = volume / market size
-    # MAP MARKET SIZES BACK AND GET SHARES!!!
+    # Shares = volume / market size.  Map market sizes back and get shares.
+    area_time_upc = area_time_upc.join(market_sizes, on = ['dma_code', 'year', month_or_quarter])
+    area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
         
     return area_time_upc
 

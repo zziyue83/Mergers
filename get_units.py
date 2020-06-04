@@ -8,6 +8,9 @@ import os
 
 def generate_units_table(code, years, groups, modules):
 
+	product_map = aux.get_product_map(groups.unique())
+	add_from_map = ['size1_units', 'size1_amount', 'prmult']
+
 	with open('m_' + code + '/intermediate/units.csv', "wb") as csvfile:
 		header = ["units", "total_quantity", "median", "mode"]
 		writer = csv.writer(csvfile, delimiter = ',', encoding = 'utf-8')
@@ -15,14 +18,18 @@ def generate_units_table(code, years, groups, modules):
 
 		all_units_frequency_list = []
 
+
 		for group, module in zip(groups, modules):
 
 			for year in years:
 				movement_table = aux.load_chunked_year_module_movement_table(year, group, module)
 				
 				for data_chunk in tqdm(movement_table):
-					# normunits is the total volume sold (quantity x size)
+					for to_add in add_from_map:
+						data_chunk[to_add] = data_chunk['upc'].map(product_map(to_add))
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'prmult']]
+					
+					# normunits is the total volume sold (quantity x size)
 					data_chunk['normunits'] = data_chunk['units'] / data_chunk['prmult']
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'norm_units']]
 					units_frequency = data_chunk.groupby(['size1_amount', 'size1_units']).sum()
