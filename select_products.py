@@ -10,6 +10,9 @@ def load_store_table(year):
     print("Loaded store file of "+ year)
     return store_table
 
+def get_conversion_map(code):
+	# Get in the conversion map
+
 def aggregate_movement(code, years, groups, modules, month_or_quarter):
 
 	# NOTES: Need to read in the units_edited.csv file to edit units, and normalize them below
@@ -28,7 +31,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter):
 
 			# Add in year somehwere?
 
-			for data_chunk in tqdm(movementTable):
+			for data_chunk in tqdm(movement_table):
 				if month_or_quarter == "month":
                 	data_chunk[month_or_quarter] = data_chunk['week_end']/100
                 	data_chunk[month_or_quarter] = data_chunk['time'].astype(int)
@@ -69,6 +72,8 @@ info_dict = aux.parse_info(code)
 
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
 years = aux.get_years(info_dict["DateCompleted"])
+
+conversion_map = get_conversion_map(code)
 
 area_month_upc = aggregate_movement(code, years, groups, modules, "month")
 area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter")
