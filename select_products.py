@@ -10,10 +10,26 @@ def load_store_table(year):
     print("Loaded store file of "+ year)
     return store_table
 
-def get_conversion_map(code):
-	# Get in the conversion map
+def get_conversion_map(code, final_unit, method = 'mode'):
+	# Get in the conversion map -- size1_units, multiplication
+	master_conversion = pd.read_csv('master/unit_conversion.csv')
+	master_conversion = master_conversion[master_conversion['final_unit'] == final_unit]
 
-def aggregate_movement(code, years, groups, modules, month_or_quarter):
+	these_units = pd.read_csv('m_' + code + '/properties/units_edited.csv')
+	these_units['conversion'] = 0
+
+	# Anything that has convert = 1 must be in the master folder
+	convertible = these_units.unit[these_units.convert == 1]
+	for this_unit in convertible.unique():
+		convert_factor master_conversion.conversion[master_conversion.initial_unit == this_unit]
+		these_units.conversion[these_units.unit == this_unit] = convert_factor
+
+	# How does the convert == 0 work???
+
+	conversion_map = conversions.to_dict()
+	return conversion_map
+
+def aggregate_movement(code, years, groups, modules, month_or_quarter, conversion_map):
 
 	# NOTES: Need to read in the units_edited.csv file to edit units, and normalize them below
 	#        Spit out things like brand descriptions separately
@@ -73,10 +89,9 @@ info_dict = aux.parse_info(code)
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
 years = aux.get_years(info_dict["DateCompleted"])
 
-conversion_map = get_conversion_map(code)
-
-area_month_upc = aggregate_movement(code, years, groups, modules, "month")
-area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter")
+conversion_map = get_conversion_map(code, info_dict["FinalUnit"])
+area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map)
+area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map)
 
 acceptable_upcs = find_acceptable_upcs(area_month_upc['upc', 'shares'], info_dict["InitialShareCutoff"])
 
