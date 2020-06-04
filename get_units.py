@@ -21,6 +21,7 @@ def generate_units_table(code, years, groups, modules):
 				
 				for data_chunk in tqdm(movementTable):
 					# Get the frequency table of units
+					# FIX THIS!!! It should be total volume sold = quantity * size, NOT count!!!
 					units_frequency = movement_table.groupby(['size1_amount', 'size1_units']).count()
 					all_units_frequency_list.append(units_frequency)
 
