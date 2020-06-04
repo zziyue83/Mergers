@@ -67,21 +67,65 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
         area_time_upc['size1_units'] = area_time_upc['upc'].map(productMap['size1_units'])
         area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi']
         area_time_upc['raw_price']  = area_time_upc['price']
-        area_time_upc['price'] = area_time_upc['sales'] / area_time_upc['volume']
+        area_time_upc['prices'] = area_time_upc['sales'] / area_time_upc['volume']
         area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
         # Get shares???
         # Normalize by units???
 
     return area_time_upc
 
-def find_acceptable_upcs(area_month_upc, share_cutoff):
+def get_acceptable_upcs(area_month_upc, share_cutoff):
     # Now for each UPC, find the max market share across all DMA-month.  If it's less than the share cutoff, then drop that upc
     upc_max_share = area_month_upc.groupby('upc').max()
     acceptable_upcs = upc_max_share[upc_max_share['shares'] > share_cutoff]
 
     return acceptable_upcs['upc']
 
+def write_brands_upc(code, agg, upc_set):
+	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'brand_descr']]
+	agg = agg.drop_duplicates
+	agg = agg[agg.upc.isin(upc_set)]
 
+	base_folder = 'm_' + code + '/intermediate/'
+	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
+
+	agg = agg[['brand_descr']]
+	agg = agg.rename(columns = {'brand_descr' : 'brand'})
+	agg = agg.drop_duplicates
+	agg.to_csv(base_folder + 'brands.csv', sep = ',', encoding = 'utf-8')	
+
+def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
+	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares']]
+	agg = agg[agg.upc.isin(upc_set)]
+	agg.to_csv('m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8')
+
+def write_market_coverage(code, agg, upc_set):
+	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'shares']]
+	agg = agg[agg.upc.isin(upc_set)]
+	agg = agg[['dma_code', 'year', month_or_quarter, 'shares']]
+
+	agg = agg.groupby(['dma_code', 'year', month_or_quarter]).sum()
+	agg = agg.rename(columns = {'shares' : 'total_shares'})
+	agg.to_csv('m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
+
+#Example:
+# upc                                   15000004
+# upc_ver_uc                                   1
+# upc_descr               SIERRA NEVADA W BR NRB
+# product_module_code                       5000
+# product_module_descr                      BEER
+# product_group_code                        5001
+# product_group_descr                       BEER
+# department_code                              8
+# department_descr           ALCOHOLIC BEVERAGES
+# brand_code_uc                           637860
+# brand_descr                SIERRA NEVADA WHEAT
+# multi                                        1
+# size1_code_uc                            32992
+# size1_amount                                12
+# size1_units                                 OZ
+# dataset_found_uc                           ALL
+# size1_change_flag_uc                         0
 
 code = sys.argv[1]
 info_dict = aux.parse_info(code)
@@ -93,13 +137,20 @@ conversion_map = get_conversion_map(code, info_dict["FinalUnit"])
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map)
 area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map)
 
-acceptable_upcs = find_acceptable_upcs(area_month_upc['upc', 'shares'], info_dict["InitialShareCutoff"])
+acceptable_upcs = get_acceptable_upcs(area_month_upc['upc', 'shares'], info_dict["InitialShareCutoff"])
 
 # Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
 # Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
+write_brands_upc(code, area_month_upc, acceptable_upcs)
+
 # Now filter area_month_upc and area_quarter_upc so that only acceptable_upcs survive
 # Print out data_month.csv and data_quarter.csv
+write_base_dataset(code, area_month_upc, acceptable_upcs, 'month')
+write_base_dataset(code, area_quarter_upc, acceptable_upcs, 'quarter')
+
 # Aggregate data_month (sum shares) by dma-month to get total market shares and spit that out as market_coverage.csv
+write_market_coverage(code, area_month_upc, acceptable_upcs)
+
 # How do you do Nielsen Characteristics excel file?
 
 
