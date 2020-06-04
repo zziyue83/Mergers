@@ -42,7 +42,7 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	conversion_map = these_units.to_dict()
 	return conversion_map
 
-def aggregate_movement(code, years, groups, modules, month_or_quarter, conversion_map):
+def aggregate_movement(code, years, groups, modules, month_or_quarter, conversion_map, market_size_scale = 1.5):
 
 	# NOTES: Need to read in the units_edited.csv file to edit units, and normalize them below
 	#        Spit out things like brand descriptions separately
@@ -61,15 +61,14 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 		for group, module in zip(groups, modules):
 			movement_table = aux.load_chunked_year_module_movement_table(year, group, module)
 
-			# Add in year somehwere?????
-
 			for data_chunk in tqdm(movement_table):
 				if month_or_quarter == "month":
                 	data_chunk[month_or_quarter] = data_chunk['week_end']/100
                 	data_chunk[month_or_quarter] = data_chunk['time'].astype(int)
                 elif month_or_quarter == "quarter":
-                	# Make time = quarter now
-                	
+                	# Make time = quarter now.  Use AggregateToMonthOrQuarter_A
+                	data_chunk[month_or_quarter] = pd.to_datetime(data_chunk['month'].values, format='%Y%m').astype('period[Q]').astype(int)
+
                 data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
                 data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
                 area_time_upc = data_chunk.groupby([month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
@@ -86,10 +85,11 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
 
     # Get the market sizes here, by summing volume within dma-time and then taking 1.5 times max within-dma
-    short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume']]
-    market_sizes = area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
+    short_area_time_upc = area_time_upc[['dma_code', month_or_quarter, 'volume']]
+    market_sizes = area_time_upc.groupby(['dma_code', month_or_quarter]).sum()
     market_sizes = market_sizes.rename({'volume : market_size'})
-    market_sizes['market_size'] = 1.5 * market_sizes['market_size']
+    market_sizes['market_size'] = market_size_scale * market_sizes['market_size']
+    market_sizes.to_csv('m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
 
     # Shares = volume / market size.  Map market sizes back and get shares.
     area_time_upc = area_time_upc.join(market_sizes, on = ['dma_code', 'year', month_or_quarter])
@@ -105,7 +105,7 @@ def get_acceptable_upcs(area_month_upc, share_cutoff):
     return acceptable_upcs['upc']
 
 def write_brands_upc(code, agg, upc_set):
-	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'brand_descr']]
+	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi']]
 	agg = agg.drop_duplicates
 	agg = agg[agg.upc.isin(upc_set)]
 
@@ -118,16 +118,16 @@ def write_brands_upc(code, agg, upc_set):
 	agg.to_csv(base_folder + 'brands.csv', sep = ',', encoding = 'utf-8')	
 
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
-	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares']]
+	agg = agg[['upc', 'dma_code', month_or_quarter, 'prices', 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
 	agg.to_csv('m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8')
 
 def write_market_coverage(code, agg, upc_set):
-	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'shares']]
+	agg = agg[['upc', 'dma_code', month_or_quarter, 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
-	agg = agg[['dma_code', 'year', month_or_quarter, 'shares']]
+	agg = agg[['dma_code', month_or_quarter, 'shares']]
 
-	agg = agg.groupby(['dma_code', 'year', month_or_quarter]).sum()
+	agg = agg.groupby(['dma_code', month_or_quarter]).sum()
 	agg = agg.rename(columns = {'shares' : 'total_shares'})
 	agg.to_csv('m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
 
