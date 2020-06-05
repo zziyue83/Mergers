@@ -38,6 +38,7 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
 	these_units = these_units[['initial_size', 'conversion']]
 	these_units = these_units.rename(columns = {'initial_size' : 'size1_units'})
+	these_units = these_units.set_index('size1_units')
 
 	conversion_map = these_units.to_dict()
 	return conversion_map
@@ -84,6 +85,9 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     area_time_upc['prices'] = area_time_upc['sales'] / area_time_upc['volume']
     area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
 
+    # Normalize the prices by the CPI.  Let January 2010 = 1.
+    # YINTIAN/AISLING -- CAN YOU FILL THIS IN?
+
     # Get the market sizes here, by summing volume within dma-time and then taking 1.5 times max within-dma
     short_area_time_upc = area_time_upc[['dma_code', month_or_quarter, 'volume']]
     market_sizes = area_time_upc.groupby(['dma_code', month_or_quarter]).sum()
@@ -112,7 +116,7 @@ def write_brands_upc(code, agg, upc_set):
 	base_folder = 'm_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
 
-	agg = agg[['brand_descr']]
+	agg = agg[['brand_code_uc', 'brand_descr']]
 	agg = agg.rename(columns = {'brand_descr' : 'brand'})
 	agg = agg.drop_duplicates
 	agg.to_csv(base_folder + 'brands.csv', sep = ',', encoding = 'utf-8')	
