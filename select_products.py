@@ -145,7 +145,7 @@ conversion_map = get_conversion_map(code, info_dict["FinalUnit"])
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map)
 area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map)
 
-acceptable_upcs = get_acceptable_upcs(area_month_upc['upc', 'shares'], info_dict["InitialShareCutoff"])
+acceptable_upcs = get_acceptable_upcs(area_month_upc['upc', 'shares'], float(info_dict["InitialShareCutoff"]))
 
 # Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
 # Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
