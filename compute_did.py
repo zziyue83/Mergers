@@ -4,6 +4,7 @@ from linearmodels.panel import PanelOLS
 import statsmodels.api as sm
 import numpy as np
 import unicodecsv as csv 
+import auxiliary as aux
 
 def append_owners(code, df):
 	upcs = pd.read_csv('m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
