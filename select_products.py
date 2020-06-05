@@ -135,25 +135,6 @@ def write_market_coverage(code, agg, upc_set):
 	agg = agg.rename(columns = {'shares' : 'total_shares'})
 	agg.to_csv('m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
 
-#Example:
-# upc                                   15000004
-# upc_ver_uc                                   1
-# upc_descr               SIERRA NEVADA W BR NRB
-# product_module_code                       5000
-# product_module_descr                      BEER
-# product_group_code                        5001
-# product_group_descr                       BEER
-# department_code                              8
-# department_descr           ALCOHOLIC BEVERAGES
-# brand_code_uc                           637860
-# brand_descr                SIERRA NEVADA WHEAT
-# multi                                        1
-# size1_code_uc                            32992
-# size1_amount                                12
-# size1_units                                 OZ
-# dataset_found_uc                           ALL
-# size1_change_flag_uc                         0
-
 code = sys.argv[1]
 info_dict = aux.parse_info(code)
 
