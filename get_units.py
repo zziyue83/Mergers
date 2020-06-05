@@ -9,7 +9,7 @@ import os
 def generate_units_table(code, years, groups, modules):
 
 	product_map = aux.get_product_map(groups.unique())
-	add_from_map = ['size1_units', 'size1_amount', 'prmult']
+	add_from_map = ['size1_units', 'size1_amount', 'multi']
 
 	with open('m_' + code + '/intermediate/units.csv', "wb") as csvfile:
 		header = ["units", "total_quantity", "median", "mode"]
@@ -27,33 +27,33 @@ def generate_units_table(code, years, groups, modules):
 				for data_chunk in tqdm(movement_table):
 					for to_add in add_from_map:
 						data_chunk[to_add] = data_chunk['upc'].map(product_map(to_add))
-					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'prmult']]
+					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'multi']]
 					
 					# normunits is the total volume sold (quantity x size)
-					data_chunk['normunits'] = data_chunk['units'] / data_chunk['prmult']
-					data_chunk = data_chunk[['size1_amount', 'size1_units', 'norm_units']]
-					units_frequency = data_chunk.groupby(['size1_amount', 'size1_units']).sum()
-					units_frequency['normunits'] = units_frequency['normunits'] * units_frequency['size1_units']
+					data_chunk['normunits'] = data_chunk['units'] * data_chunk['multi'] * data_chunk['size1_amount']
+					data_chunk['norm_size1_amount'] = data_chunk['size1_amount'] * data_chunk['multi']
+					data_chunk = data_chunk[['norm_size1_amount', 'size1_units', 'norm_units']]
+					units_frequency = data_chunk.groupby(['norm_size1_amount', 'size1_units']).sum()
 					all_units_frequency_list.append(units_frequency)
 
 		# Sum frequency table to get the total frequency table
 		all_units_frequency = pd.concat(all_units_frequency_list)
-		agg_all_units_frequency = all_units_frequency.groupby(['size1_amount', 'size1_units']).sum()
+		agg_all_units_frequency = all_units_frequency.groupby(['norm_size1_amount', 'size1_units']).sum()
 
 		unique_units = agg_all_units_frequency['size1_units'].unique()
 
 		for unit in unique_units:
 			this_unit = agg_all_units_frequency[agg_all_units_frequency['size1_units'] == unit]
-			this_unit = this_unit.sort_values(by = ['size1_amount'])
+			this_unit = this_unit.sort_values(by = ['norm_size1_amount'])
 
 			# Weighted by quantity, what is the median package size?
 			total_quantity = this_unit['normunits'].sum()
 			booleans = this_unit['normunits'].cumsum() <= (0.5 * total_quantity)
-			median = this_unit.size1_amount[sum(booleans)]
+			median = this_unit.norm_size1_amount[sum(booleans)]
 
 			# Mode
 			where_mode = this_unit.normunits.idxmax()
-			mode = this_unit.size1_amount[where_mode]
+			mode = this_unit.norm_size1_amount[where_mode]
 
 			to_write = [unit, total_quantity, median, mode]
 			writer.writerow(to_write)
