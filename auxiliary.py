@@ -33,6 +33,13 @@ def get_years(year_string, pre = 2, post = 2):
 			years.append(str(this_year))
 	return years
 
+def get_merging_parties(info_str):
+	all_parties = re.finditer('{(.*?)}', full_string, re.DOTALL)
+	merging_parties = []
+	for i in all_parties:
+		merging_parties.append(i)
+	return merging_parties
+
 def load_chunked_year_module_movement_table(year, group, module, path = ''):
     if path == '':
         path = "../../Data/nielsen_extracts/RMS/" + year + "/Movement_Files/" + group + "_" + year + "/" + module + "_" + year + ".tsv"
@@ -46,3 +53,22 @@ def get_product_map(groups):
 	wanted_products = products[products['product_group_code'].isin(int_groups)]
 	product_map = wanted_products.to_dict()
     return product_map
+
+#Example:
+# upc                                   15000004
+# upc_ver_uc                                   1
+# upc_descr               SIERRA NEVADA W BR NRB
+# product_module_code                       5000
+# product_module_descr                      BEER
+# product_group_code                        5001
+# product_group_descr                       BEER
+# department_code                              8
+# department_descr           ALCOHOLIC BEVERAGES
+# brand_code_uc                           637860
+# brand_descr                SIERRA NEVADA WHEAT
+# multi                                        1
+# size1_code_uc                            32992
+# size1_amount                                12
+# size1_units                                 OZ
+# dataset_found_uc                           ALL
+# size1_change_flag_uc                         0
