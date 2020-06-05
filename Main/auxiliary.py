@@ -42,12 +42,12 @@ def get_merging_parties(info_str):
 
 def load_chunked_year_module_movement_table(year, group, module, path = ''):
     if path == '':
-        path = "../../Data/nielsen_extracts/RMS/" + year + "/Movement_Files/" + group + "_" + year + "/" + module + "_" + year + ".tsv"
+        path = "../../../Data/nielsen_extracts/RMS/" + year + "/Movement_Files/" + group + "_" + year + "/" + module + "_" + year + ".tsv"
     table = pd.read_csv(path, delimiter = "\t", chunksize = 10000000)
     return table
 
 def get_product_map(groups):
-    products_path = "../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
+    products_path = "../../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
     products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0, index_col = "upc")
     int_groups = [int(i) for i in groups] 
 	wanted_products = products[products['product_group_code'].isin(int_groups)]
