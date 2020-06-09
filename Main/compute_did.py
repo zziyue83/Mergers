@@ -127,7 +127,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	data['log_hhinc_per_person_adj'] = np.log(data['hhinc_per_person_adj'])
 
     with open('m_' + code + '/output/did_' + month_or_quarter + '.csv', "wb") as csvfile:
-    	header = ["model","post_merger*merging", "post_merger*merging_se", "post_merger*dhhi", "post_merger*dhhi_se", "post_merger", "post_merger_se", "trend", "trend_se", "log_hhinc_per_person_adj", "log_hhinc_per_person_adj_se", "N", "r2", "product", "time"]
+    	header = ["model","post_merger*merging", "post_merger*merging_se", "post_merger*merging_pval", "post_merger*dhhi", "post_merger*dhhi_se", "post_merger*dhhi_pval", "post_merger", "post_merger_se", "post_merger_pval", "trend", "trend_se", "trend_pval", "log_hhinc_per_person_adj", "log_hhinc_per_person_adj_se", "log_hhinc_per_person_adj_pval", "N", "r2", "product", "time"]
 		writer = csv.writer(csvfile, delimiter = ',', encoding = 'utf-8')
 		writer.writerow(header)
 
@@ -138,30 +138,30 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	    exog = sm.add_constant(data[exog_vars])
 	    mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
 	    reg_nofe = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_nofe = ['No FE',str(reg_nofe.params[0]),str(reg_nofe.std_errors[0]), \
-			'-','-', \
-			str(reg_nofe.params[1]),str(reg_nofe.std_errors[1]), \
-			str(reg_nofe.params[2]),str(reg_nofe.std_errors[2]), \
-			'-','-' \
+		res_nofe = ['No FE',str(reg_nofe.params[0]),str(reg_nofe.std_errors[0]), str(reg_nofe.pvalues[0]), \
+			'-','-','-', \
+			str(reg_nofe.params[1]),str(reg_nofe.std_errors[1]),str(reg_nofe.pvalues[1]), \
+			str(reg_nofe.params[2]),str(reg_nofe.std_errors[2]),str(reg_nofe.pvalues[2]), \
+			'-','-','-', \
 			str(reg_nofe.nobs),str(reg_nofe.rsquared),'No','No']
 		writer.writerow(res_nofe)
 
 		# Product/market fixed effects
 	    mod = PanelOLS(data['lprice'], data[exog_vars], entity_effects = True, time_effects = False)
 	    reg_dma_product_fe = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_dma_product_fe = ['DMA/Product FE',str(reg_dma_product_fe.params[0]),str(reg_dma_product_fe.std_errors[0]), \
-			'-','-', \
-			str(reg_dma_product_fe.params[1]),str(reg_dma_product_fe.std_errors[1]), \
-			str(reg_dma_product_fe.params[2]),str(reg_dma_product_fe.std_errors[2]), \
-			'-','-' \
+		res_dma_product_fe = ['DMA/Product FE',str(reg_dma_product_fe.params[0]),str(reg_dma_product_fe.std_errors[0]),str(reg_dma_product_fe.pvalues[0]), \
+			'-','-','-', \
+			str(reg_dma_product_fe.params[1]),str(reg_dma_product_fe.std_errors[1]),str(reg_dma_product_fe.pvalues[1]), \
+			str(reg_dma_product_fe.params[2]),str(reg_dma_product_fe.std_errors[2]),str(reg_dma_product_fe.pvalues[2]), \
+			'-','-','-', \
 			str(reg_dma_product_fe.nobs),str(reg_dma_product_fe.rsquared),'Yes','No']
 		writer.writerow(res_dma_product_fe)
 
 		# Product/market and time fixed effects
 	    mod = PanelOLS(data['lprice'], data['post_merger_merging'], entity_effects = True, time_effects = True)
 	    reg_time_fe = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_time_fe = ['Time FE',str(reg_time_fe.params[0]),str(reg_time_fe.std_errors[0]), \
-			'-','-','-','-','-','-','-','-' \
+		res_time_fe = ['Time FE',str(reg_time_fe.params[0]),str(reg_time_fe.std_errors[0]),str(reg_time_fe.pvalues[0]), \
+			'-','-','-','-','-','-','-','-','-','-','-','-', \
 			str(reg_time_fe.nobs),str(reg_time_fe.rsquared),'Yes','Yes']
 		writer.writerow(res_time_fe)
 
@@ -170,31 +170,31 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		exog_dhhi = sm.add_constant(data[exog_vars_dhhi])
 		mod = PanelOLS(data['lprice'], exog_dhhi, entity_effects = False, time_effects = False)
 		reg_nofe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_nofe_dhhi = ['No FE, DHHI','-','-', \
-			str(reg_nofe_dhhi.params[0]),str(reg_nofe_dhhi.std_errors[0]), \
-			str(reg_nofe_dhhi.params[1]),str(reg_nofe_dhhi.std_errors[1]), \
-			str(reg_nofe_dhhi.params[2]),str(reg_nofe_dhhi.std_errors[2]), \
-			'-','-' \
+		res_nofe_dhhi = ['No FE, DHHI','-','-','-', \
+			str(reg_nofe_dhhi.params[0]),str(reg_nofe_dhhi.std_errors[0]),str(reg_nofe_dhhi.pvalues[0]), \
+			str(reg_nofe_dhhi.params[1]),str(reg_nofe_dhhi.std_errors[1]),str(reg_nofe_dhhi.pvalues[1]), \
+			str(reg_nofe_dhhi.params[2]),str(reg_nofe_dhhi.std_errors[2]),str(reg_nofe_dhhi.pvalues[2]), \
+			'-','-','-', \
 			str(reg_nofe_dhhi.nobs),str(reg_nofe_dhhi.rsquared),'No','No']
 		writer.writerow(res_nofe_dhhi)
 
 		# Product/market fixed effects, DHHI
 		mod = PanelOLS(data['lprice'], exog_vars_dhhi, entity_effects = True, time_effects = False)
 		reg_dma_product_fe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_dma_product_fe_dhhi = ['DMA/Product FE, DHHI','-','-', \
-			str(reg_dma_product_fe_dhhi.params[0]),str(reg_dma_product_fe_dhhi.std_errors[0]), \
-			str(reg_dma_product_fe_dhhi.params[1]),str(reg_dma_product_fe_dhhi.std_errors[1]), \
-			str(reg_dma_product_fe_dhhi.params[2]),str(reg_dma_product_fe_dhhi.std_errors[2]), \
-			'-','-' \
+		res_dma_product_fe_dhhi = ['DMA/Product FE, DHHI','-','-','-', \
+			str(reg_dma_product_fe_dhhi.params[0]),str(reg_dma_product_fe_dhhi.std_errors[0]),str(reg_dma_product_fe_dhhi.pvalues[0]), \
+			str(reg_dma_product_fe_dhhi.params[1]),str(reg_dma_product_fe_dhhi.std_errors[1]),str(reg_dma_product_fe_dhhi.pvalues[1]), \
+			str(reg_dma_product_fe_dhhi.params[2]),str(reg_dma_product_fe_dhhi.std_errors[2]),str(reg_dma_product_fe_dhhi.pvalues[2]), \
+			'-','-','-', \
 			str(reg_dma_product_fe_dhhi.nobs),str(reg_dma_product_fe_dhhi.rsquared),'Yes','No']
 		writer.writerow(res_dma_product_fe_dhhi)
 
 		# Product/market and time fixed effects, DHHI
 		mod = PanelOLS(data['lprice'], data['post_merger_dhhi'], entity_effects = True, time_effects = True)
 		reg_time_fe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_time_fe_dhhi = ['Time FE, DHHI','-','-', \
-			str(reg_time_fe_dhhi.params[0]),str(reg_time_fe_dhhi.std_errors[0]), \
-			'-','-','-','-','-','-' \
+		res_time_fe_dhhi = ['Time FE, DHHI','-','-','-', \
+			str(reg_time_fe_dhhi.params[0]),str(reg_time_fe_dhhi.std_errors[0]),str(reg_time_fe_dhhi.pvalues[0]), \
+			'-','-','-','-','-','-','-','-','-', \
 			str(reg_time_fe_dhhi.nobs),str(reg_time_fe_dhhi.rsquared),'Yes','Yes']
 		writer.writerow(res_time_fe_dhhi)
 
@@ -203,31 +203,31 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	    exog = sm.add_constant(data[exog_vars])
 	    mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
 	    reg_nofe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_nofe_demog = ['No FE, Demographics',str(reg_nofe_demog.params[0]),str(reg_nofe_demog.std_errors[0]), \
-			'-','-', \
-			str(reg_nofe_demog.params[1]),str(reg_nofe_demog.std_errors[1]), \
-			str(reg_nofe_demog.params[2]),str(reg_nofe_demog.std_errors[2]), \
-			str(reg_nofe_demog.params[3]),str(reg_nofe_demog.std_errors[3]), \
+		res_nofe_demog = ['No FE, Demographics',str(reg_nofe_demog.params[0]),str(reg_nofe_demog.std_errors[0]),str(reg_nofe_demog.pvalues[0]), \
+			'-','-','-', \
+			str(reg_nofe_demog.params[1]),str(reg_nofe_demog.std_errors[1]),str(reg_nofe_demog.pvalues[1]), \
+			str(reg_nofe_demog.params[2]),str(reg_nofe_demog.std_errors[2]),str(reg_nofe_demog.pvalues[2]), \
+			str(reg_nofe_demog.params[3]),str(reg_nofe_demog.std_errors[3]),str(reg_nofe_demog.pvalues[3]), \
 			str(reg_nofe_demog.nobs),str(reg_nofe_demog.rsquared),'No','No']
 		writer.writerow(res_nofe_demog)
 
 		# Product/market fixed effects, demographics
 	    mod = PanelOLS(data['lprice'], data[exog_vars], entity_effects = True, time_effects = False)
 	    reg_dma_product_fe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_dma_product_fe_demog = ['DMA/Product FE, Demographics',str(reg_dma_product_fe_demog.params[0]),str(reg_dma_product_fe_demog.std_errors[0]), \
-			'-','-', \
-			str(reg_dma_product_fe_demog.params[1]),str(reg_dma_product_fe_demog.std_errors[1]), \
-			str(reg_dma_product_fe_demog.params[2]),str(reg_dma_product_fe_demog.std_errors[2]), \
-			str(reg_dma_product_fe_demog.params[3]),str(reg_dma_product_fe_demog.std_errors[3]), \
+		res_dma_product_fe_demog = ['DMA/Product FE, Demographics',str(reg_dma_product_fe_demog.params[0]),str(reg_dma_product_fe_demog.std_errors[0]),str(reg_dma_product_fe_demog.pvalues[0]), \
+			'-','-','-', \
+			str(reg_dma_product_fe_demog.params[1]),str(reg_dma_product_fe_demog.std_errors[1]),str(reg_dma_product_fe_demog.pvalues[1]), \
+			str(reg_dma_product_fe_demog.params[2]),str(reg_dma_product_fe_demog.std_errors[2]),str(reg_dma_product_fe_demog.pvalues[2]), \
+			str(reg_dma_product_fe_demog.params[3]),str(reg_dma_product_fe_demog.std_errors[3]),str(reg_dma_product_fe_demog.pvalues[3]), \
 			str(reg_dma_product_fe_demog.nobs),str(reg_dma_product_fe_demog.rsquared),'Yes','No']
 		writer.writerow(res_dma_product_fe_demog)
 
 		# Product/market and time fixed effects, demographics
 	    mod = PanelOLS(data['lprice'], data[['post_merger_merging','log_hhinc_per_person_adj']], entity_effects = True, time_effects = True)
 	    reg_time_fe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_time_fe_demog = ['Time FE, Demographics',str(reg_time_fe_demog.params[0]),str(reg_time_fe_demog.std_errors[0]), \
-			'-','-','-','-','-','-', \
-			str(reg_time_fe_demog.params[1]),str(reg_time_fe_demog.std_errors[1]), \
+		res_time_fe_demog = ['Time FE, Demographics',str(reg_time_fe_demog.params[0]),str(reg_time_fe_demog.std_errors[0]),str(reg_time_fe_demog.pvalues[0]), \
+			'-','-','-','-','-','-','-','-','-', \
+			str(reg_time_fe_demog.params[1]),str(reg_time_fe_demog.std_errors[1]),str(reg_time_fe_demog.pvalues[1]), \
 			str(reg_time_fe_demog.nobs),str(reg_time_fe_demog.rsquared),'Yes','Yes']
 		writer.writerow(res_time_fe_demog)
 
@@ -236,32 +236,32 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		exog_dhhi = sm.add_constant(data[exog_vars_dhhi])
 		mod = PanelOLS(data['lprice'], exog_dhhi, entity_effects = False, time_effects = False)
 		reg_nofe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_nofe_dhhi_demog = ['No FE, DHHI, Demographics','-','-', \
-			str(reg_nofe_dhhi_demog.params[0]),str(reg_nofe_dhhi_demog.std_errors[0]), \
-			str(reg_nofe_dhhi_demog.params[1]),str(reg_nofe_dhhi_demog.std_errors[1]), \
-			str(reg_nofe_dhhi_demog.params[2]),str(reg_nofe_dhhi_demog.std_errors[2]), \
-			str(reg_nofe_dhhi_demog.params[3]),str(reg_nofe_dhhi_demog.std_errors[3]), \
+		res_nofe_dhhi_demog = ['No FE, DHHI, Demographics','-','-','-', \
+			str(reg_nofe_dhhi_demog.params[0]),str(reg_nofe_dhhi_demog.std_errors[0]),str(reg_nofe_dhhi_demog.pvalues[0]), \
+			str(reg_nofe_dhhi_demog.params[1]),str(reg_nofe_dhhi_demog.std_errors[1]),str(reg_nofe_dhhi_demog.pvalues[1]), \
+			str(reg_nofe_dhhi_demog.params[2]),str(reg_nofe_dhhi_demog.std_errors[2]),str(reg_nofe_dhhi_demog.pvalues[2]), \
+			str(reg_nofe_dhhi_demog.params[3]),str(reg_nofe_dhhi_demog.std_errors[3]),str(reg_nofe_dhhi_demog.pvalues[3]), \
 			str(reg_nofe_dhhi_demog.nobs),str(reg_nofe_dhhi_demog.rsquared),'No','No']
 		writer.writerow(res_nofe_dhhi_demog)
 
 		# Product/market fixed effects, DHHI, demographics
 		mod = PanelOLS(data['lprice'], exog_vars_dhhi, entity_effects = True, time_effects = False)
 		reg_dma_product_fe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_dma_product_fe_dhhi_demog = ['DMA/Product FE, DHHI, Demographics','-','-', \
-			str(reg_dma_product_fe_dhhi_demog.params[0]),str(reg_dma_product_fe_dhhi_demog.std_errors[0]), \
-			str(reg_dma_product_fe_dhhi_demog.params[1]),str(reg_dma_product_fe_dhhi_demog.std_errors[1]), \
-			str(reg_dma_product_fe_dhhi_demog.params[2]),str(reg_dma_product_fe_dhhi_demog.std_errors[2]), \
-			str(reg_dma_product_fe_dhhi_demog.params[3]),str(reg_dma_product_fe_dhhi_demog.std_errors[3]), \
+		res_dma_product_fe_dhhi_demog = ['DMA/Product FE, DHHI, Demographics','-','-','-', \
+			str(reg_dma_product_fe_dhhi_demog.params[0]),str(reg_dma_product_fe_dhhi_demog.std_errors[0]),str(reg_dma_product_fe_dhhi_demog.pvalues[0]), \
+			str(reg_dma_product_fe_dhhi_demog.params[1]),str(reg_dma_product_fe_dhhi_demog.std_errors[1]),str(reg_dma_product_fe_dhhi_demog.pvalues[1]), \
+			str(reg_dma_product_fe_dhhi_demog.params[2]),str(reg_dma_product_fe_dhhi_demog.std_errors[2]),str(reg_dma_product_fe_dhhi_demog.pvalues[2]), \
+			str(reg_dma_product_fe_dhhi_demog.params[3]),str(reg_dma_product_fe_dhhi_demog.std_errors[3]),str(reg_dma_product_fe_dhhi_demog.pvalues[3]), \
 			str(reg_dma_product_fe_dhhi_demog.nobs),str(reg_dma_product_fe_dhhi_demog.rsquared),'Yes','No']
 		writer.writerow(res_dma_product_fe_dhhi_demog)
 
 		# Product/market and time fixed effects, DHHI, demographics
 		mod = PanelOLS(data['lprice'], data[['post_merger_dhhi','log_hhinc_per_person_adj']], entity_effects = True, time_effects = True)
 		reg_time_fe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_time_fe_dhhi_demog = ['Time FE, DHHI, Demographics','-','-', \
-			str(reg_time_fe_dhhi_demog.params[0]),str(reg_time_fe_dhhi_demog.std_errors[0]), \
-			'-','-','-','-', \
-			str(reg_time_fe_dhhi_demog.params[1]),str(reg_time_fe_dhhi_demog.std_errors[1]), \
+		res_time_fe_dhhi_demog = ['Time FE, DHHI, Demographics','-','-','-', \
+			str(reg_time_fe_dhhi_demog.params[0]),str(reg_time_fe_dhhi_demog.std_errors[0]),str(reg_time_fe_dhhi_demog.pvalues[0]), \
+			'-','-','-','-','-','-', \
+			str(reg_time_fe_dhhi_demog.params[1]),str(reg_time_fe_dhhi_demog.std_errors[1]),str(reg_time_fe_dhhi_demog.pvalues[1]), \
 			str(reg_time_fe_dhhi_demog.nobs),str(reg_time_fe_dhhi_demog.rsquared),'Yes','Yes']
 		writer.writerow(res_time_fe_dhhi_demog)
 
