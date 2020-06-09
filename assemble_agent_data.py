@@ -118,7 +118,7 @@ def assemble_nodes_weights(num_rc,level):
         nodes_weights = pd.concat([weights, nodes], axis=1)
         return(nodes_weights)
 
-def assemble_agent_data(year,quarter,dma,hhids,pids,nodes_weights,dma_to_puma,pums_data):
+def assemble_agent_data(year,period,month_or_quarter,dma,hhids,pids,nodes_weights,dma_to_puma,pums_data):
 
         # Determine number of draws
         ndraw = nodes_weights.shape[0]
@@ -130,7 +130,7 @@ def assemble_agent_data(year,quarter,dma,hhids,pids,nodes_weights,dma_to_puma,pu
         nodes_weights.reset_index(drop=True, inplace=True)
         demographics.reset_index(drop=True, inplace=True)
         agent_data = pd.concat([nodes_weights, demographics], axis=1)
-        agent_data['quarter'] = quarter
+        agent_data[month_or_quarter] = period
         return(agent_data)
 
 # Set up inputs and run
@@ -149,44 +149,48 @@ level = [int(ll) for ll in level_str]
 num_rc_str = sys.argv[6].split(',')
 num_rc = [int(nn) for nn in num_rc_str]
 
-# Assemble nodes and weights
-nodes_weights = assemble_nodes_weights(num_rc[0],level[0])
-
-# Loop over years, quarters, and DMAs
-count = 0
-for yr in years:
-
-        # List of unique DMAs
-        dma_to_puma = pull_dma_shares(yr)
-        dma_unique = dma_to_puma['dma_code'].drop_duplicates()
-
-        # PUMS data
-        pums_data = import_pums(yr,hhids,pids)
-
-        for pp in range(1,periods[0]+1):
-
-                for dd in dma_unique:
-
-                        # Counter
-                        count += 1
-                        print(str(yr)+'P'+str(pp)+'DMA'+dd)
-
-                        agents = assemble_agent_data(yr,pp,dd,hhids,pids,nodes_weights,dma_to_puma,pums_data)
-
-                        # Append to full dataset
-                        if count == 1:
-                                agent_full = agents
-                        else:
-                                agent_full = agent_full.append(agents,ignore_index=True)
-
-# Export to csv
+# Month or quarter
 if periods[0]==4:
-        agent_full = agent_full[['YEAR','quarter','dma_code','weight','nodes0','nodes1','hhmember'] + hhids + pids]
-        agent_full = agent_full.rename(columns = {'YEAR' : 'year', 'dma_code': 'dma'})
-        out_file = 'Clean/agent_data_quarter.csv'
+        month_or_quarter = 'quarter'
+elif periods[0]==12:
+        month_or_quarter = 'month'
 else:
-        agent_full = agent_full[['YEAR','month','dma_code','weight','nodes0','nodes1','hhmember'] + hhids + pids]
-        agent_full = agent_full.rename(columns = {'YEAR' : 'year', 'dma_code': 'dma'})
-        out_file = 'Clean/agent_data_month.csv'
+        print('Must specify either 4 or 12 periods.')
 
-agent_full.to_csv (out_file, index = None, header=True)
+if (month_or_quarter == 'quarter') | (month_or_quarter == 'month'):
+        # Assemble nodes and weights
+        nodes_weights = assemble_nodes_weights(num_rc[0],level[0])
+
+        # Loop over years, quarters, and DMAs
+        count = 0
+        for yr in years:
+
+                # List of unique DMAs
+                dma_to_puma = pull_dma_shares(yr)
+                dma_unique = dma_to_puma['dma_code'].drop_duplicates()
+
+                # PUMS data
+                pums_data = import_pums(yr,hhids,pids)
+
+                for pp in range(1,periods[0]+1):
+
+                        for dd in dma_unique:
+
+                                # Counter
+                                count += 1
+                                print(str(yr)+'P'+str(pp)+'DMA'+dd)
+
+                                agents = assemble_agent_data(yr,pp,month_or_quarter,dd,hhids,pids,nodes_weights,dma_to_puma,pums_data)
+
+                                # Append to full dataset
+                                if count == 1:
+                                        agent_full = agents
+                                else:
+                                        agent_full = agent_full.append(agents,ignore_index=True)
+
+        # Export to csv
+        agent_full = agent_full[['YEAR',month_or_quarter,'dma_code','weight','nodes0','nodes1','hhmember'] + hhids + pids]
+        agent_full = agent_full.rename(columns = {'YEAR' : 'year', 'dma_code': 'dma'})
+        out_file = 'Clean/agent_data_' + month_or_quarter + '.csv'
+
+        agent_full.to_csv (out_file, index = None, header=True)
