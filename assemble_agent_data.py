@@ -180,7 +180,7 @@ for yr in years:
                                 agent_full = agent_full.append(agents,ignore_index=True)
 
 # Export to csv
-if periods==4:
+if periods[0]==4:
         agent_full = agent_full[['YEAR','quarter','dma_code','weight','nodes0','nodes1','hhmember'] + hhids + pids]
         agent_full = agent_full.rename(columns = {'YEAR' : 'year', 'dma_code': 'dma'})
         out_file = 'Clean/agent_data_quarter.csv'
