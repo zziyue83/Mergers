@@ -28,7 +28,7 @@ def get_years(year_string, pre = 2, post = 2):
 	dt = datetime.strptime(year_string, '%Y-%m-%d')
 	years = []
 	for i in range(-pre, post + 1, 1):
-		this_year = dt.year + i 
+		this_year = dt.year + i
 		if this_year >= 2006 and this_year <= 2017:
 			years.append(str(this_year))
 	return years
@@ -49,7 +49,7 @@ def load_chunked_year_module_movement_table(year, group, module, path = ''):
 def get_product_map(groups):
     products_path = "../../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
     products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0, index_col = "upc")
-    int_groups = [int(i) for i in groups] 
+    int_groups = [int(i) for i in groups]
 	wanted_products = products[products['product_group_code'].isin(int_groups)]
 	product_map = wanted_products.to_dict()
     return product_map
@@ -73,13 +73,82 @@ def get_product_map(groups):
 # dataset_found_uc                           ALL
 # size1_change_flag_uc                         0
 
-def append_owners(code, df):
+def append_owners(code, df, month_or_quarter):
+	# Load list of UPCs and brands
 	upcs = pd.read_csv('m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
 	upcs = upcs['brand_code_uc']
 	upc_map = upcs.to_dict()
 
+	# Map brands to dataframe (by UPC)
 	df['brand_code_uc'] = df['upc'].map(upc_map['brand_code_uc'])
 
+	# Load ownership assignments
 	brand_to_owner = pd.read_csv('m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
+	max_num_owner = brand_to_owner['owner_num'].max()
+	brand_to_owner = brand_to_owner.set_index(['brand_code_uc','owner_num'])
+	brand_to_owner = brand_to_owner.unstack('owner_num')
+	brand_to_owner.columns = ['{}_{}'.format(var, num) for var, num in brand_to_owner.columns]
 
-	FINISH THIS WITH NEW FORMAT!!
+	# Merge ownership
+	df = df.join(brand_to_owner, on='brand_code_uc', how='left')
+	min_year = df['year'].min()
+	max_year = df['year'].max()
+
+	for ii in reversed(range(1,max_num_owner+1)):
+		df.loc[df['start_year_1']==0,'owner_'+str(ii)] = df.loc[df['start_year_1']==0,'owner_1']
+		df.loc[df['start_year_1']==0,'end_month_'+str(ii)] = 12
+		df.loc[df['start_year_1']==0,'end_year_'+str(ii)] = max_year
+		df.loc[df['start_year_1']==0,'start_month_'+str(ii)] = 1
+		df.loc[df['start_year_1']==0,'start_year_'+str(ii)] = min_year
+
+	for ii in range(1,max_num_owner+1):
+		if month_or_quarter == 'month':
+			df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
+				((df['year']==df['start_year_'+str(ii)]) & (df['month'] >= df['start_month_'+str(ii)]))) & \
+				(((df['year'] < df['end_year_'+str(ii)]) | \
+				((df['year']==df['end_year_'+str(ii)]) & df['month'] <= df['end_year_'+str(ii)]))),'owner'] = \
+				df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
+				((df['year']==df['start_year_'+str(ii)]) & (df['month'] >= df['start_month_'+str(ii)]))) & \
+				(((df['year'] < df['end_year_'+str(ii)]) | \
+				((df['year']==df['end_year_'+str(ii)]) & df['month'] <= df['end_year_'+str(ii)]))),'owner_'+str(ii)]
+		elif month_or_quarter == 'quarter':
+			df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
+				((df['year']==df['start_year_'+str(ii)]) & (df['quarter'] >= ceil(df['start_month_'+str(ii)]/3)))) & \
+				(((df['year'] < df['end_year_'+str(ii)]) | \
+				((df['year']==df['end_year_'+str(ii)]) & df['quarter'] <= ceil(df['end_year_'+str(ii)]/3)))),'owner'] = \
+				df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
+				((df['year']==df['start_year_'+str(ii)]) & (df['quarter'] >= ceil(df['start_month_'+str(ii)]/3)))) & \
+				(((df['year'] < df['end_year_'+str(ii)]) | \
+				((df['year']==df['end_year_'+str(ii)]) & df['quarter'] <= ceil(df['end_year_'+str(ii)]/3)))),'owner_'+str(ii)]
+
+	return(df)
+
+def adjust_inflation(df,var,month_or_quarter):
+
+	# Import CPIU dataset
+	month_or_quarter = 'month'
+	cpiu = pd.read_excel('../Data/cpiu_2000_2020.xlsx', header = 11)
+	cpiu = cpiu.set_index('Year')
+	month_dictionary = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12}
+	cpiu = cpiu.rename(columns = month_dictionary)
+	cpiu = cpiu.drop(['HALF1','HALF2'], axis=1)
+	cpiu = cpiu.stack()
+
+	# Aggregate to the quarter level, if necessary
+	cpiu = cpiu.reset_index().rename(columns = {'level_1':'month',0:'cpiu'})
+	if month_or_quarter == 'quarter':
+		cpiu['quarter'] = cpiu['month'].apply(lambda x: 1 if x <=3 else 2 if ((x>3) & (x<=6)) else 3 if ((x>6) & (x<=9)) else 4)
+		cpiu = cpiu.groupby(['Year', month_or_quarter]).agg({'cpiu': 'mean'}).reset_index()
+	if month_or_quarter == 'month':
+		cpiu = cpiu.set_index(['Year', month_or_quarter]).reset_index()
+
+	# Set index value in base period
+	cpiu['cpiu_202001'] = float(cpiu.loc[(cpiu['Year']==2020) & (cpiu[month_or_quarter]==1),'cpiu'])
+	cpiu = cpiu.rename(columns={'Year': 'year'})
+	cpiu = cpiu.set_index(['year','month'])
+
+	# Merge CPIU onto dataframe and adjust prices
+	df = df.join(cpiu, on=['year',month_or_quarter], how='left')
+	df[var + '_adj'] = df[var]*(df['cpiu_202001']/df['cpiu'])
+
+	return(df)
