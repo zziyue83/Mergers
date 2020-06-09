@@ -2,7 +2,14 @@ import re
 import sys
 from datetime import datetime
 import auxiliary as aux
+import pandas as pd
+import numpy as np
 import pyblp
+
+# Set pyblp options
+pyblp.options.digits = 3
+pyblp.options.verbose = True
+pyblp.options.flush_output = True
 
 def add_characteristics(code, df, char_map, chars):
 	for this_char in chars:
@@ -11,6 +18,7 @@ def add_characteristics(code, df, char_map, chars):
 
 def add_instruments(code, df, instrument_names):
 	# First get the distances
+	distances = pd.read_csv('m_' + code + '/intermediate/distances.csv', delimiter = ',')
 
 	# Then get diesel prices to multiply
 	df['demand_instruments0'] = df['distance'] * df['diesel']
@@ -25,10 +33,12 @@ def add_instruments(code, df, instrument_names):
 
 	return df, i
 
-def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', estimate_type = 'logit', num_instruments = 0, add_differentiation = False, add_blp = False):
+def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', estimate_type = 'logit', 
+	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True, 
+	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
 
 	df['market_ids'] = df['dma_code'].astype(str) + '_' + df[month_or_quarter].astype(str)
-	df['firm_ids'] = df['owner']
+	df = df.rename(columns = {'owner' : 'firm_ids'})
 
 	# Baseline formulation
 	num_chars = 2
@@ -39,7 +49,7 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 	formulation_char = pyblp.Formulation(string_chars, absorb = 'C(TIME) + C(dma_code)')
 	formulation_fe = pyblp.Formulation('0 + prices', absorb = 'C(upc) + C(TIME) + C(dma_code)')
 
-	# Add instruments
+	# Add Gandhi-Houde or BLP instruments
 	if add_differentiation:
 		gandhi_houde = pyblp.build_differentiation_instruments(formulation_char, df)
 		for i in range(gandhi_houde.shape[1]):
@@ -52,18 +62,22 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 			df['demand_instruments' + str(num_instruments)] = blp[:,i]
 			num_instruments += 1
 
+	# Add the nests
 	if nests is not None:
-		# Add the nests
 		if nests == 'inside':
 			df['nesting_ids'] = 1
 		else:
-			df['nesting_ids'] = ???
+			df['nesting_ids'] = df[nests]
 
 
 	# Get the first stage of instruments
 
 
-	
+	# Set up optimization	
+	if use_knitro:
+		optimization = pyblp.Optimization('knitro', method_options = {'knitro_dir' : '/software/knitro/10.3'})
+	else:
+		optimization = pyblp.Optimization('l-bgfs-b')
 
 	# Estimate
 	if estimate_type == 'logit':
@@ -71,20 +85,23 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 		problem_char = pyblp.Problem(formulation_char, df)
 		problem_fe = pyblp.Problem(formulation_fe, df)
 
-		results_char = problem_char.solve()
-		results_fe = problem_char.solve()
+		if nests is not None:
+			results_char = problem_char.solve()
+			results_fe = problem_fe.solve()
+		else:
+			num_nests = len(df['nesting_ids'].unique())
+			with pyblp.parallel(num_parallel):
+				results_char = problem_char.solve(rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
+				results_fe = problem_fe.solve(rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
 
 	elif estimate_type == 'blp':
 		
 		forumlation_blp = (formulation_fe, formulation_char)
 		integration = pyblp.Integration(integration_options['type'], size = integration_options['size'])
-		if use_knitro:
-			optimization = pyblp.Optimization()
-		else:
-			optimization = 
-
+		
 		problem = pyblp.Problem(formulation_blp, df, integration = integration)
-		results_blp = problem.solve(sigma = np.ones((num_chars, num_chars)), optimization = bfgs)
+		with pyblp.parallel(num_parallel):
+			results_blp = problem.solve(sigma = np.ones((num_chars, num_chars)), optimization = optimization)
 
 	else:
 		print("Did not run estimation")
@@ -112,5 +129,6 @@ df = pd.read_csv('m_' + code + '/intermediate/data_' + month_or_quarter + '.csv'
 df = aux.append_owners(code, df)
 df = add_characteristics(code, cf, char_map, to_append)
 df, num_instruments = add_instruments(code, df, instrument_names)
-estimate_demand(code, df, characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type, num_instruments = num_instruments)
+estimate_demand(code, df, characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type, 
+	num_instruments = num_instruments)
 
