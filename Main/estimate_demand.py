@@ -21,22 +21,36 @@ def add_instruments(code, df, instrument_names):
 	for instrument in instrument_names:
 		do something
 		df['demand_instruments' + str(i)] = something
-		i = i + 1
+		i += 1
 
 	return df, i
 
-def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', estimate_type = 'logit', num_instruments = None, add_differentiation = False, add_blp = False):
+def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', estimate_type = 'logit', num_instruments = 0, add_differentiation = False, add_blp = False):
 
 	df['market_ids'] = df['dma_code'].astype(str) + '_' + df[month_or_quarter].astype(str)
+	df['firm_ids'] = df['owner']
 
-	# Get the first stage of instruments
-
-	# Run logit
-	logit_string_chars = '1 + prices'
+	# Baseline formulation
+	num_chars = 2
+	string_chars = '1 + prices'
 	for this_char in chars:
-		logit_string_chars = logit_string_chars + ' + ' this_char
-	logit_formulation_char = pyblp.Formulation(logit_string_chars, absorb = 'C(TIME) + C(dma_code)')
-	logit_formulation_fe = pyblp.Formulation('0 + prices', absorb = 'C(upc) + C(TIME) + C(dma_code)')
+		string_chars = string_chars + ' + ' this_char
+		num_chars += 1
+	formulation_char = pyblp.Formulation(string_chars, absorb = 'C(TIME) + C(dma_code)')
+	formulation_fe = pyblp.Formulation('0 + prices', absorb = 'C(upc) + C(TIME) + C(dma_code)')
+
+	# Add instruments
+	if add_differentiation:
+		gandhi_houde = pyblp.build_differentiation_instruments(formulation_char, df)
+		for i in range(gandhi_houde.shape[1]):
+			df['demand_instruments' + str(num_instruments)] = gandhi_houde[:,i]
+			num_instruments += 1
+
+	if add_blp:
+		blp = pyblp.build_blp_instruments(formulation_char, df)
+		for i in range(blp.shape[1]):
+			df['demand_instruments' + str(num_instruments)] = blp[:,i]
+			num_instruments += 1
 
 	if nests is not None:
 		# Add the nests
@@ -45,49 +59,58 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 		else:
 			df['nesting_ids'] = ???
 
+
+	# Get the first stage of instruments
+
+
+	
+
+	# Estimate
 	if estimate_type == 'logit':
 
-		problem_char = pyblp.Problem(logit_formulation_char, df)
-		problem_fe = pyblp.Problem(logit_formulation_fe, df)
+		problem_char = pyblp.Problem(formulation_char, df)
+		problem_fe = pyblp.Problem(formulation_fe, df)
 
-		results_char = logit_problem_char.solve()
-		results_fe = logit_problem_char.solve()
+		results_char = problem_char.solve()
+		results_fe = problem_char.solve()
 
 	elif estimate_type == 'blp':
+		
+		forumlation_blp = (formulation_fe, formulation_char)
+		integration = pyblp.Integration(integration_options['type'], size = integration_options['size'])
+		if use_knitro:
+			optimization = pyblp.Optimization()
+		else:
+			optimization = 
 
-		hello
+		problem = pyblp.Problem(formulation_blp, df, integration = integration)
+		results_blp = problem.solve(sigma = np.ones((num_chars, num_chars)), optimization = bfgs)
 
 	else:
-		
-		ERROR
+		print("Did not run estimation")
 
 
 	
 
 code = sys.argv[1]
+month_or_quarter = sys.argv[2]
+estimate_type = sys.argv[3]
+
 info_dict = aux.parse_info(code)
+characteristics = aux.get_characteristics(info_dict["Characteristics"])
+nest = aux.get_nest(info_dict["Nest"])
+if (nest is not None) and (nest not in characteristics):
+	to_append = characteristics
+else:
+	to_append = characteristics.append(nest)
 
-groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
-years = aux.get_years(info_dict["DateCompleted"])
+# Get the characteristics map
+char_df = pd.read_csv('m_' + code + '/properties/characteristics.csv', delimiter = ',', index_col = 'brand_code_uc')
+char_map = char_df.to_dict()
 
-conversion_map = get_conversion_map(code, info_dict["FinalUnit"])
-area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map)
-area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map)
-
-acceptable_upcs = get_acceptable_upcs(area_month_upc['upc', 'shares'], float(info_dict["InitialShareCutoff"]))
-
-# Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
-# Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
-write_brands_upc(code, area_month_upc, acceptable_upcs)
-
-# Now filter area_month_upc and area_quarter_upc so that only acceptable_upcs survive
-# Print out data_month.csv and data_quarter.csv
-write_base_dataset(code, area_month_upc, acceptable_upcs, 'month')
-write_base_dataset(code, area_quarter_upc, acceptable_upcs, 'quarter')
-
-# Aggregate data_month (sum shares) by dma-month to get total market shares and spit that out as market_coverage.csv
-write_market_coverage(code, area_month_upc, acceptable_upcs)
-
-# How do you do Nielsen Characteristics excel file?
-
+df = pd.read_csv('m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', delimiter = ',')
+df = aux.append_owners(code, df)
+df = add_characteristics(code, cf, char_map, to_append)
+df, num_instruments = add_instruments(code, df, instrument_names)
+estimate_demand(code, df, characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type, num_instruments = num_instruments)
 
