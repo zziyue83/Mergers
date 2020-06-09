@@ -180,6 +180,11 @@ for yr in years:
                                 agent_full = agent_full.append(agents,ignore_index=True)
 
 # Export to csv
-agent_full = agent_full[['YEAR','quarter','dma_code','weight','nodes0','nodes1','hhmember','HINCP','AGEP','RAC1P']]
-out_file = 'Clean/agent_data.csv'
+if periods==4:
+        agent_full = agent_full[['YEAR','quarter','dma_code','weight','nodes0','nodes1','hhmember'] + hhids + pids]
+        out_file = 'Clean/agent_data_quarter.csv'
+else:
+        agent_full = agent_full[['YEAR','month','dma_code','weight','nodes0','nodes1','hhmember'] + hhids + pids]
+        out_file = 'Clean/agent_data_month.csv'
+
 agent_full.to_csv (out_file, index = None, header=True)
