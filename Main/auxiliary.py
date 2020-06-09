@@ -72,3 +72,14 @@ def get_product_map(groups):
 # size1_units                                 OZ
 # dataset_found_uc                           ALL
 # size1_change_flag_uc                         0
+
+def append_owners(code, df):
+	upcs = pd.read_csv('m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
+	upcs = upcs['brand_code_uc']
+	upc_map = upcs.to_dict()
+
+	df['brand_code_uc'] = df['upc'].map(upc_map['brand_code_uc'])
+
+	brand_to_owner = pd.read_csv('m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
+
+	FINISH THIS WITH NEW FORMAT!!

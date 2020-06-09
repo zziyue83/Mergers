@@ -6,17 +6,6 @@ import numpy as np
 import unicodecsv as csv 
 import auxiliary as aux
 
-def append_owners(code, df):
-	upcs = pd.read_csv('m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
-	upcs = upcs['brand_code_uc']
-	upc_map = upcs.to_dict()
-
-	df['brand_code_uc'] = df['upc'].map(upc_map['brand_code_uc'])
-
-	brand_to_owner = pd.read_csv('m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
-
-	FINISH THIS WITH NEW FORMAT!!
-
 def compute_hhi_map(df, owner_col = 'owner'):
 	# df should have dma, upc, owner
 	df = df[['dma', 'shares', owner_col]]
@@ -99,8 +88,6 @@ merging_parties = aux.get_merging_parties(info_dict["MergingParties"])
 
 for timetype in ['month', 'quarter']:
 	df = pd.read_csv('m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
-	df = append_owners(code, df)
+	df = aux.append_owners(code, df)
 	did(df, info_dict["DateCompleted"], merging_parties, timetype)
 
-
-# Run DID for mo
