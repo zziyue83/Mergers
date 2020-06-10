@@ -35,6 +35,35 @@ def add_instruments(code, df, instrument_names):
 
 	return df, i
 
+def get_partial_f(df, chars):
+	fixed_effects = df['upc',TIME,'dma_code']
+	alg = pyhdfe.create(fixed_effects, drop_singletons = False)
+	endog_mat = df[['prices', 'shares']].to_numpy()
+	characteristics_mat = df[chars].to_numpy()
+
+	filter_col = [col for col in df if col.startswith('demand_instruments')]
+	instruments_mat = df[filter_col].to_numpy()
+
+	endog_resid = alg.residualize(endog_mat)
+	characteristics_resid = alg.residualize(characteristics_mat)
+	characteristics_resid = sm.add_constant(characteristics_resid)
+	instruments_resid = alg.residualize(instruments_mat)
+	instruments_resid = np.concatenate((characteristics_resid, instruments_resid), axis = 1)
+
+	piP_full = np.linalg.lstsq(instruments_resid, endog_resid)
+	eP_full = endog_resid - instruments_resid @ piP_full
+	sigmaP_full = (eP_full.T @ eP_full)
+
+	piP_reduced = np.linalg.lstsq(characteristics_resid, endog_resid)
+	eP_reduced = endog_resid - characteristics_resid @ piP_reduced
+	sigmaP_reduced = (eP_reduced.T @ eP_reduced)
+
+	partialF = ((sigmaP_reduced - sigmaP_full) / sigmaP_full) * (characteristics_resid.shape[0] - instruments_resid.shape[1]) / (instruments_resid.shape[1] - characteristics_resid.shape[1]);
+	partialR2 = (sigmaP_reduced - sigmaP_full) / sigmaP_reduced
+
+	return partialF, partialR2
+
+
 def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', estimate_type = 'logit', 
 	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True, 
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
@@ -73,29 +102,7 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 
 
 	# Get the first stage of instruments
-	fixed_effects = df['upc',TIME,'dma_code']
-	alg = pyhdfe.create(fixed_effects, drop_singletons = False)
-	prices_mat = df['prices'].to_numpy()
-	characteristics_mat = df[chars].to_numpy()
-
-	filter_col = [col for col in df if col.startswith('demand_instruments')]
-	instruments_mat = sm.add_constant(df[filter_col]).to_numpy()
-
-	prices_resid = alg.residualize(prices_mat)
-	characteristics_resid = alg.residualize(characteristics_mat)
-	characteristics_resid = sm.add_constant(characteristics_resid)
-
-	piP_full = np.linalg.lstsq(instruments_mat, prices_mat)
-	eP_full = prices - instruments_mat @ piP_full
-	sigmaP_full = (eP_full.T @ eP_full)
-
-	piP_reduced = np.linalg.lstsq(characteristics_resid, prices_resid)
-	eP_reduced = prices_resid - characteristics_resid @ piP_reduced
-	sigmaP_reduced = (eP_reduced.T @ eP_reduced)
-
-	# FIGURE OUT THE REST
-	partialF = ((sigmaP_reduced - sigmaP_full) / sigmaP_full) * (blp.nProds - size(Z,2)) / (size(Z,2) - size(FEp,2));
-	partialR2 = (sigmaP_reduced - sigmaP_full) / sigmaP_reduced
+	partialF, partialR2 = get_partial_f(df, chars)
 
 	# Set up optimization	
 	if use_knitro:
@@ -128,6 +135,7 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 			results_blp = problem.solve(sigma = np.ones((num_chars, num_chars)), optimization = optimization)
 
 	else:
+		# Can do this if we just want to run partial F
 		print("Did not run estimation")
 
 
