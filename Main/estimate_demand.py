@@ -16,7 +16,7 @@ pyblp.options.flush_output = True
 
 def add_characteristics(code, df, char_map, chars):
 	for this_char in chars:
-		df[this_char] = df['brand_code_uc'].map(char_map[this_char])
+		df[this_char] = df['upc'].map(char_map[this_char])
 	return df
 
 def add_instruments(code, df, instrument_names):
@@ -54,7 +54,9 @@ def gather_product_data(code):
 	df = pd.read_csv('m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', delimiter = ',')
 	df = aux.append_owners(code, df)
 	df = add_characteristics(code, cf, char_map, to_append)
-	df, characteristics, nest, num_instruments = add_instruments(code, df, instrument_names)
+	df, num_instruments = add_instruments(code, df, instrument_names)
+
+	return df, characteristics, nest, num_instruments
 
 def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month',
 	num_instruments = 0, add_differentiation = False, add_blp = False, 
