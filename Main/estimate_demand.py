@@ -20,6 +20,17 @@ def add_characteristics(code, df, char_map, chars):
 	return df
 
 def add_instruments(code, df, instrument_names):
+
+	add_differentiation = False
+	if 'differentiation' in instrument_names:
+		add_differentiation = True
+		instrument_names.remove('differentiation')
+
+	add_blp = False
+	if 'blp' in instrument_names:
+		add_blp = True
+		instrument_names.remove('blp')
+
 	# First get the distances
 	distances = pd.read_csv('m_' + code + '/intermediate/distances.csv', delimiter = ',')
 
@@ -34,7 +45,7 @@ def add_instruments(code, df, instrument_names):
 		df['demand_instruments' + str(i)] = something
 		i += 1
 
-	return df, i
+	return df, i, add_differentiation, add_blp
 
 def gather_product_data(code, month_or_quarter = 'month'):
 	info_dict = aux.parse_info(code)
@@ -42,10 +53,9 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	nest = aux.get_nest(info_dict["Nest"])
 	instrument_names = aux.get_instruments(info_dict["Instruments"])
 
+	to_append = characteristics
 	if (nest is not None) and (nest not in characteristics):
-		to_append = characteristics
-	else:
-		to_append = characteristics.append(nest)
+		to_append.append(nest)
 
 	# Get the characteristics map
 	char_df = pd.read_csv('m_' + code + '/properties/characteristics.csv', delimiter = ',', index_col = 'upc')
@@ -56,7 +66,7 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	df = add_characteristics(code, cf, char_map, to_append)
 	df, num_instruments = add_instruments(code, df, instrument_names)
 
-	return df, characteristics, nest, num_instruments
+	return df, characteristics, nest, num_instruments, add_differentiation, add_blp
 
 def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month',
 	num_instruments = 0, add_differentiation = False, add_blp = False, 
@@ -196,7 +206,7 @@ code = sys.argv[1]
 month_or_quarter = sys.argv[2]
 estimate_type = sys.argv[3]
 
-df, characteristics, nest, num_instruments = gather_product_data(code, month_or_quarter)
+df, characteristics, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
 estimate_demand(code, df, characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type, 
-	num_instruments = num_instruments)
+	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
 
