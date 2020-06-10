@@ -36,7 +36,7 @@ def add_instruments(code, df, instrument_names):
 
 	return df, i
 
-def gather_product_data(code):
+def gather_product_data(code, month_or_quarter = 'month'):
 	info_dict = aux.parse_info(code)
 	characteristics = aux.get_characteristics(info_dict["Characteristics"])
 	nest = aux.get_nest(info_dict["Nest"])
@@ -196,7 +196,7 @@ code = sys.argv[1]
 month_or_quarter = sys.argv[2]
 estimate_type = sys.argv[3]
 
-df, characteristics, nest, num_instruments = gather_product_data(code)
+df, characteristics, nest, num_instruments = gather_product_data(code, month_or_quarter)
 estimate_demand(code, df, characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type, 
 	num_instruments = num_instruments)
 
