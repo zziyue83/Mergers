@@ -110,15 +110,16 @@ def get_acceptable_upcs(area_month_upc, share_cutoff):
 
 def write_brands_upc(code, agg, upc_set):
 	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi']]
-	agg = agg.drop_duplicates
+	agg = agg.drop_duplicates()
 	agg = agg[agg.upc.isin(upc_set)]
+	agg = agg.sort_values(by = 'brand_descr')
 
 	base_folder = 'm_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
 
 	agg = agg[['brand_code_uc', 'brand_descr']]
 	agg = agg.rename(columns = {'brand_descr' : 'brand'})
-	agg = agg.drop_duplicates
+	agg = agg.drop_duplicates()
 	agg.to_csv(base_folder + 'brands.csv', sep = ',', encoding = 'utf-8')	
 
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
