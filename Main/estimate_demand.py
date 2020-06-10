@@ -69,8 +69,7 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	return df, characteristics, nest, num_instruments, add_differentiation, add_blp
 
 def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month',
-	num_instruments = 0, add_differentiation = False, add_blp = False, 
-	integration_options = {'type' : 'grid', 'size' : 9}):
+	num_instruments = 0, add_differentiation = False, add_blp = False):
 
 	df['market_ids'] = df['dma_code'].astype(str) + '_' + df[month_or_quarter].astype(str)
 	df = df.rename(columns = {'owner' : 'firm_ids'})
@@ -148,8 +147,7 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 	# First get the formulations
 	formulation_char, formulation_fe, df = create_formulation(code, df, chars, 
 		nests = nests, month_or_quarter = month_or_quarter,	
-		num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, 
-		integration_options = integration_options)
+		num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
 
 	# Get the first stage of instruments
 	partialF, partialR2 = get_partial_f(df, chars)
@@ -177,11 +175,10 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 				results_fe = problem_fe.solve(rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
 
 		# Save as pickles
-		dict_char = results_char.to_dict()
-		dict_fe = results_fe.to_dict()
-
-		pickle.dump(dict_char, open('m_' + code + '/output/logit_char_' + month_or_quarter + '.p', "wb"))
-		pickle.dump(dict_fe, open('m_' + code + '/output/logit_fe_' + month_or_quarter + '.p', "wb"))
+		with open('m_' + code + '/output/logit_char_' + month_or_quarter + '.p', 'wb') as fout:
+			pickle.dump(results_char.to_dict(), fout)
+		with open('m_' + code + '/output/logit_fe_' + month_or_quarter + '.p', 'wb') as fout:
+			pickle.dump(results_char.to_dict(), fout)
 
 
 	elif estimate_type == 'blp':
@@ -193,8 +190,8 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 		with pyblp.parallel(num_parallel):
 			results_blp = problem.solve(sigma = np.ones((num_chars, num_chars)), optimization = optimization)
 
-		dict_blp = results_blp.to_dict()
-		pickle.dump(dict_blp, open('m_' + code + '/output/blp_' + month_or_quarter + '.p', "wb"))
+		with open('m_' + code + '/output/blp_' + month_or_quarter + '.p', 'wb') as fout:
+			pickle.dump(results_blp.to_dict(), fout)
 
 	else:
 		# Can do this if we just want to run partial F

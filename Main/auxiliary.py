@@ -1,6 +1,10 @@
 import re
 import sys
 from datetime import datetime
+import pyblp
+import pickle
+import pandas as pd
+import numpy as np
 
 def parse_info(code):
 	file = open('m_' + code + '/info.txt', mode = 'r')
@@ -123,7 +127,7 @@ def append_owners(code, df, month_or_quarter):
 
 	return(df)
 
-def adjust_inflation(df,var,month_or_quarter):
+def adjust_inflation(df, var, month_or_quarter):
 
 	# Import CPIU dataset
 	month_or_quarter = 'month'
@@ -152,3 +156,32 @@ def adjust_inflation(df,var,month_or_quarter):
 	df[var + '_adj'] = df[var]*(df['cpiu_202001']/df['cpiu'])
 
 	return(df)
+
+def load_problem_results(code, results_pickle, month_or_quarter):
+	
+	# Create fake formulation that is just a logit
+	product_data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
+	logit_formulation = pyblp.Formulation('prices')
+	problem = pyblp.Problem(logit_formulation, product_data)
+	results = problem.solve()
+
+	# Create the real problem
+	df, characteristics, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
+	formulation_char, formulation_fe, df = create_formulation(code, df, chars, 
+		nests = nest, month_or_quarter = month_or_quarter,	
+		num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
+
+	if something:
+		real_problem = pyblp.Problem(formulation_char)
+	elif something:
+		real_problem = pyblp.Problem(formulation_fe)
+	elif something:
+		real_problem = pyblp.Problem((formulation_fe, formulation_char), integration = integration)
+
+	results.problem = real_problem
+	results_dict = pickle.load(open(results_pickle, 'rb'))
+	for k in results_dict.keys():
+		setattr(results, k, results_dict[k])
+	
+
+	return results, df
