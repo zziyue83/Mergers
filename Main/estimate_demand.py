@@ -5,6 +5,8 @@ import auxiliary as aux
 import pandas as pd
 import numpy as np
 import pyblp
+import pyhdfe
+import statsmodels.api as sm
 
 # Set pyblp options
 pyblp.options.digits = 3
@@ -71,7 +73,29 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 
 
 	# Get the first stage of instruments
+	fixed_effects = df['upc',TIME,'dma_code']
+	alg = pyhdfe.create(fixed_effects, drop_singletons = False)
+	prices_mat = df['prices'].to_numpy()
+	characteristics_mat = df[chars].to_numpy()
 
+	filter_col = [col for col in df if col.startswith('demand_instruments')]
+	instruments_mat = sm.add_constant(df[filter_col]).to_numpy()
+
+	prices_resid = alg.residualize(prices_mat)
+	characteristics_resid = alg.residualize(characteristics_mat)
+	characteristics_resid = sm.add_constant(characteristics_resid)
+
+	piP_full = np.linalg.lstsq(instruments_mat, prices_mat)
+	eP_full = prices - instruments_mat @ piP_full
+	sigmaP_full = (eP_full.T @ eP_full)
+
+	piP_reduced = np.linalg.lstsq(characteristics_resid, prices_resid)
+	eP_reduced = prices_resid - characteristics_resid @ piP_reduced
+	sigmaP_reduced = (eP_reduced.T @ eP_reduced)
+
+	# FIGURE OUT THE REST
+	partialF = ((sigmaP_reduced - sigmaP_full) / sigmaP_full) * (blp.nProds - size(Z,2)) / (size(Z,2) - size(FEp,2));
+	partialR2 = (sigmaP_reduced - sigmaP_full) / sigmaP_reduced
 
 	# Set up optimization	
 	if use_knitro:
