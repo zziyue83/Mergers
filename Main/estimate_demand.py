@@ -58,8 +58,11 @@ def get_partial_f(df, chars):
 	eP_reduced = endog_resid - characteristics_resid @ piP_reduced
 	sigmaP_reduced = (eP_reduced.T @ eP_reduced)
 
-	partialF = ((sigmaP_reduced - sigmaP_full) / sigmaP_full) * (characteristics_resid.shape[0] - instruments_resid.shape[1]) / (instruments_resid.shape[1] - characteristics_resid.shape[1]);
-	partialR2 = (sigmaP_reduced - sigmaP_full) / sigmaP_reduced
+	partialF = ((sigmaP_reduced - sigmaP_full) @ np.linalg.inv(sigmaP_full)) * (characteristics_resid.shape[0] - instruments_resid.shape[1]) / (instruments_resid.shape[1] - characteristics_resid.shape[1]);
+	partialR2 = (sigmaP_reduced - sigmaP_full) @ np.linalg.inv(sigmaP_reduced)
+
+	partialF = np.diag(partialF)
+	partialR2 = np.diag(partialR2)
 
 	return partialF, partialR2
 
@@ -103,6 +106,7 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 
 	# Get the first stage of instruments
 	partialF, partialR2 = get_partial_f(df, chars)
+	# PRINT THIS SOMEWHERE???
 
 	# Set up optimization	
 	if use_knitro:
