@@ -86,7 +86,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
 
     # Normalize the prices by the CPI.  Let January 2010 = 1.
-    # YINTIAN/AISLING -- CAN YOU FILL THIS IN?
+    area_time_upc = aux.adjust_inflation(area_time_upc, 'prices', month_or_quarter)
 
     # Get the market sizes here, by summing volume within dma-time and then taking 1.5 times max within-dma
     short_area_time_upc = area_time_upc[['dma_code', month_or_quarter, 'volume']]
