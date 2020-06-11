@@ -19,11 +19,11 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	these_units['conversion'] = 0
 
 	# Anything that has convert = 1 must be in the master folder
-	convertible = these_units.unit[these_units.convert == 1] # YINTIAN/AISLING -- there's some sliciing issue here you should look at!
-	for this_unit in convertible.unique():
+	convertible = these_units.loc[these_units.convert == 1].copy()
+	for this_unit in convertible.unit.unique():
 		convert_factor = master_conversion.conversion[master_conversion.initial_unit == this_unit]
-		these_units.conversion[these_units.unit == this_unit] = convert_factor
-		convertible.conversion[convertible.unit == this_unit] = convert_factor
+		these_units.loc[these_units.unit == this_unit, 'conversion'] = convert_factor
+		convertible.loc[convertible.unit == this_unit, 'conversion'] = convert_factor
 
 	# The "method" for convert = 0 is mapped to the "method" for the convert = 1
 	# with the largest quantity
