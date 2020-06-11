@@ -75,9 +75,15 @@ def add_dhhi(df, merging_date, month_or_quarter):
 	df_post = df_pre.copy()
 
 	if month_or_quarter == 'month':
-		df_post['month'] = merger_month_or_quarter
+		if merger_month_or_quarter == 12:
+			df_post['month'] = 1
+		else:
+			df_post['month'] = merger_month_or_quarter + 1
 	elif month_or_quarter == 'quarter':
-		df_post['quarter'] = merger_month_or_quarter
+		if merger_month_or_quarter == 4:
+			df_post['quarter'] = 1
+		else:
+			df_post['quarter'] = merger_month_or_quarter + 1
 
 	df_post['year'] = merger_year
 
