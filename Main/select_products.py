@@ -75,11 +75,11 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
                 data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
                 data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
-                area_time_upc = data_chunk.groupby(['year',month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
+                area_time_upc = data_chunk.groupby(['year', month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
                 area_time_upc_list.append(area_time_upc)
 
     area_time_upc = pd.concat(area_time_upc_list)
-    area_time_upc = area_time_upc.groupby(['year',month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
+    area_time_upc = area_time_upc.groupby(['year', month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
     for to_add in add_from_map:
     	area_time_upc[to_add] = area_time_upc['upc'].map(product_map(to_add))
     area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion']) # YINTIAN/AISLING -- check this!!!
