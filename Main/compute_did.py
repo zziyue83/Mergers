@@ -44,7 +44,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 	if month_or_quarter == 'month':
 		merger_month_or_quarter = merging_date.month
 	elif month_or_quarter == 'quarter':
-		merger_month_or_quarter = ceil(merging_date.month/3)
+		merger_month_or_quarter = np.ceil(merging_date.month/3)
 	merger_year = merging_date.year
 
 	# First, create shares for pre-merger period at the DMA level
@@ -98,7 +98,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	if month_or_quarter == 'month':
 		merger_month_or_quarter = merging_date.month
 	elif month_or_quarter == 'quarter':
-		merger_month_or_quarter = ceil(merging_date.month/3)
+		merger_month_or_quarter = np.ceil(merging_date.month/3)
 	merger_year = merging_date.year
 
 	# Add DHHI, adjust for inflation, add DMA/UPC indicator, log price and post-merger indicator

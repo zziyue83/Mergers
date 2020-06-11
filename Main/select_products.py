@@ -3,6 +3,7 @@ import sys
 from datetime import datetime
 import auxiliary as aux
 import tqdm
+import numpy as np
 
 def load_store_table(year):
     store_path = "../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
@@ -63,11 +64,14 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 			movement_table = aux.load_chunked_year_module_movement_table(year, group, module)
 
 			for data_chunk in tqdm(movement_table):
-				data_chunk['year'] = floor(data_chunk['week_end']/10000)
+				data_chunk['year'] = np.floor(data_chunk['week_end']/10000)
+				data_chunk['year'] = data_chunk['year'].astype(int)
 				if month_or_quarter == "month":
-					data_chunk[month_or_quarter] = floor((data_chunk['week_end'] % 10000)/100)
+					data_chunk[month_or_quarter] = np.floor((data_chunk['week_end'] % 10000)/100)
+					data_chunk[month_or_quarter] = data_chunk[month_or_quarter].astype(int)
             	elif month_or_quarter == "quarter":
-					data_chunk[month_or_quarter] = ceil(floor((data_chunk['week_end'] % 10000)/100)/3)
+					data_chunk[month_or_quarter] = np.ceil(np.floor((data_chunk['week_end'] % 10000)/100)/3)
+					data_chunk[month_or_quarter] = data_chunk[month_or_quarter].astype(int)
 
                 data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
                 data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
