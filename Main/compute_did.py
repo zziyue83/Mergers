@@ -186,7 +186,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		# Product/market fixed effects, DHHI
 		mod = PanelOLS(data['lprice'], exog_vars_dhhi, entity_effects = True, time_effects = False)
 		reg_dma_product_fe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_dma_product_fe_dhhi = ['DMA/Product FE, DHHI','-','-','-', \
+		res_dma_product_fe_dhhi = ['DMA/Product FE, DHHI','','','', \
 			str(reg_dma_product_fe_dhhi.params[0]),str(reg_dma_product_fe_dhhi.std_errors[0]),str(reg_dma_product_fe_dhhi.pvalues[0]), \
 			str(reg_dma_product_fe_dhhi.params[1]),str(reg_dma_product_fe_dhhi.std_errors[1]),str(reg_dma_product_fe_dhhi.pvalues[1]), \
 			str(reg_dma_product_fe_dhhi.params[2]),str(reg_dma_product_fe_dhhi.std_errors[2]),str(reg_dma_product_fe_dhhi.pvalues[2]), \
@@ -197,7 +197,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		# Product/market and time fixed effects, DHHI
 		mod = PanelOLS(data['lprice'], data['post_merger_dhhi'], entity_effects = True, time_effects = True)
 		reg_time_fe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma'])
-		res_time_fe_dhhi = ['Time FE, DHHI','-','-','-', \
+		res_time_fe_dhhi = ['Time FE, DHHI','','','', \
 			str(reg_time_fe_dhhi.params[0]),str(reg_time_fe_dhhi.std_errors[0]),str(reg_time_fe_dhhi.pvalues[0]), \
 			'','','','','','','','','', \
 			str(reg_time_fe_dhhi.nobs),str(reg_time_fe_dhhi.rsquared),'Yes','Yes']
