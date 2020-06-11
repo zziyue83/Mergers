@@ -190,7 +190,7 @@ if (month_or_quarter == 'quarter') | (month_or_quarter == 'month'):
 
         # Export to csv
         agent_full = agent_full[['YEAR',month_or_quarter,'dma_code','weight','nodes0','nodes1','hhmember'] + hhids + pids]
-        agent_full = agent_full.rename(columns = {'YEAR' : 'year', 'dma_code': 'dma'})
+        agent_full = agent_full.rename(columns = {'YEAR' : 'year'})
         out_file = 'Clean/agent_data_' + month_or_quarter + '.csv'
 
         agent_full.to_csv (out_file, index = None, header=True)

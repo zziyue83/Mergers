@@ -84,12 +84,13 @@ def append_owners(code, df, month_or_quarter):
 	upc_map = upcs.to_dict()
 
 	# Map brands to dataframe (by UPC)
-	df['brand_code_uc'] = df['upc'].map(upc_map['brand_code_uc'])
+	df['brand_code_uc'] = df['upc'].map(upc_map)
 
 	# Load ownership assignments
 	brand_to_owner = pd.read_csv('m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
+	brand_to_owner['owner_num'] = brand_to_owner.groupby('brand_code_uc').cumcount()+1
 	max_num_owner = brand_to_owner['owner_num'].max()
-	brand_to_owner = brand_to_owner.set_index(['brand_code_uc','owner_num'])
+	brand_to_owner = brand_to_owner.set_index('owner_num',append=True)
 	brand_to_owner = brand_to_owner.unstack('owner_num')
 	brand_to_owner.columns = ['{}_{}'.format(var, num) for var, num in brand_to_owner.columns]
 
@@ -162,7 +163,7 @@ def adjust_inflation(df, var, month_or_quarter, rename_var = True):
 	return df
 
 def load_problem_results(code, results_pickle, month_or_quarter):
-	
+
 	# Create fake formulation that is just a logit
 	product_data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
 	logit_formulation = pyblp.Formulation('prices')
@@ -171,8 +172,8 @@ def load_problem_results(code, results_pickle, month_or_quarter):
 
 	# Create the real problem
 	df, characteristics, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
-	formulation_char, formulation_fe, df = create_formulation(code, df, chars, 
-		nests = nest, month_or_quarter = month_or_quarter,	
+	formulation_char, formulation_fe, df = create_formulation(code, df, chars,
+		nests = nest, month_or_quarter = month_or_quarter,
 		num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
 
 	if something:
@@ -186,6 +187,6 @@ def load_problem_results(code, results_pickle, month_or_quarter):
 	results_dict = pickle.load(open(results_pickle, 'rb'))
 	for k in results_dict.keys():
 		setattr(results, k, results_dict[k])
-	
+
 
 	return results, df

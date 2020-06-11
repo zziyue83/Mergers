@@ -15,26 +15,26 @@ def append_aggregate_demographics(df, month_or_quarter):
 	agent_data['hhinc_per_person'] = agent_data['HINCP_ADJ'] / agent_data['hhmember']
 
 	# Compute mean demographics by DMA and month or quarter
-	dma_stats = agent_data.groupby(['year','dma'])['hhinc_per_person'].agg('median')
+	dma_stats = agent_data.groupby(['year','dma_code'])['hhinc_per_person'].agg('median')
 	demog_map = dma_stats.to_dict()
 
 	# Map to main dataframe
-	df['hhinc_per_person'] = df[['year','dma']].map(demog_map)
+	df['hhinc_per_person'] = df[['year','dma_code']].map(demog_map)
 
 	return df
 
 def compute_hhi_map(df, owner_col = 'owner'):
 
 	# df should have dma, upc, owner, shares
-	df = df[['dma', 'shares', owner_col]]
-	df = df.groupby(['dma', owner_col]).sum()
+	df = df[['dma_code', 'shares', owner_col]]
+	df = df.groupby(['dma_code', owner_col]).sum()
 
 	# Compute HHI
 	df['shares2'] = df['shares'] * df['shares']
-	df = df.groupby('dma').sum()
+	df = df.groupby('dma_code').sum()
 	df = df.rename(columns = {'shares2' : 'hhi'})
-	df = df[['dma', 'hhi']]
-	df = df.set_index('dma')
+	df = df[['dma_code', 'hhi']]
+	df = df.set_index('dma_code')
 	hhi_map = df.to_dict()
 	return hhi_map
 
@@ -49,10 +49,10 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	# First, create shares for pre-merger period at the DMA level
 	df_pre = df.loc[(df['year'] < merger_year) | ((df['year'] == merger_year) & (df[month_or_quarter] < merger_month_or_quarter))].copy()
-	df_pre = df_pre.groupby(['upc','dma'])['shares'].agg('sum').reset_index()
-	df_pre['dma_share'] = df_pre.groupby('dma')['shares'].transform('sum') # We may want to generalize this. Right now, it assumes that market size is constant over time.
+	df_pre = df_pre.groupby(['upc','dma_code'])['shares'].agg('sum').reset_index()
+	df_pre['dma_share'] = df_pre.groupby('dma_code')['shares'].transform('sum') # We may want to generalize this. Right now, it assumes that market size is constant over time.
 	df_pre['inside_share'] = df_pre['shares']/df_pre['dma_share']
-	df_pre = df_pre[['upc','dma','inside_share']]
+	df_pre = df_pre[['upc','dma_code','inside_share']]
 	df_pre = df_pre.rename(columns = {'inside_share' : 'shares'})
 
 	if merger_month_or_quarter > 1:
@@ -68,8 +68,8 @@ def add_dhhi(df, merging_date, month_or_quarter):
 	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter)
 
 	# Get inside HHI pre at the DMA level
-	pre_hhi_map = compute_hhi_map(df_pre_own[['dma', 'shares', 'owner']])
-	df['pre_hhi'] = df['dma'].map(pre_hhi_map['hhi'])
+	pre_hhi_map = compute_hhi_map(df_pre_own[['dma_code', 'shares', 'owner']])
+	df['pre_hhi'] = df['dma_code'].map(pre_hhi_map['hhi'])
 
 	# Now, get owners post merger
 	df_post = df_pre.copy()
@@ -84,8 +84,8 @@ def add_dhhi(df, merging_date, month_or_quarter):
 	df_post_own = aux.append_owners(code, df_post, month_or_quarter)
 
 	# Get inside HHI post at the DMA level
-	post_hhi_map = compute_hhi_map(df_post_own[['dma', 'shares', 'owner']])
-	df['post_hhi'] = df['dma'].map(post_hhi_map['hhi'])
+	post_hhi_map = compute_hhi_map(df_post_own[['dma_code', 'shares', 'owner']])
+	df['post_hhi'] = df['dma_code'].map(post_hhi_map['hhi'])
 
 	# Compute DHHI and return
 	df['dhhi'] = df['post_hhi'] - df['pre_hhi']
@@ -105,7 +105,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	df = add_dhhi(df, merging_date, month_or_quarter)
 	df = aux.adjust_inflation(df, 'price', month_or_quarter)
 	df = aux.adjust_inflation(df, 'hhinc_per_person', month_or_quarter)
-	df['dma_upc'] = df['dma'].astype(str) + "_" + df['upc'].astype(str)
+	df['dma_upc'] = df['dma_code'].astype(str) + "_" + df['upc'].astype(str)
     df['lprice'] = np.log(df['price_adj'])
 	df['post_merger'] = 0
     df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
@@ -114,13 +114,13 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	min_year = df['year'].min()
 	min_month_or_quarter = df[df['year'] == min_year, month_or_quarter].min()
 	if month_or_quarter == 'month':
-    	num_periods = 12   	
+    	num_periods = 12
     else:
     	num_periods = 4
     df['trend'] = 0
     df.loc[df['year'] == min_year, 'trend'] = df[df['year'] == min_year, month_or_quarter] - min_month_or_quarter
 	df.loc[df['year'] > min_year, 'trend'] = (num_periods - min_month_or_quarter) + num_periods * (df[df['year'] > min_year, 'year'] - min_year - 1) + df[df['year'] > min_year, month_or_quarter]
-    
+
 
     data = df.set_index(['dma_upc', month_or_quarter])
 
@@ -142,7 +142,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	    exog_vars = ['post_merger_merging', 'post_merger', 'trend']
 	    exog = sm.add_constant(data[exog_vars])
 	    mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
-	    reg_nofe = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+	    reg_nofe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_nofe = ['No FE',str(reg_nofe.params[0]),str(reg_nofe.std_errors[0]), str(reg_nofe.pvalues[0]), \
 			'','','', \
 			str(reg_nofe.params[1]),str(reg_nofe.std_errors[1]),str(reg_nofe.pvalues[1]), \
@@ -153,7 +153,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 		# Product/market fixed effects
 	    mod = PanelOLS(data['lprice'], data[exog_vars], entity_effects = True, time_effects = False)
-	    reg_dma_product_fe = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+	    reg_dma_product_fe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_dma_product_fe = ['DMA/Product FE',str(reg_dma_product_fe.params[0]),str(reg_dma_product_fe.std_errors[0]),str(reg_dma_product_fe.pvalues[0]), \
 			'','','', \
 			str(reg_dma_product_fe.params[1]),str(reg_dma_product_fe.std_errors[1]),str(reg_dma_product_fe.pvalues[1]), \
@@ -164,7 +164,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 		# Product/market and time fixed effects
 	    mod = PanelOLS(data['lprice'], data['post_merger_merging'], entity_effects = True, time_effects = True)
-	    reg_time_fe = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+	    reg_time_fe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_time_fe = ['Time FE',str(reg_time_fe.params[0]),str(reg_time_fe.std_errors[0]),str(reg_time_fe.pvalues[0]), \
 			'','','','','','','','','','','','', \
 			str(reg_time_fe.nobs),str(reg_time_fe.rsquared),'Yes','Yes']
@@ -174,7 +174,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		exog_vars_dhhi = ['post_merger_dhhi', 'post_merger', 'trend']
 		exog_dhhi = sm.add_constant(data[exog_vars_dhhi])
 		mod = PanelOLS(data['lprice'], exog_dhhi, entity_effects = False, time_effects = False)
-		reg_nofe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+		reg_nofe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_nofe_dhhi = ['No FE, DHHI','','','', \
 			str(reg_nofe_dhhi.params[0]),str(reg_nofe_dhhi.std_errors[0]),str(reg_nofe_dhhi.pvalues[0]), \
 			str(reg_nofe_dhhi.params[1]),str(reg_nofe_dhhi.std_errors[1]),str(reg_nofe_dhhi.pvalues[1]), \
@@ -185,7 +185,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 		# Product/market fixed effects, DHHI
 		mod = PanelOLS(data['lprice'], exog_vars_dhhi, entity_effects = True, time_effects = False)
-		reg_dma_product_fe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+		reg_dma_product_fe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_dma_product_fe_dhhi = ['DMA/Product FE, DHHI','','','', \
 			str(reg_dma_product_fe_dhhi.params[0]),str(reg_dma_product_fe_dhhi.std_errors[0]),str(reg_dma_product_fe_dhhi.pvalues[0]), \
 			str(reg_dma_product_fe_dhhi.params[1]),str(reg_dma_product_fe_dhhi.std_errors[1]),str(reg_dma_product_fe_dhhi.pvalues[1]), \
@@ -196,7 +196,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 		# Product/market and time fixed effects, DHHI
 		mod = PanelOLS(data['lprice'], data['post_merger_dhhi'], entity_effects = True, time_effects = True)
-		reg_time_fe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+		reg_time_fe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_time_fe_dhhi = ['Time FE, DHHI','','','', \
 			str(reg_time_fe_dhhi.params[0]),str(reg_time_fe_dhhi.std_errors[0]),str(reg_time_fe_dhhi.pvalues[0]), \
 			'','','','','','','','','', \
@@ -207,7 +207,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	    exog_vars = ['post_merger_merging', 'post_merger', 'trend', 'log_hhinc_per_person_adj']
 	    exog = sm.add_constant(data[exog_vars])
 	    mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
-	    reg_nofe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+	    reg_nofe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_nofe_demog = ['No FE, Demographics',str(reg_nofe_demog.params[0]),str(reg_nofe_demog.std_errors[0]),str(reg_nofe_demog.pvalues[0]), \
 			'','','', \
 			str(reg_nofe_demog.params[1]),str(reg_nofe_demog.std_errors[1]),str(reg_nofe_demog.pvalues[1]), \
@@ -218,7 +218,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 		# Product/market fixed effects, demographics
 	    mod = PanelOLS(data['lprice'], data[exog_vars], entity_effects = True, time_effects = False)
-	    reg_dma_product_fe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+	    reg_dma_product_fe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_dma_product_fe_demog = ['DMA/Product FE, Demographics',str(reg_dma_product_fe_demog.params[0]),str(reg_dma_product_fe_demog.std_errors[0]),str(reg_dma_product_fe_demog.pvalues[0]), \
 			'','','', \
 			str(reg_dma_product_fe_demog.params[1]),str(reg_dma_product_fe_demog.std_errors[1]),str(reg_dma_product_fe_demog.pvalues[1]), \
@@ -229,7 +229,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 		# Product/market and time fixed effects, demographics
 	    mod = PanelOLS(data['lprice'], data[['post_merger_merging','log_hhinc_per_person_adj']], entity_effects = True, time_effects = True)
-	    reg_time_fe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+	    reg_time_fe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_time_fe_demog = ['Time FE, Demographics',str(reg_time_fe_demog.params[0]),str(reg_time_fe_demog.std_errors[0]),str(reg_time_fe_demog.pvalues[0]), \
 			'','','','','','','','','', \
 			str(reg_time_fe_demog.params[1]),str(reg_time_fe_demog.std_errors[1]),str(reg_time_fe_demog.pvalues[1]), \
@@ -240,7 +240,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		exog_vars_dhhi = ['post_merger_dhhi', 'post_merger', 'trend', 'log_hhinc_per_person_adj']
 		exog_dhhi = sm.add_constant(data[exog_vars_dhhi])
 		mod = PanelOLS(data['lprice'], exog_dhhi, entity_effects = False, time_effects = False)
-		reg_nofe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+		reg_nofe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_nofe_dhhi_demog = ['No FE, DHHI, Demographics','','','', \
 			str(reg_nofe_dhhi_demog.params[0]),str(reg_nofe_dhhi_demog.std_errors[0]),str(reg_nofe_dhhi_demog.pvalues[0]), \
 			str(reg_nofe_dhhi_demog.params[1]),str(reg_nofe_dhhi_demog.std_errors[1]),str(reg_nofe_dhhi_demog.pvalues[1]), \
@@ -251,7 +251,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 		# Product/market fixed effects, DHHI, demographics
 		mod = PanelOLS(data['lprice'], exog_vars_dhhi, entity_effects = True, time_effects = False)
-		reg_dma_product_fe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+		reg_dma_product_fe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_dma_product_fe_dhhi_demog = ['DMA/Product FE, DHHI, Demographics','','','', \
 			str(reg_dma_product_fe_dhhi_demog.params[0]),str(reg_dma_product_fe_dhhi_demog.std_errors[0]),str(reg_dma_product_fe_dhhi_demog.pvalues[0]), \
 			str(reg_dma_product_fe_dhhi_demog.params[1]),str(reg_dma_product_fe_dhhi_demog.std_errors[1]),str(reg_dma_product_fe_dhhi_demog.pvalues[1]), \
@@ -262,7 +262,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 		# Product/market and time fixed effects, DHHI, demographics
 		mod = PanelOLS(data['lprice'], data[['post_merger_dhhi','log_hhinc_per_person_adj']], entity_effects = True, time_effects = True)
-		reg_time_fe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma'])
+		reg_time_fe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_time_fe_dhhi_demog = ['Time FE, DHHI, Demographics','','','', \
 			str(reg_time_fe_dhhi_demog.params[0]),str(reg_time_fe_dhhi_demog.std_errors[0]),str(reg_time_fe_dhhi_demog.pvalues[0]), \
 			'','','','','','', \
