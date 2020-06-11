@@ -103,10 +103,9 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 	# Add DHHI, adjust for inflation, add DMA/UPC indicator, log price and post-merger indicator
 	df = add_dhhi(df, merging_date, month_or_quarter)
-	df = aux.adjust_inflation(df, 'price', month_or_quarter)
 	df = aux.adjust_inflation(df, 'hhinc_per_person', month_or_quarter)
 	df['dma_upc'] = df['dma_code'].astype(str) + "_" + df['upc'].astype(str)
-    df['lprice'] = np.log(df['price_adj'])
+    df['lprice'] = np.log(df['prices_adj'])
 	df['post_merger'] = 0
     df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
     df['merging'] = df['owner'].isin(merging_parties)
@@ -121,8 +120,8 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
     df.loc[df['year'] == min_year, 'trend'] = df[df['year'] == min_year, month_or_quarter] - min_month_or_quarter
 	df.loc[df['year'] > min_year, 'trend'] = (num_periods - min_month_or_quarter) + num_periods * (df[df['year'] > min_year, 'year'] - min_year - 1) + df[df['year'] > min_year, month_or_quarter]
 
-
-    data = df.set_index(['dma_upc', month_or_quarter])
+	df['time_index'] = df['year']*100 + df[month_or_quarter]
+    data = df.set_index(['dma_upc', 'time_index'])
 
 	# Add interaction terms
 	data['post_merger_merging'] = data['post_merger']*data['merging']

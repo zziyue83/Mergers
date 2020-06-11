@@ -58,25 +58,24 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 		store_table = load_store_table(year)
         store_map = store_table.to_dict()
         dma_map = store_map['dma_code']
-        
+
 		for group, module in zip(groups, modules):
 			movement_table = aux.load_chunked_year_module_movement_table(year, group, module)
 
 			for data_chunk in tqdm(movement_table):
+				data_chunk['year'] = floor(data_chunk['week_end']/10000)
 				if month_or_quarter == "month":
-                	data_chunk[month_or_quarter] = data_chunk['week_end']/100
-                	data_chunk[month_or_quarter] = data_chunk['time'].astype(int)
-                elif month_or_quarter == "quarter":
-                	# Make time = quarter now.  Use AggregateToMonthOrQuarter_A
-                	data_chunk[month_or_quarter] = pd.to_datetime(data_chunk['month'].values, format='%Y%m').astype('period[Q]').astype(int)
+					data_chunk[month_or_quarter] = floor((data_chunk['week_end'] % 10000)/100)
+            	elif month_or_quarter == "quarter":
+					data_chunk[month_or_quarter] = ceil(floor((data_chunk['week_end'] % 10000)/100)/3)
 
                 data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
                 data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
-                area_time_upc = data_chunk.groupby([month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
+                area_time_upc = data_chunk.groupby(['year',month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
                 area_time_upc_list.append(area_time_upc)
 
     area_time_upc = pd.concat(area_time_upc_list)
-    area_time_upc = area_time_upc.groupby([month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
+    area_time_upc = area_time_upc.groupby(['year',month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
     for to_add in add_from_map:
     	area_time_upc[to_add] = area_time_upc['upc'].map(product_map(to_add))
     area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion']) # YINTIAN/AISLING -- check this!!!
@@ -89,8 +88,8 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     area_time_upc = aux.adjust_inflation(area_time_upc, 'prices', month_or_quarter)
 
     # Get the market sizes here, by summing volume within dma-time and then taking 1.5 times max within-dma
-    short_area_time_upc = area_time_upc[['dma_code', month_or_quarter, 'volume']]
-    market_sizes = area_time_upc.groupby(['dma_code', month_or_quarter]).sum()
+    short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume']]
+    market_sizes = area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
     market_sizes = market_sizes.rename({'volume : market_size'})
     market_sizes['market_size'] = market_size_scale * market_sizes['market_size']
     market_sizes.to_csv('m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
@@ -98,7 +97,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     # Shares = volume / market size.  Map market sizes back and get shares.
     area_time_upc = area_time_upc.join(market_sizes, on = ['dma_code', 'year', month_or_quarter])
     area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
-        
+
     return area_time_upc
 
 def get_acceptable_upcs(area_month_upc, share_cutoff):
@@ -120,19 +119,19 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg[['brand_code_uc', 'brand_descr']]
 	agg = agg.rename(columns = {'brand_descr' : 'brand'})
 	agg = agg.drop_duplicates()
-	agg.to_csv(base_folder + 'brands.csv', sep = ',', encoding = 'utf-8')	
+	agg.to_csv(base_folder + 'brands.csv', sep = ',', encoding = 'utf-8')
 
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
-	agg = agg[['upc', 'dma_code', month_or_quarter, 'prices', 'shares']]
+	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
 	agg.to_csv('m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8')
 
 def write_market_coverage(code, agg, upc_set):
-	agg = agg[['upc', 'dma_code', month_or_quarter, 'shares']]
+	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
 	agg = agg[['dma_code', month_or_quarter, 'shares']]
 
-	agg = agg.groupby(['dma_code', month_or_quarter]).sum()
+	agg = agg.groupby(['dma_code', 'year', month_or_quarter]).sum()
 	agg = agg.rename(columns = {'shares' : 'total_shares'})
 	agg.to_csv('m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
 
@@ -161,5 +160,3 @@ write_base_dataset(code, area_quarter_upc, acceptable_upcs, 'quarter')
 write_market_coverage(code, area_month_upc, acceptable_upcs)
 
 # How do you do Nielsen Characteristics excel file?
-
-
