@@ -201,3 +201,84 @@ The fixed point computation of delta failed to converge. This problem can someti
 
 Optimization completed after 02:06:25.
 Computing the Hessian and estimating standard errors ...
+
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+
+Computed results after 01:44:59.
+
+Problem Results Summary:
+==================================================================================================================
+GMM     Objective      Projected    Reduced Hessian  Reduced Hessian  Clipped  Weighting Matrix  Covariance Matrix
+Step      Value      Gradient Norm  Min Eigenvalue   Max Eigenvalue   Shares   Condition Number  Condition Number 
+----  -------------  -------------  ---------------  ---------------  -------  ----------------  -----------------
+ 1    +4.018634E+01  +6.702997E-12   +0.000000E+00    +3.649377E-01      0      +2.615102E+06      +2.820094E+30  
+==================================================================================================================
+
+Cumulative Statistics:
+===========================================================================
+Computation  Optimizer  Optimization   Objective   Fixed Point  Contraction
+   Time      Converged   Iterations   Evaluations  Iterations   Evaluations
+-----------  ---------  ------------  -----------  -----------  -----------
+ 03:51:24       Yes          7             9         764978       2295873  
+===========================================================================
+
+Nonlinear Coefficient Estimates (Robust SEs in Parentheses):
+==============================================================
+  Sigma:            1             prices         style_descr  
+-----------  ---------------  ---------------  ---------------
+     1        +0.000000E+00                                   
+             (+4.383688E-12)                                  
+                                                              
+  prices      +0.000000E+00    +1.836116E-11                  
+                              (+4.150879E-10)                 
+                                                              
+style_descr   +0.000000E+00    +0.000000E+00    +0.000000E+00 
+                                               (+1.339763E-13)
+==============================================================
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices            time      
+---------------  ---------------
+ -2.273555E+02    -3.191723E-03 
+(+5.939856E+01)  (+8.198029E-03)
+================================
+Terminating the pool of 12 processes ...
+Terminated the process pool after 00:00:00.
+Problem Results Summary:
+==================================================================================================================
+GMM     Objective      Projected    Reduced Hessian  Reduced Hessian  Clipped  Weighting Matrix  Covariance Matrix
+Step      Value      Gradient Norm  Min Eigenvalue   Max Eigenvalue   Shares   Condition Number  Condition Number 
+----  -------------  -------------  ---------------  ---------------  -------  ----------------  -----------------
+ 1    +4.018634E+01  +6.702997E-12   +0.000000E+00    +3.649377E-01      0      +2.615102E+06      +2.820094E+30  
+==================================================================================================================
+
+Cumulative Statistics:
+===========================================================================
+Computation  Optimizer  Optimization   Objective   Fixed Point  Contraction
+   Time      Converged   Iterations   Evaluations  Iterations   Evaluations
+-----------  ---------  ------------  -----------  -----------  -----------
+ 03:51:24       Yes          7             9         764978       2295873  
+===========================================================================
+
+Nonlinear Coefficient Estimates (Robust SEs in Parentheses):
+==============================================================
+  Sigma:            1             prices         style_descr  
+-----------  ---------------  ---------------  ---------------
+     1        +0.000000E+00                                   
+             (+4.383688E-12)                                  
+                                                              
+  prices      +0.000000E+00    +1.836116E-11                  
+                              (+4.150879E-10)                 
+                                                              
+style_descr   +0.000000E+00    +0.000000E+00    +0.000000E+00 
+                                               (+1.339763E-13)
+==============================================================
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices            time      
+---------------  ---------------
+ -2.273555E+02    -3.191723E-03 
+(+5.939856E+01)  (+8.198029E-03)
+================================

@@ -155,3 +155,24 @@ style_descr  +0.000000E+00  +0.000000E+00      +INF
 
 Starting optimization ...
 
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+A fixed effect absorption procedure failed to properly absorb fixed effects. Consider configuring absorption options or choosing a different absorption method. For information about absorption options and defaults, refer to the PyHDFE package's documentation. Exception encountered: 'Failed to converge after 1000000 iterations.'.
+
+GMM   Optimization   Objective   Fixed Point  Contraction  Clipped    Objective      Objective      Projected                                               
+Step   Iterations   Evaluations  Iterations   Evaluations  Shares       Value       Improvement   Gradient Norm                     Theta                   
+----  ------------  -----------  -----------  -----------  -------  -------------  -------------  -------------  -------------------------------------------
+ 1         0             1         300000       942515      2770    +2.071420E+38                 +5.378273E+19  +1.000000E+00, +1.000000E+00, +1.000000E+00
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+A fixed effect absorption procedure failed to properly absorb fixed effects. Consider configuring absorption options or choosing a different absorption method. For information about absorption options and defaults, refer to the PyHDFE package's documentation. Exception encountered: 'Failed to converge after 1000000 iterations.'.
+
+ 1         0             2         297418       833370      1294    +2.127595E+36  +2.050144E+38  +1.174927E+19  +1.913166E+00, +1.009496E+00, +1.407476E+00
+
+At least one error was encountered. As long as the optimization routine does not get stuck at values of theta that give rise to errors, this is not necessarily a problem. If the errors persist or seem to be impacting the optimization results, consider setting an error punishment or following any of the other suggestions below:
+The fixed point computation of delta failed to converge. This problem can sometimes be mitigated by increasing the maximum number of fixed point iterations, increasing the fixed point tolerance, choosing more reasonable initial parameter values, setting more conservative parameter or share bounds, or using different iteration or optimization configurations.
+A fixed effect absorption procedure failed to properly absorb fixed effects. Consider configuring absorption options or choosing a different absorption method. For information about absorption options and defaults, refer to the PyHDFE package's documentation. Exception encountered: 'Failed to converge after 1000000 iterations.'.
+
+ 1         1             3         295164       833683      1294    +4.645769E+35  +1.663018E+36  +5.314112E+18  +1.751381E+00, +1.008777E+00, +1.385969E+00
