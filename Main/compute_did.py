@@ -136,7 +136,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	# Add demographics
 	data['log_hhinc_per_person_adj'] = np.log(data['hhinc_per_person_adj'])
 
-    with open('m_' + code + '/output/did_' + month_or_quarter + '.csv', "wb") as csvfile:
+    with open('../../../Data/m_' + code + '/output/did_' + month_or_quarter + '.csv', "wb") as csvfile:
     	header = ["model","post_merger*merging", "post_merger*merging_se", "post_merger*merging_pval", "post_merger*dhhi", "post_merger*dhhi_se", "post_merger*dhhi_pval", "post_merger", "post_merger_se", "post_merger_pval", "trend", "trend_se", "trend_pval", "log_hhinc_per_person_adj", "log_hhinc_per_person_adj_se", "log_hhinc_per_person_adj_pval", "N", "r2", "product", "time"]
 		writer = csv.writer(csvfile, delimiter = ',', encoding = 'utf-8')
 		writer.writerow(header)
@@ -278,10 +278,13 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	    # Should we think about a case where we do a dummy for the second-largest firm too?
 
 code = sys.argv[1]
+if not os.path.isdir('../../../Data/m_' + code + '/intermediate/output'):
+	print("Making the intermediate output directory")
+	os.makedirs('../../../Data/m_' + code + '/intermediate/output')
 info_dict = aux.parse_info(code)
 merging_parties = aux.get_merging_parties(info_dict["MergingParties"])
 
 for timetype in ['month', 'quarter']:
-	df = pd.read_csv('m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
+	df = pd.read_csv('../../../Data/m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
 	df = aux.append_owners(code, df, timetype)
 	did(df, info_dict["DateCompleted"], merging_parties, timetype)
