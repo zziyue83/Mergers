@@ -16,7 +16,7 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	master_conversion = pd.read_csv('master/unit_conversion.csv')
 	master_conversion = master_conversion[master_conversion['final_unit'] == final_unit]
 
-	these_units = pd.read_csv('m_' + code + '/properties/units_edited.csv')
+	these_units = pd.read_csv('../../../Data/m_' + code + '/properties/units_edited.csv')
 	these_units['conversion'] = 0
 
 	# Anything that has convert = 1 must be in the master folder
@@ -96,7 +96,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     market_sizes = area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
     market_sizes = market_sizes.rename({'volume : market_size'})
     market_sizes['market_size'] = market_size_scale * market_sizes['market_size']
-    market_sizes.to_csv('m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
+    market_sizes.to_csv('../../../Data/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
 
     # Shares = volume / market size.  Map market sizes back and get shares.
     area_time_upc = area_time_upc.join(market_sizes, on = ['dma_code', 'year', month_or_quarter])
@@ -117,7 +117,7 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg[agg.upc.isin(upc_set)]
 	agg = agg.sort_values(by = 'brand_descr')
 
-	base_folder = 'm_' + code + '/intermediate/'
+	base_folder = '../../../Data/m_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
 
 	agg = agg[['brand_code_uc', 'brand_descr']]
@@ -128,7 +128,7 @@ def write_brands_upc(code, agg, upc_set):
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
-	agg.to_csv('m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../Data/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8')
 
 def write_market_coverage(code, agg, upc_set):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'shares']]
@@ -137,7 +137,7 @@ def write_market_coverage(code, agg, upc_set):
 
 	agg = agg.groupby(['dma_code', 'year', month_or_quarter]).sum()
 	agg = agg.rename(columns = {'shares' : 'total_shares'})
-	agg.to_csv('m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../Data/m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
 
 code = sys.argv[1]
 info_dict = aux.parse_info(code)

@@ -11,7 +11,7 @@ def generate_units_table(code, years, groups, modules):
 	product_map = aux.get_product_map(groups.unique())
 	add_from_map = ['size1_units', 'size1_amount', 'multi']
 
-	with open('m_' + code + '/intermediate/units.csv', "wb") as csvfile:
+	with open('../../../Data/m_' + code + '/intermediate/units.csv', "wb") as csvfile:
 		header = ["units", "total_quantity", "median", "mode"]
 		writer = csv.writer(csvfile, delimiter = ',', encoding = 'utf-8')
 		writer.writerow(header)
@@ -64,7 +64,7 @@ info_dict = aux.parse_info(code)
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
 years = aux.get_years(info_dict["DateCompleted"])
 
-if not os.path.isdir('m_' + code + '/intermediate'):
+if not os.path.isdir('../../../Data/m_' + code + '/intermediate'):
 	print("Making the intermediate directory")
-	os.makedirs('m_' + code + '/intermediate')
+	os.makedirs('../../../Data/m_' + code + '/intermediate')
 generate_units_table(code, years, groups, modules)

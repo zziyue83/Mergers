@@ -1,0 +1,1 @@
+merger_ls = ['millercoors', 'wrigleymars', 'wyethpfizer']

@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 
 def parse_info(code):
-	file = open('m_' + code + '/info.txt', mode = 'r')
+	file = open('../../../Data/m_' + code + '/info.txt', mode = 'r')
 	info_file = file.read()
 	file.close()
 
@@ -79,7 +79,7 @@ def get_product_map(groups):
 
 def append_owners(code, df, month_or_quarter):
 	# Load list of UPCs and brands
-	upcs = pd.read_csv('m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
+	upcs = pd.read_csv('../../../Data/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
 	upcs = upcs['brand_code_uc']
 	upc_map = upcs.to_dict()
 
