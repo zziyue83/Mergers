@@ -278,13 +278,18 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	    # Should we think about a case where we do a dummy for the second-largest firm too?
 
 code = sys.argv[1]
-if not os.path.isdir('../../../Data/m_' + code + '/intermediate/output'):
-	print("Making the intermediate output directory")
-	os.makedirs('../../../Data/m_' + code + '/intermediate/output')
+log_out = open('../../../All/m_' + code + '/output/compute_did.log', 'w')
+log_err = open('../../../All/m_' + code + '/output/compute_did.err', 'w')
+sys.stdout = log_out
+sys.stderr = log_err
+
 info_dict = aux.parse_info(code)
 merging_parties = aux.get_merging_parties(info_dict["MergingParties"])
 
 for timetype in ['month', 'quarter']:
-	df = pd.read_csv('../../../Data/m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
+	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
 	df = aux.append_owners(code, df, timetype)
 	did(df, info_dict["DateCompleted"], merging_parties, timetype)
+
+log_out.close()
+log_err.close()

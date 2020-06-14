@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 
 def parse_info(code):
-	file = open('../../../Data/m_' + code + '/info.txt', mode = 'r')
+	file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
 	info_file = file.read()
 	file.close()
 
@@ -79,7 +79,7 @@ def get_product_map(groups):
 
 def append_owners(code, df, month_or_quarter):
 	# Load list of UPCs and brands
-	upcs = pd.read_csv('../../../Data/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
+	upcs = pd.read_csv('../../../All/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
 	upcs = upcs['brand_code_uc']
 	upc_map = upcs.to_dict()
 
@@ -87,7 +87,7 @@ def append_owners(code, df, month_or_quarter):
 	df['brand_code_uc'] = df['upc'].map(upc_map)
 
 	# Load ownership assignments
-	brand_to_owner = pd.read_csv('m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
+	brand_to_owner = pd.read_csv('../../../All/m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
 	brand_to_owner['owner_num'] = brand_to_owner.groupby('brand_code_uc').cumcount()+1
 	max_num_owner = brand_to_owner['owner_num'].max()
 	brand_to_owner = brand_to_owner.set_index('owner_num',append=True)
@@ -132,7 +132,7 @@ def adjust_inflation(df, var, month_or_quarter, rename_var = True):
 
 	# Import CPIU dataset
 	month_or_quarter = 'month'
-	cpiu = pd.read_excel('../Data/cpiu_2000_2020.xlsx', header = 11)
+	cpiu = pd.read_excel('../../../All/master/cpiu_2000_2020.xlsx', header = 11)
 	cpiu = cpiu.set_index('Year')
 	month_dictionary = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12}
 	cpiu = cpiu.rename(columns = month_dictionary)
