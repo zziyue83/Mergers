@@ -88,45 +88,39 @@ def append_owners(code, df, month_or_quarter):
 
 	# Load ownership assignments
 	brand_to_owner = pd.read_csv('../../../All/m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
-	brand_to_owner['owner_num'] = brand_to_owner.groupby('brand_code_uc').cumcount()+1
-	max_num_owner = brand_to_owner['owner_num'].max()
-	brand_to_owner = brand_to_owner.set_index('owner_num',append=True)
-	brand_to_owner = brand_to_owner.unstack('owner_num')
-	brand_to_owner.columns = ['{}_{}'.format(var, num) for var, num in brand_to_owner.columns]
 
-	# Merge ownership
-	df = df.join(brand_to_owner, on='brand_code_uc', how='left')
+	# Assign min/max year and month when listed as zero in ownership mapping
 	min_year = df['year'].min()
 	max_year = df['year'].max()
+	brand_to_owner.loc[brand_to_owner['start_year']==0,'start_year'] = min_year
+	brand_to_owner.loc[brand_to_owner['start_month']==0,'start_month'] = 1
+	brand_to_owner.loc[brand_to_owner['end_year']==0,'end_year'] = max_year
+	brand_to_owner.loc[brand_to_owner['end_month']==0,'end_month'] = 12
 
-	for ii in reversed(range(1,max_num_owner+1)):
-		df.loc[df['start_year_1']==0,'owner_'+str(ii)] = df.loc[df['start_year_1']==0,'owner_1']
-		df.loc[df['start_year_1']==0,'end_month_'+str(ii)] = 12
-		df.loc[df['start_year_1']==0,'end_year_'+str(ii)] = max_year
-		df.loc[df['start_year_1']==0,'start_month_'+str(ii)] = 1
-		df.loc[df['start_year_1']==0,'start_year_'+str(ii)] = min_year
+	# Merge on brand and date intervals
+	if month_or_quarter == 'month':
+	    brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=brand_to_owner.start_month, day=1))
+	    brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=brand_to_owner.end_month, day=1))
+	    print(brand_to_owner)
+	    df['date'] = pd.to_datetime(dict(year=df.year, month=df.month, day=1))
+	    sqlcode = '''
+	    select df.upc, df.year, df.month, df.price, df.shares, df.dma, df.brand_code_uc, brand_to_owner.owner
+	    from df
+	    inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+	    '''
+	elif month_or_quarter == 'quarter':
+	    brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=3*(np.ceil(brand_to_owner.start_month/3)-1)+1, day=1))
+	    brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=3*(np.floor(brand_to_owner.end_month/3)), day=1))
+	    print(brand_to_owner)
+	    df['date'] = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1))
+	    sqlcode = '''
+	    select df.upc, df.year, df.quarter, df.price, df.shares, df.dma, df.brand_code_uc, brand_to_owner.owner
+	    from df
+	    inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+	    '''
 
-	for ii in range(1,max_num_owner+1):
-		if month_or_quarter == 'month':
-			df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
-				((df['year']==df['start_year_'+str(ii)]) & (df['month'] >= df['start_month_'+str(ii)]))) & \
-				(((df['year'] < df['end_year_'+str(ii)]) | \
-				((df['year']==df['end_year_'+str(ii)]) & df['month'] <= df['end_year_'+str(ii)]))),'owner'] = \
-				df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
-				((df['year']==df['start_year_'+str(ii)]) & (df['month'] >= df['start_month_'+str(ii)]))) & \
-				(((df['year'] < df['end_year_'+str(ii)]) | \
-				((df['year']==df['end_year_'+str(ii)]) & df['month'] <= df['end_year_'+str(ii)]))),'owner_'+str(ii)]
-		elif month_or_quarter == 'quarter':
-			df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
-				((df['year']==df['start_year_'+str(ii)]) & (df['quarter'] >= ceil(df['start_month_'+str(ii)]/3)))) & \
-				(((df['year'] < df['end_year_'+str(ii)]) | \
-				((df['year']==df['end_year_'+str(ii)]) & df['quarter'] <= ceil(df['end_year_'+str(ii)]/3)))),'owner'] = \
-				df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
-				((df['year']==df['start_year_'+str(ii)]) & (df['quarter'] >= ceil(df['start_month_'+str(ii)]/3)))) & \
-				(((df['year'] < df['end_year_'+str(ii)]) | \
-				((df['year']==df['end_year_'+str(ii)]) & df['quarter'] <= ceil(df['end_year_'+str(ii)]/3)))),'owner_'+str(ii)]
-
-	return(df)
+	df_own = ps.sqldf(sqlcode,locals())
+	return df_own
 
 def adjust_inflation(df, vars, month_or_quarter, rename_var = True):
 
