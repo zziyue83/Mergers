@@ -84,22 +84,22 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     	area_time_upc[to_add] = area_time_upc['upc'].map(product_map(to_add))
     area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion']) # YINTIAN/AISLING -- check this!!!
     area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi'] * area_time_upc['conversion']
-    area_time_upc['raw_price']  = area_time_upc['price']
     area_time_upc['prices'] = area_time_upc['sales'] / area_time_upc['volume']
-    area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
+    area_time_upc = area_time_upc.drop(['week_end','store_code_uc'], axis = 1)
 
     # Normalize the prices by the CPI.  Let January 2010 = 1.
-    area_time_upc = aux.adjust_inflation(area_time_upc, 'prices', month_or_quarter)
+    area_time_upc = aux.adjust_inflation(area_time_upc, ['prices', 'shares'], month_or_quarter)
 
     # Get the market sizes here, by summing volume within dma-time and then taking 1.5 times max within-dma
-    short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume']]
-    market_sizes = area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
-    market_sizes = market_sizes.rename({'volume : market_size'})
-    market_sizes['market_size'] = market_size_scale * market_sizes['market_size']
-    market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
+    short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume', 'sales']]
+    market_sizes = short_area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
+	market_sizes['market_size'] = market_size_scale * market_sizes.groupby('dma_code')['volume'].transform('max')
+	market_sizes = market_sizes.rename({'sales' : 'total_sales'})
+	market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
 
     # Shares = volume / market size.  Map market sizes back and get shares.
     area_time_upc = area_time_upc.join(market_sizes, on = ['dma_code', 'year', month_or_quarter])
+    area_time_upc = area_time_upc.drop(['total_sales'], axis = 1)
     area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
 
     return area_time_upc

@@ -98,6 +98,41 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	return df
 
+def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'month'):
+
+	# Pull merger year and merger month (or quarter)
+	merger_year = merging_date.year
+	merger_month = merging_date.month
+	if month_or_quarter == 'month':
+		merger_month_or_quarter = merger_month
+	elif month_or_quarter == 'quarter':
+		merger_month_or_quarter = np.ceil(merger_month/3)
+	
+	# First get total sales in entire market pre and post
+	ms = pd.read_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', delimiter = ',')
+	ms['post_merger'] = 0
+	ms.loc[(ms['year']>merger_year) | ((ms['year']==merger_year) & (ms['month']>=merger_month)), 'post_merger'] = 1
+
+    total_sales_post = ms.total_sales[ms['post_merger'] == 1].sum()
+    total_sales_pre = ms.total_sales[ms['post_merger'] == 0].sum()
+
+	df['post_merger'] = 0
+    df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
+    
+    # Get a dataframe that is pre-sales, post-sales, pre-shares, post-shares for all merging parties
+    rows_list = []
+    for party in merging_parties:
+    	party_sales_pre = df.sales[df['owner'] == party & df['post_merger'] == 0]
+    	party_sales_post = df.sales[df['owner'] == party & df['post_merger'] == 1]
+    	party_share_pre = party_sales_pre / total_sales_pre
+    	party_share_post = party_sales_post / total_sales_post
+
+    	this_dict = {'name' : party, 'pre_sales' : party_sales_pre, 'post_sales' : party_sales_post, 'pre_share' : party_share_pre, 'post_share' : part_share_post}
+    	rows_list.append(this_dict)
+    overlap_df = pd.DataFrame(rows_list)
+    overlap_df.to_csv('../../../All/m_' + code + '/output/overlap.csv', sep = ',', encoding = 'utf-8')
+
+
 def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 	# Pull merger year and merger month (or quarter)
@@ -289,6 +324,8 @@ merging_parties = aux.get_merging_parties(info_dict["MergingParties"])
 for timetype in ['month', 'quarter']:
 	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
 	df = aux.append_owners(code, df, timetype)
+	if timetype == 'month':
+		write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
 	did(df, info_dict["DateCompleted"], merging_parties, timetype)
 
 log_out.close()

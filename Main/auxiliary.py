@@ -128,7 +128,7 @@ def append_owners(code, df, month_or_quarter):
 
 	return(df)
 
-def adjust_inflation(df, var, month_or_quarter, rename_var = True):
+def adjust_inflation(df, vars, month_or_quarter, rename_var = True):
 
 	# Import CPIU dataset
 	month_or_quarter = 'month'
@@ -153,12 +153,13 @@ def adjust_inflation(df, var, month_or_quarter, rename_var = True):
 	cpiu = cpiu.set_index(['year', month_or_quarter])
 
 	# Merge CPIU onto dataframe and adjust prices
-	df = df.join(cpiu, on=['year',month_or_quarter], how='left')
-	if rename_var:
-		df[var] = df[var] * (df['cpiu_201001'] / df['cpiu'])
-		df = df.drop(['cpiu_201001', 'cpiu'])
-	else:
-		df[var + '_adj'] = df[var] * (df['cpiu_201001'] / df['cpiu'])
+	df = df.join(cpiu, on=['year', month_or_quarter], how = 'left')
+	for var in vars:
+		if rename_var:
+			df[var] = df[var] * (df['cpiu_201001'] / df['cpiu'])
+			df = df.drop(['cpiu_201001', 'cpiu'])
+		else:
+			df[var + '_adj'] = df[var] * (df['cpiu_201001'] / df['cpiu'])
 
 	return df
 
