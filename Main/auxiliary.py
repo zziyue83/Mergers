@@ -5,6 +5,7 @@ import pyblp
 import pickle
 import pandas as pd
 import numpy as np
+import pandasql as ps
 
 def parse_info(code):
 	file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
