@@ -11,7 +11,7 @@ def generate_units_table(code, years, groups, modules):
 	product_map = aux.get_product_map(groups.unique())
 	add_from_map = ['size1_units', 'size1_amount', 'multi']
 
-	with open('../../../Data/m_' + code + '/intermediate/units.csv', "wb") as csvfile:
+	with open('../../../All/m_' + code + '/intermediate/units.csv', "wb") as csvfile:
 		header = ["units", "total_quantity", "median", "mode"]
 		writer = csv.writer(csvfile, delimiter = ',', encoding = 'utf-8')
 		writer.writerow(header)
@@ -58,13 +58,23 @@ def generate_units_table(code, years, groups, modules):
 			to_write = [unit, total_quantity, median, mode]
 			writer.writerow(to_write)
 
+if not os.path.isdir('../../../All/m_' + code + '/logs'):
+	os.makedirs('../../../All/m_' + code + '/logs')
+log_out = open('../../../All/m_' + code + '/logs/get_units.log', 'w')
+log_err = open('../../../All/m_' + code + '/logs/get_units.err', 'w')
+sys.stdout = log_out
+sys.stderr = log_err
+
 code = sys.argv[1]
 info_dict = aux.parse_info(code)
 
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
 years = aux.get_years(info_dict["DateCompleted"])
 
-if not os.path.isdir('../../../Data/m_' + code + '/intermediate'):
+if not os.path.isdir('../../../All/m_' + code + '/intermediate'):
 	print("Making the intermediate directory")
-	os.makedirs('../../../Data/m_' + code + '/intermediate')
+	os.makedirs('../../../All/m_' + code + '/intermediate')
 generate_units_table(code, years, groups, modules)
+
+log_out.close()
+log_err.close()
