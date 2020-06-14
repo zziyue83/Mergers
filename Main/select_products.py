@@ -143,8 +143,8 @@ def write_market_coverage(code, agg, upc_set):
 	agg.total_shares.describe(percentiles = [0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99])
 
 code = sys.argv[1]
-log_out = open('../../../All/m_' + code + '/logs/select_products.log', 'w')
-log_err = open('../../../All/m_' + code + '/logs/select_products.err', 'w')
+log_out = open('../../../All/m_' + code + '/output/select_products.log', 'w')
+log_err = open('../../../All/m_' + code + '/output/select_products.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 

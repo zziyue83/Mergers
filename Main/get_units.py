@@ -59,10 +59,10 @@ def generate_units_table(code, years, groups, modules):
 			writer.writerow(to_write)
 
 code = sys.argv[1]
-if not os.path.isdir('../../../All/m_' + code + '/logs'):
-	os.makedirs('../../../All/m_' + code + '/logs')
-log_out = open('../../../All/m_' + code + '/logs/get_units.log', 'w')
-log_err = open('../../../All/m_' + code + '/logs/get_units.err', 'w')
+if not os.path.isdir('../../../All/m_' + code + '/output'):
+	os.makedirs('../../../All/m_' + code + '/output')
+log_out = open('../../../All/m_' + code + '/output/get_units.log', 'w')
+log_err = open('../../../All/m_' + code + '/output/get_units.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
