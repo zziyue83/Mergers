@@ -58,6 +58,7 @@ def generate_units_table(code, years, groups, modules):
 			to_write = [unit, total_quantity, median, mode]
 			writer.writerow(to_write)
 
+code = sys.argv[1]
 if not os.path.isdir('../../../All/m_' + code + '/logs'):
 	os.makedirs('../../../All/m_' + code + '/logs')
 log_out = open('../../../All/m_' + code + '/logs/get_units.log', 'w')
@@ -65,7 +66,6 @@ log_err = open('../../../All/m_' + code + '/logs/get_units.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
-code = sys.argv[1]
 info_dict = aux.parse_info(code)
 
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
