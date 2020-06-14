@@ -102,7 +102,6 @@ def append_owners(code, df, month_or_quarter):
 	if month_or_quarter == 'month':
 	    brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=brand_to_owner.start_month, day=1))
 	    brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=brand_to_owner.end_month, day=1))
-	    print(brand_to_owner)
 	    df['date'] = pd.to_datetime(dict(year=df.year, month=df.month, day=1))
 	    sqlcode = '''
 	    select df.upc, df.year, df.month, df.price, df.shares, df.dma, df.brand_code_uc, brand_to_owner.owner
@@ -112,7 +111,6 @@ def append_owners(code, df, month_or_quarter):
 	elif month_or_quarter == 'quarter':
 	    brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=3*(np.ceil(brand_to_owner.start_month/3)-1)+1, day=1))
 	    brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=3*(np.floor(brand_to_owner.end_month/3)), day=1))
-	    print(brand_to_owner)
 	    df['date'] = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1))
 	    sqlcode = '''
 	    select df.upc, df.year, df.quarter, df.price, df.shares, df.dma, df.brand_code_uc, brand_to_owner.owner
