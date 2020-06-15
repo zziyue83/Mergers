@@ -170,6 +170,12 @@ def write_market_coverage(code, agg, upc_set):
 	agg.to_csv('../../../Data/m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
 
 code = sys.argv[1]
+log_out = open('../../../All/m_' + code + '/output/select_products.log', 'w')
+log_err = open('../../../All/m_' + code + '/output/select_products.err', 'w')
+sys.stdout = log_out
+sys.stderr = log_err
+
+
 info_dict = aux.parse_info(code)
 
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
@@ -193,6 +199,5 @@ write_base_dataset(code, area_quarter_upc, acceptable_upcs, 'quarter')
 # Aggregate data_month (sum shares) by dma-month to get total market shares and spit that out as market_coverage.csv
 write_market_coverage(code, area_month_upc, acceptable_upcs)
 
-# How do you do Nielsen Characteristics excel file?
-
-# tabulate nielsen characteristics
+log_out.close()
+log_err.close()
