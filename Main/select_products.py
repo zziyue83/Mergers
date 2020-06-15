@@ -6,7 +6,7 @@ import tqdm
 import numpy as np
 
 def load_store_table(year):
-    store_path = "../../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
+    store_path = "../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
     store_table = pd.read_csv(store_path, delimiter = "\t", index_col = "store_code_uc")
     print("Loaded store file of "+ year)
     return store_table
@@ -16,7 +16,7 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	master_conversion = pd.read_csv('master/unit_conversion.csv')
 	master_conversion = master_conversion[master_conversion['final_unit'] == final_unit]
 
-	these_units = pd.read_csv('../../../All/m_' + code + '/properties/units_edited.csv')
+	these_units = pd.read_csv('../../../Data/m_' + code + '/properties/units_edited.csv')
 	these_units['conversion'] = 0
 
 	# Anything that has convert = 1 must be in the master folder
@@ -84,22 +84,22 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     	area_time_upc[to_add] = area_time_upc['upc'].map(product_map(to_add))
     area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion']) # YINTIAN/AISLING -- check this!!!
     area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi'] * area_time_upc['conversion']
+    area_time_upc['raw_price']  = area_time_upc['price']
     area_time_upc['prices'] = area_time_upc['sales'] / area_time_upc['volume']
-    area_time_upc = area_time_upc.drop(['week_end','store_code_uc'], axis = 1)
+    area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
 
     # Normalize the prices by the CPI.  Let January 2010 = 1.
-    area_time_upc = aux.adjust_inflation(area_time_upc, ['prices', 'shares'], month_or_quarter)
+    area_time_upc = aux.adjust_inflation(area_time_upc, 'prices', month_or_quarter)
 
     # Get the market sizes here, by summing volume within dma-time and then taking 1.5 times max within-dma
-    short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume', 'sales']]
-    market_sizes = short_area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
-	market_sizes['market_size'] = market_size_scale * market_sizes.groupby('dma_code')['volume'].transform('max')
-	market_sizes = market_sizes.rename({'sales' : 'total_sales'})
-	market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
+    short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume']]
+    market_sizes = area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
+    market_sizes = market_sizes.rename({'volume : market_size'})
+    market_sizes['market_size'] = market_size_scale * market_sizes['market_size']
+    market_sizes.to_csv('../../../Data/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
 
     # Shares = volume / market size.  Map market sizes back and get shares.
     area_time_upc = area_time_upc.join(market_sizes, on = ['dma_code', 'year', month_or_quarter])
-    area_time_upc = area_time_upc.drop(['total_sales'], axis = 1)
     area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
 
     return area_time_upc
@@ -112,12 +112,23 @@ def get_acceptable_upcs(area_month_upc, share_cutoff):
     return acceptable_upcs['upc']
 
 def write_brands_upc(code, agg, upc_set):
-	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi']]
+	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi']]
 	agg = agg.drop_duplicates()
 	agg = agg[agg.upc.isin(upc_set)]
 	agg = agg.sort_values(by = 'brand_descr')
 
-	base_folder = '../../../All/m_' + code + '/intermediate/'
+	# add extra nielsen data features from Annual_Files/products_extra_year.tsv
+	features_year = []
+	years = agg['year'].unique()
+	for year in years:
+		features =  pd.read_csv("../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/products_extra_"+year+".tsv", delimiter = '\t')
+		features['year'] = year
+		features_year.append(features)
+	features = pd.concat(features_year)
+	agg = agg.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','year'])
+
+
+	base_folder = '../../../Data/m_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
 
 	agg = agg[['brand_code_uc', 'brand_descr']]
@@ -128,7 +139,7 @@ def write_brands_upc(code, agg, upc_set):
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
-	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../Data/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8')
 
 def write_market_coverage(code, agg, upc_set):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'shares']]
@@ -137,18 +148,9 @@ def write_market_coverage(code, agg, upc_set):
 
 	agg = agg.groupby(['dma_code', 'year', month_or_quarter]).sum()
 	agg = agg.rename(columns = {'shares' : 'total_shares'})
-	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
-
-	print("Summary Statistics for Total Shares")
-	agg.total_shares.describe(percentiles = [0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99])
+	agg.to_csv('../../../Data/m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
 
 code = sys.argv[1]
-log_out = open('../../../All/m_' + code + '/output/select_products.log', 'w')
-log_err = open('../../../All/m_' + code + '/output/select_products.err', 'w')
-sys.stdout = log_out
-sys.stderr = log_err
-
-
 info_dict = aux.parse_info(code)
 
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
@@ -174,8 +176,4 @@ write_market_coverage(code, area_month_upc, acceptable_upcs)
 
 # How do you do Nielsen Characteristics excel file?
 
-
-
-# Close the logs
-log_out.close()
-log_err.close()
+# tabulate nielsen characteristics
