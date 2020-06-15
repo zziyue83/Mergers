@@ -6,7 +6,13 @@ import auxiliary as aux
 import tqdm
 import os
 
-def generate_units_table(code, years, groups, modules):
+def generate_units_table(code, years, groups, modules, merger_date, pre_months = 18, post_months = 18):
+
+	# Get the relevant range
+	dt = datetime.strptime(merger_date, '%Y-%m-%d')
+	month_int = dt.year * 12 + dt.month
+	min_year, min_month = aux.int_to_month(month_int - pre_months)
+	max_year, max_month = aux.int_to_month(month_int + post_months)
 
 	product_map = aux.get_product_map(groups.unique())
 	add_from_map = ['size1_units', 'size1_amount', 'multi']
@@ -25,6 +31,14 @@ def generate_units_table(code, years, groups, modules):
 				movement_table = aux.load_chunked_year_module_movement_table(year, group, module)
 				
 				for data_chunk in tqdm(movement_table):
+					# First make sure that only the actual years and months are included
+					if int(year) == min_year or int(year) == max_year
+						data_chunk['month'] = np.floor((data_chunk['week_end'] % 10000)/100).astype(int)
+						if int(year) == min_year:
+							data_chunk = data_chunk[data_chunk.month >= min_month]
+						else:
+							data_chunk = data_chunk[data_chunk.month <= max_month]
+					
 					for to_add in add_from_map:
 						data_chunk[to_add] = data_chunk['upc'].map(product_map(to_add))
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'multi']]

@@ -49,11 +49,15 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	conversion_map = these_units.to_dict()
 	return conversion_map
 
-def aggregate_movement(code, years, groups, modules, month_or_quarter, conversion_map, market_size_scale = 1.5):
+def aggregate_movement(code, years, groups, modules, month_or_quarter, conversion_map, merger_date, market_size_scale = 1.5, pre_months = 18, post_months = 18):
 
-	# NOTES: Need to read in the units_edited.csv file to edit units, and normalize them below
-	#        Spit out things like brand descriptions separately
-	#        Shares need to be computed and products filtered by share -- but maybe do this separately?
+	# Get the relevant range
+	dt = datetime.strptime(merger_date, '%Y-%m-%d')
+	month_int = dt.year * 12 + dt.month
+	min_year, min_month = aux.int_to_month(month_int - pre_months)
+	max_year, max_month = aux.int_to_month(month_int + post_months)
+	min_quarter = np.ceil(min_month/3)
+	max_quarter = np.ceil(max_month/3)
 
 	area_time_upc_list = []
 	product_map = aux.get_product_map(groups.unique())
@@ -74,9 +78,18 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 				if month_or_quarter == "month":
 					data_chunk[month_or_quarter] = np.floor((data_chunk['week_end'] % 10000)/100)
 					data_chunk[month_or_quarter] = data_chunk[month_or_quarter].astype(int)
+
+					if int(year) == min_year:
+						data_chunk = data_chunk[data_chunk.month >= min_month]
+					elif int(year) == max_year:
+						data_chunk = data_chunk[data_chunk.month <= max_month]
             	elif month_or_quarter == "quarter":
 					data_chunk[month_or_quarter] = np.ceil(np.floor((data_chunk['week_end'] % 10000)/100)/3)
 					data_chunk[month_or_quarter] = data_chunk[month_or_quarter].astype(int)
+					if int(year) == min_year:
+						data_chunk = data_chunk[data_chunk.quarter >= min_quarter]
+					elif int(year) == max_year:
+						data_chunk = data_chunk[data_chunk.quarter <= max_quarter]
 
                 data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
                 data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
