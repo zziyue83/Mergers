@@ -240,35 +240,58 @@ def geocoding_dmas():
 
 def geocoding_locations(locations):
     df1 = locations.dropna(subset=['location'])
-    locations_ls = df1['location'].unique().tolist()
+    df1 = df1[['location', 'lat', 'lon']]
+    df1 = df1.drop_duplicates()
+
+    dict_list = []
     geolocator = Nominatim()
-    geocoded_locations = pd.DataFrame()
-    i = 0
-    while i < len(locations_dict):
-        try:
-            location = geolocator.geocode(locations_ls[i])
-            latitude, longitude = location[1]
-            a_row = pd.Series([locations_ls[i], latitude, longitude])
-            row_geocoded_locations = pd.DataFrame([a_row])
-            geocoded_locations = pd.concat([row_geocoded_locations, geocoded_locations])
-            i = i + 1
-            print(i)
-        except:
-            time.sleep(10)
-    geocoded_locations = geocoded_locations.rename(columns = {0: 'location', 1: 'lat', 2: 'lon'}).set_index('location')
-    geocoded_locations.to_csv('../../../Data/m_' + code + '/intermediate/geocoded_locations.csv', sep = ',', encoding = 'utf-8')
+    for index, row in df1.iterrows():
+        this_location = row['location']
+
+        if not pd.isnull(row['lat']):
+            latitude = row['lat']
+            longitude = row['lon']
+        else:
+            try:
+                location = geolocator.geocode(this_location)
+                latitude, longitude = location[1]
+            except:
+                time.sleep(10)
+                latitude = None 
+                longitude = None 
+        this_dict = {'location' : this_location, 'lat' : latitude, 'lon' : longitude}
+        dict_list.append(this_dict)
+    geocoded_locations = pd.DataFrame(dict_list).set_index('location')
+
+    #locations_ls = df1['location'].unique().tolist()
+    #geolocator = Nominatim()
+    #geocoded_locations = pd.DataFrame()
+    #i = 0
+    #while i < len(locations_ls):
+    #    try:
+    #        location = geolocator.geocode(locations_ls[i])
+    #        latitude, longitude = location[1]
+    #        a_row = pd.Series([locations_ls[i], latitude, longitude])
+    #        row_geocoded_locations = pd.DataFrame([a_row])
+    #        geocoded_locations = pd.concat([row_geocoded_locations, geocoded_locations])
+    #        i = i + 1
+    #        print(i)
+    #    except:
+    #        time.sleep(10)
+    #geocoded_locations = geocoded_locations.rename(columns = {0: 'location', 1: 'lat', 2: 'lon'}).set_index('location')
+    geocoded_locations.to_csv('../../../All/m_' + code + '/intermediate/geocoded_locations.csv', sep = ',', encoding = 'utf-8')
     locations['lat'] = locations['location'].map(geocoded_locations['lat'])
     locations['lon'] = locations['location'].map(geocoded_locations['lon'])
     return locations
 
 def compute_distances(code, month_or_quarter = 'quarter'):
-    locations = pd.read_csv('../../../Data/m_' + code + '/properties/locations.csv')
+    locations = pd.read_csv('../../../All/m_' + code + '/properties/locations.csv')
     locations = geocoding_locations(locations)
     locations['owner-brand'] = locations['owner'] + ' ' + locations['brand_code_uc'].astype(str)
     locations = locations[['owner-brand','location','lat','lon']]
 
     # get all upcs-dma pair and add brand_code_uc and owner
-    df = pd.read_csv('../../../Data/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv')
+    df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv')
     df = df[['upc','dma_code']].drop_duplicates()
     df = aux.append_owners(code, df, month_or_quarter)
     
@@ -283,4 +306,12 @@ def compute_distances(code, month_or_quarter = 'quarter'):
     distance.to_csv('../../../Data/m_' + code + '/intermediate/distances.csv', sep = ',', encoding = 'utf-8')
 
 code = sys.argv[1]
+log_out = open('../../../All/m_' + code + '/output/compute_distances.log', 'w')
+log_err = open('../../../All/m_' + code + '/output/compute_distances.err', 'w')
+sys.stdout = log_out
+sys.stderr = log_err
+
 compute_distances(code)
+
+log_out.close()
+log_err.close()
