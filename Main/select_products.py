@@ -109,6 +109,15 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
     return area_time_upc
 
+def read_extra_characteristics(years):
+	df_list = []
+	for year in years:
+		this_df = pd.read_csv('../../../Data/nielsen_extracts/RMS/' + str(year) + 'Annual_Files/products_extra_' + str(year) + '.tsv', delimiter = '\t')
+		this_df = this_df.rename({'panel_year' : 'year'})
+		df_list.append(this_df)
+	df = pd.concat(df_list)
+	return df
+
 def get_acceptable_upcs(area_month_upc, share_cutoff):
     # Now for each UPC, find the max market share across all DMA-month.  If it's less than the share cutoff, then drop that upc
     upc_max_share = area_month_upc.groupby('upc').max()
@@ -116,12 +125,40 @@ def get_acceptable_upcs(area_month_upc, share_cutoff):
 
     return acceptable_upcs['upc']
 
+<<<<<<< HEAD
 def write_brands_upc(code, agg, upc_set):
 	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi']]
+=======
+def is_same(xlist):
+	if all(x == xlist[0] for x in xlist):
+		return True
+	else:
+		return False
+
+def write_brands_upc(code, agg, upc_set, chars):
+	
+	# Drop characteristics with no variation
+	for c in chars.columns:
+		if c in ['upc', 'upc_ver_uc', 'year']:
+			continue
+		if is_same(chars[c]):
+			chars = chars.drop(c)
+
+	list_of_chars = chars.columns
+	for colname in ['upc', 'upc_ver_uc', 'year']:
+		list_of_chars = list_of_chars.remove(colname)
+
+
+	# SOMEWHERE NEED TO CHECK IF CHARS CHANGE OVER TIME
+
+	cols_to_keep = ['upc', 'upc_descr', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi']
+	agg = agg[cols_to_keep]
+>>>>>>> b89b0cc09e6d3dd44fc86a97a8c2d0161f81d07a
 	agg = agg.drop_duplicates()
 	agg = agg[agg.upc.isin(upc_set)]
 	agg = agg.sort_values(by = 'brand_descr')
 
+<<<<<<< HEAD
 	# add extra nielsen data features from Annual_Files/products_extra_year.tsv
 	features_year = []
 	years = agg['year'].unique()
@@ -140,6 +177,19 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','year'])
 
 	base_folder = '../../../Data/m_' + code + '/intermediate/'
+=======
+	# Now join to characteristics
+	# CAN YOU FIX THIS JOIN???
+	chars = chars.set_index('upc')
+	agg = agg.set_index('upc')
+	agg = agg.join(chars)
+
+	# Describe the characteristics
+	agg_chars = agg[list_of_chars]
+	agg_chars.describe()
+	
+	base_folder = '../../../All/m_' + code + '/intermediate/'
+>>>>>>> b89b0cc09e6d3dd44fc86a97a8c2d0161f81d07a
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique upcs')
 
@@ -175,9 +225,12 @@ area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", c
 
 acceptable_upcs = get_acceptable_upcs(area_month_upc['upc', 'shares'], float(info_dict["InitialShareCutoff"]))
 
+nielsen_charcteristics = read_extra_characteristics(years)
+nielsen_charcteristics = nielsen_charcteristics[nielsen_charcteristics['upcs'].isin(acceptable_upcs)]
+
 # Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
 # Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
-write_brands_upc(code, area_month_upc, acceptable_upcs)
+write_brands_upc(code, area_month_upc, acceptable_upcs, nielsen_charcteristics)
 
 # Now filter area_month_upc and area_quarter_upc so that only acceptable_upcs survive
 # Print out data_month.csv and data_quarter.csv
