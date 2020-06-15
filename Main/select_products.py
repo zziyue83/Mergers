@@ -124,11 +124,13 @@ def write_brands_upc(code, agg, upc_set):
 
 	base_folder = '../../../All/m_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
+	print(str(len(agg)) + ' unique upcs')
 
 	agg = agg[['brand_code_uc', 'brand_descr']]
 	agg = agg.rename(columns = {'brand_descr' : 'brand'})
 	agg = agg.drop_duplicates()
 	agg.to_csv(base_folder + 'brands.csv', sep = ',', encoding = 'utf-8')
+	print(str(len(agg)) + ' unique brands')
 
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares']]
