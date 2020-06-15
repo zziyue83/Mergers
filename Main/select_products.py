@@ -195,8 +195,8 @@ groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
 years = aux.get_years(info_dict["DateCompleted"])
 
 conversion_map = get_conversion_map(code, info_dict["FinalUnit"])
-area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map)
-area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map)
+area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateCompleted"])
+area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateCompleted"])
 
 acceptable_upcs = get_acceptable_upcs(area_month_upc['upc', 'shares'], float(info_dict["InitialShareCutoff"]))
 
