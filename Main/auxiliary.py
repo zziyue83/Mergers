@@ -29,12 +29,21 @@ def get_groups_and_modules(full_string):
 		modules.append(pair.group(2).strip())
 	return groups, modules
 
-def get_years(year_string, pre = 2, post = 2):
+def int_to_month(value):
+	year = np.floor((value - 1) / 12)
+	month = value - 12 * year 
+	return year, month
+
+def get_years(year_string, pre_months = 18, post_months = 18):
 	dt = datetime.strptime(year_string, '%Y-%m-%d')
+	month_int = dt.year * 12 + dt.month
+	min_year, min_month = int_to_month(month_int - pre_months)
+	max_year, max_month = int_to_month(month_int + post_months)
+
 	years = []
-	for i in range(-pre, post + 1, 1):
+	for i in range(miin_year, max_year + 1, 1):
 		this_year = dt.year + i
-		if this_year >= 2006 and this_year <= 2017:
+		if this_year >= 2006 and this_year <= 2018:
 			years.append(str(this_year))
 	return years
 
