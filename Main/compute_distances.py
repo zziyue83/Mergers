@@ -238,7 +238,7 @@ def geocoding_dmas():
     geocoded_dmas = pd.DataFrame(major_cities)
     return geocoded_dmas
 
-def geocoding_locations(locations):
+def geocoding_locations(code, locations):
     df1 = locations.dropna(subset=['location'])
     df1 = df1[['location', 'lat', 'lon']]
     df1 = df1.drop_duplicates()
@@ -272,7 +272,7 @@ def geocoding_locations(locations):
 
 def compute_distances(code, month_or_quarter = 'quarter'):
     locations = pd.read_csv('../../../All/m_' + code + '/properties/locations.csv')
-    locations = geocoding_locations(locations)
+    locations = geocoding_locations(code, locations)
     locations['owner-brand'] = locations['owner'] + ' ' + locations['brand_code_uc'].astype(str)
     locations = locations[['owner-brand','location','lat','lon']]
 
