@@ -31,7 +31,7 @@ def get_groups_and_modules(full_string):
 
 def int_to_month(value):
 	year = np.floor((value - 1) / 12)
-	month = value - 12 * year 
+	month = value - 12 * year
 	return year, month
 
 def get_years(year_string, pre_months = 18, post_months = 18):
@@ -102,10 +102,18 @@ def append_owners(code, df, month_or_quarter):
 	# Assign min/max year and month when listed as zero in ownership mapping
 	min_year = df['year'].min()
 	max_year = df['year'].max()
+
+	if month_or_quarter == 'month':
+	    min_month = df.loc[df['year']==min_year,'month'].min()
+	    max_month = df.loc[df['year']==max_year,'month'].max()
+	elif month_or_quarter == 'quarter':
+	    min_month = (3*(df.loc[df['year']==min_year,'quarter']-1)+1).min()
+	    max_month = (3*df.loc[df['year']==max_year,'quarter']).max()
+
 	brand_to_owner.loc[brand_to_owner['start_year']==0,'start_year'] = min_year
-	brand_to_owner.loc[brand_to_owner['start_month']==0,'start_month'] = 1
+	brand_to_owner.loc[brand_to_owner['start_month']==0,'start_month'] = min_month
 	brand_to_owner.loc[brand_to_owner['end_year']==0,'end_year'] = max_year
-	brand_to_owner.loc[brand_to_owner['end_month']==0,'end_month'] = 12
+	brand_to_owner.loc[brand_to_owner['end_month']==0,'end_month'] = max_month
 
 	# Throw error if (1) dates don't span the entirety of the sample period or
 	# (2) ownership dates overlap
