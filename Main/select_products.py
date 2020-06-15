@@ -14,6 +14,7 @@ def load_store_table(year):
 def get_conversion_map(code, final_unit, method = 'mode'):
 	# Get in the conversion map -- size1_units, multiplication
 	master_conversion = pd.read_csv('master/unit_conversion.csv')
+	assert final_unit in master_conversion['final_unit'], "Cannot find %r as a final_unit" % final_unit
 	master_conversion = master_conversion[master_conversion['final_unit'] == final_unit]
 
 	these_units = pd.read_csv('../../../All/m_' + code + '/properties/units_edited.csv')
@@ -22,9 +23,13 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	# Anything that has convert = 1 must be in the master folder
 	convertible = these_units.loc[these_units.convert == 1].copy()
 	for this_unit in convertible.unit.unique():
-		convert_factor = master_conversion.conversion[master_conversion.initial_unit == this_unit]
-		these_units.loc[these_units.unit == this_unit, 'conversion'] = convert_factor
-		convertible.loc[convertible.unit == this_unit, 'conversion'] = convert_factor
+		assert this_unit in master_conversion['initial_unit'], "Cannot find %r as an initial_unit" % this_unit
+		if this_unit in master_conversion['initial_unit']:
+			convert_factor = master_conversion.conversion[master_conversion.initial_unit == this_unit]
+			these_units.loc[these_units.unit == this_unit, 'conversion'] = convert_factor
+			convertible.loc[convertible.unit == this_unit, 'conversion'] = convert_factor
+		else:
+
 
 	# The "method" for convert = 0 is mapped to the "method" for the convert = 1
 	# with the largest quantity
