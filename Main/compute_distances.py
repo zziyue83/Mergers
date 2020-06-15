@@ -252,13 +252,15 @@ def geocoding_locations(locations):
             latitude = row['lat']
             longitude = row['lon']
         else:
-            try:
-                location = geolocator.geocode(this_location)
-                latitude, longitude = location[1]
-            except:
-                time.sleep(10)
-                latitude = None 
-                longitude = None 
+            for num_try in range(3):
+                try:
+                    location = geolocator.geocode(this_location)
+                    latitude, longitude = location[1]
+                    break
+                except:
+                    time.sleep(10)
+                    latitude = None 
+                    longitude = None 
         this_dict = {'location' : this_location, 'lat' : latitude, 'lon' : longitude}
         dict_list.append(this_dict)
     geocoded_locations = pd.DataFrame(dict_list).set_index('location')
