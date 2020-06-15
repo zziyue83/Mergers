@@ -136,12 +136,14 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg.drop_duplicates()
 	agg = agg[agg.upc.isin(upc_set)]
 	agg = agg.sort_values(by = 'brand_descr')
+	agg['year'] = agg['year'].astype(int)
+	agg['max_year'] = agg.groupby('upc')['year'].transform('max')
 
 	# add extra nielsen data features from Annual_Files/products_extra_year.tsv
 	features_year = []
 	years = agg['year'].unique()
 	for year in years:
-		features =  pd.read_csv("../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/products_extra_"+year+".tsv", delimiter = '\t')
+		features =  pd.read_csv("../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/products_extra_"+str(year)+".tsv", delimiter = '\t')
 		features['year'] = year
 		features_year.append(features)
 	features = pd.concat(features_year)
@@ -153,7 +155,8 @@ def write_brands_upc(code, agg, upc_set):
 		if variation <= 1:
 			features.drop(column, axis = 1)
 	# merge extra characteristics with agg
-	agg = agg.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','year'])
+	agg = agg.merge(features, how = 'left', left_on = ['upc','max_year'], right_on = ['upc','year'])
+	agg = agg.drop(['max_year', 'panel_year', 'upc_ver_uc'], axis = 1)
 
 	base_folder = '../../../Data/m_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
