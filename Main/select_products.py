@@ -156,7 +156,7 @@ def write_brands_upc(code, agg, upc_set):
 			features.drop(column, axis = 1)
 	# merge extra characteristics with agg
 	agg = agg.merge(features, how = 'left', left_on = ['upc','max_year'], right_on = ['upc','year'])
-	agg = agg.drop(['max_year', 'panel_year', 'upc_ver_uc'], axis = 1)
+	agg = agg.drop(['max_year', 'panel_year', 'year', 'upc_ver_uc'], axis = 1)
 
 	base_folder = '../../../Data/m_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
