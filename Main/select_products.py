@@ -70,7 +70,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 					data_chunk[month_or_quarter] = np.floor((data_chunk['week_end'] % 10000)/100)
 					data_chunk[month_or_quarter] = data_chunk[month_or_quarter].astype(int)
             	elif month_or_quarter == "quarter":
-					data_chunk[month_or_quarter] = np.ceil(np.floor((data_chunk['week_end'] % 10000)/100)/3)
+					data_chunk[month_or_quarter] = np.ceil(((data_chunk['week_end'] % 10000)/100)/3)
 					data_chunk[month_or_quarter] = data_chunk[month_or_quarter].astype(int)
 
                 data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
