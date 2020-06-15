@@ -264,26 +264,7 @@ def geocoding_locations(locations):
         this_dict = {'location' : this_location, 'lat' : latitude, 'lon' : longitude}
         dict_list.append(this_dict)
     geocoded_locations = pd.DataFrame(dict_list).set_index('location')
-
-<<<<<<< HEAD
-=======
-    #locations_ls = df1['location'].unique().tolist()
-    #geolocator = Nominatim()
-    #geocoded_locations = pd.DataFrame()
-    #i = 0
-    #while i < len(locations_ls):
-    #    try:
-    #        location = geolocator.geocode(locations_ls[i])
-    #        latitude, longitude = location[1]
-    #        a_row = pd.Series([locations_ls[i], latitude, longitude])
-    #        row_geocoded_locations = pd.DataFrame([a_row])
-    #        geocoded_locations = pd.concat([row_geocoded_locations, geocoded_locations])
-    #        i = i + 1
-    #        print(i)
-    #    except:
-    #        time.sleep(10)
-    #geocoded_locations = geocoded_locations.rename(columns = {0: 'location', 1: 'lat', 2: 'lon'}).set_index('location')
->>>>>>> 4e04e9cbdcddbb7a3062fb84af5b6cee7a71045f
+    
     geocoded_locations.to_csv('../../../All/m_' + code + '/intermediate/geocoded_locations.csv', sep = ',', encoding = 'utf-8')
     locations['lat'] = locations['location'].map(geocoded_locations['lat'])
     locations['lon'] = locations['location'].map(geocoded_locations['lon'])
