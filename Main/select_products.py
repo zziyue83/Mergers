@@ -125,40 +125,18 @@ def get_acceptable_upcs(area_month_upc, share_cutoff):
 
     return acceptable_upcs['upc']
 
-<<<<<<< HEAD
-def write_brands_upc(code, agg, upc_set):
-	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi']]
-=======
 def is_same(xlist):
 	if all(x == xlist[0] for x in xlist):
 		return True
 	else:
 		return False
 
-def write_brands_upc(code, agg, upc_set, chars):
-	
-	# Drop characteristics with no variation
-	for c in chars.columns:
-		if c in ['upc', 'upc_ver_uc', 'year']:
-			continue
-		if is_same(chars[c]):
-			chars = chars.drop(c)
-
-	list_of_chars = chars.columns
-	for colname in ['upc', 'upc_ver_uc', 'year']:
-		list_of_chars = list_of_chars.remove(colname)
-
-
-	# SOMEWHERE NEED TO CHECK IF CHARS CHANGE OVER TIME
-
-	cols_to_keep = ['upc', 'upc_descr', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi']
-	agg = agg[cols_to_keep]
->>>>>>> b89b0cc09e6d3dd44fc86a97a8c2d0161f81d07a
+def write_brands_upc(code, agg, upc_set):
+	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi']]
 	agg = agg.drop_duplicates()
 	agg = agg[agg.upc.isin(upc_set)]
 	agg = agg.sort_values(by = 'brand_descr')
 
-<<<<<<< HEAD
 	# add extra nielsen data features from Annual_Files/products_extra_year.tsv
 	features_year = []
 	years = agg['year'].unique()
@@ -167,6 +145,7 @@ def write_brands_upc(code, agg, upc_set, chars):
 		features['year'] = year
 		features_year.append(features)
 	features = pd.concat(features_year)
+	features.drop('upc_ver_uc', axis = 1)
 	# drop columns with no variation
 	columns = features.columns
 	for column in columns:
@@ -177,19 +156,6 @@ def write_brands_upc(code, agg, upc_set, chars):
 	agg = agg.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','year'])
 
 	base_folder = '../../../Data/m_' + code + '/intermediate/'
-=======
-	# Now join to characteristics
-	# CAN YOU FIX THIS JOIN???
-	chars = chars.set_index('upc')
-	agg = agg.set_index('upc')
-	agg = agg.join(chars)
-
-	# Describe the characteristics
-	agg_chars = agg[list_of_chars]
-	agg_chars.describe()
-	
-	base_folder = '../../../All/m_' + code + '/intermediate/'
->>>>>>> b89b0cc09e6d3dd44fc86a97a8c2d0161f81d07a
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique upcs')
 
@@ -198,6 +164,49 @@ def write_brands_upc(code, agg, upc_set, chars):
 	agg = agg.drop_duplicates()
 	agg.to_csv(base_folder + 'brands.csv', sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique brands')
+
+# def write_brands_upc(code, agg, upc_set, chars):
+	
+# 	# Drop characteristics with no variation
+# 	for c in chars.columns:
+# 		if c in ['upc', 'upc_ver_uc', 'year']:
+# 			continue
+# 		if is_same(chars[c]):
+# 			chars = chars.drop(c)
+
+# 	list_of_chars = chars.columns
+# 	for colname in ['upc', 'upc_ver_uc', 'year']:
+# 		list_of_chars = list_of_chars.remove(colname)
+
+
+# 	# SOMEWHERE NEED TO CHECK IF CHARS CHANGE OVER TIME
+
+# 	cols_to_keep = ['upc', 'upc_descr', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi']
+# 	agg = agg[cols_to_keep]
+# 	agg = agg.drop_duplicates()
+# 	agg = agg[agg.upc.isin(upc_set)]
+# 	agg = agg.sort_values(by = 'brand_descr')
+
+# 	# Now join to characteristics
+# 	# CAN YOU FIX THIS JOIN???
+# 	chars = chars.set_index('upc')
+# 	agg = agg.set_index('upc')
+# 	agg = agg.join(chars)
+
+# 	# Describe the characteristics
+# 	agg_chars = agg[list_of_chars]
+# 	agg_chars.describe()
+	
+# 	base_folder = '../../../All/m_' + code + '/intermediate/'
+# 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
+# 	print(str(len(agg)) + ' unique upcs')
+
+# 	agg = agg[['brand_code_uc', 'brand_descr']]
+# 	agg = agg.rename(columns = {'brand_descr' : 'brand'})
+# 	agg = agg.drop_duplicates()
+# 	agg.to_csv(base_folder + 'brands.csv', sep = ',', encoding = 'utf-8')
+# 	print(str(len(agg)) + ' unique brands')
+
 
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares']]
