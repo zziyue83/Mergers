@@ -130,8 +130,14 @@ def write_brands_upc(code, agg, upc_set):
 		features['year'] = year
 		features_year.append(features)
 	features = pd.concat(features_year)
+	# drop columns with no variation
+	columns = features.columns
+	for column in columns:
+		variation = len(features[column].unique())
+		if variation <= 1:
+			features.drop(column, axis = 1)
+	# merge extra characteristics with agg
 	agg = agg.merge(features, how = 'left', left_on = ['upc','year'], right_on = ['upc','year'])
-
 
 	base_folder = '../../../Data/m_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
