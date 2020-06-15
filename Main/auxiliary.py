@@ -98,6 +98,41 @@ def append_owners(code, df, month_or_quarter):
 	brand_to_owner.loc[brand_to_owner['end_year']==0,'end_year'] = max_year
 	brand_to_owner.loc[brand_to_owner['end_month']==0,'end_month'] = 12
 
+	# Throw error if (1) dates don't span the entirety of the sample period or
+	# (2) ownership dates overlap
+	brand_to_owner_test = brand_to_owner.copy()
+	brand_to_owner_test = brand_to_owner_test.sort_values(by=['brand_code_uc', 'start_year', 'start_month'])
+
+	if month_or_quarter == 'month':
+	    min_date = pd.to_datetime(dict(year=df.year, month=df.month, day=1)).min()
+	    max_date = pd.to_datetime(dict(year=df.year, month=df.month, day=1)).max()
+	    brand_to_owner_test['start_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.start_year, month=brand_to_owner_test.start_month, day=1))
+	    brand_to_owner_test['end_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.end_year, month=brand_to_owner_test.end_month, day=1))
+	elif month_or_quarter == 'quarter':
+	    min_date = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1)).min()
+	    max_date = pd.to_datetime(dict(year=df.year, month=3*df.quarter, day=1)).max()
+	    brand_to_owner_test['start_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.start_year, month=3*(np.ceil(brand_to_owner_test.start_month/3)-1)+1, day=1))
+	    brand_to_owner_test['end_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.end_year, month=3*(np.floor(brand_to_owner_test.end_month/3)), day=1))
+
+	brand_dates = brand_to_owner_test.groupby('brand_code_uc')[['start_date_test', 'end_date_test']].agg(['min', 'max'])
+	if ((brand_dates.start_date_test['min']!=min_date).sum() + (brand_dates.end_date_test['max']!=max_date).sum() > 0):
+	    raise Exception('Ownership definitions either do not span the entire sample period or span more than the sample period.')
+
+	brand_to_owner_test['owner_num'] = brand_to_owner_test.groupby('brand_code_uc').cumcount()+1
+	max_num_owner = brand_to_owner_test['owner_num'].max()
+	brand_to_owner_test = brand_to_owner_test.set_index('owner_num',append=True)
+	brand_to_owner_test = brand_to_owner_test.unstack('owner_num')
+	brand_to_owner_test.columns = ['{}_{}'.format(var, num) for var, num in brand_to_owner_test.columns]
+
+	for ii in range(2,max_num_owner+1):
+	    overlap_or_gap = (brand_to_owner_test['start_year_' + str(ii)] < brand_to_owner_test['end_year_' + str(ii-1)]) | \
+	        ((brand_to_owner_test['start_year_' + str(ii)] == brand_to_owner_test['end_year_' + str(ii-1)]) & \
+	        (brand_to_owner_test['start_month_' + str(ii)] != (brand_to_owner_test['end_month_' + str(ii-1)] + 1))) | \
+	        ((brand_to_owner_test['start_year_' + str(ii)] > brand_to_owner_test['end_year_' + str(ii-1)]) & \
+	        ((brand_to_owner_test['start_month_' + str(ii)] != 1) | (brand_to_owner_test['end_month_' + str(ii-1)] != 12)))
+	    if overlap_or_gap.sum() > 0:
+	        raise Exception('There are gaps or overlap in the ownership mapping.')
+
 	# Merge on brand and date intervals
 	if month_or_quarter == 'month':
 	    brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=brand_to_owner.start_month, day=1))
