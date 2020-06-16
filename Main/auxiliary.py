@@ -34,11 +34,13 @@ def int_to_month(value):
 	month = value - 12 * year
 	return year, month
 
-def get_years(year_string, pre_months = 18, post_months = 18):
-	dt = datetime.strptime(year_string, '%Y-%m-%d')
-	month_int = dt.year * 12 + dt.month
-	min_year, min_month = int_to_month(month_int - pre_months)
-	max_year, max_month = int_to_month(month_int + post_months)
+def get_years(initial_year_string, final_year_string, pre_months = 24, post_months = 24):
+	initial_dt = datetime.strptime(initial_year_string, '%Y-%m-%d')
+	final_dt = datetime.strptime(final_year_string, '%Y-%m-%d')
+	initial_month_int = initial_dt.year * 12 + intial_dt.month
+	final_month_int = final_dt.year * 12 + final_dt.month
+	min_year, min_month = int_to_month(initial_month_int - pre_months)
+	max_year, max_month = int_to_month(final_month_int + post_months)
 
 	years = []
 	for i in range(int(min_year), int(max_year) + 1, 1):

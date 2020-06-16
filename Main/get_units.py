@@ -84,7 +84,7 @@ info_dict = aux.parse_info(code)
 
 merger_date = info_dict['DateCompleted']
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
-years = aux.get_years(info_dict["DateCompleted"])
+years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
 if not os.path.isdir('../../../All/m_' + code + '/intermediate'):
 	print("Making the intermediate directory")
