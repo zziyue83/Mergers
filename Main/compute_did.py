@@ -5,6 +5,7 @@ import statsmodels.api as sm
 import numpy as np
 import unicodecsv as csv
 import auxiliary as aux
+import datetime
 
 def append_aggregate_demographics(df, month_or_quarter):
 
@@ -41,6 +42,7 @@ def compute_hhi_map(df, owner_col = 'owner'):
 def add_dhhi(df, merging_date, month_or_quarter):
 
 	# Pull merger year and merger month (or quarter)
+	merging_date = datetime.strptime(merging_date, '%Y-%m-%d')
 	if month_or_quarter == 'month':
 		merger_month_or_quarter = merging_date.month
 	elif month_or_quarter == 'quarter':
@@ -101,6 +103,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 	# Pull merger year and merger month (or quarter)
+	merging_date = datetime.strptime(merging_date, '%Y-%m-%d')
 	merger_year = merging_date.year
 	merger_month = merging_date.month
 	if month_or_quarter == 'month':
