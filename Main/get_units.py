@@ -14,7 +14,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 	min_year, min_month = aux.int_to_month(month_int - pre_months)
 	max_year, max_month = aux.int_to_month(month_int + post_months)
 
-	product_map = aux.get_product_map(groups.unique())
+	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['size1_units', 'size1_amount', 'multi']
 
 	with open('../../../All/m_' + code + '/intermediate/units.csv', "wb") as csvfile:
