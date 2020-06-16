@@ -89,7 +89,7 @@ years = aux.get_years(info_dict["DateCompleted"])
 if not os.path.isdir('../../../All/m_' + code + '/intermediate'):
 	print("Making the intermediate directory")
 	os.makedirs('../../../All/m_' + code + '/intermediate')
-generate_units_table(code, years, groups, modules)
+generate_units_table(code, years, groups, modules, merger_date)
 
 log_out.close()
 log_err.close()
