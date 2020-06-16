@@ -98,6 +98,41 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	return df
 
+def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'month'):
+
+	# Pull merger year and merger month (or quarter)
+	merger_year = merging_date.year
+	merger_month = merging_date.month
+	if month_or_quarter == 'month':
+		merger_month_or_quarter = merger_month
+	elif month_or_quarter == 'quarter':
+		merger_month_or_quarter = np.ceil(merger_month/3)
+	
+	# First get total sales in entire market pre and post
+	ms = pd.read_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', delimiter = ',')
+	ms['post_merger'] = 0
+	ms.loc[(ms['year']>merger_year) | ((ms['year']==merger_year) & (ms['month']>=merger_month)), 'post_merger'] = 1
+
+    total_sales_post = ms.total_sales[ms['post_merger'] == 1].sum()
+    total_sales_pre = ms.total_sales[ms['post_merger'] == 0].sum()
+
+	df['post_merger'] = 0
+    df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
+    
+    # Get a dataframe that is pre-sales, post-sales, pre-shares, post-shares for all merging parties
+    rows_list = []
+    for party in merging_parties:
+    	party_sales_pre = df.sales[df['owner'] == party & df['post_merger'] == 0]
+    	party_sales_post = df.sales[df['owner'] == party & df['post_merger'] == 1]
+    	party_share_pre = party_sales_pre / total_sales_pre
+    	party_share_post = party_sales_post / total_sales_post
+
+    	this_dict = {'name' : party, 'pre_sales' : party_sales_pre, 'post_sales' : party_sales_post, 'pre_share' : party_share_pre, 'post_share' : part_share_post}
+    	rows_list.append(this_dict)
+    overlap_df = pd.DataFrame(rows_list)
+    overlap_df.to_csv('../../../All/m_' + code + '/output/overlap.csv', sep = ',', encoding = 'utf-8')
+
+
 def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 	# Pull merger year and merger month (or quarter)
@@ -136,7 +171,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	# Add demographics
 	data['log_hhinc_per_person_adj'] = np.log(data['hhinc_per_person_adj'])
 
-    with open('m_' + code + '/output/did_' + month_or_quarter + '.csv', "wb") as csvfile:
+    with open('../../../Data/m_' + code + '/output/did_' + month_or_quarter + '.csv', "wb") as csvfile:
     	header = ["model","post_merger*merging", "post_merger*merging_se", "post_merger*merging_pval", "post_merger*dhhi", "post_merger*dhhi_se", "post_merger*dhhi_pval", "post_merger", "post_merger_se", "post_merger_pval", "trend", "trend_se", "trend_pval", "log_hhinc_per_person_adj", "log_hhinc_per_person_adj_se", "log_hhinc_per_person_adj_pval", "N", "r2", "product", "time"]
 		writer = csv.writer(csvfile, delimiter = ',', encoding = 'utf-8')
 		writer.writerow(header)
@@ -278,10 +313,20 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	    # Should we think about a case where we do a dummy for the second-largest firm too?
 
 code = sys.argv[1]
+log_out = open('../../../All/m_' + code + '/output/compute_did.log', 'w')
+log_err = open('../../../All/m_' + code + '/output/compute_did.err', 'w')
+sys.stdout = log_out
+sys.stderr = log_err
+
 info_dict = aux.parse_info(code)
 merging_parties = aux.get_merging_parties(info_dict["MergingParties"])
 
 for timetype in ['month', 'quarter']:
-	df = pd.read_csv('m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
+	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
 	df = aux.append_owners(code, df, timetype)
+	if timetype == 'month':
+		write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
 	did(df, info_dict["DateCompleted"], merging_parties, timetype)
+
+log_out.close()
+log_err.close()

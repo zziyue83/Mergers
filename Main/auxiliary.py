@@ -5,9 +5,10 @@ import pyblp
 import pickle
 import pandas as pd
 import numpy as np
+import pandasql as ps
 
 def parse_info(code):
-	file = open('../../../Data/m_' + code + '/info.txt', mode = 'r')
+	file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
 	info_file = file.read()
 	file.close()
 
@@ -79,7 +80,7 @@ def get_product_map(groups):
 
 def append_owners(code, df, month_or_quarter):
 	# Load list of UPCs and brands
-	upcs = pd.read_csv('../../../Data/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
+	upcs = pd.read_csv('../../../All/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
 	upcs = upcs['brand_code_uc']
 	upc_map = upcs.to_dict()
 
@@ -87,52 +88,79 @@ def append_owners(code, df, month_or_quarter):
 	df['brand_code_uc'] = df['upc'].map(upc_map)
 
 	# Load ownership assignments
-	brand_to_owner = pd.read_csv('m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
-	brand_to_owner['owner_num'] = brand_to_owner.groupby('brand_code_uc').cumcount()+1
-	max_num_owner = brand_to_owner['owner_num'].max()
-	brand_to_owner = brand_to_owner.set_index('owner_num',append=True)
-	brand_to_owner = brand_to_owner.unstack('owner_num')
-	brand_to_owner.columns = ['{}_{}'.format(var, num) for var, num in brand_to_owner.columns]
+	brand_to_owner = pd.read_csv('../../../All/m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
 
-	# Merge ownership
-	df = df.join(brand_to_owner, on='brand_code_uc', how='left')
+	# Assign min/max year and month when listed as zero in ownership mapping
 	min_year = df['year'].min()
 	max_year = df['year'].max()
+	brand_to_owner.loc[brand_to_owner['start_year']==0,'start_year'] = min_year
+	brand_to_owner.loc[brand_to_owner['start_month']==0,'start_month'] = 1
+	brand_to_owner.loc[brand_to_owner['end_year']==0,'end_year'] = max_year
+	brand_to_owner.loc[brand_to_owner['end_month']==0,'end_month'] = 12
 
-	for ii in reversed(range(1,max_num_owner+1)):
-		df.loc[df['start_year_1']==0,'owner_'+str(ii)] = df.loc[df['start_year_1']==0,'owner_1']
-		df.loc[df['start_year_1']==0,'end_month_'+str(ii)] = 12
-		df.loc[df['start_year_1']==0,'end_year_'+str(ii)] = max_year
-		df.loc[df['start_year_1']==0,'start_month_'+str(ii)] = 1
-		df.loc[df['start_year_1']==0,'start_year_'+str(ii)] = min_year
+	# Throw error if (1) dates don't span the entirety of the sample period or
+	# (2) ownership dates overlap
+	brand_to_owner_test = brand_to_owner.copy()
+	brand_to_owner_test = brand_to_owner_test.sort_values(by=['brand_code_uc', 'start_year', 'start_month'])
 
-	for ii in range(1,max_num_owner+1):
-		if month_or_quarter == 'month':
-			df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
-				((df['year']==df['start_year_'+str(ii)]) & (df['month'] >= df['start_month_'+str(ii)]))) & \
-				(((df['year'] < df['end_year_'+str(ii)]) | \
-				((df['year']==df['end_year_'+str(ii)]) & df['month'] <= df['end_year_'+str(ii)]))),'owner'] = \
-				df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
-				((df['year']==df['start_year_'+str(ii)]) & (df['month'] >= df['start_month_'+str(ii)]))) & \
-				(((df['year'] < df['end_year_'+str(ii)]) | \
-				((df['year']==df['end_year_'+str(ii)]) & df['month'] <= df['end_year_'+str(ii)]))),'owner_'+str(ii)]
-		elif month_or_quarter == 'quarter':
-			df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
-				((df['year']==df['start_year_'+str(ii)]) & (df['quarter'] >= ceil(df['start_month_'+str(ii)]/3)))) & \
-				(((df['year'] < df['end_year_'+str(ii)]) | \
-				((df['year']==df['end_year_'+str(ii)]) & df['quarter'] <= ceil(df['end_year_'+str(ii)]/3)))),'owner'] = \
-				df.loc[((df['year'] > df['start_year_'+str(ii)]) | \
-				((df['year']==df['start_year_'+str(ii)]) & (df['quarter'] >= ceil(df['start_month_'+str(ii)]/3)))) & \
-				(((df['year'] < df['end_year_'+str(ii)]) | \
-				((df['year']==df['end_year_'+str(ii)]) & df['quarter'] <= ceil(df['end_year_'+str(ii)]/3)))),'owner_'+str(ii)]
+	if month_or_quarter == 'month':
+	    min_date = pd.to_datetime(dict(year=df.year, month=df.month, day=1)).min()
+	    max_date = pd.to_datetime(dict(year=df.year, month=df.month, day=1)).max()
+	    brand_to_owner_test['start_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.start_year, month=brand_to_owner_test.start_month, day=1))
+	    brand_to_owner_test['end_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.end_year, month=brand_to_owner_test.end_month, day=1))
+	elif month_or_quarter == 'quarter':
+	    min_date = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1)).min()
+	    max_date = pd.to_datetime(dict(year=df.year, month=3*df.quarter, day=1)).max()
+	    brand_to_owner_test['start_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.start_year, month=3*(np.ceil(brand_to_owner_test.start_month/3)-1)+1, day=1))
+	    brand_to_owner_test['end_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.end_year, month=3*(np.floor(brand_to_owner_test.end_month/3)), day=1))
 
-	return(df)
+	brand_dates = brand_to_owner_test.groupby('brand_code_uc')[['start_date_test', 'end_date_test']].agg(['min', 'max'])
+	if ((brand_dates.start_date_test['min']!=min_date).sum() + (brand_dates.end_date_test['max']!=max_date).sum() > 0):
+	    raise Exception('Ownership definitions either do not span the entire sample period or span more than the sample period.')
 
-def adjust_inflation(df, var, month_or_quarter, rename_var = True):
+	brand_to_owner_test['owner_num'] = brand_to_owner_test.groupby('brand_code_uc').cumcount()+1
+	max_num_owner = brand_to_owner_test['owner_num'].max()
+	brand_to_owner_test = brand_to_owner_test.set_index('owner_num',append=True)
+	brand_to_owner_test = brand_to_owner_test.unstack('owner_num')
+	brand_to_owner_test.columns = ['{}_{}'.format(var, num) for var, num in brand_to_owner_test.columns]
+
+	for ii in range(2,max_num_owner+1):
+	    overlap_or_gap = (brand_to_owner_test['start_year_' + str(ii)] < brand_to_owner_test['end_year_' + str(ii-1)]) | \
+	        ((brand_to_owner_test['start_year_' + str(ii)] == brand_to_owner_test['end_year_' + str(ii-1)]) & \
+	        (brand_to_owner_test['start_month_' + str(ii)] != (brand_to_owner_test['end_month_' + str(ii-1)] + 1))) | \
+	        ((brand_to_owner_test['start_year_' + str(ii)] > brand_to_owner_test['end_year_' + str(ii-1)]) & \
+	        ((brand_to_owner_test['start_month_' + str(ii)] != 1) | (brand_to_owner_test['end_month_' + str(ii-1)] != 12)))
+	    if overlap_or_gap.sum() > 0:
+	        raise Exception('There are gaps or overlap in the ownership mapping.')
+
+	# Merge on brand and date intervals
+	if month_or_quarter == 'month':
+	    brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=brand_to_owner.start_month, day=1))
+	    brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=brand_to_owner.end_month, day=1))
+	    df['date'] = pd.to_datetime(dict(year=df.year, month=df.month, day=1))
+	    sqlcode = '''
+	    select df.upc, df.year, df.month, df.price, df.shares, df.dma, df.brand_code_uc, brand_to_owner.owner
+	    from df
+	    inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+	    '''
+	elif month_or_quarter == 'quarter':
+	    brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=3*(np.ceil(brand_to_owner.start_month/3)-1)+1, day=1))
+	    brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=3*(np.floor(brand_to_owner.end_month/3)), day=1))
+	    df['date'] = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1))
+	    sqlcode = '''
+	    select df.upc, df.year, df.quarter, df.price, df.shares, df.dma, df.brand_code_uc, brand_to_owner.owner
+	    from df
+	    inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+	    '''
+
+	df_own = ps.sqldf(sqlcode,locals())
+	return df_own
+
+def adjust_inflation(df, vars, month_or_quarter, rename_var = True):
 
 	# Import CPIU dataset
 	month_or_quarter = 'month'
-	cpiu = pd.read_excel('../Data/cpiu_2000_2020.xlsx', header = 11)
+	cpiu = pd.read_excel('../../../All/master/cpiu_2000_2020.xlsx', header = 11)
 	cpiu = cpiu.set_index('Year')
 	month_dictionary = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12}
 	cpiu = cpiu.rename(columns = month_dictionary)
@@ -153,12 +181,13 @@ def adjust_inflation(df, var, month_or_quarter, rename_var = True):
 	cpiu = cpiu.set_index(['year', month_or_quarter])
 
 	# Merge CPIU onto dataframe and adjust prices
-	df = df.join(cpiu, on=['year',month_or_quarter], how='left')
-	if rename_var:
-		df[var] = df[var] * (df['cpiu_201001'] / df['cpiu'])
-		df = df.drop(['cpiu_201001', 'cpiu'])
-	else:
-		df[var + '_adj'] = df[var] * (df['cpiu_201001'] / df['cpiu'])
+	df = df.join(cpiu, on=['year', month_or_quarter], how = 'left')
+	for var in vars:
+		if rename_var:
+			df[var] = df[var] * (df['cpiu_201001'] / df['cpiu'])
+			df = df.drop(['cpiu_201001', 'cpiu'])
+		else:
+			df[var + '_adj'] = df[var] * (df['cpiu_201001'] / df['cpiu'])
 
 	return df
 
