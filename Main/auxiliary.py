@@ -173,7 +173,7 @@ def append_owners(code, df, month_or_quarter):
 	df_own = ps.sqldf(sqlcode,locals())
 	return df_own
 
-def adjust_inflation(df, vars, month_or_quarter, rename_var = True):
+def adjust_inflation(df, all_vars, month_or_quarter, rename_var = True):
 
 	# Import CPIU dataset
 	month_or_quarter = 'month'
@@ -199,7 +199,7 @@ def adjust_inflation(df, vars, month_or_quarter, rename_var = True):
 
 	# Merge CPIU onto dataframe and adjust prices
 	df = df.join(cpiu, on=['year', month_or_quarter], how = 'left')
-	for var in vars:
+	for var in all_vars:
 		if rename_var:
 			df[var] = df[var] * (df['cpiu_201001'] / df['cpiu'])
 			df = df.drop(['cpiu_201001', 'cpiu'])
