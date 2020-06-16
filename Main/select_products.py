@@ -135,26 +135,22 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg[agg.upc.isin(upc_set)]
 	agg = agg.sort_values(by = 'brand_descr')
 	agg['year'] = agg['year'].astype(int)
-	agg['max_year'] = agg.groupby('upc')['year'].transform('max')
+	# agg['max_year'] = agg.groupby('upc')['year'].transform('max')
 
 	# add extra nielsen data features from Annual_Files/products_extra_year.tsv
-	features_year = []
 	years = agg['year'].unique()
-	for year in years:
-		features =  pd.read_csv("../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/products_extra_"+str(year)+".tsv", delimiter = '\t')
-		features['year'] = year
-		features_year.append(features)
-	features = pd.concat(features_year)
+	last_year = years[-1]
+	features =  pd.read_csv("../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/products_extra_"+str(year)+".tsv", delimiter = '\t')
 	features.drop('upc_ver_uc', axis = 1)
 	# drop columns with no variation
 	columns = features.columns
 	for column in columns:
 		variation = len(features[column].unique())
 		if variation <= 1:
-			features.drop(column, axis = 1)
+			features = features.drop(column, axis = 1)
 	# merge extra characteristics with agg
-	agg = agg.merge(features, how = 'left', left_on = ['upc','max_year'], right_on = ['upc','year'])
-	agg = agg.drop(['max_year', 'panel_year', 'year', 'upc_ver_uc'], axis = 1)
+	agg = agg.merge(features, how = 'left', left_on = 'upc', right_on = 'upc')
+	agg = agg.drop(['panel_year', 'year', 'upc_ver_uc'], axis = 1)
 	agg.describe()
 
 	base_folder = '../../../Data/m_' + code + '/intermediate/'
@@ -202,7 +198,7 @@ acceptable_upcs = get_acceptable_upcs(area_month_upc['upc', 'shares'], float(inf
 
 # Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
 # Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
-write_brands_upc(code, area_month_upc, acceptable_upcs, nielsen_charcteristics)
+write_brands_upc(code, area_month_upc, acceptable_upcs)
 
 # Now filter area_month_upc and area_quarter_upc so that only acceptable_upcs survive
 # Print out data_month.csv and data_quarter.csv
