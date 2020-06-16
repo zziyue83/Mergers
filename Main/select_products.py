@@ -62,7 +62,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	area_time_upc_list = []
 	product_map = aux.get_product_map(groups.unique())
 	add_from_map = ['brand_code_uc', 'brand_descr', 'multi', 'size1_units', 'size1_amount']
-	aggregation_function = {'week_end' : 'first', 'units' : 'sum', 'prmult' : 'mean', 'price' : 'mean', 'feature' : 'first', 'display' : 'first', 'store_code_uc' : 'first', 'sales' : 'sum'}
+	aggregation_function = {'week_end' : 'first', 'units' : 'sum', 'prmult' : 'mean', 'price' : 'mean', 'feature' : 'first', 'display' : 'first', 'store_code_uc' : 'first', 'sales' : 'sum', 'module' : 'first'}
 
 	for year in years:
 		store_table = load_store_table(year)
@@ -93,6 +93,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
 				data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
 				data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
+				data_chunk['module'] = int(module)
 				area_time_upc = data_chunk.groupby(['year', month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
 				area_time_upc_list.append(area_time_upc)
 
@@ -130,10 +131,9 @@ def get_acceptable_upcs(area_month_upc, share_cutoff):
 	return acceptable_upcs['upc']
 
 def write_brands_upc(code, agg, upc_set):
-	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi']]
+	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module']]
 	agg = agg.drop_duplicates()
 	agg = agg[agg.upc.isin(upc_set)]
-	agg = agg.sort_values(by = 'brand_descr')
 	agg['year'] = agg['year'].astype(int)
 	# agg['max_year'] = agg.groupby('upc')['year'].transform('max')
 
@@ -151,6 +151,8 @@ def write_brands_upc(code, agg, upc_set):
 	# merge extra characteristics with agg
 	agg = agg.merge(features, how = 'left', left_on = 'upc', right_on = 'upc')
 	agg = agg.drop(['panel_year', 'year', 'upc_ver_uc'], axis = 1)
+	agg = agg.sort_values(by = 'brand_descr')
+	
 	agg.describe()
 
 	base_folder = '../../../Data/m_' + code + '/intermediate/'
