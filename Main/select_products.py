@@ -142,12 +142,14 @@ def write_brands_upc(code, agg, upc_set):
 	last_year = years[-1]
 	features =  pd.read_csv("../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/products_extra_"+str(year)+".tsv", delimiter = '\t')
 	features.drop('upc_ver_uc', axis = 1)
+	
 	# drop columns with no variation
 	columns = features.columns
 	for column in columns:
 		variation = len(features[column].unique())
 		if variation <= 1:
 			features = features.drop(column, axis = 1)
+	
 	# merge extra characteristics with agg
 	agg = agg.merge(features, how = 'left', left_on = 'upc', right_on = 'upc')
 	agg = agg.drop(['panel_year', 'year', 'upc_ver_uc'], axis = 1)
