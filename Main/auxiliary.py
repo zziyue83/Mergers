@@ -41,7 +41,7 @@ def get_years(year_string, pre_months = 18, post_months = 18):
 	max_year, max_month = int_to_month(month_int + post_months)
 
 	years = []
-	for i in range(min_year, max_year + 1, 1):
+	for i in range(int(min_year), int(max_year) + 1, 1):
 		this_year = dt.year + i
 		if this_year >= 2006 and this_year <= 2018:
 			years.append(str(this_year))
