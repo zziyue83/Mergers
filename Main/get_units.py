@@ -82,6 +82,7 @@ sys.stderr = log_err
 
 info_dict = aux.parse_info(code)
 
+merger_date = info_dict['DateCompleted']
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
 years = aux.get_years(info_dict["DateCompleted"])
 
