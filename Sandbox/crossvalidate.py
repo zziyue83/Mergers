@@ -12,6 +12,13 @@ data_short = data[data['market_ids'].isin(uu)].copy()
 problem_short = pyblp.Problem(formulation, data_short)
 results_short = problem_short.solve()
 
+# Run a silly simulation to check how simulation works
+simulation_check = pyblp.Simulation(formulation, data_short, beta = results_short.beta, xi = results_short.xi)
+simulation_results_check = simulation_check.replace_endogenous(costs = np.zeros((len(data_short), 1)), 
+	prices = data_short.prices, 
+	iteration = pyblp.Iteration(method = 'return'))
+plt.scatter(data_short.shares, simulation_results_check.product_data.shares)
+
 # Now get xi from results_short by product
 data_short['xi'] = results_short.xi
 product_xi = data_short[['product_ids', 'xi']].copy()
