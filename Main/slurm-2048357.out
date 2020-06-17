@@ -1,0 +1,10 @@
+Requirement already satisfied: pyblp in /home/jds7480/.local/lib/python3.6/site-packages
+Requirement already satisfied: patsy>=0.5.1 in /home/jds7480/.local/lib/python3.6/site-packages (from pyblp)
+Requirement already satisfied: sympy>=1.1.0 in /home/jds7480/.local/lib/python3.6/site-packages (from pyblp)
+Requirement already satisfied: pyhdfe>=0.1.0 in /home/jds7480/.local/lib/python3.6/site-packages (from pyblp)
+Requirement already satisfied: scipy>=1.2.0 in /home/jds7480/.local/lib/python3.6/site-packages (from pyblp)
+Requirement already satisfied: numpy>=1.16.0 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pyblp)
+Requirement already satisfied: six in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from patsy>=0.5.1->pyblp)
+Requirement already satisfied: mpmath>=0.19 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from sympy>=1.1.0->pyblp)
+You are using pip version 9.0.1, however version 20.1.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.

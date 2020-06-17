@@ -43,10 +43,11 @@ def get_years(initial_year_string, final_year_string, pre_months = 24, post_mont
 	max_year, max_month = int_to_month(final_month_int + post_months)
 
 	years = []
-	for i in range(int(min_year), int(max_year) + 1, 1):
-		this_year = dt.year + i
+        for i in range(int(min_year), int(max_year) + 1, 1):
+                this_year = i
 		if this_year >= 2006 and this_year <= 2018:
 			years.append(str(this_year))
+        print(years)
 	return years
 
 def get_merging_parties(info_str):
