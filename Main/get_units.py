@@ -93,5 +93,6 @@ if not os.path.isdir('../../../All/m_' + code + '/intermediate'):
 	os.makedirs('../../../All/m_' + code + '/intermediate')
 generate_units_table(code, years, groups, modules, merger_date)
 
+print("get_units finished successfully")
 log_out.close()
 log_err.close()
