@@ -5,6 +5,7 @@ import unicodecsv as csv
 import auxiliary as aux
 import tqdm
 import os
+import pandas as pd
 
 def generate_units_table(code, years, groups, modules, merger_date, pre_months = 18, post_months = 18):
 
