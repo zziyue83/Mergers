@@ -4,6 +4,7 @@ from datetime import datetime
 import auxiliary as aux
 import tqdm
 import numpy as np
+import pandas as pd
 
 def load_store_table(year):
 	store_path = "../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
