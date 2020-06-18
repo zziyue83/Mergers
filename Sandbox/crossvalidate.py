@@ -124,8 +124,9 @@ def recover_fixed_effects(fe_columns, fe_vals, omit_constant = True):
 				this_fe = row[col]
 				try:
 					this_index = fe_dict[col].index(this_fe)
-				except:
+				except ValueError:
 					# Omitted value
+					print('Omitted value for ' + col)
 					continue
 
 				col_number = start_col_number[col] + this_index
