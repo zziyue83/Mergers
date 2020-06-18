@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import numpy as np
 
-def generate_units_table(code, years, groups, modules, merger_date, pre_months = 18, post_months = 18):
+def generate_units_table(code, years, groups, modules, merger_date, pre_months = 24, post_months = 24):
 
 	# Get the relevant range
 	dt = datetime.strptime(merger_date, '%Y-%m-%d')
@@ -56,7 +56,6 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		all_units_frequency = pd.concat(all_units_frequency_list)
 		agg_all_units_frequency = all_units_frequency.groupby(['norm_size1_amount', 'size1_units']).sum()
 		agg_all_units_frequency = agg_all_units_frequency.reset_index()
-		print(agg_all_units_frequency)
 		unique_units = agg_all_units_frequency['size1_units'].unique()
 
 		print("finished aggregation")
@@ -68,12 +67,9 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 			# Weighted by quantity, what is the median package size?
 			total_quantity = this_unit['norm_units'].sum()
 			booleans = this_unit['norm_units'].cumsum() <= (0.5 * total_quantity)
-			print(booleans)
-			print(sum(booleans))
 			# median = this_unit.norm_size1_amount[sum(booleans)]
 			this_unit_np = np.array(this_unit['norm_size1_amount'])
 			median = this_unit_np[sum(booleans)]
-			print(median)
 
 			# Mode
 			where_mode = this_unit.norm_units.idxmax()
