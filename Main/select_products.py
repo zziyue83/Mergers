@@ -2,8 +2,9 @@ import re
 import sys
 from datetime import datetime
 import auxiliary as aux
-import tqdm
+from tqdm import tqdm
 import numpy as np
+import pandas as pd
 
 def load_store_table(year):
 	store_path = "../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
@@ -49,13 +50,16 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	conversion_map = these_units.to_dict()
 	return conversion_map
 
-def aggregate_movement(code, years, groups, modules, month_or_quarter, conversion_map, merger_date, market_size_scale = 1.5, pre_months = 18, post_months = 18):
+def aggregate_movement(code, years, groups, modules, month_or_quarter, conversion_map, merger_start_date, merger_stop_date, market_size_scale = 1.5, pre_months = 24, post_months = 24):
 
 	# Get the relevant range
-	dt = datetime.strptime(merger_date, '%Y-%m-%d')
-	month_int = dt.year * 12 + dt.month
-	min_year, min_month = aux.int_to_month(month_int - pre_months)
-	max_year, max_month = aux.int_to_month(month_int + post_months)
+	stop_dt = datetime.strptime(merger_stop_date, '%Y-%m-%d')
+	start_dt = datetime.strptime(merger_start_date, '%Y-%m-%d')
+	stop_month_int = stop_dt.year * 12 + stop_dt.month
+	start_month_int = start_dt.year * 12 + start_dt.month
+
+	min_year, min_month = aux.int_to_month(start_month_int - pre_months)
+	max_year, max_month = aux.int_to_month(stop_month_int + post_months)
 	min_quarter = np.ceil(min_month/3)
 	max_quarter = np.ceil(max_month/3)
 
@@ -101,22 +105,25 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	area_time_upc = area_time_upc.groupby(['year', month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
 	for to_add in add_from_map:
 		area_time_upc[to_add] = area_time_upc['upc'].map(product_map(to_add))
-	area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion']) # YINTIAN/AISLING -- check this!!!
+	area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion']) 
 	area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi'] * area_time_upc['conversion']
-	area_time_upc['raw_price']  = area_time_upc['price']
 	area_time_upc['prices'] = area_time_upc['sales'] / area_time_upc['volume']
 	area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
 
 	# Normalize the prices by the CPI.  Let January 2010 = 1.
-	area_time_upc = aux.adjust_inflation(area_time_upc, 'prices', month_or_quarter)
+	area_time_upc = aux.adjust_inflation(area_time_upc, ['prices', 'sales'], month_or_quarter)
 
 	# Get the market sizes here, by summing volume within dma-time and then taking 1.5 times max within-dma
-	short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume']]
-	market_sizes = area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
-	market_sizes = market_sizes.rename({'volume : market_size'})
+	short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume', 'sales']]
+	market_sizes = short_area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
+	market_sizes['market_size'] = market_sizes.groupby('dma_code').transform('max')
 	market_sizes['market_size'] = market_size_scale * market_sizes['market_size']
-	market_sizes.to_csv('../../../Data/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
+	market_sizes = market_sizes.rename({'volume' : 'market_size', 'total_sales' : 'sales'})
 
+	# Save the output if this is month
+	if month_or_quarter == 'month':
+		market_sizes.to_csv('../../../Data/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
+	
 	# Shares = volume / market size.  Map market sizes back and get shares.
 	area_time_upc = area_time_upc.join(market_sizes, on = ['dma_code', 'year', month_or_quarter])
 	area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
@@ -196,11 +203,11 @@ sys.stderr = log_err
 info_dict = aux.parse_info(code)
 
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
-years = aux.get_years(info_dict["DateCompleted"])
+years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
 conversion_map = get_conversion_map(code, info_dict["FinalUnit"])
-area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateCompleted"])
-area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateCompleted"])
+area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
+area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
 acceptable_upcs = get_acceptable_upcs(area_month_upc['upc', 'shares'], float(info_dict["InitialShareCutoff"]))
 

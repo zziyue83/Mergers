@@ -3,8 +3,10 @@ import sys
 from datetime import datetime
 import unicodecsv as csv
 import auxiliary as aux
-import tqdm
+from tqdm import tqdm
 import os
+import pandas as pd
+import numpy as np
 
 def generate_units_table(code, years, groups, modules, merger_date, pre_months = 18, post_months = 18):
 
@@ -14,7 +16,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 	min_year, min_month = aux.int_to_month(month_int - pre_months)
 	max_year, max_month = aux.int_to_month(month_int + post_months)
 
-	product_map = aux.get_product_map(groups.unique())
+	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['size1_units', 'size1_amount', 'multi']
 
 	with open('../../../All/m_' + code + '/intermediate/units.csv', "wb") as csvfile:
@@ -40,11 +42,11 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 							data_chunk = data_chunk[data_chunk.month <= max_month]
 					
 					for to_add in add_from_map:
-						data_chunk[to_add] = data_chunk['upc'].map(product_map(to_add))
+						data_chunk[to_add] = data_chunk['upc'].map(product_map[to_add])
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'multi']]
 					
 					# normunits is the total volume sold (quantity x size)
-					data_chunk['normunits'] = data_chunk['units'] * data_chunk['multi'] * data_chunk['size1_amount']
+					data_chunk['norm_units'] = data_chunk['units'] * data_chunk['multi'] * data_chunk['size1_amount']
 					data_chunk['norm_size1_amount'] = data_chunk['size1_amount'] * data_chunk['multi']
 					data_chunk = data_chunk[['norm_size1_amount', 'size1_units', 'norm_units']]
 					units_frequency = data_chunk.groupby(['norm_size1_amount', 'size1_units']).sum()
@@ -53,20 +55,24 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		# Sum frequency table to get the total frequency table
 		all_units_frequency = pd.concat(all_units_frequency_list)
 		agg_all_units_frequency = all_units_frequency.groupby(['norm_size1_amount', 'size1_units']).sum()
-
+		agg_all_units_frequency = agg_all_units_frequency.reset_index()
 		unique_units = agg_all_units_frequency['size1_units'].unique()
 
+		print("finished aggregation")
 		for unit in unique_units:
+			print(unit)
 			this_unit = agg_all_units_frequency[agg_all_units_frequency['size1_units'] == unit]
 			this_unit = this_unit.sort_values(by = ['norm_size1_amount'])
 
 			# Weighted by quantity, what is the median package size?
-			total_quantity = this_unit['normunits'].sum()
-			booleans = this_unit['normunits'].cumsum() <= (0.5 * total_quantity)
-			median = this_unit.norm_size1_amount[sum(booleans)]
+			total_quantity = this_unit['norm_units'].sum()
+			booleans = this_unit['norm_units'].cumsum() <= (0.5 * total_quantity)
+			# median = this_unit.norm_size1_amount[sum(booleans)]
+			this_unit_np = np.array(this_unit['norm_size1_amount'])
+			median = this_unit_np[sum(booleans)]
 
 			# Mode
-			where_mode = this_unit.normunits.idxmax()
+			where_mode = this_unit.norm_units.idxmax()
 			mode = this_unit.norm_size1_amount[where_mode]
 
 			to_write = [unit, total_quantity, median, mode]
@@ -82,13 +88,18 @@ sys.stderr = log_err
 
 info_dict = aux.parse_info(code)
 
+merger_date = info_dict['DateCompleted']
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
-years = aux.get_years(info_dict["DateCompleted"])
+years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
+if code == '1912896020_1':
+	years = ['2006','2007','2008','2009']
+	print('beer data only lasts till 2009')
 
 if not os.path.isdir('../../../All/m_' + code + '/intermediate'):
 	print("Making the intermediate directory")
 	os.makedirs('../../../All/m_' + code + '/intermediate')
-generate_units_table(code, years, groups, modules)
+generate_units_table(code, years, groups, modules, merger_date)
 
+print("get_units finished successfully")
 log_out.close()
 log_err.close()

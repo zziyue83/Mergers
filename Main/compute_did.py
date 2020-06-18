@@ -5,6 +5,7 @@ import statsmodels.api as sm
 import numpy as np
 import unicodecsv as csv
 import auxiliary as aux
+import datetime
 
 def append_aggregate_demographics(df, month_or_quarter):
 
@@ -41,6 +42,7 @@ def compute_hhi_map(df, owner_col = 'owner'):
 def add_dhhi(df, merging_date, month_or_quarter):
 
 	# Pull merger year and merger month (or quarter)
+	merging_date = datetime.strptime(merging_date, '%Y-%m-%d')
 	if month_or_quarter == 'month':
 		merger_month_or_quarter = merging_date.month
 	elif month_or_quarter == 'quarter':
@@ -101,6 +103,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 	# Pull merger year and merger month (or quarter)
+	merging_date = datetime.strptime(merging_date, '%Y-%m-%d')
 	merger_year = merging_date.year
 	merger_month = merging_date.month
 	if month_or_quarter == 'month':
@@ -121,15 +124,21 @@ def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'm
     
     # Get a dataframe that is pre-sales, post-sales, pre-shares, post-shares for all merging parties
     rows_list = []
-    for party in merging_parties:
-    	party_sales_pre = df.sales[df['owner'] == party & df['post_merger'] == 0]
-    	party_sales_post = df.sales[df['owner'] == party & df['post_merger'] == 1]
+    for party in df.owner.unique():
+    	party_sales_pre = df.sales[df['owner'] == party & df['post_merger'] == 0].sum()
+    	party_sales_post = df.sales[df['owner'] == party & df['post_merger'] == 1].sum()
     	party_share_pre = party_sales_pre / total_sales_pre
     	party_share_post = party_sales_post / total_sales_post
 
-    	this_dict = {'name' : party, 'pre_sales' : party_sales_pre, 'post_sales' : party_sales_post, 'pre_share' : party_share_pre, 'post_share' : part_share_post}
+    	if party in merging_parties:
+    		is_merging_party = 1
+    	else:
+    		is_merging_party = 0
+
+    	this_dict = {'name' : party, 'pre_sales' : party_sales_pre, 'post_sales' : party_sales_post, 'pre_share' : party_share_pre, 'post_share' : part_share_post, 'merging_party' : is_merging_party}
     	rows_list.append(this_dict)
     overlap_df = pd.DataFrame(rows_list)
+    overlap_df = overlap_df.sort_values(by = 'merging_party', ascending = False)
     overlap_df.to_csv('../../../All/m_' + code + '/output/overlap.csv', sep = ',', encoding = 'utf-8')
 
 

@@ -6,6 +6,7 @@ import pickle
 import pandas as pd
 import numpy as np
 import pandasql as ps
+import os
 
 def parse_info(code):
 	file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
@@ -34,15 +35,17 @@ def int_to_month(value):
 	month = value - 12 * year
 	return year, month
 
-def get_years(year_string, pre_months = 18, post_months = 18):
-	dt = datetime.strptime(year_string, '%Y-%m-%d')
-	month_int = dt.year * 12 + dt.month
-	min_year, min_month = int_to_month(month_int - pre_months)
-	max_year, max_month = int_to_month(month_int + post_months)
+def get_years(initial_year_string, final_year_string, pre_months = 24, post_months = 24):
+	initial_dt = datetime.strptime(initial_year_string, '%Y-%m-%d')
+	final_dt = datetime.strptime(final_year_string, '%Y-%m-%d')
+	initial_month_int = initial_dt.year * 12 + initial_dt.month
+	final_month_int = final_dt.year * 12 + final_dt.month
+	min_year, min_month = int_to_month(initial_month_int - pre_months)
+	max_year, max_month = int_to_month(final_month_int + post_months)
 
 	years = []
-	for i in range(miin_year, max_year + 1, 1):
-		this_year = dt.year + i
+	for i in range(int(min_year), int(max_year) + 1, 1):
+		this_year = i
 		if this_year >= 2006 and this_year <= 2018:
 			years.append(str(this_year))
 	return years
@@ -57,6 +60,7 @@ def get_merging_parties(info_str):
 def load_chunked_year_module_movement_table(year, group, module, path = ''):
 	if path == '':
 		path = "../../../Data/nielsen_extracts/RMS/" + year + "/Movement_Files/" + group + "_" + year + "/" + module + "_" + year + ".tsv"
+	assert os.path.exists(path), "File does not exist: %r" % path
 	table = pd.read_csv(path, delimiter = "\t", chunksize = 10000000)
 	return table
 
@@ -173,7 +177,7 @@ def append_owners(code, df, month_or_quarter):
 	df_own = ps.sqldf(sqlcode,locals())
 	return df_own
 
-def adjust_inflation(df, vars, month_or_quarter, rename_var = True):
+def adjust_inflation(df, all_vars, month_or_quarter, rename_var = True):
 
 	# Import CPIU dataset
 	month_or_quarter = 'month'
@@ -199,7 +203,7 @@ def adjust_inflation(df, vars, month_or_quarter, rename_var = True):
 
 	# Merge CPIU onto dataframe and adjust prices
 	df = df.join(cpiu, on=['year', month_or_quarter], how = 'left')
-	for var in vars:
+	for var in all_vars:
 		if rename_var:
 			df[var] = df[var] * (df['cpiu_201001'] / df['cpiu'])
 			df = df.drop(['cpiu_201001', 'cpiu'])
