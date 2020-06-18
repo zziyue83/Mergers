@@ -42,7 +42,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 							data_chunk = data_chunk[data_chunk.month <= max_month]
 					
 					for to_add in add_from_map:
-						data_chunk[to_add] = data_chunk['upc'].map(product_map(to_add))
+						data_chunk[to_add] = data_chunk['upc'].map(product_map[to_add])
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'multi']]
 					
 					# normunits is the total volume sold (quantity x size)
