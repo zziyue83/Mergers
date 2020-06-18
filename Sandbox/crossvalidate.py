@@ -2,10 +2,11 @@ import numpy as np
 import pandas as pd
 import pyblp
 import matplotlib.pyplot as plt
+import statsmodels.api as sm
 
 # Read the Nevo data
 data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
-formulation = pyblp.Formulation('1 + prices + sugar + mushy')
+formulation = pyblp.Formulation('0 + prices + C(product_ids)')
 uu = np.random.choice(data.market_ids.unique(), size = 70)
 data_short = data[data['market_ids'].isin(uu)].copy()
 
@@ -27,6 +28,7 @@ product_xi_map = product_xi.to_dict()
 
 # Now add that back to data
 data_xi = data.product_ids.map(product_xi_map['xi'])
+# data_xi[data.market_ids.isin(uu)] = results_short.xi # if you want to verify 
 simulation = pyblp.Simulation(formulation, data, beta = results_short.beta, xi = data_xi)
 simulation_results = simulation.replace_endogenous(costs = np.zeros((len(data), 1)), 
 	prices = data.prices, 
@@ -48,3 +50,10 @@ data_other['xi'] = results_other.xi
 product_xi_other = data_other[['product_ids', 'xi']].copy()
 product_xi_other = product_xi_other.groupby('product_ids').mean()
 axs[2].scatter(1e16 * product_xi.xi, 1e16 * product_xi_other.xi)
+
+
+excluded = sm.OLS(simulation_data.shares[~data['market_ids'].isin(uu)], sm.add_constant(data.shares[~data['market_ids'].isin(uu)])).fit()
+excluded.summary()
+
+included = sm.OLS(simulation_data.shares[data['market_ids'].isin(uu)], sm.add_constant(data.shares[data['market_ids'].isin(uu)])).fit()
+included.summary()
