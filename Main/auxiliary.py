@@ -47,7 +47,6 @@ def get_years(initial_year_string, final_year_string, pre_months = 24, post_mont
 		this_year = i
 		if this_year >= 2006 and this_year <= 2018:
 			years.append(str(this_year))
-	print(years)
 	return years
 
 def get_merging_parties(info_str):
