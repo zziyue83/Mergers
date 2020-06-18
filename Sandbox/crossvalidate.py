@@ -65,7 +65,7 @@ included.summary()
 # Read the Nevo data
 data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
 data['nesting_ids'] = 1
-formulation = pyblp.Formulation('0 + prices', absorb = 'C(product_ids)')
+formulation = pyblp.Formulation('0 + prices', absorb = 'C(product_ids) + C(market_ids)')
 uu = np.random.choice(data.market_ids.unique(), size = 70)
 data_short = data[data['market_ids'].isin(uu)].copy()
 
@@ -83,7 +83,7 @@ simulation_results_check = simulation_check.replace_endogenous(costs = np.zeros(
 	iteration = pyblp.Iteration(method = 'return'))
 plt.scatter(data_short.shares, simulation_results_check.product_data.shares)
 
-def recover_fixed_effects(fe_columns, fe_vals):
+def recover_fixed_effects(fe_columns, fe_vals, omit_constant = True):
 	# If there's only one FE, then this is easy
 	return_dict = {}
 
@@ -101,8 +101,8 @@ def recover_fixed_effects(fe_columns, fe_vals):
 		first_col = True
 		removed_fe = {}
 		for col in fe_columns.columns:
-			this_unique_fe = fe_columns[col].unique()
-			if first_col:
+			this_unique_fe = fe_columns[col].unique().tolist()
+			if first_col and omit_constant:
 				removed_fe[col] = None
 				first_col = False
 			else:
@@ -110,7 +110,7 @@ def recover_fixed_effects(fe_columns, fe_vals):
 			start_col_number[col] = start_col 
 			start_col += len(this_unique_fe)
 			end_col_number[col] = start_col
-			fe_dict[col] = unique_fe
+			fe_dict[col] = this_unique_fe
 
 		num_rows = len(fe_columns)
 		num_cols = start_col
@@ -119,10 +119,14 @@ def recover_fixed_effects(fe_columns, fe_vals):
 		start = 0
 		indptr = np.array([0])
 		indices = np.array([])
-		for row in fe_columns.iterrows():
+		for index, row in fe_columns.iterrows():
 			for col in fe_columns.columns:
-				this_fe = fe_columns.loc[row, col]
-				this_index = fe_dict[col].index(this_fe)
+				this_fe = row[col]
+				try:
+					this_index = fe_dict[col].index(this_fe)
+				except:
+					# Omitted value
+					continue
 
 				col_number = start_col_number[col] + this_index
 				indices = np.append(indices, col_number)
@@ -130,15 +134,16 @@ def recover_fixed_effects(fe_columns, fe_vals):
 			indptr = np.append(indptr, start)
 		fe_matrix = sp.csr_matrix((np.ones_like(indices), indices, indptr), shape=(num_rows, num_cols))
 
-		indiv_fe_vals = sp.linalg.lsqr(fe_matrix, fe_vals)
+		output = sp.linalg.lsqr(fe_matrix, fe_vals)
+		indiv_fe_vals = output[0]
 
 		# Now go through and map indices pack to values
 		# Return a dictionary of dictionaries
 		for col in fe_columns.columns:
 			df = pd.DataFrame({col : fe_dict[col], 'fe_value' : indiv_fe_vals[start_col_number[col]:end_col_number[col]]})
 			if removed_fe[col] is not None:
-				df = df.append({col : removed_fe[col], 'fe_value' : 0})
-			df.set_index(col)
-			fe_dict[col] = df.to_dict()
+				df = df.append({col : removed_fe[col], 'fe_value' : 0}, ignore_index = True)
+			df = df.set_index(col)
+			return_dict[col] = df.to_dict()
 
 	return return_dict
