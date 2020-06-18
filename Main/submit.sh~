@@ -10,5 +10,4 @@
 #SBATCH --nodes=1
 
 module load python/anaconda3.6
-cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Main
 python get_units.py CODE
