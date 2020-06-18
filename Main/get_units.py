@@ -56,7 +56,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		# Sum frequency table to get the total frequency table
 		all_units_frequency = pd.concat(all_units_frequency_list)
 		agg_all_units_frequency = all_units_frequency.groupby(['norm_size1_amount', 'size1_units']).sum()
-		agg_all_units_frequency = agg_all_units_frequency.reindex()
+		agg_all_units_frequency = agg_all_units_frequency.reset_index()
 		print(agg_all_units_frequency)
 		unique_units = agg_all_units_frequency['size1_units'].unique()
 
