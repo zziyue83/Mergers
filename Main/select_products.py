@@ -2,7 +2,7 @@ import re
 import sys
 from datetime import datetime
 import auxiliary as aux
-import tqdm
+from tqdm import tqdm
 import numpy as np
 import pandas as pd
 

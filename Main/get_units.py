@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 import unicodecsv as csv
 import auxiliary as aux
-import tqdm
+from tqdm import tqdm
 import os
 import pandas as pd
 import numpy as np
