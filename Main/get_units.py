@@ -51,7 +51,6 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 					data_chunk = data_chunk[['norm_size1_amount', 'size1_units', 'norm_units']]
 					units_frequency = data_chunk.groupby(['norm_size1_amount', 'size1_units']).sum()
 					all_units_frequency_list.append(units_frequency)
-				print("finished year "+str(year))
 
 		# Sum frequency table to get the total frequency table
 		all_units_frequency = pd.concat(all_units_frequency_list)
@@ -71,7 +70,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 			median = this_unit.norm_size1_amount[sum(booleans)]
 
 			# Mode
-			where_mode = this_unit.normunits.idxmax()
+			where_mode = this_unit.norm_units.idxmax()
 			mode = this_unit.norm_size1_amount[where_mode]
 
 			to_write = [unit, total_quantity, median, mode]
