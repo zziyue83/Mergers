@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import numpy as np
 
-def generate_units_table(code, years, groups, modules, merger_date, pre_months = 18, post_months = 18):
+def generate_units_table(code, years, groups, modules, merger_date, pre_months = 24, post_months = 24):
 
 	# Get the relevant range
 	dt = datetime.strptime(merger_date, '%Y-%m-%d')
