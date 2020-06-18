@@ -1,0 +1,2 @@
+/var/spool/slurmd/job2097559/slurm_script: line 13: 20488 Killed                  python select_products.py 1973045020_1
+slurmstepd: error: Detected 1 oom-kill event(s) in step 2097559.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.

@@ -7,44 +7,42 @@ import numpy as np
 import pandas as pd
 
 def load_store_table(year):
-	store_path = "../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
+	store_path = "../../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
 	store_table = pd.read_csv(store_path, delimiter = "\t", index_col = "store_code_uc")
 	print("Loaded store file of "+ year)
 	return store_table
 
 def get_conversion_map(code, final_unit, method = 'mode'):
 	# Get in the conversion map -- size1_units, multiplication
-	master_conversion = pd.read_csv('master/unit_conversion.csv')
-	assert final_unit in master_conversion['final_unit'], "Cannot find %r as a final_unit" % final_unit
+	master_conversion = pd.read_csv('../../../All/master/unit_conversion.csv')
+	assert master_conversion['final_unit'].str.contains(final_unit).any(), "Cannot find %r as a final_unit" % final_unit
 	master_conversion = master_conversion[master_conversion['final_unit'] == final_unit]
 
-	these_units = pd.read_csv('../../../Data/m_' + code + '/properties/units_edited.csv')
+	these_units = pd.read_csv('../../../All/m_' + code + '/properties/units_edited.csv')
 	these_units['conversion'] = 0
 
 	# Anything that has convert = 1 must be in the master folder
 	convertible = these_units.loc[these_units.convert == 1].copy()
-	for this_unit in convertible.unit.unique():
-		assert this_unit in master_conversion['initial_unit'], "Cannot find %r as an initial_unit" % this_unit
+	for this_unit in convertible.units.unique():
+		assert master_conversion['initial_unit'].str.contains(this_unit).any(), "Cannot find %r as an initial_unit" % this_unit
 		if this_unit in master_conversion['initial_unit']:
 			convert_factor = master_conversion.conversion[master_conversion.initial_unit == this_unit]
 			these_units.loc[these_units.unit == this_unit, 'conversion'] = convert_factor
 			convertible.loc[convertible.unit == this_unit, 'conversion'] = convert_factor
-		else:
-
 
 	# The "method" for convert = 0 is mapped to the "method" for the convert = 1
 	# with the largest quantity
 	where_largest = convertible.total_quantity.idxmax()
 	if method == 'mode':
-		base_size = convertible.mode[where_largest]
-		other_size = these_units.mode[these_units.convert == 0]
+		base_size = convertible.iloc[where_largest]['mode']
+		other_size = these_units[these_units.convert == 0]['mode']
 	else:
-		base_size = convertible.median[where_largest]
-		other_size = these_units.median[these_units.convert == 0]
+		base_size = convertible.iloc[where_largest]['median']
+		other_size = these_units[these_units.convert == 0]['median']
 
 	these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
-	these_units = these_units[['initial_size', 'conversion']]
-	these_units = these_units.rename(columns = {'initial_size' : 'size1_units'})
+	these_units = these_units[['units', 'conversion']]
+	these_units = these_units.rename(columns = {'units' : 'size1_units'})
 	these_units = these_units.set_index('size1_units')
 
 	conversion_map = these_units.to_dict()
@@ -64,7 +62,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	max_quarter = np.ceil(max_month/3)
 
 	area_time_upc_list = []
-	product_map = aux.get_product_map(groups.unique())
+	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['brand_code_uc', 'brand_descr', 'multi', 'size1_units', 'size1_amount']
 	aggregation_function = {'week_end' : 'first', 'units' : 'sum', 'prmult' : 'mean', 'price' : 'mean', 'feature' : 'first', 'display' : 'first', 'store_code_uc' : 'first', 'sales' : 'sum', 'module' : 'first'}
 
@@ -168,7 +166,7 @@ def write_brands_upc(code, agg, upc_set):
 	
 	agg.describe()
 
-	base_folder = '../../../Data/m_' + code + '/intermediate/'
+	base_folder = '../../../All/m_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique upcs')
 
@@ -182,7 +180,7 @@ def write_brands_upc(code, agg, upc_set):
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
-	agg.to_csv('../../../Data/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8')
 
 def write_market_coverage(code, agg, upc_set):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'shares']]
@@ -191,7 +189,7 @@ def write_market_coverage(code, agg, upc_set):
 
 	agg = agg.groupby(['dma_code', 'year', month_or_quarter]).sum()
 	agg = agg.rename(columns = {'shares' : 'total_shares'})
-	agg.to_csv('../../../Data/m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
 
 code = sys.argv[1]
 log_out = open('../../../All/m_' + code + '/output/select_products.log', 'w')
@@ -205,7 +203,7 @@ info_dict = aux.parse_info(code)
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
 years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
-conversion_map = get_conversion_map(code, info_dict["FinalUnit"])
+conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
