@@ -46,7 +46,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'multi']]
 					
 					# normunits is the total volume sold (quantity x size)
-					data_chunk['normunits'] = data_chunk['units'] * data_chunk['multi'] * data_chunk['size1_amount']
+					data_chunk['norm_units'] = data_chunk['units'] * data_chunk['multi'] * data_chunk['size1_amount']
 					data_chunk['norm_size1_amount'] = data_chunk['size1_amount'] * data_chunk['multi']
 					data_chunk = data_chunk[['norm_size1_amount', 'size1_units', 'norm_units']]
 					units_frequency = data_chunk.groupby(['norm_size1_amount', 'size1_units']).sum()
@@ -63,8 +63,8 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 			this_unit = this_unit.sort_values(by = ['norm_size1_amount'])
 
 			# Weighted by quantity, what is the median package size?
-			total_quantity = this_unit['normunits'].sum()
-			booleans = this_unit['normunits'].cumsum() <= (0.5 * total_quantity)
+			total_quantity = this_unit['norm_units'].sum()
+			booleans = this_unit['norm_units'].cumsum() <= (0.5 * total_quantity)
 			median = this_unit.norm_size1_amount[sum(booleans)]
 
 			# Mode
