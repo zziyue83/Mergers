@@ -6,6 +6,7 @@ import pickle
 import pandas as pd
 import numpy as np
 import pandasql as ps
+import os
 
 def parse_info(code):
 	file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
@@ -59,6 +60,7 @@ def get_merging_parties(info_str):
 def load_chunked_year_module_movement_table(year, group, module, path = ''):
 	if path == '':
 		path = "../../../Data/nielsen_extracts/RMS/" + year + "/Movement_Files/" + group + "_" + year + "/" + module + "_" + year + ".tsv"
+	assert os.path.exists(path), "File does not exist: %r" % path
 	table = pd.read_csv(path, delimiter = "\t", chunksize = 10000000)
 	return table
 
