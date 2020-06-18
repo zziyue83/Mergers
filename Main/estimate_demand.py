@@ -8,6 +8,7 @@ import pyblp
 import pyhdfe
 import statsmodels.api as sm
 import pickle
+import scipy.sparse as sp
 
 # Set pyblp options
 pyblp.options.digits = 3
