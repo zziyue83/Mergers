@@ -69,7 +69,10 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 			total_quantity = this_unit['norm_units'].sum()
 			booleans = this_unit['norm_units'].cumsum() <= (0.5 * total_quantity)
 			print(booleans)
-			median = this_unit.norm_size1_amount[sum(booleans)]
+			print(sum(booleans))
+			# median = this_unit.norm_size1_amount[sum(booleans)]
+			this_unit_np = np.array(this_unit['norm_size1_amount'])
+			median = this_unit_np[sum(booleans)]
 			print(median)
 
 			# Mode
