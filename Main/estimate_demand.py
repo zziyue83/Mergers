@@ -14,6 +14,72 @@ pyblp.options.digits = 3
 pyblp.options.verbose = True
 pyblp.options.flush_output = True
 
+def recover_fixed_effects(fe_columns, fe_vals, omit_constant = True):
+	# If there's only one FE, then this is easy
+	return_dict = {}
+
+	if len(fe_columns.columns) == 1:
+		colname = fe_columns.columns[0]
+		fe_columns['fe_value'] = fe_vals
+		fe_columns = fe_columns.groupby(colname).mean()
+		return_dict[colname] = fe_columns.to_dict()
+	else:
+		# First get the FEs -- need to drop one element
+		fe_dict = {}
+		start_col_number = {}
+		end_col_number = {}
+		start_col = 0
+		first_col = True
+		removed_fe = {}
+		for col in fe_columns.columns:
+			this_unique_fe = fe_columns[col].unique().tolist()
+			if first_col and omit_constant:
+				removed_fe[col] = None
+				first_col = False
+			else:
+				removed_fe[col] = this_unique_fe.pop(0)
+			start_col_number[col] = start_col 
+			start_col += len(this_unique_fe)
+			end_col_number[col] = start_col
+			fe_dict[col] = this_unique_fe
+
+		num_rows = len(fe_columns)
+		num_cols = start_col
+
+		# First build the csr_matrix
+		start = 0
+		indptr = np.array([0])
+		indices = np.array([])
+		for index, row in fe_columns.iterrows():
+			for col in fe_columns.columns:
+				this_fe = row[col]
+				try:
+					this_index = fe_dict[col].index(this_fe)
+				except ValueError:
+					# Omitted value
+					print('Omitted value for ' + col)
+					continue
+
+				col_number = start_col_number[col] + this_index
+				indices = np.append(indices, col_number)
+				start += 1
+			indptr = np.append(indptr, start)
+		fe_matrix = sp.csr_matrix((np.ones_like(indices), indices, indptr), shape=(num_rows, num_cols))
+
+		output = sp.linalg.lsqr(fe_matrix, fe_vals)
+		indiv_fe_vals = output[0]
+
+		# Now go through and map indices pack to values
+		# Return a dictionary of dictionaries
+		for col in fe_columns.columns:
+			df = pd.DataFrame({col : fe_dict[col], 'fe_value' : indiv_fe_vals[start_col_number[col]:end_col_number[col]]})
+			if removed_fe[col] is not None:
+				df = df.append({col : removed_fe[col], 'fe_value' : 0}, ignore_index = True)
+			df = df.set_index(col)
+			return_dict[col] = df.to_dict()
+
+	return return_dict
+
 def add_characteristics(code, df, char_map, chars):
 	for this_char in chars:
 		df[this_char] = df['upc'].map(char_map[this_char])
@@ -80,8 +146,8 @@ def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month'
 	for this_char in chars:
 		string_chars = string_chars + ' + ' this_char
 		num_chars += 1
-	formulation_char = pyblp.Formulation(string_chars, absorb = 'C(TIME) + C(dma_code)')
-	formulation_fe = pyblp.Formulation('0 + prices', absorb = 'C(upc) + C(TIME) + C(dma_code)')
+	formulation_char = pyblp.Formulation(string_chars, absorb = 'C(dma_code) + C(' + month_or_quarter + ')') # These are seasonality FEs
+	formulation_fe = pyblp.Formulation('0 + prices', absorb = 'C(upc) + C(dma_code) + C(' + month_or_quarter + ')')
 
 	# Add Gandhi-Houde or BLP instruments
 	if add_differentiation:
@@ -139,8 +205,21 @@ def get_partial_f(df, chars):
 
 	return partialF, partialR2
 
+def write_to_file(problem, code, filepath):
 
-def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', estimate_type = 'logit', 
+	# FIGURE THIS OUT!!!
+
+	# Save as pickles
+	with open('m_' + code + '/output/logit_char_' + month_or_quarter + '.p', 'wb') as fout:
+		pickle.dump(results_char.to_dict(), fout)
+	with open('m_' + code + '/output/logit_fe_' + month_or_quarter + '.p', 'wb') as fout:
+		pickle.dump(results_char.to_dict(), fout)
+
+	with open('m_' + code + '/output/blp_' + month_or_quarter + '.p', 'wb') as fout:
+			pickle.dump(results_blp.to_dict(), fout)
+
+
+def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', 
 	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True, 
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
 
@@ -174,12 +253,7 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 				results_char = problem_char.solve(rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
 				results_fe = problem_fe.solve(rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
 
-		# Save as pickles
-		with open('m_' + code + '/output/logit_char_' + month_or_quarter + '.p', 'wb') as fout:
-			pickle.dump(results_char.to_dict(), fout)
-		with open('m_' + code + '/output/logit_fe_' + month_or_quarter + '.p', 'wb') as fout:
-			pickle.dump(results_char.to_dict(), fout)
-
+		return [results_char, results_fe]
 
 	elif estimate_type == 'blp':
 		
@@ -190,20 +264,82 @@ def estimate_demand(code, df, chars, nests = None, month_or_quarter = 'month', e
 		with pyblp.parallel(num_parallel):
 			results_blp = problem.solve(sigma = np.ones((num_chars, num_chars)), optimization = optimization)
 
-		with open('m_' + code + '/output/blp_' + month_or_quarter + '.p', 'wb') as fout:
-			pickle.dump(results_blp.to_dict(), fout)
+		return results_blp
 
 	else:
 		# Can do this if we just want to run partial F
 		print("Did not run estimation")
 
+def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars = None, nests = None, 
+	month_or_quarter = 'month', estimate_type = 'logit', 
+	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True, 
+	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
 	
+	# First subset the df if needed
+	if cutoff_date is not None:
+		dt = datetime.strptime(cutoff_date, '%Y-%m-%d')
+		if month_or_quarter == 'month':
+			dt_month_or_quarter = dt.month 
+		else:
+			dt_month_or_quarter = ceil(dt.month / 3)
 
+		if timespan == 'pre':
+			df = df[df['year'] < dt.year | df['year'] == dt.year & df[month_or_quarter] < dt_month_or_quarter]
+		elif timespan == 'post':
+			df = df[df['year'] > dt.year | df['year'] == dt.year & df[month_or_quarter] > dt_month_or_quarter]
+
+	# Now choose the markets
+	unique_dmas = df['dma_code'].unique()
+	dma_group1 = np.random.choice(unique_dmas, size = ceil(0.5 * len(unique_dmas)), replace = False)
+	dma_group2 = list(set(unique_dmas) - set(dma_group1))
+
+	df['time'] = 100 * df['year'] + df[month_or_quarter]
+	unique_times = df['time'].unique()
+	time_group1 = np.random.choice(unique_times, size = ceil(0.5 * len(unique_times)), replace = False)
+	time_group2 = list(set(unique_times) - set(time_group1))
+
+	inside_group = (df['dma_code'].isin(dma_group1) & df['time'].isin(time_group1)) | (df['dma_code'].isin(dma_group2) & df['time'].isin(time_group2)) 
+	df_short = df[inside_group].copy()
+
+	results_short = estimate_demand(code, df_short, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, 
+		estimate_type = estimate_type, num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
+
+	# Now get the fixed effects
+	df_short['temp'] = results_short.delta - results_short.xi
+	df_short['fe'] = data_short['temp'] - results_short.beta[0, 0] * df_short['prices'] # GENERALIZE THIS!!!
+	df = df.drop('temp', axis = 1)
+
+	fe_levels = ['upc', 'dma_code', month_or_quarter]
+	fe_dict = recover_fixed_effects(df[fe_levels], df['fe'])
+	
+	df['fe'] = 0
+	for fe in fe_levels:
+		df['fe'] = df['fe'] + df[fe].map(fe_dict[fe]['fe_value'])
+
+	# Now get xi
+	df['xi'] = something
+
+	# Generate the simulation
+	new_formulation = pyblp.Formulation('0 + prices + fe')	
+	simulation = pyblp.Simulation(new_formulation, df, 
+		beta = np.append(results_short.beta, [1]),
+		xi = df.xi,
+		rho = results_short.rho)
+	simulation_results = simulation.replace_endogenous(costs = np.zeros((len(df), 1)),
+		prices = df.prices,
+		iteration = pyblp.Iteration(method = 'return'))
+
+	# Now get the inside and outside shares
+	inside_shares_actual = df.shares[inside_group]
+	outside_shares_actual = df.shares[~inside_group]
+	inside_shares_predicted = simulation_results.product_data.shares[inside_group]
+	outside_shares_predicted = simulation_results.product_data.shares[~inside_group]
+	
 code = sys.argv[1]
 month_or_quarter = sys.argv[2]
 estimate_type = sys.argv[3]
 
 df, characteristics, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
-estimate_demand(code, df, characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type, 
+estimate_demand(code, df, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type, 
 	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
 

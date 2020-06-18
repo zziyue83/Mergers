@@ -148,3 +148,11 @@ def recover_fixed_effects(fe_columns, fe_vals, omit_constant = True):
 			return_dict[col] = df.to_dict()
 
 	return return_dict
+
+# Get data
+# Restrict to data before the merger if pre = True
+# Select half the markets: half the time for half A and other half for half B
+# Get delta and total fe
+# Run recover_fixed_effects
+# Match to get the fixed effects
+# Average xi within product-dma
