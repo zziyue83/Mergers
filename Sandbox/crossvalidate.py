@@ -3,6 +3,7 @@ import pandas as pd
 import pyblp
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
+from scipy.sparse import csr_matrix
 
 # Read the Nevo data
 data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
@@ -63,21 +64,58 @@ included.summary()
 # Try adding fixed effects
 # Read the Nevo data
 data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
+data['nesting_ids'] = 1
 formulation = pyblp.Formulation('0 + prices', absorb = 'C(product_ids)')
 uu = np.random.choice(data.market_ids.unique(), size = 70)
 data_short = data[data['market_ids'].isin(uu)].copy()
 
 problem_short = pyblp.Problem(formulation, data_short)
-results_short = problem_short.solve()
-delta_short = results_short.compute_delta()
-data_short['temp'] = delta_short - results_short.xi
+results_short = problem_short.solve(rho = 0.7)
+data_short['temp'] = results_short.delta - results_short.xi
 data_short['fe'] = data_short['temp'] - results_short.beta[0, 0] * data_short['prices']
 
 # Run a silly simulation to check how simulation works
 # just_fe = data_short[['product_ids', 'fe']].copy().groupby('product_ids').mean().to_dict()
 new_formulation = pyblp.Formulation('0 + prices + fe')
-simulation_check = pyblp.Simulation(new_formulation, data_short, beta = np.append(results_short.beta, [1]), xi = results_short.xi)
+simulation_check = pyblp.Simulation(new_formulation, data_short, beta = np.append(results_short.beta, [1]), xi = results_short.xi, rho = results_short.rho)
 simulation_results_check = simulation_check.replace_endogenous(costs = np.zeros((len(data_short), 1)), 
 	prices = data_short.prices, 
 	iteration = pyblp.Iteration(method = 'return'))
 plt.scatter(data_short.shares, simulation_results_check.product_data.shares)
+
+def recover_fixed_effects(fe_columns, fe_vals):
+	# If there's only one FE, then this is easy
+	if len(fe_columns.columns) == 1:
+		do something easy 
+	else:
+		# First get the FEs
+		fe_dict = {}
+		num_fe = []
+		for col in fe_columns.columns:
+			this_unique_fe = fe_columns[col].unique()
+			num_fe.append(len(this_unique_fe))
+			fe_dict[col] = unique_fe
+
+		num_rows = len(fe_columns)
+		num_cols = sum(num_fe) - (len(num_fe) - 1)
+
+		# First build the csr_matrix
+		start = 0
+		indptr = np.array([0])
+		indices = np.array([])
+		for row in fe_columns.iterrows():
+			for col in fe_columns.columns:
+				this_fe = fe_columns.loc[row, col]
+				GET INDEX IN fe_dict[col]
+
+				col_number = XXX?
+				indices = np.append(indices, col_number)
+				start += 1
+			indptr = np.append(indptr, start)
+		data = np.ones(???)
+		fe_matrix = csr_matrix((data, indices, indptr), shape=(num_rows, num_cols))
+
+		inverse!!! (fe_matrix.transpose() TIMES fe_matrix)
+		fe_matrix.transpose().dot(fe_vals) 
+
+	return something
