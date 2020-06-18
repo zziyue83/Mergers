@@ -70,11 +70,13 @@ data_short = data[data['market_ids'].isin(uu)].copy()
 problem_short = pyblp.Problem(formulation, data_short)
 results_short = problem_short.solve()
 delta_short = results_short.compute_delta()
-data_short['fe'] = delta_short - results_short.xi - results_short.beta[0, 0] * data_short['prices']
+data_short['temp'] = delta_short - results_short.xi
+data_short['fe'] = data_short['temp'] - results_short.beta[0, 0] * data_short['prices']
 
 # Run a silly simulation to check how simulation works
-new_formulation = 
-simulation_check = pyblp.Simulation(formulation, data_short, beta = results_short.beta, xi = results_short.xi)
+# just_fe = data_short[['product_ids', 'fe']].copy().groupby('product_ids').mean().to_dict()
+new_formulation = pyblp.Formulation('0 + prices + fe')
+simulation_check = pyblp.Simulation(new_formulation, data_short, beta = np.append(results_short.beta, [1]), xi = results_short.xi)
 simulation_results_check = simulation_check.replace_endogenous(costs = np.zeros((len(data_short), 1)), 
 	prices = data_short.prices, 
 	iteration = pyblp.Iteration(method = 'return'))
