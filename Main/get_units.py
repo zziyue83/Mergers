@@ -61,6 +61,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 
 		print("finished aggregation")
 		for unit in unique_units:
+			print(unit)
 			this_unit = agg_all_units_frequency[agg_all_units_frequency['size1_units'] == unit]
 			this_unit = this_unit.sort_values(by = ['norm_size1_amount'])
 
@@ -69,6 +70,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 			booleans = this_unit['norm_units'].cumsum() <= (0.5 * total_quantity)
 			print(booleans)
 			median = this_unit.norm_size1_amount[sum(booleans)]
+			print(median)
 
 			# Mode
 			where_mode = this_unit.norm_units.idxmax()
