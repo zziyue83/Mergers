@@ -14,7 +14,7 @@ python -m pip install pyblp --user
 python -m pip install numpy --user
 python -m pip install pandas --user
 python -m pip install pandasql --user
-python -m pip instal datetime --user
+python -m pip install datetime --user
 python -m pip install tqdm --user
 
 python get_units.py 2600981020_1
