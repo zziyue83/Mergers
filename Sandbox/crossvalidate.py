@@ -6,7 +6,7 @@ import statsmodels.api as sm
 
 # Read the Nevo data
 data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
-formulation = pyblp.Formulation('0 + prices + C(product_ids)')
+formulation = pyblp.Formulation('1 + prices')
 uu = np.random.choice(data.market_ids.unique(), size = 70)
 data_short = data[data['market_ids'].isin(uu)].copy()
 
@@ -57,3 +57,25 @@ excluded.summary()
 
 included = sm.OLS(simulation_data.shares[data['market_ids'].isin(uu)], sm.add_constant(data.shares[data['market_ids'].isin(uu)])).fit()
 included.summary()
+
+
+##########################
+# Try adding fixed effects
+# Read the Nevo data
+data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
+formulation = pyblp.Formulation('0 + prices', absorb = 'C(product_ids)')
+uu = np.random.choice(data.market_ids.unique(), size = 70)
+data_short = data[data['market_ids'].isin(uu)].copy()
+
+problem_short = pyblp.Problem(formulation, data_short)
+results_short = problem_short.solve()
+delta_short = results_short.compute_delta()
+data_short['fe'] = delta_short - results_short.xi - results_short.beta[0, 0] * data_short['prices']
+
+# Run a silly simulation to check how simulation works
+new_formulation = 
+simulation_check = pyblp.Simulation(formulation, data_short, beta = results_short.beta, xi = results_short.xi)
+simulation_results_check = simulation_check.replace_endogenous(costs = np.zeros((len(data_short), 1)), 
+	prices = data_short.prices, 
+	iteration = pyblp.Iteration(method = 'return'))
+plt.scatter(data_short.shares, simulation_results_check.product_data.shares)
