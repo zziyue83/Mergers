@@ -3,7 +3,7 @@ import pandas as pd
 import pyblp
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
-from scipy.sparse import csr_matrix
+import scipy.sparse as sp
 
 # Read the Nevo data
 data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
@@ -85,19 +85,35 @@ plt.scatter(data_short.shares, simulation_results_check.product_data.shares)
 
 def recover_fixed_effects(fe_columns, fe_vals):
 	# If there's only one FE, then this is easy
+	return_dict = {}
+
 	if len(fe_columns.columns) == 1:
-		do something easy 
+		colname = fe_columns.columns[0]
+		fe_columns['fe_value'] = fe_vals
+		fe_columns = fe_columns.groupby(colname).mean()
+		return_dict[colname] = fe_columns.to_dict()
 	else:
-		# First get the FEs
+		# First get the FEs -- need to drop one element
 		fe_dict = {}
-		num_fe = []
+		start_col_number = {}
+		end_col_number = {}
+		start_col = 0
+		first_col = True
+		removed_fe = {}
 		for col in fe_columns.columns:
 			this_unique_fe = fe_columns[col].unique()
-			num_fe.append(len(this_unique_fe))
+			if first_col:
+				removed_fe[col] = None
+				first_col = False
+			else:
+				removed_fe[col] = this_unique_fe.pop(0)
+			start_col_number[col] = start_col 
+			start_col += len(this_unique_fe)
+			end_col_number[col] = start_col
 			fe_dict[col] = unique_fe
 
 		num_rows = len(fe_columns)
-		num_cols = sum(num_fe) - (len(num_fe) - 1)
+		num_cols = start_col
 
 		# First build the csr_matrix
 		start = 0
@@ -106,16 +122,23 @@ def recover_fixed_effects(fe_columns, fe_vals):
 		for row in fe_columns.iterrows():
 			for col in fe_columns.columns:
 				this_fe = fe_columns.loc[row, col]
-				GET INDEX IN fe_dict[col]
+				this_index = fe_dict[col].index(this_fe)
 
-				col_number = XXX?
+				col_number = start_col_number[col] + this_index
 				indices = np.append(indices, col_number)
 				start += 1
 			indptr = np.append(indptr, start)
-		data = np.ones(???)
-		fe_matrix = csr_matrix((data, indices, indptr), shape=(num_rows, num_cols))
+		fe_matrix = sp.csr_matrix((np.ones_like(indices), indices, indptr), shape=(num_rows, num_cols))
 
-		inverse!!! (fe_matrix.transpose() TIMES fe_matrix)
-		fe_matrix.transpose().dot(fe_vals) 
+		indiv_fe_vals = sp.linalg.lsqr(fe_matrix, fe_vals)
 
-	return something
+		# Now go through and map indices pack to values
+		# Return a dictionary of dictionaries
+		for col in fe_columns.columns:
+			df = pd.DataFrame({col : fe_dict[col], 'fe_value' : indiv_fe_vals[start_col_number[col]:end_col_number[col]]})
+			if removed_fe[col] is not None:
+				df = df.append({col : removed_fe[col], 'fe_value' : 0})
+			df.set_index(col)
+			fe_dict[col] = df.to_dict()
+
+	return return_dict
