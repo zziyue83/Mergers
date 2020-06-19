@@ -35,7 +35,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 				
 				for data_chunk in tqdm(movement_table):
 					# First make sure that only the actual years and months are included
-					data_chunk = clean_data(code, data_chunk)
+					
 					if int(year) == min_year or int(year) == max_year:
 						data_chunk['month'] = np.floor((data_chunk['week_end'] % 10000)/100).astype(int)
 						if int(year) == min_year:
@@ -45,6 +45,8 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 					
 					for to_add in add_from_map:
 						data_chunk[to_add] = data_chunk['upc'].map(product_map[to_add])
+						data_chunk = clean_data(code, data_chunk)
+						
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'multi']]
 					
 					# normunits is the total volume sold (quantity x size)
