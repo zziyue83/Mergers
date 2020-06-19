@@ -61,7 +61,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		agg_all_units_frequency = all_units_frequency.groupby(['norm_size1_amount', 'size1_units']).sum()
 		agg_all_units_frequency = agg_all_units_frequency.reset_index()
 		agg_all_units_frequency = agg_all_units_frequency.sort_values(by = 'size1_units')
-		agg_all_units_frequency.to_csv('../../../All/m_' + code + '/intermediate/units_frequency.csv', sep = ',')
+		agg_all_units_frequency.to_csv('../../../All/m_' + code + '/intermediate/units_frequency.csv', sep = ',', index = False)
 		unique_units = agg_all_units_frequency['size1_units'].unique()
 
 		print("finished aggregation")
