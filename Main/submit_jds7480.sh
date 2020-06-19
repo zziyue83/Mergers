@@ -10,5 +10,12 @@
 #SBATCH --nodes=1
 
 module load python/anaconda3.6
+python -m pip install pandas --user
+python -m pip install pandasql --user
+python -m pip install numpy --user
+python -m pip install pyblp --user
+python -m pip install tqdm --user
+python -m pip install datetime --user
+
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Main
-python get_units.py 2600981020_1
+python get_units.py 2471497020_1

@@ -35,8 +35,12 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 				
 				for data_chunk in tqdm(movement_table):
 					# First make sure that only the actual years and months are included
+<<<<<<< HEAD
 					print(data_chunk.head())
 					data_chunk = clean_data(code, data_chunk)
+=======
+					
+>>>>>>> 348d7d5059c33eb6b8b5e29ee5b8b15ccd25108c
 					if int(year) == min_year or int(year) == max_year:
 						data_chunk['month'] = np.floor((data_chunk['week_end'] % 10000)/100).astype(int)
 						if int(year) == min_year:
@@ -46,6 +50,8 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 					
 					for to_add in add_from_map:
 						data_chunk[to_add] = data_chunk['upc'].map(product_map[to_add])
+					
+					data_chunk = clean_data(code, data_chunk)	
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'multi']]
 					
 					# normunits is the total volume sold (quantity x size)
@@ -60,7 +66,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		agg_all_units_frequency = all_units_frequency.groupby(['norm_size1_amount', 'size1_units']).sum()
 		agg_all_units_frequency = agg_all_units_frequency.reset_index()
 		agg_all_units_frequency = agg_all_units_frequency.sort_values(by = 'size1_units')
-		agg_all_units_frequency.to_csv('../../../All/m_' + code + '/intermediate/units_frequency.csv', sep = ',')
+		agg_all_units_frequency.to_csv('../../../All/m_' + code + '/intermediate/units_frequency.csv', sep = ',', index = False)
 		unique_units = agg_all_units_frequency['size1_units'].unique()
 
 		print("finished aggregation")
