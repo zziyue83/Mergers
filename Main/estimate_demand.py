@@ -289,7 +289,8 @@ def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars =
 		elif timespan == 'post':
 			df = df[df['year'] > dt.year | df['year'] == dt.year & df[month_or_quarter] > dt_month_or_quarter]
 
-	# Now choose the markets
+	# Now choose the markets.  
+	# Half the markets are estimated on half the time period and the other half on the other time period
 	unique_dmas = df['dma_code'].unique()
 	dma_group1 = np.random.choice(unique_dmas, size = ceil(0.5 * len(unique_dmas)), replace = False)
 	dma_group2 = list(set(unique_dmas) - set(dma_group1))
@@ -317,8 +318,11 @@ def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars =
 	for fe in fe_levels:
 		df['fe'] = df['fe'] + df[fe].map(fe_dict[fe]['fe_value'])
 
-	# Now get xi
-	df['xi'] = something
+	# Now get xi, grouped within upc-dma
+	df_short['xi'] = results_short.xi
+	df_short_xi = df_short[['upc', 'dma_code', 'xi']]
+	df_short_group = df_short_xi.groupby(['upc', 'dma_code']).mean()
+	df = df.join(df_short_group, on = ['upc', 'dma_code'])
 
 	# Generate the simulation
 	new_formulation = pyblp.Formulation('0 + prices + fe')	
