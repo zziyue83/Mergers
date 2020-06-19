@@ -117,9 +117,8 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	# Get the market sizes here, by summing volume within dma-time and then taking 1.5 times max within-dma
 	short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume', 'sales']]
 	market_sizes = short_area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
-	market_sizes['volume'] = market_sizes['volume'].groupby('dma_code').transform('max')
-	market_sizes = market_sizes.rename(columns = {'volume' : 'market_size', 'sales': 'total_sales'})
-	market_sizes['market_size'] = market_size_scale * market_sizes['market_size']
+	market_sizes['market_size'] = market_size_scale * market_sizes['volume'].groupby('dma_code').transform('max')
+	market_sizes = market_sizes.rename(columns = {'sales': 'total_sales'})
 	print(market_sizes)
 
 	# Save the output if this is month
@@ -190,12 +189,16 @@ def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', index = False, sep = ',', encoding = 'utf-8')
 
 def write_market_coverage(code, agg, upc_set, month_or_quarter = 'month'):
+	ms = pd.read_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', delimiter = ',')
+
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
 	agg = agg[['dma_code', 'year', month_or_quarter, 'shares']]
 
-	agg = agg.groupby(['dma_code', 'year', month_or_quarter]).sum()
-	agg = agg.rename(columns = {'shares' : 'total_shares'})
+	agg = agg.groupby(['dma_code', 'year', month_or_quarter], as_index = False).sum()
+	agg = agg.join(ms, how = 'left', on = ['dma_code', 'year', month_or_quarter])
+	agg['total_shares'] = agg['shares'] / agg['volume']
+	agg = agg[['dma_code', 'year', month_or_quarter, 'total_shares']]
 	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', index = False, sep = ',', encoding = 'utf-8')
 
 code = sys.argv[1]
