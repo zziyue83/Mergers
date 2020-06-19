@@ -58,6 +58,8 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		all_units_frequency = pd.concat(all_units_frequency_list)
 		agg_all_units_frequency = all_units_frequency.groupby(['norm_size1_amount', 'size1_units']).sum()
 		agg_all_units_frequency = agg_all_units_frequency.reset_index()
+		agg_all_units_frequency = agg_all_units_frequency.sort_values(by = 'size1_units')
+		agg_all_units_frequency.to_csv('../../../All/m_' + code + '/intermediate/units_frequency.csv', sep = ',')
 		unique_units = agg_all_units_frequency['size1_units'].unique()
 
 		print("finished aggregation")
@@ -84,7 +86,9 @@ code = sys.argv[1]
 if not os.path.isdir('../../../All/m_' + code + '/output'):
 	os.makedirs('../../../All/m_' + code + '/output')
 log_out = open('../../../All/m_' + code + '/output/get_units.log', 'w')
+log_err = open('../../../All/m_' + code + '/output/get_units.err', 'w')
 sys.stdout = log_out
+sys.stderr = log_err
 
 info_dict = aux.parse_info(code)
 
@@ -102,3 +106,4 @@ generate_units_table(code, years, groups, modules, merger_date)
 
 print("get_units finished successfully")
 log_out.close()
+log_err.close()
