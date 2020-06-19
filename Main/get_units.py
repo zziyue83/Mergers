@@ -82,9 +82,7 @@ code = sys.argv[1]
 if not os.path.isdir('../../../All/m_' + code + '/output'):
 	os.makedirs('../../../All/m_' + code + '/output')
 log_out = open('../../../All/m_' + code + '/output/get_units.log', 'w')
-log_err = open('../../../All/m_' + code + '/output/get_units.err', 'w')
 sys.stdout = log_out
-sys.stderr = log_err
 
 info_dict = aux.parse_info(code)
 
@@ -102,4 +100,3 @@ generate_units_table(code, years, groups, modules, merger_date)
 
 print("get_units finished successfully")
 log_out.close()
-log_err.close()
