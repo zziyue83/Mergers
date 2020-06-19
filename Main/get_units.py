@@ -95,9 +95,6 @@ info_dict = aux.parse_info(code)
 merger_date = info_dict['DateCompleted']
 groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
 years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
-# if code == '1912896020_1':
-# 	years = ['2006','2007','2008','2009']
-# 	print('beer data only lasts till 2009')
 
 if not os.path.isdir('../../../All/m_' + code + '/intermediate'):
 	print("Making the intermediate directory")
