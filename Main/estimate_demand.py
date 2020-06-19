@@ -206,21 +206,12 @@ def get_partial_f(df, chars):
 
 	return partialF, partialR2
 
-def write_to_file(problem, code, filepath):
+def write_to_file(results, code, filepath):
+	# Save as pickle
+	with open('m_' + code + '/output/' + filepath + '.p', 'wb') as fout:
+		pickle.dump(results.to_dict(), fout)
 
-	# FIGURE THIS OUT!!!
-
-	# Save as pickles
-	with open('m_' + code + '/output/logit_char_' + month_or_quarter + '.p', 'wb') as fout:
-		pickle.dump(results_char.to_dict(), fout)
-	with open('m_' + code + '/output/logit_fe_' + month_or_quarter + '.p', 'wb') as fout:
-		pickle.dump(results_char.to_dict(), fout)
-
-	with open('m_' + code + '/output/blp_' + month_or_quarter + '.p', 'wb') as fout:
-			pickle.dump(results_blp.to_dict(), fout)
-
-
-def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', 
+def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', linear_fe = True,
 	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True, 
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
 
@@ -228,10 +219,6 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 	formulation_char, formulation_fe, df = create_formulation(code, df, chars, 
 		nests = nests, month_or_quarter = month_or_quarter,	
 		num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
-
-	# Get the first stage of instruments
-	partialF, partialR2 = get_partial_f(df, chars)
-	# PRINT THIS SOMEWHERE???
 
 	# Set up optimization	
 	if use_knitro:
@@ -242,19 +229,19 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 	# Estimate
 	if estimate_type == 'logit':
 
-		problem_char = pyblp.Problem(formulation_char, df)
-		problem_fe = pyblp.Problem(formulation_fe, df)
+		if linear_fe:
+			problem = pyblp.Problem(formulation_fe, df)
+		else:
+			problem = pyblp.Problem(formulation_char, dr)
 
-		if nests is not None:
-			results_char = problem_char.solve()
-			results_fe = problem_fe.solve()
+		if nests is None:
+			results = problem.solve()
 		else:
 			num_nests = len(df['nesting_ids'].unique())
 			with pyblp.parallel(num_parallel):
-				results_char = problem_char.solve(rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
-				results_fe = problem_fe.solve(rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
+				results = problem.solve(rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
 
-		return [results_char, results_fe]
+		return results
 
 	elif estimate_type == 'blp':
 		
@@ -263,13 +250,22 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 		
 		problem = pyblp.Problem(formulation_blp, df, integration = integration)
 		with pyblp.parallel(num_parallel):
-			results_blp = problem.solve(sigma = np.ones((num_chars, num_chars)), optimization = optimization)
+			if nests is None:
+				results = problem.solve(sigma = np.ones((num_chars, num_chars)), optimization = optimization)
+			else:
+				num_nests = len(df['nesting_ids'].unique())
+				results = problem.solve(sigma = np.ones((num_chars, num_chars)), rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
 
-		return results_blp
+		return results
 
-	else:
-		# Can do this if we just want to run partial F
+	elif estimate_type == 'partialF':
 		print("Did not run estimation")
+		
+		# Get the first stage of instruments
+		partialF, partialR2 = get_partial_f(df, chars)
+		return None
+	else:
+		return None
 
 def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars = None, nests = None, 
 	month_or_quarter = 'month', estimate_type = 'logit', 
@@ -302,10 +298,14 @@ def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars =
 
 	inside_group = (df['dma_code'].isin(dma_group1) & df['time'].isin(time_group1)) | (df['dma_code'].isin(dma_group2) & df['time'].isin(time_group2)) 
 	df_short = df[inside_group].copy()
+	df_other_short = df[~inside_group].copy()
 
 	results_short = estimate_demand(code, df_short, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, 
 		estimate_type = estimate_type, num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
+	results_other_short = estimate_demand(code, df_other_short, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, 
+		estimate_type = estimate_type, num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
 
+	# Step 1: Compute out-of-sample shares
 	# Now get the fixed effects
 	df_short['temp'] = results_short.delta - results_short.xi
 	df_short['fe'] = data_short['temp'] - results_short.beta[0, 0] * df_short['prices'] # GENERALIZE THIS!!!
@@ -330,15 +330,27 @@ def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars =
 		beta = np.append(results_short.beta, [1]),
 		xi = df.xi,
 		rho = results_short.rho)
-	simulation_results = simulation.replace_endogenous(costs = np.zeros((len(df), 1)),
-		prices = df.prices,
-		iteration = pyblp.Iteration(method = 'return'))
+	with pyblp.parallel(num_parallel):
+		simulation_results = simulation.replace_endogenous(costs = np.zeros((len(df), 1)),
+			prices = df.prices,
+			iteration = pyblp.Iteration(method = 'return'))
 
 	# Now get the inside and outside shares
 	inside_shares_actual = df.shares[inside_group]
 	outside_shares_actual = df.shares[~inside_group]
 	inside_shares_predicted = simulation_results.product_data.shares[inside_group]
 	outside_shares_predicted = simulation_results.product_data.shares[~inside_group]
+
+	# Any calculations with them?
+
+
+	# Step 2: Recover the xi
+	df_other_short['xi_other'] = results_other_short.xi
+	df_other_short_xi = df_other_short[['upc', 'dma_code', 'xi']]
+	df_other_short_group = df_other_short_xi.groupby(['upc', 'dma_code']).mean()
+	df_short_group = df_short_group.join(df_other_short_group, how = 'left', on = ['upc', 'dma'])
+
+
 	
 code = sys.argv[1]
 month_or_quarter = sys.argv[2]
