@@ -125,7 +125,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 		market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
 	
 	# Shares = volume / market size.  Map market sizes back and get shares.
-	area_time_upc = area_time_upc.join(market_sizes.drop('volume', axis=1), on = ['dma_code', 'year', month_or_quarter])
+	area_time_upc = area_time_upc.join(market_sizes.drop('total_volume', axis=1), on = ['dma_code', 'year', month_or_quarter])
 	area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
 
 	return area_time_upc
