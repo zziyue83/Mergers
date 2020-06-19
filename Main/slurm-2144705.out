@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "get_units.py", line 5, in <module>
+    import auxiliary as aux
+  File "/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/auxiliary.py", line 4, in <module>
+    import pyblp
+ModuleNotFoundError: No module named 'pyblp'

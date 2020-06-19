@@ -5,6 +5,7 @@ import auxiliary as aux
 from tqdm import tqdm
 import numpy as np
 import pandas as pd
+from clean_data import clean_data
 
 def load_store_table(year):
 	store_path = "../../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
@@ -25,10 +26,10 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	convertible = these_units.loc[these_units.convert == 1].copy()
 	for this_unit in convertible.units.unique():
 		assert master_conversion['initial_unit'].str.contains(this_unit).any(), "Cannot find %r as an initial_unit" % this_unit
-		if this_unit in master_conversion['initial_unit']:
-			convert_factor = master_conversion.conversion[master_conversion.initial_unit == this_unit]
-			these_units.loc[these_units.unit == this_unit, 'conversion'] = convert_factor
-			convertible.loc[convertible.unit == this_unit, 'conversion'] = convert_factor
+		if this_unit in master_conversion.initial_unit.unique():
+			convert_factor = master_conversion.conversion[master_conversion.initial_unit == this_unit].values
+			these_units.loc[these_units.units == this_unit, 'conversion'] = convert_factor
+			convertible.loc[convertible.units == this_unit, 'conversion'] = convert_factor
 
 	# The "method" for convert = 0 is mapped to the "method" for the convert = 1
 	# with the largest quantity
@@ -44,6 +45,7 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 	these_units = these_units[['units', 'conversion']]
 	these_units = these_units.rename(columns = {'units' : 'size1_units'})
 	these_units = these_units.set_index('size1_units')
+	print(these_units)
 
 	conversion_map = these_units.to_dict()
 	return conversion_map
@@ -102,7 +104,8 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	area_time_upc = pd.concat(area_time_upc_list)
 	area_time_upc = area_time_upc.groupby(['year', month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
 	for to_add in add_from_map:
-		area_time_upc[to_add] = area_time_upc['upc'].map(product_map(to_add))
+		area_time_upc[to_add] = area_time_upc['upc'].map(product_map[to_add])
+	area_time_upc = clean_data(code, area_time_upc)
 	area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion']) 
 	area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi'] * area_time_upc['conversion']
 	area_time_upc['prices'] = area_time_upc['sales'] / area_time_upc['volume']
@@ -114,13 +117,14 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	# Get the market sizes here, by summing volume within dma-time and then taking 1.5 times max within-dma
 	short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume', 'sales']]
 	market_sizes = short_area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
-	market_sizes['market_size'] = market_sizes.groupby('dma_code').transform('max')
+	market_sizes['volume'] = market_sizes['volume'].groupby('dma_code').transform('max')
+	market_sizes = market_sizes.rename(columns = {'volume' : 'market_size', 'sales': 'total_sales'})
 	market_sizes['market_size'] = market_size_scale * market_sizes['market_size']
-	market_sizes = market_sizes.rename({'volume' : 'market_size', 'total_sales' : 'sales'})
+	print(market_sizes)
 
 	# Save the output if this is month
 	if month_or_quarter == 'month':
-		market_sizes.to_csv('../../../Data/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
+		market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', index = False, sep = ',', encoding = 'utf-8')
 	
 	# Shares = volume / market size.  Map market sizes back and get shares.
 	area_time_upc = area_time_upc.join(market_sizes, on = ['dma_code', 'year', month_or_quarter])
@@ -128,15 +132,19 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
 	return area_time_upc
 
-def get_acceptable_upcs(area_month_upc, share_cutoff):
+def get_acceptable_upcs(area_month_upc, share_cutoff, number_cutoff = 100, share_cutoff_2 = 0.1):
 	# Now for each UPC, find the max market share across all DMA-month.  If it's less than the share cutoff, then drop that upc
-	upc_max_share = area_month_upc.groupby('upc').max()
+	upc_max_share = area_month_upc.groupby('upc', as_index = False).aggregate({'shares': 'max', 'volume': 'sum'})
 	acceptable_upcs = upc_max_share[upc_max_share['shares'] > share_cutoff]
-
+	if len(list(set(acceptable_upcs['upc']))) > number_cutoff:
+		top_upcs = upc_max_share.nlargest(number_cutoff, ['volume'])
+		exceed_share_cutoff_2_upcs = upc_max_share[upc_max_share['shares'] > share_cutoff_2]
+		acceptable_upcs = pd.concat([top_upcs, exceed_share_cutoff_2_upcs]).drop_duplicates().reset_index(drop=True)
+	print(acceptable_upcs)
 	return acceptable_upcs['upc']
 
 def write_brands_upc(code, agg, upc_set):
-	agg = agg[['upc', 'upc_descr', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module']]
+	agg = agg[['upc', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module']]
 	agg = agg[agg.upc.isin(upc_set)]
 	agg['year'] = agg['year'].astype(int)
 	agg['max_year'] = agg.groupby('upc')['year'].transform('max')
@@ -144,7 +152,7 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg.drop_duplicates()
 	
 	# add extra nielsen data features from Annual_Files/products_extra_year.tsv
-	years = agg['year'].unique()
+	years = agg['max_year'].unique()
 	features_list = []
 	for year in years:
 		this_features =  pd.read_csv("../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/products_extra_"+str(year)+".tsv", delimiter = '\t')
@@ -153,7 +161,7 @@ def write_brands_upc(code, agg, upc_set):
 	features = features.drop('upc_ver_uc', axis = 1)
 	
 	# drop columns with no variation
-	columns = features.columns
+	columns = features.columns.drop('panel_year')
 	for column in columns:
 		variation = len(features[column].unique())
 		if variation <= 1:
@@ -161,42 +169,40 @@ def write_brands_upc(code, agg, upc_set):
 	
 	# merge extra characteristics with agg
 	agg = agg.merge(features, how = 'left', left_on = ['upc', 'max_year'], right_on = ['upc', 'panel_year'])
-	agg = agg.drop(['max_year', 'panel_year', 'upc_ver_uc'], axis = 1)
+	agg = agg.drop(['max_year', 'panel_year'], axis = 1)
 	agg = agg.sort_values(by = 'brand_descr')
 	
 	agg.describe()
 
 	base_folder = '../../../All/m_' + code + '/intermediate/'
-	agg.to_csv(base_folder + 'upcs.csv', sep = ',', encoding = 'utf-8')
+	agg.to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique upcs')
 
 	agg = agg[['brand_code_uc', 'brand_descr']]
 	agg = agg.rename(columns = {'brand_descr' : 'brand'})
-	agg = agg.drop_duplicates()
-	agg.to_csv(base_folder + 'brands.csv', sep = ',', encoding = 'utf-8')
+	agg = agg.drop_duplicates().reset_index(drop=True)
+	agg.to_csv(base_folder + 'brands.csv', index = False, sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique brands')
-
 
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
-	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', index = False, sep = ',', encoding = 'utf-8')
 
-def write_market_coverage(code, agg, upc_set):
+def write_market_coverage(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
-	agg = agg[['dma_code', month_or_quarter, 'shares']]
+	agg = agg[['dma_code', 'year', month_or_quarter, 'shares']]
 
 	agg = agg.groupby(['dma_code', 'year', month_or_quarter]).sum()
 	agg = agg.rename(columns = {'shares' : 'total_shares'})
-	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', index = False, sep = ',', encoding = 'utf-8')
 
 code = sys.argv[1]
 log_out = open('../../../All/m_' + code + '/output/select_products.log', 'w')
 log_err = open('../../../All/m_' + code + '/output/select_products.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
-
 
 info_dict = aux.parse_info(code)
 
@@ -207,7 +213,7 @@ conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
-acceptable_upcs = get_acceptable_upcs(area_month_upc['upc', 'shares'], float(info_dict["InitialShareCutoff"]))
+acceptable_upcs = get_acceptable_upcs(area_month_upc[['upc', 'shares', 'volume']], float(info_dict["InitialShareCutoff"]))
 
 # Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
 # Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv

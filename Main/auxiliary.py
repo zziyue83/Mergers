@@ -180,7 +180,6 @@ def append_owners(code, df, month_or_quarter):
 def adjust_inflation(df, all_vars, month_or_quarter, rename_var = True):
 
 	# Import CPIU dataset
-	month_or_quarter = 'month'
 	cpiu = pd.read_excel('../../../All/master/cpiu_2000_2020.xlsx', header = 11)
 	cpiu = cpiu.set_index('Year')
 	month_dictionary = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12}
@@ -206,10 +205,9 @@ def adjust_inflation(df, all_vars, month_or_quarter, rename_var = True):
 	for var in all_vars:
 		if rename_var:
 			df[var] = df[var] * (df['cpiu_201001'] / df['cpiu'])
-			df = df.drop(['cpiu_201001', 'cpiu'])
 		else:
-			df[var + '_adj'] = df[var] * (df['cpiu_201001'] / df['cpiu'])
-
+			df[var + '_adj'] = df[var] * df['cpiu_201001'] / df['cpiu']
+	df = df.drop(['cpiu_201001', 'cpiu'], axis = 1)
 	return df
 
 def load_problem_results(code, results_pickle, month_or_quarter):
