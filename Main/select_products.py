@@ -118,15 +118,14 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	short_area_time_upc = area_time_upc[['dma_code', 'year', month_or_quarter, 'volume', 'sales']]
 	market_sizes = short_area_time_upc.groupby(['dma_code', 'year', month_or_quarter]).sum()
 	market_sizes['market_size'] = market_size_scale * market_sizes['volume'].groupby('dma_code').transform('max')
-	market_sizes = market_sizes.rename(columns = {'sales': 'total_sales', 'volume' : 'total_volume'})
-	print(market_sizes)
+	market_sizes = market_sizes.rename(columns = {'sales': 'total_sales'})
 
 	# Save the output if this is month
 	if month_or_quarter == 'month':
-		market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', index = False, sep = ',', encoding = 'utf-8')
+		market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
 	
 	# Shares = volume / market size.  Map market sizes back and get shares.
-	area_time_upc = area_time_upc.join(market_sizes, on = ['dma_code', 'year', month_or_quarter])
+	area_time_upc = area_time_upc.join(market_sizes.drop('volume', axis=1), on = ['dma_code', 'year', month_or_quarter])
 	area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
 
 	return area_time_upc
@@ -139,7 +138,6 @@ def get_acceptable_upcs(area_month_upc, share_cutoff, number_cutoff = 100, share
 		top_upcs = upc_max_share.nlargest(number_cutoff, ['volume'])
 		exceed_share_cutoff_2_upcs = upc_max_share[upc_max_share['shares'] > share_cutoff_2]
 		acceptable_upcs = pd.concat([top_upcs, exceed_share_cutoff_2_upcs]).drop_duplicates().reset_index(drop=True)
-	print(acceptable_upcs)
 	return acceptable_upcs['upc']
 
 def write_brands_upc(code, agg, upc_set):
@@ -189,15 +187,15 @@ def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', index = False, sep = ',', encoding = 'utf-8')
 
 def write_market_coverage(code, agg, upc_set, month_or_quarter = 'month'):
-	ms = pd.read_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', delimiter = ',')
+	ms = pd.read_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', delimiter = ',', index_col = ['dma_code', 'year', month_or_quarter])
 
-	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'volume']]
+	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'shares']]
 	agg = agg[agg.upc.isin(upc_set)]
-	agg = agg[['dma_code', 'year', month_or_quarter, 'volume']]
+	agg = agg[['dma_code', 'year', month_or_quarter, 'shares']]
 
 	agg = agg.groupby(['dma_code', 'year', month_or_quarter], as_index = False).sum()
 	agg = agg.join(ms, how = 'left', on = ['dma_code', 'year', month_or_quarter])
-	agg['total_shares'] = agg['volume'] / agg['total_volume']
+	agg['total_shares'] = agg['shares'] / agg['volume']
 	agg = agg[['dma_code', 'year', month_or_quarter, 'total_shares']]
 	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', index = False, sep = ',', encoding = 'utf-8')
 
