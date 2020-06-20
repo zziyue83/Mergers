@@ -5,7 +5,7 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -c 1
 #SBATCH -t 1:00:00
-#SBATCH --mail-user=josesalas2025@u.northwestern.edu
+#SBATCH --mail-user=yintianzhan2021@u.northwestern.edu
 #SBATCH --mem=15G
 #SBATCH --nodes=1
 
