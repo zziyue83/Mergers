@@ -39,7 +39,7 @@ def recover_fixed_effects(fe_columns, fe_vals, omit_constant = True):
 				first_col = False
 			else:
 				removed_fe[col] = this_unique_fe.pop(0)
-			start_col_number[col] = start_col 
+			start_col_number[col] = start_col
 			start_col += len(this_unique_fe)
 			end_col_number[col] = start_col
 			fe_dict[col] = this_unique_fe
@@ -86,7 +86,7 @@ def add_characteristics(code, df, char_map, chars):
 		df[this_char] = df['upc'].map(char_map[this_char])
 	return df
 
-def add_instruments(code, df, instrument_names):
+def add_instruments(code, df, instrument_names, month_or_quarter):
 
 	add_differentiation = False
 	if 'differentiation' in instrument_names:
@@ -105,11 +105,22 @@ def add_instruments(code, df, instrument_names):
 	df['demand_instruments0'] = df['distance'] * df['diesel']
 	df = df.drop(['distance', 'diesel'])
 
-	# Then get 
+	# Then get the remaining instruments
 	i = 1
 	for instrument in instrument_names:
-		do something
-		df['demand_instruments' + str(i)] = something
+		inst_data = pd.read_csv('../../All/instruments/' + instrument + '.csv', delimiter = ',')
+		inst_data['date'] = pd.to_datetime(inst_data['date'])
+		inst_data['year'] = inst_data['date'].dt.year
+
+		if month_or_quarter == 'month':
+			inst_data[month_or_quarter] = inst_data['date'].dt.month
+		elif month_or_quarter == 'quarter':
+			inst_data[month_or_quarter] = np.ceil(inst_data['date'].dt.month/3)
+
+		inst_data_period = inst_data.groupby([month_or_quarter, 'year'])['value'].agg('mean')
+
+		df = df.join(inst_data_period, on = [month_or_quarter, 'year'], how = 'left')
+		df.rename(columns={'value': 'demand_instruments' + str(i)}, inplace=True)
 		i += 1
 
 	return df, i, add_differentiation, add_blp
@@ -131,7 +142,7 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	df = pd.read_csv('m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', delimiter = ',')
 	df = aux.append_owners(code, df)
 	df = add_characteristics(code, cf, char_map, to_append)
-	df, num_instruments = add_instruments(code, df, instrument_names)
+	df, num_instruments = add_instruments(code, df, instrument_names, month_or_quarter)
 
 	return df, characteristics, nest, num_instruments, add_differentiation, add_blp
 
@@ -212,15 +223,15 @@ def write_to_file(results, code, filepath):
 		pickle.dump(results.to_dict(), fout)
 
 def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', linear_fe = True,
-	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True, 
+	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True,
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
 
 	# First get the formulations
-	formulation_char, formulation_fe, df = create_formulation(code, df, chars, 
-		nests = nests, month_or_quarter = month_or_quarter,	
+	formulation_char, formulation_fe, df = create_formulation(code, df, chars,
+		nests = nests, month_or_quarter = month_or_quarter,
 		num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
 
-	# Set up optimization	
+	# Set up optimization
 	if use_knitro:
 		optimization = pyblp.Optimization('knitro', method_options = {'knitro_dir' : '/software/knitro/10.3'})
 	else:
@@ -244,10 +255,10 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 		return results
 
 	elif estimate_type == 'blp':
-		
+
 		forumlation_blp = (formulation_fe, formulation_char)
 		integration = pyblp.Integration(integration_options['type'], size = integration_options['size'])
-		
+
 		problem = pyblp.Problem(formulation_blp, df, integration = integration)
 		with pyblp.parallel(num_parallel):
 			if nests is None:
@@ -260,23 +271,23 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 	elif estimate_type == 'partialF':
 		print("Did not run estimation")
-		
+
 		# Get the first stage of instruments
 		partialF, partialR2 = get_partial_f(df, chars)
 		return None
 	else:
 		return None
 
-def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars = None, nests = None, 
-	month_or_quarter = 'month', estimate_type = 'logit', 
-	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True, 
+def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars = None, nests = None,
+	month_or_quarter = 'month', estimate_type = 'logit',
+	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True,
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
-	
+
 	# First subset the df if needed
 	if cutoff_date is not None:
 		dt = datetime.strptime(cutoff_date, '%Y-%m-%d')
 		if month_or_quarter == 'month':
-			dt_month_or_quarter = dt.month 
+			dt_month_or_quarter = dt.month
 		else:
 			dt_month_or_quarter = ceil(dt.month / 3)
 
@@ -285,7 +296,7 @@ def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars =
 		elif timespan == 'post':
 			df = df[df['year'] > dt.year | df['year'] == dt.year & df[month_or_quarter] > dt_month_or_quarter]
 
-	# Now choose the markets.  
+	# Now choose the markets.
 	# Half the markets are estimated on half the time period and the other half on the other time period
 	unique_dmas = df['dma_code'].unique()
 	dma_group1 = np.random.choice(unique_dmas, size = ceil(0.5 * len(unique_dmas)), replace = False)
@@ -296,13 +307,13 @@ def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars =
 	time_group1 = np.random.choice(unique_times, size = ceil(0.5 * len(unique_times)), replace = False)
 	time_group2 = list(set(unique_times) - set(time_group1))
 
-	inside_group = (df['dma_code'].isin(dma_group1) & df['time'].isin(time_group1)) | (df['dma_code'].isin(dma_group2) & df['time'].isin(time_group2)) 
+	inside_group = (df['dma_code'].isin(dma_group1) & df['time'].isin(time_group1)) | (df['dma_code'].isin(dma_group2) & df['time'].isin(time_group2))
 	df_short = df[inside_group].copy()
 	df_other_short = df[~inside_group].copy()
 
-	results_short = estimate_demand(code, df_short, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, 
+	results_short = estimate_demand(code, df_short, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter,
 		estimate_type = estimate_type, num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
-	results_other_short = estimate_demand(code, df_other_short, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, 
+	results_other_short = estimate_demand(code, df_other_short, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter,
 		estimate_type = estimate_type, num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
 
 	# Step 1: Compute out-of-sample shares
@@ -313,7 +324,7 @@ def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars =
 
 	fe_levels = ['upc', 'dma_code', month_or_quarter]
 	fe_dict = recover_fixed_effects(df[fe_levels], df['fe'])
-	
+
 	df['fe'] = 0
 	for fe in fe_levels:
 		df['fe'] = df['fe'] + df[fe].map(fe_dict[fe]['fe_value'])
@@ -325,8 +336,8 @@ def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars =
 	df = df.join(df_short_group, on = ['upc', 'dma_code'])
 
 	# Generate the simulation
-	new_formulation = pyblp.Formulation('0 + prices + fe')	
-	simulation = pyblp.Simulation(new_formulation, df, 
+	new_formulation = pyblp.Formulation('0 + prices + fe')
+	simulation = pyblp.Simulation(new_formulation, df,
 		beta = np.append(results_short.beta, [1]),
 		xi = df.xi,
 		rho = results_short.rho)
@@ -351,12 +362,11 @@ def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars =
 	df_short_group = df_short_group.join(df_other_short_group, how = 'left', on = ['upc', 'dma'])
 
 
-	
+
 code = sys.argv[1]
 month_or_quarter = sys.argv[2]
 estimate_type = sys.argv[3]
 
 df, characteristics, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
-estimate_demand(code, df, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type, 
+estimate_demand(code, df, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
 	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
-
