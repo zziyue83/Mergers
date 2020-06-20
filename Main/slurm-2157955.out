@@ -1,0 +1,42 @@
+Requirement already satisfied: pandas in /home/yza4307/.local/lib/python3.6/site-packages (0.25.3)
+Requirement already satisfied: numpy>=1.13.3 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandas) (1.16.2)
+Requirement already satisfied: pytz>=2017.2 in /home/yza4307/.local/lib/python3.6/site-packages (from pandas) (2019.3)
+Requirement already satisfied: python-dateutil>=2.6.1 in /home/yza4307/.local/lib/python3.6/site-packages (from pandas) (2.8.1)
+Requirement already satisfied: six>=1.5 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from python-dateutil>=2.6.1->pandas) (1.10.0)
+WARNING: You are using pip version 20.0.2; however, version 20.1.1 is available.
+You should consider upgrading via the '/software/anaconda3.6/bin/python -m pip install --upgrade pip' command.
+Requirement already satisfied: pandasql in /home/yza4307/.local/lib/python3.6/site-packages (0.7.3)
+Requirement already satisfied: pandas in /home/yza4307/.local/lib/python3.6/site-packages (from pandasql) (0.25.3)
+Requirement already satisfied: sqlalchemy in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandasql) (1.1.5)
+Requirement already satisfied: numpy in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandasql) (1.16.2)
+Requirement already satisfied: python-dateutil>=2.6.1 in /home/yza4307/.local/lib/python3.6/site-packages (from pandas->pandasql) (2.8.1)
+Requirement already satisfied: pytz>=2017.2 in /home/yza4307/.local/lib/python3.6/site-packages (from pandas->pandasql) (2019.3)
+Requirement already satisfied: six>=1.5 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from python-dateutil>=2.6.1->pandas->pandasql) (1.10.0)
+WARNING: You are using pip version 20.0.2; however, version 20.1.1 is available.
+You should consider upgrading via the '/software/anaconda3.6/bin/python -m pip install --upgrade pip' command.
+Requirement already satisfied: numpy in /hpc/software/anaconda3.6/lib/python3.6/site-packages (1.16.2)
+WARNING: You are using pip version 20.0.2; however, version 20.1.1 is available.
+You should consider upgrading via the '/software/anaconda3.6/bin/python -m pip install --upgrade pip' command.
+Requirement already satisfied: pyblp in /home/yza4307/.local/lib/python3.6/site-packages (0.9.0)
+Requirement already satisfied: patsy>=0.5.1 in /home/yza4307/.local/lib/python3.6/site-packages (from pyblp) (0.5.1)
+Requirement already satisfied: numpy>=1.16.0 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pyblp) (1.16.2)
+Requirement already satisfied: pyhdfe>=0.1.0 in /home/yza4307/.local/lib/python3.6/site-packages (from pyblp) (0.1.0)
+Requirement already satisfied: scipy>=1.2.0 in /home/yza4307/.local/lib/python3.6/site-packages (from pyblp) (1.4.1)
+Requirement already satisfied: sympy>=1.1.0 in /home/yza4307/.local/lib/python3.6/site-packages (from pyblp) (1.5.1)
+Requirement already satisfied: six in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from patsy>=0.5.1->pyblp) (1.10.0)
+Requirement already satisfied: mpmath>=0.19 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from sympy>=1.1.0->pyblp) (0.19)
+WARNING: You are using pip version 20.0.2; however, version 20.1.1 is available.
+You should consider upgrading via the '/software/anaconda3.6/bin/python -m pip install --upgrade pip' command.
+Requirement already satisfied: tqdm in /home/yza4307/.local/lib/python3.6/site-packages (4.42.1)
+WARNING: You are using pip version 20.0.2; however, version 20.1.1 is available.
+You should consider upgrading via the '/software/anaconda3.6/bin/python -m pip install --upgrade pip' command.
+Collecting datetime
+  Downloading DateTime-4.3-py2.py3-none-any.whl (60 kB)
+Collecting zope.interface
+  Downloading zope.interface-5.1.0-cp36-cp36m-manylinux2010_x86_64.whl (234 kB)
+Requirement already satisfied: pytz in /home/yza4307/.local/lib/python3.6/site-packages (from datetime) (2019.3)
+Requirement already satisfied: setuptools in /hpc/software/anaconda3.6/lib/python3.6/site-packages/setuptools-27.2.0-py3.6.egg (from zope.interface->datetime) (27.2.0)
+Installing collected packages: zope.interface, datetime
+Successfully installed datetime-4.3 zope.interface-5.1.0
+WARNING: You are using pip version 20.0.2; however, version 20.1.1 is available.
+You should consider upgrading via the '/software/anaconda3.6/bin/python -m pip install --upgrade pip' command.
