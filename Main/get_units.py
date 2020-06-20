@@ -49,8 +49,8 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 					
 					for to_add in add_from_map:
 						data_chunk[to_add] = data_chunk['upc'].map(product_map[to_add])
-					
-					data_chunk = clean_data(code, data_chunk)	
+					/////////////';'
+					data_chunk = clean_data(code, data_chunk)	''
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'multi']]
 					
 					# normunits is the total volume sold (quantity x size)
@@ -63,6 +63,8 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		# Sum frequency table to get the total frequency table
 		print(iterations)
 		all_units_frequency = pd.concat(all_units_frequency_list)
+		print(all_units_frequency.head())
+		print(all_units_frequency.columns)
 		agg_all_units_frequency = all_units_frequency.groupby(['norm_size1_amount', 'size1_units']).sum()
 		agg_all_units_frequency = agg_all_units_frequency.reset_index()
 		agg_all_units_frequency = agg_all_units_frequency.sort_values(by = 'size1_units')
