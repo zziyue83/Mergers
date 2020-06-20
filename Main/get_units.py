@@ -37,6 +37,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 				for data_chunk in tqdm(movement_table):
 					# First make sure that only the actual years and months are included
 					print(data_chunk.head())
+					print(data_chunk.columns)
 					iterations += 1
 					data_chunk = clean_data(code, data_chunk)
 					if int(year) == min_year or int(year) == max_year:
