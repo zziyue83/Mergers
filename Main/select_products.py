@@ -215,6 +215,13 @@ conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 area_quarter_upc = aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
+if 'InitialShareCutoff' not in info_dict:
+	info_dict['InitialShareCutoff'] = 1e-3
+if 'MaxUPC' not in info_dict:
+	info_dict['MaxUPC'] = 100
+if 'RegionalShareCutoff' not in info_dict:
+	info_dict['RegionalShareCutoff'] = 0.1
+
 acceptable_upcs = get_acceptable_upcs(area_month_upc[['upc', 'shares', 'volume']], 
 	share_cutoff = float(info_dict["InitialShareCutoff"]),
 	number_cutoff = int(info_dict["MaxUPC"]),
