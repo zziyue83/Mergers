@@ -26,7 +26,8 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		writer.writerow(header)
 
 		all_units_frequency_list = []
-
+		print("now loading nielsen data")
+		iterations = 0
 
 		for group, module in zip(groups, modules):
 
@@ -36,6 +37,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 				for data_chunk in tqdm(movement_table):
 					# First make sure that only the actual years and months are included
 					print(data_chunk.head())
+					iterations += 1
 					data_chunk = clean_data(code, data_chunk)
 					if int(year) == min_year or int(year) == max_year:
 						data_chunk['month'] = np.floor((data_chunk['week_end'] % 10000)/100).astype(int)
@@ -58,6 +60,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 					all_units_frequency_list.append(units_frequency)
 
 		# Sum frequency table to get the total frequency table
+		print(iterations)
 		all_units_frequency = pd.concat(all_units_frequency_list)
 		agg_all_units_frequency = all_units_frequency.groupby(['norm_size1_amount', 'size1_units']).sum()
 		agg_all_units_frequency = agg_all_units_frequency.reset_index()
