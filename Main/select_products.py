@@ -138,7 +138,20 @@ def get_acceptable_upcs(area_month_upc, share_cutoff = 0.01, number_cutoff = 100
 		top_upcs = upc_max_share.nlargest(number_cutoff, ['volume'])
 		exceed_regional_share_cutoff_upcs = upc_max_share[upc_max_share['shares'] > regional_share_cutoff]
 		acceptable_upcs = pd.concat([top_upcs, exceed_regional_share_cutoff_upcs]).drop_duplicates().reset_index(drop=True)
+
 	return acceptable_upcs['upc']
+
+def get_largest_brand_left_out(agg, upc_set, month_or_quarter = 'month'):
+	agg_left_out = agg[~agg.upc.isin(upc_set)]
+	agg_left_out = agg_left_out[['brand_descr', 'dma_code', 'year', month_or_quarter, 'volume', 'market_size']]
+	agg_left_out = agg_left_out.groupby(['brand_descr','dma_code', 'year', month_or_quarter], as_index = False).sum()
+	agg_left_out['share_of_largest_brand_left_out'] = agg_left_out['volume'] / agg_left_out['market_size']
+	agg_left_out = agg_left_out.set_index(['dma_code', 'year', month_or_quarter])
+
+	largest_brand_left_out = agg_left_out.loc[agg_left_out.groupby(level=[0,1,2])['share_of_largest_brand_left_out'].idxmax()]
+	largest_brand_left_out = largest_brand_left_out.drop(['volume', 'market_size'], axis = 1).rename(columns = {'brand_descr' : 'largest_brand_left_out'})
+
+	return largest_brand_left_out
 
 def write_brands_upc(code, agg, upc_set):
 	agg = agg[['upc', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module']]
@@ -189,7 +202,7 @@ def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg[agg.upc.isin(upc_set)]
 	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', index = False, sep = ',', encoding = 'utf-8')
 
-def write_market_coverage(code, agg, upc_set, month_or_quarter = 'month'):
+def write_market_coverage(code, agg, upc_set, largest_brand_left_out, month_or_quarter = 'month'):
 	ms = pd.read_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', delimiter = ',', index_col = ['dma_code', 'year', month_or_quarter])
 
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'volume']]
@@ -201,6 +214,8 @@ def write_market_coverage(code, agg, upc_set, month_or_quarter = 'month'):
 	agg['market_coverage'] = agg['volume'] / agg['total_volume']
 	agg = agg[['dma_code', 'year', month_or_quarter, 'market_coverage', 'total_volume']].reset_index()
 	print(agg.market_coverage.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
+
+	agg = agg.join(largest_brand_left_out, how = 'left', on = ['dma_code', 'year', month_or_quarter])
 	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', index = False, sep = ',', encoding = 'utf-8')
 
 code = sys.argv[1]
@@ -230,6 +245,8 @@ acceptable_upcs = get_acceptable_upcs(area_month_upc[['upc', 'shares', 'volume']
 	number_cutoff = int(info_dict["MaxUPC"]),
 	regional_share_cutoff = float(info_dict["RegionalShareCutoff"]))
 
+largest_brand_left_out = get_largest_brand_left_out(area_month_upc, acceptable_upcs)
+
 # Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
 # Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
 write_brands_upc(code, area_month_upc, acceptable_upcs)
@@ -240,7 +257,7 @@ write_base_dataset(code, area_month_upc, acceptable_upcs, 'month')
 write_base_dataset(code, area_quarter_upc, acceptable_upcs, 'quarter')
 
 # Aggregate data_month (sum shares) by dma-month to get total market shares and spit that out as market_coverage.csv
-write_market_coverage(code, area_month_upc, acceptable_upcs)
+write_market_coverage(code, area_month_upc, acceptable_upcs, largest_brand_left_out)
 
 log_out.close()
 log_err.close()
