@@ -99,7 +99,7 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 		instrument_names.remove('blp')
 
 	# First get the distances
-	distances = pd.read_csv('m_' + code + '/intermediate/distances.csv', delimiter = ',')
+	distances = pd.read_csv('../../../All/m_' + code + '/intermediate/distances.csv', delimiter = ',')
 
 	# Then get diesel prices to multiply
 	df['demand_instruments0'] = df['distance'] * df['diesel']
@@ -108,7 +108,7 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 	# Then get the remaining instruments
 	i = 1
 	for instrument in instrument_names:
-		inst_data = pd.read_csv('../../All/instruments/' + instrument + '.csv', delimiter = ',')
+		inst_data = pd.read_csv('../../../All/instruments/' + instrument + '.csv', delimiter = ',')
 		inst_data['date'] = pd.to_datetime(inst_data['date'])
 		inst_data['year'] = inst_data['date'].dt.year
 
@@ -136,10 +136,10 @@ def gather_product_data(code, month_or_quarter = 'month'):
 		to_append.append(nest)
 
 	# Get the characteristics map
-	char_df = pd.read_csv('m_' + code + '/properties/characteristics.csv', delimiter = ',', index_col = 'upc')
+	char_df = pd.read_csv('../../../All/m_' + code + '/properties/characteristics.csv', delimiter = ',', index_col = 'upc')
 	char_map = char_df.to_dict()
 
-	df = pd.read_csv('m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', delimiter = ',')
+	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', delimiter = ',')
 	df = aux.append_owners(code, df)
 	df = add_characteristics(code, cf, char_map, to_append)
 	df, num_instruments = add_instruments(code, df, instrument_names, month_or_quarter)
@@ -219,7 +219,7 @@ def get_partial_f(df, chars):
 
 def write_to_file(results, code, filepath):
 	# Save as pickle
-	with open('m_' + code + '/output/' + filepath + '.p', 'wb') as fout:
+	with open('../../../All/m_' + code + '/output/' + filepath + '.p', 'wb') as fout:
 		pickle.dump(results.to_dict(), fout)
 
 def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', linear_fe = True,
