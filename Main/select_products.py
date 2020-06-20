@@ -169,7 +169,7 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg.drop(['max_year', 'panel_year'], axis = 1)
 	agg = agg.sort_values(by = 'brand_descr')
 	
-	agg.describe()
+	print(agg.describe())
 
 	base_folder = '../../../All/m_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
@@ -197,6 +197,7 @@ def write_market_coverage(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg.join(ms, how = 'left', on = ['dma_code', 'year', month_or_quarter])
 	agg['market_coverage'] = agg['volume'] / agg['total_volume']
 	agg = agg[['dma_code', 'year', month_or_quarter, 'market_coverage', 'total_volume']].reset_index()
+	print(agg.market_coverage.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', index = False, sep = ',', encoding = 'utf-8')
 
 code = sys.argv[1]
