@@ -130,14 +130,14 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
 	return area_time_upc
 
-def get_acceptable_upcs(area_month_upc, share_cutoff = 0.01, number_cutoff = 100, share_cutoff_2 = 0.1):
+def get_acceptable_upcs(area_month_upc, share_cutoff = 0.01, number_cutoff = 100, regional_share_cutoff = 0.1):
 	# Now for each UPC, find the max market share across all DMA-month.  If it's less than the share cutoff, then drop that upc
 	upc_max_share = area_month_upc.groupby('upc', as_index = False).aggregate({'shares': 'max', 'volume': 'sum'})
 	acceptable_upcs = upc_max_share[upc_max_share['shares'] > share_cutoff]
 	if len(list(set(acceptable_upcs['upc']))) > number_cutoff:
 		top_upcs = upc_max_share.nlargest(number_cutoff, ['volume'])
-		exceed_share_cutoff_2_upcs = upc_max_share[upc_max_share['shares'] > share_cutoff_2]
-		acceptable_upcs = pd.concat([top_upcs, exceed_share_cutoff_2_upcs]).drop_duplicates().reset_index(drop=True)
+		exceed_regional_share_cutoff_upcs = upc_max_share[upc_max_share['shares'] > regional_share_cutoff]
+		acceptable_upcs = pd.concat([top_upcs, exceed_regional_share_cutoff_upcs]).drop_duplicates().reset_index(drop=True)
 	return acceptable_upcs['upc']
 
 def write_brands_upc(code, agg, upc_set):
@@ -168,8 +168,9 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg.merge(features, how = 'left', left_on = ['upc', 'max_year'], right_on = ['upc', 'panel_year'])
 	agg = agg.drop(['max_year', 'panel_year'], axis = 1)
 	agg = agg.sort_values(by = 'brand_descr')
-	
-	print(agg.describe())
+	for column in agg.columns:
+		print(column)
+		print(agg.column.describe())
 
 	base_folder = '../../../All/m_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
@@ -225,7 +226,7 @@ if 'RegionalShareCutoff' not in info_dict:
 acceptable_upcs = get_acceptable_upcs(area_month_upc[['upc', 'shares', 'volume']], 
 	share_cutoff = float(info_dict["InitialShareCutoff"]),
 	number_cutoff = int(info_dict["MaxUPC"]),
-	share_cutoff_2 = float(info_dict["RegionalShareCutoff"]))
+	regional_share_cutoff = float(info_dict["RegionalShareCutoff"]))
 
 # Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
 # Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
