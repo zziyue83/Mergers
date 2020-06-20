@@ -146,9 +146,10 @@ def get_largest_brand_left_out(agg, upc_set, month_or_quarter = 'month'):
 	agg_left_out = agg_left_out[['brand_descr', 'dma_code', 'year', month_or_quarter, 'volume', 'market_size']]
 	agg_left_out = agg_left_out.groupby(['brand_descr','dma_code', 'year', month_or_quarter], as_index = False).sum()
 	agg_left_out['share_of_largest_brand_left_out'] = agg_left_out['volume'] / agg_left_out['market_size']
-	agg_left_out = agg_left_out.set_index(['dma_code', 'year', month_or_quarter])
+	# agg_left_out = agg_left_out.set_index(['dma_code', 'year', month_or_quarter])
 
-	largest_brand_left_out = agg_left_out.loc[agg_left_out.groupby(level=[0,1,2])['share_of_largest_brand_left_out'].idxmax()]
+	largest_brand_left_out = agg_left_out.loc[agg_left_out.groupby(['dma_code', 'year', month_or_quarter])['share_of_largest_brand_left_out'].idxmax()]
+	largest_brand_left_out = largest_brand_left_out.set_index(['dma_code', 'year', month_or_quarter])
 	largest_brand_left_out = largest_brand_left_out.drop(['volume', 'market_size'], axis = 1).rename(columns = {'brand_descr' : 'largest_brand_left_out'})
 
 	return largest_brand_left_out
