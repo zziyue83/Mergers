@@ -168,9 +168,11 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg.merge(features, how = 'left', left_on = ['upc', 'max_year'], right_on = ['upc', 'panel_year'])
 	agg = agg.drop(['max_year', 'panel_year'], axis = 1)
 	agg = agg.sort_values(by = 'brand_descr')
-	for column in agg.columns:
+	
+	characteristics = agg.columns.drop(['upc', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module'])
+	for column in characteristics:
 		print(column)
-		print(agg.column.describe())
+		print(agg[column].describe())
 
 	base_folder = '../../../All/m_' + code + '/intermediate/'
 	agg.to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
