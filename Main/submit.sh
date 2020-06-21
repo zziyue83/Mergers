@@ -4,7 +4,7 @@
 #SBATCH -p buyin
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -c 1
-#SBATCH -t 1:00:00
+#SBATCH -t 12:00:00
 #SBATCH --mail-user=youremail@email.com
 #SBATCH --mem=15G
 #SBATCH --nodes=1
