@@ -98,8 +98,24 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 		add_blp = True
 		instrument_names.remove('blp')
 
-	# First get the distances
-	distances = pd.read_csv('../../../All/m_' + code + '/intermediate/distances.csv', delimiter = ',')
+	# First get the distances and merge with df
+	distances = pd.read_csv('../../../All/m_' + code + '/intermediate/distances.csv', delimiter = ',', index_col = ['brand_code_uc', 'owner', 'dma_code'])
+	df = df.joint(distances, on = ['brand_code_uc', 'owner', 'dma_code'], how = 'left')
+
+	# Next, get the diesel prices and merge with df
+	diesel = pd.read_csv('../../../All/instruments/diesel.csv', delimiter = ',')
+	diesel_data['date'] = pd.to_datetime(diesel_data['date'])
+	diesel_data['year'] = diesel_data['date'].dt.year
+
+	if month_or_quarter == 'month':
+		diesel_data[month_or_quarter] = diesel_data['date'].dt.month
+	elif month_or_quarter == 'quarter':
+		diesel_data[month_or_quarter] = np.ceil(diesel_data['date'].dt.month/3)
+
+	diesel_data_period = diesel_data.groupby([month_or_quarter, 'year'])['value'].agg('mean')
+
+	df = df.join(diesel_data_period, on = [month_or_quarter, 'year'], how = 'left')
+	df.rename(columns={'value': 'diesel'}, inplace=True)
 
 	# Then get diesel prices to multiply
 	df['demand_instruments0'] = df['distance'] * df['diesel']
