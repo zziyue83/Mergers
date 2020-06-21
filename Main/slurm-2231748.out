@@ -1,0 +1,38 @@
+Requirement already satisfied: pandas in /hpc/software/anaconda3.6/lib/python3.6/site-packages
+Requirement already satisfied: python-dateutil>=2 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandas)
+Requirement already satisfied: pytz>=2011k in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandas)
+Requirement already satisfied: numpy>=1.7.0 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandas)
+Requirement already satisfied: six>=1.5 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from python-dateutil>=2->pandas)
+You are using pip version 9.0.1, however version 20.1.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+Requirement already satisfied: pandasql in /home/atb8288/.local/lib/python3.6/site-packages
+Requirement already satisfied: numpy in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandasql)
+Requirement already satisfied: sqlalchemy in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandasql)
+Requirement already satisfied: pandas in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandasql)
+Requirement already satisfied: python-dateutil>=2 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandas->pandasql)
+Requirement already satisfied: pytz>=2011k in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pandas->pandasql)
+Requirement already satisfied: six>=1.5 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from python-dateutil>=2->pandas->pandasql)
+You are using pip version 9.0.1, however version 20.1.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+Requirement already satisfied: numpy in /hpc/software/anaconda3.6/lib/python3.6/site-packages
+You are using pip version 9.0.1, however version 20.1.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+Requirement already satisfied: pyblp in /home/atb8288/.local/lib/python3.6/site-packages
+Requirement already satisfied: numpy>=1.16.0 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from pyblp)
+Requirement already satisfied: scipy>=1.2.0 in /home/atb8288/.local/lib/python3.6/site-packages (from pyblp)
+Requirement already satisfied: patsy>=0.5.1 in /home/atb8288/.local/lib/python3.6/site-packages (from pyblp)
+Requirement already satisfied: sympy>=1.1.0 in /home/atb8288/.local/lib/python3.6/site-packages (from pyblp)
+Requirement already satisfied: pyhdfe>=0.1.0 in /home/atb8288/.local/lib/python3.6/site-packages (from pyblp)
+Requirement already satisfied: six in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from patsy>=0.5.1->pyblp)
+Requirement already satisfied: mpmath>=0.19 in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from sympy>=1.1.0->pyblp)
+You are using pip version 9.0.1, however version 20.1.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+Requirement already satisfied: tqdm in /home/atb8288/.local/lib/python3.6/site-packages
+You are using pip version 9.0.1, however version 20.1.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+Requirement already satisfied: datetime in /home/atb8288/.local/lib/python3.6/site-packages
+Requirement already satisfied: pytz in /hpc/software/anaconda3.6/lib/python3.6/site-packages (from datetime)
+Requirement already satisfied: zope.interface in /home/atb8288/.local/lib/python3.6/site-packages (from datetime)
+Requirement already satisfied: setuptools in /hpc/software/anaconda3.6/lib/python3.6/site-packages/setuptools-27.2.0-py3.6.egg (from zope.interface->datetime)
+You are using pip version 9.0.1, however version 20.1.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
