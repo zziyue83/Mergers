@@ -130,7 +130,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
 	return area_time_upc
 
-def get_acceptable_upcs(area_month_upc, share_cutoff = 0.01, number_cutoff = 100, regional_share_cutoff = 0.1):
+def get_acceptable_upcs(area_month_upc, share_cutoff = 0.01, number_cutoff = 100, regional_share_cutoff = 0.05):
 	# Now for each UPC, find the max market share across all DMA-month.  If it's less than the share cutoff, then drop that upc
 	upc_max_share = area_month_upc.groupby('upc', as_index = False).aggregate({'shares': 'max', 'volume': 'sum'})
 	acceptable_upcs = upc_max_share[upc_max_share['shares'] > share_cutoff]
@@ -146,9 +146,10 @@ def get_largest_brand_left_out(agg, upc_set, month_or_quarter = 'month'):
 	agg_left_out = agg_left_out[['brand_descr', 'dma_code', 'year', month_or_quarter, 'volume', 'market_size']]
 	agg_left_out = agg_left_out.groupby(['brand_descr','dma_code', 'year', month_or_quarter], as_index = False).sum()
 	agg_left_out['share_of_largest_brand_left_out'] = agg_left_out['volume'] / agg_left_out['market_size']
-	agg_left_out = agg_left_out.set_index(['dma_code', 'year', month_or_quarter])
+	# agg_left_out = agg_left_out.set_index(['dma_code', 'year', month_or_quarter])
 
-	largest_brand_left_out = agg_left_out.loc[agg_left_out.groupby(level=[0,1,2])['share_of_largest_brand_left_out'].idxmax()]
+	largest_brand_left_out = agg_left_out.loc[agg_left_out.groupby(['dma_code', 'year', month_or_quarter])['share_of_largest_brand_left_out'].idxmax()]
+	largest_brand_left_out = largest_brand_left_out.set_index(['dma_code', 'year', month_or_quarter])
 	largest_brand_left_out = largest_brand_left_out.drop(['volume', 'market_size'], axis = 1).rename(columns = {'brand_descr' : 'largest_brand_left_out'})
 
 	return largest_brand_left_out
@@ -238,7 +239,7 @@ if 'InitialShareCutoff' not in info_dict:
 if 'MaxUPC' not in info_dict:
 	info_dict['MaxUPC'] = 100
 if 'RegionalShareCutoff' not in info_dict:
-	info_dict['RegionalShareCutoff'] = 0.1
+	info_dict['RegionalShareCutoff'] = 0.05
 
 acceptable_upcs = get_acceptable_upcs(area_month_upc[['upc', 'shares', 'volume']], 
 	share_cutoff = float(info_dict["InitialShareCutoff"]),
