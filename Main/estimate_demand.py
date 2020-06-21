@@ -157,8 +157,8 @@ def gather_product_data(code, month_or_quarter = 'month'):
 
 	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', delimiter = ',')
 	df = aux.append_owners(code, df)
-	df = add_characteristics(code, cf, char_map, to_append)
-	df, num_instruments = add_instruments(code, df, instrument_names, month_or_quarter)
+	df = add_characteristics(code, df, char_map, to_append)
+	df, num_instruments, add_differentiation, add_blp = add_instruments(code, df, instrument_names, month_or_quarter)
 
 	return df, characteristics, nest, num_instruments, add_differentiation, add_blp
 
