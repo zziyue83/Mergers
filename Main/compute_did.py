@@ -37,6 +37,7 @@ def compute_hhi_map(df, owner_col = 'owner'):
 	print(df.head())
 	df = df['hhi']
 	hhi_map = df.to_dict()
+	print(hhi_map)
 	return hhi_map
 
 def add_dhhi(df, merging_date, month_or_quarter):
@@ -73,7 +74,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	# Get inside HHI pre at the DMA level
 	pre_hhi_map = compute_hhi_map(df_pre_own[['dma_code', 'shares', 'owner']])
-	df['pre_hhi'] = df['dma_code'].map(pre_hhi_map['hhi'])
+	df['pre_hhi'] = df['dma_code'].map(pre_hhi_map)
 
 	# Now, get owners post merger
 	df_post = df_pre.copy()
