@@ -200,7 +200,7 @@ def write_brands_upc(code, agg, upc_set):
 	print(str(len(agg)) + ' unique brands')
 
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
-	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares']]
+	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares','sales']]
 	agg = agg[agg.upc.isin(upc_set)]
 	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', index = False, sep = ',', encoding = 'utf-8')
 
