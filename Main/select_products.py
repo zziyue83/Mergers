@@ -99,7 +99,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 				data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
 				data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
 				data_chunk['module'] = int(module)
-				area_time_upc['upc_ver_uc'] = area_time_upc['upc'].map(upc_ver_map)
+				data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
 				area_time_upc = data_chunk.groupby(['year', month_or_quarter, 'upc', 'upc_ver_uc', 'dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
 				area_time_upc_list.append(area_time_upc)
 
