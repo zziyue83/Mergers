@@ -135,7 +135,7 @@ def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'm
 		else:
 			is_merging_party = 0
 
-		this_dict = {'name' : party, 'pre_sales' : party_sales_pre, 'post_sales' : party_sales_post, 'pre_share' : party_share_pre, 'post_share' : part_share_post, 'merging_party' : is_merging_party}
+		this_dict = {'name' : party, 'pre_sales' : party_sales_pre, 'post_sales' : party_sales_post, 'pre_share' : party_share_pre, 'post_share' : party_share_post, 'merging_party' : is_merging_party}
 		rows_list.append(this_dict)
 	overlap_df = pd.DataFrame(rows_list)
 	overlap_df = overlap_df.sort_values(by = 'merging_party', ascending = False)
