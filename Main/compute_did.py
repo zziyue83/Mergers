@@ -155,7 +155,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 	# Add DHHI, adjust for inflation, add DMA/UPC indicator, log price and post-merger indicator
 	df = add_dhhi(df, merging_date, month_or_quarter)
-	df = aux.adjust_inflation(df, 'hhinc_per_person', month_or_quarter)
+	df = aux.adjust_inflation(df, ['hhinc_per_person'], month_or_quarter)
 	df['dma_upc'] = df['dma_code'].astype(str) + "_" + df['upc'].astype(str)
 	df['lprice'] = np.log(df['prices_adj'])
 	df['post_merger'] = 0
