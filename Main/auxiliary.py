@@ -145,8 +145,6 @@ def append_owners(code, df, month_or_quarter):
 	brand_dates = brand_to_owner_test.groupby('brand_code_uc')[['start_date_test', 'end_date_test']].agg(['min', 'max'])
 	if ((brand_dates.start_date_test['min']!=min_date).sum() + (brand_dates.end_date_test['max']!=max_date).sum() > 0):
 		print('Ownership definitions either do not span the entire sample period or span more than the sample period:')
-		print(brand_dates.head())
-		print(brand_dates.columns)
 		for index, row in brand_dates.iterrows():
 			if row.start_date_test['min'] != min_date or row.end_date_test['max'] != max_date:
 				print(index)
@@ -186,7 +184,7 @@ def append_owners(code, df, month_or_quarter):
 		from df
 		inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
 		'''
-
+	print(df.columns)
 	df_own = ps.sqldf(sqlcode,locals())
 	return df_own
 
