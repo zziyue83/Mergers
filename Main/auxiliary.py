@@ -148,7 +148,7 @@ def append_owners(code, df, month_or_quarter):
 		print(brand_dates.head())
 		print(brand_dates.columns)
 		for index, row in brand_dates.iterrows():
-			if row['min'] != min_date or row['max'] != max_date:
+			if row.start_date_test['min'] != min_date or row.end_date_test['max'] != max_date:
 				print(row['brand'])
 		raise Exception('Ownership definitions either do not span the entire sample period or span more than the sample period.')
 
