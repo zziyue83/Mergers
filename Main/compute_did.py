@@ -116,30 +116,30 @@ def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'm
 	ms['post_merger'] = 0
 	ms.loc[(ms['year']>merger_year) | ((ms['year']==merger_year) & (ms['month']>=merger_month)), 'post_merger'] = 1
 
-    total_sales_post = ms.total_sales[ms['post_merger'] == 1].sum()
-    total_sales_pre = ms.total_sales[ms['post_merger'] == 0].sum()
+	total_sales_post = ms.total_sales[ms['post_merger'] == 1].sum()
+	total_sales_pre = ms.total_sales[ms['post_merger'] == 0].sum()
 
 	df['post_merger'] = 0
-    df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
-    
-    # Get a dataframe that is pre-sales, post-sales, pre-shares, post-shares for all merging parties
-    rows_list = []
-    for party in df.owner.unique():
-    	party_sales_pre = df.sales[df['owner'] == party & df['post_merger'] == 0].sum()
-    	party_sales_post = df.sales[df['owner'] == party & df['post_merger'] == 1].sum()
-    	party_share_pre = party_sales_pre / total_sales_pre
-    	party_share_post = party_sales_post / total_sales_post
+	df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
 
-    	if party in merging_parties:
-    		is_merging_party = 1
-    	else:
-    		is_merging_party = 0
+	# Get a dataframe that is pre-sales, post-sales, pre-shares, post-shares for all merging parties
+	rows_list = []
+	for party in df.owner.unique():
+		party_sales_pre = df.sales[df['owner'] == party & df['post_merger'] == 0].sum()
+		party_sales_post = df.sales[df['owner'] == party & df['post_merger'] == 1].sum()
+		party_share_pre = party_sales_pre / total_sales_pre
+		party_share_post = party_sales_post / total_sales_post
 
-    	this_dict = {'name' : party, 'pre_sales' : party_sales_pre, 'post_sales' : party_sales_post, 'pre_share' : party_share_pre, 'post_share' : part_share_post, 'merging_party' : is_merging_party}
-    	rows_list.append(this_dict)
-    overlap_df = pd.DataFrame(rows_list)
-    overlap_df = overlap_df.sort_values(by = 'merging_party', ascending = False)
-    overlap_df.to_csv('../../../All/m_' + code + '/output/overlap.csv', sep = ',', encoding = 'utf-8')
+		if party in merging_parties:
+			is_merging_party = 1
+		else:
+			is_merging_party = 0
+
+		this_dict = {'name' : party, 'pre_sales' : party_sales_pre, 'post_sales' : party_sales_post, 'pre_share' : party_share_pre, 'post_share' : part_share_post, 'merging_party' : is_merging_party}
+		rows_list.append(this_dict)
+	overlap_df = pd.DataFrame(rows_list)
+	overlap_df = overlap_df.sort_values(by = 'merging_party', ascending = False)
+	overlap_df.to_csv('../../../All/m_' + code + '/output/overlap.csv', sep = ',', encoding = 'utf-8')
 
 
 def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
@@ -155,23 +155,23 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	df = add_dhhi(df, merging_date, month_or_quarter)
 	df = aux.adjust_inflation(df, 'hhinc_per_person', month_or_quarter)
 	df['dma_upc'] = df['dma_code'].astype(str) + "_" + df['upc'].astype(str)
-    df['lprice'] = np.log(df['prices_adj'])
+	df['lprice'] = np.log(df['prices_adj'])
 	df['post_merger'] = 0
-    df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
-    df['merging'] = df['owner'].isin(merging_parties)
+	df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
+	df['merging'] = df['owner'].isin(merging_parties)
 
 	min_year = df['year'].min()
 	min_month_or_quarter = df[df['year'] == min_year, month_or_quarter].min()
 	if month_or_quarter == 'month':
-    	num_periods = 12
-    else:
-    	num_periods = 4
-    df['trend'] = 0
-    df.loc[df['year'] == min_year, 'trend'] = df[df['year'] == min_year, month_or_quarter] - min_month_or_quarter
+		num_periods = 12
+	else:
+		num_periods = 4
+	df['trend'] = 0
+	df.loc[df['year'] == min_year, 'trend'] = df[df['year'] == min_year, month_or_quarter] - min_month_or_quarter
 	df.loc[df['year'] > min_year, 'trend'] = (num_periods - min_month_or_quarter) + num_periods * (df[df['year'] > min_year, 'year'] - min_year - 1) + df[df['year'] > min_year, month_or_quarter]
 
 	df['time_index'] = df['year']*100 + df[month_or_quarter]
-    data = df.set_index(['dma_upc', 'time_index'])
+	data = df.set_index(['dma_upc', 'time_index'])
 
 	# Add interaction terms
 	data['post_merger_merging'] = data['post_merger']*data['merging']
@@ -180,18 +180,18 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	# Add demographics
 	data['log_hhinc_per_person_adj'] = np.log(data['hhinc_per_person_adj'])
 
-    with open('../../../Data/m_' + code + '/output/did_' + month_or_quarter + '.csv', "wb") as csvfile:
-    	header = ["model","post_merger*merging", "post_merger*merging_se", "post_merger*merging_pval", "post_merger*dhhi", "post_merger*dhhi_se", "post_merger*dhhi_pval", "post_merger", "post_merger_se", "post_merger_pval", "trend", "trend_se", "trend_pval", "log_hhinc_per_person_adj", "log_hhinc_per_person_adj_se", "log_hhinc_per_person_adj_pval", "N", "r2", "product", "time"]
+	with open('../../../Data/m_' + code + '/output/did_' + month_or_quarter + '.csv', "wb") as csvfile:
+		header = ["model","post_merger*merging", "post_merger*merging_se", "post_merger*merging_pval", "post_merger*dhhi", "post_merger*dhhi_se", "post_merger*dhhi_pval", "post_merger", "post_merger_se", "post_merger_pval", "trend", "trend_se", "trend_pval", "log_hhinc_per_person_adj", "log_hhinc_per_person_adj_se", "log_hhinc_per_person_adj_pval", "N", "r2", "product", "time"]
 		writer = csv.writer(csvfile, delimiter = ',', encoding = 'utf-8')
 		writer.writerow(header)
 
-	    # Run the various regressions
+		# Run the various regressions
 
 		# No fixed effects
-	    exog_vars = ['post_merger_merging', 'post_merger', 'trend']
-	    exog = sm.add_constant(data[exog_vars])
-	    mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
-	    reg_nofe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
+		exog_vars = ['post_merger_merging', 'post_merger', 'trend']
+		exog = sm.add_constant(data[exog_vars])
+		mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
+		reg_nofe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_nofe = ['No FE',str(reg_nofe.params[0]),str(reg_nofe.std_errors[0]), str(reg_nofe.pvalues[0]), \
 			'','','', \
 			str(reg_nofe.params[1]),str(reg_nofe.std_errors[1]),str(reg_nofe.pvalues[1]), \
@@ -201,8 +201,8 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		writer.writerow(res_nofe)
 
 		# Product/market fixed effects
-	    mod = PanelOLS(data['lprice'], data[exog_vars], entity_effects = True, time_effects = False)
-	    reg_dma_product_fe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
+		mod = PanelOLS(data['lprice'], data[exog_vars], entity_effects = True, time_effects = False)
+		reg_dma_product_fe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_dma_product_fe = ['DMA/Product FE',str(reg_dma_product_fe.params[0]),str(reg_dma_product_fe.std_errors[0]),str(reg_dma_product_fe.pvalues[0]), \
 			'','','', \
 			str(reg_dma_product_fe.params[1]),str(reg_dma_product_fe.std_errors[1]),str(reg_dma_product_fe.pvalues[1]), \
@@ -212,8 +212,8 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		writer.writerow(res_dma_product_fe)
 
 		# Product/market and time fixed effects
-	    mod = PanelOLS(data['lprice'], data['post_merger_merging'], entity_effects = True, time_effects = True)
-	    reg_time_fe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
+		mod = PanelOLS(data['lprice'], data['post_merger_merging'], entity_effects = True, time_effects = True)
+		reg_time_fe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_time_fe = ['Time FE',str(reg_time_fe.params[0]),str(reg_time_fe.std_errors[0]),str(reg_time_fe.pvalues[0]), \
 			'','','','','','','','','','','','', \
 			str(reg_time_fe.nobs),str(reg_time_fe.rsquared),'Yes','Yes']
@@ -252,11 +252,11 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 			str(reg_time_fe_dhhi.nobs),str(reg_time_fe_dhhi.rsquared),'Yes','Yes']
 		writer.writerow(res_time_fe_dhhi)
 
-	    # No fixed effects, demographics
-	    exog_vars = ['post_merger_merging', 'post_merger', 'trend', 'log_hhinc_per_person_adj']
-	    exog = sm.add_constant(data[exog_vars])
-	    mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
-	    reg_nofe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
+		# No fixed effects, demographics
+		exog_vars = ['post_merger_merging', 'post_merger', 'trend', 'log_hhinc_per_person_adj']
+		exog = sm.add_constant(data[exog_vars])
+		mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
+		reg_nofe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_nofe_demog = ['No FE, Demographics',str(reg_nofe_demog.params[0]),str(reg_nofe_demog.std_errors[0]),str(reg_nofe_demog.pvalues[0]), \
 			'','','', \
 			str(reg_nofe_demog.params[1]),str(reg_nofe_demog.std_errors[1]),str(reg_nofe_demog.pvalues[1]), \
@@ -266,8 +266,8 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		writer.writerow(res_nofe_demog)
 
 		# Product/market fixed effects, demographics
-	    mod = PanelOLS(data['lprice'], data[exog_vars], entity_effects = True, time_effects = False)
-	    reg_dma_product_fe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
+		mod = PanelOLS(data['lprice'], data[exog_vars], entity_effects = True, time_effects = False)
+		reg_dma_product_fe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_dma_product_fe_demog = ['DMA/Product FE, Demographics',str(reg_dma_product_fe_demog.params[0]),str(reg_dma_product_fe_demog.std_errors[0]),str(reg_dma_product_fe_demog.pvalues[0]), \
 			'','','', \
 			str(reg_dma_product_fe_demog.params[1]),str(reg_dma_product_fe_demog.std_errors[1]),str(reg_dma_product_fe_demog.pvalues[1]), \
@@ -277,8 +277,8 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		writer.writerow(res_dma_product_fe_demog)
 
 		# Product/market and time fixed effects, demographics
-	    mod = PanelOLS(data['lprice'], data[['post_merger_merging','log_hhinc_per_person_adj']], entity_effects = True, time_effects = True)
-	    reg_time_fe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
+		mod = PanelOLS(data['lprice'], data[['post_merger_merging','log_hhinc_per_person_adj']], entity_effects = True, time_effects = True)
+		reg_time_fe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_time_fe_demog = ['Time FE, Demographics',str(reg_time_fe_demog.params[0]),str(reg_time_fe_demog.std_errors[0]),str(reg_time_fe_demog.pvalues[0]), \
 			'','','','','','','','','', \
 			str(reg_time_fe_demog.params[1]),str(reg_time_fe_demog.std_errors[1]),str(reg_time_fe_demog.pvalues[1]), \
@@ -319,7 +319,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 			str(reg_time_fe_dhhi_demog.nobs),str(reg_time_fe_dhhi_demog.rsquared),'Yes','Yes']
 		writer.writerow(res_time_fe_dhhi_demog)
 
-	    # Should we think about a case where we do a dummy for the second-largest firm too?
+		# Should we think about a case where we do a dummy for the second-largest firm too?
 
 code = sys.argv[1]
 log_out = open('../../../All/m_' + code + '/output/compute_did.log', 'w')
