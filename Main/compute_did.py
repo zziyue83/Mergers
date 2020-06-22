@@ -53,7 +53,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 	df_pre = df_pre.groupby(['upc','dma_code'])['shares'].agg('sum').reset_index()
 	df_pre['dma_share'] = df_pre.groupby('dma_code')['shares'].transform('sum') # We may want to generalize this. Right now, it assumes that market size is constant over time.
 	df_pre['inside_share'] = df_pre['shares']/df_pre['dma_share']
-	df_pre = df_pre[['upc','dma_code','inside_share']]
+	df_pre = df_pre[['upc','dma_code','inside_share','owner']]
 	df_pre = df_pre.rename(columns = {'inside_share' : 'shares'})
 
 	if merger_month_or_quarter > 1:
