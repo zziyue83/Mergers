@@ -171,7 +171,7 @@ def append_owners(code, df, month_or_quarter):
 		brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=brand_to_owner.end_month, day=1))
 		df['date'] = pd.to_datetime(dict(year=df.year, month=df.month, day=1))
 		sqlcode = '''
-		select df.upc, df.year, df.month, df.prices, df.shares, df.dma_code, df.brand_code_uc, brand_to_owner.owner
+		select df.upc, df.year, df.month, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
 		from df
 		inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
 		'''
@@ -180,7 +180,7 @@ def append_owners(code, df, month_or_quarter):
 		brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=3*(np.floor(brand_to_owner.end_month/3)), day=1))
 		df['date'] = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1))
 		sqlcode = '''
-		select df.upc, df.year, df.quarter, df.prices, df.shares, df.dma_code, df.brand_code_uc, brand_to_owner.owner
+		select df.upc, df.year, df.quarter, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
 		from df
 		inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
 		'''
