@@ -12,6 +12,7 @@
 
 module load python/anaconda3.6
 python -m pip install pandas --user
+python -m pip install --upgrade pandas --user
 python -m pip install pandasql --user
 python -m pip install numpy --user
 python -m pip install pyblp --user
@@ -19,4 +20,4 @@ python -m pip install tqdm --user
 python -m pip install datetime --user
 
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Main
-python get_units.py 2614332020_1
+python get_units.py 2655951020_4
