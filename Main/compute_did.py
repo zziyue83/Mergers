@@ -153,14 +153,17 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		merger_month_or_quarter = np.ceil(merging_date.month/3)
 	merger_year = merging_date.year
 
-	# Add DHHI, adjust for inflation, add DMA/UPC indicator, log price and post-merger indicator
+	# Add DHHI, add DMA/UPC indicator, log price and post-merger indicator
 	df = add_dhhi(df, merging_date, month_or_quarter)
-	df = aux.adjust_inflation(df, ['hhinc_per_person'], month_or_quarter)
 	df['dma_upc'] = df['dma_code'].astype(str) + "_" + df['upc'].astype(str)
 	df['lprice'] = np.log(df['prices_adj'])
 	df['post_merger'] = 0
 	df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
 	df['merging'] = df['owner'].isin(merging_parties)
+
+	# Append demographics and adjust for inflation
+	df = df.append_aggregate_demographics(df, month_or_quarter)
+	df = aux.adjust_inflation(df, ['hhinc_per_person'], month_or_quarter)
 
 	min_year = df['year'].min()
 	min_month_or_quarter = df[df['year'] == min_year, month_or_quarter].min()
