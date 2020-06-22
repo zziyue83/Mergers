@@ -33,7 +33,8 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 
 			for year in years:
 				movement_table = aux.load_chunked_year_module_movement_table(year, group, module)
-				
+				upc_ver_map = aux.get_upc_ver_uc_map(year)
+
 				for data_chunk in tqdm(movement_table):
 					# First make sure that only the actual years and months are included
 					print(data_chunk.head())
@@ -45,13 +46,13 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 							data_chunk = data_chunk[data_chunk.month >= min_month]
 						else:
 							data_chunk = data_chunk[data_chunk.month <= max_month]
-					
-					for to_add in add_from_map:
-						data_chunk[to_add] = data_chunk['upc'].map(product_map[to_add])
-					
+
+					data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
+					data_chunk = data_chunk.join(product_map[to_add], on=['upc','upc_ver_uc'], how='left')
+
 					data_chunk = clean_data(code, data_chunk)
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'multi']]
-					
+
 					# normunits is the total volume sold (quantity x size)
 					data_chunk['norm_units'] = data_chunk['units'] * data_chunk['multi'] * data_chunk['size1_amount']
 					data_chunk['norm_size1_amount'] = data_chunk['size1_amount'] * data_chunk['multi']

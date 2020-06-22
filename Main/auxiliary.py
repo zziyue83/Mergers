@@ -64,12 +64,19 @@ def load_chunked_year_module_movement_table(year, group, module, path = ''):
 	table = pd.read_csv(path, delimiter = "\t", chunksize = 10000000)
 	return table
 
+def get_upc_ver_uc_map(year):
+	upc_ver_path = "../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/rms_versions_"+str(year)+".tsv"
+	upc_vers = pd.read_csv(upc_ver_path, delimiter = "\t", encoding = "cp1252", header = 0, index_col = "upc")
+    upc_vers = upc_vers['upc_ver_uc']
+    upc_ver_map = upc_vers.to_dict()
+    return upc_ver_map
+
 def get_product_map(groups):
 	products_path = "../../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
-	products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0, index_col = "upc")
+	products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0, index_col = ["upc","upc_ver_uc"])
 	int_groups = [int(i) for i in groups]
 	wanted_products = products[products['product_group_code'].isin(int_groups)]
-	product_map = wanted_products.to_dict()
+	product_map = wanted_products
 	return product_map
 
 #Example:
