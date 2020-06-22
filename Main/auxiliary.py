@@ -121,6 +121,9 @@ def append_owners(code, df, month_or_quarter):
 		min_month = (3*(df.loc[df['year']==min_year,'quarter']-1)+1).min()
 		max_month = (3*df.loc[df['year']==max_year,'quarter']).max()
 
+	# Remove Onwership that starts later than the latest time in the dataframe
+	brand_to_owner = brand_to_owner[(brand_to_owner['start_year'] > min_year) | ((brand_to_owner['start_year'] = min_year)&(brand_to_owner['start_month'] >= min_month))]
+
 	brand_to_owner.loc[(brand_to_owner['start_year']==0) | (brand_to_owner['start_year']<min_year),'start_year'] = min_year
 	brand_to_owner.loc[(brand_to_owner['start_month']==0) | (brand_to_owner['start_year']<min_year) | ((brand_to_owner['start_year']==min_year)&(brand_to_owner['start_month']<min_month)),'start_month'] = min_month
 	brand_to_owner.loc[(brand_to_owner['end_year']==0) | (brand_to_owner['end_year']>max_year),'end_year'] = max_year
