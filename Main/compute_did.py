@@ -66,7 +66,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 			df_pre[month_or_quarter] = 4
 		df_pre['year'] = merger_year - 1
 
-	print(df_pre_own.columns)
+	print(df_pre.columns)
 	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter)
 
 	# Get inside HHI pre at the DMA level
