@@ -10,4 +10,4 @@
 #SBATCH --nodes=1
 
 module load python/anaconda3.6
-python select_products.py 1973045020_1
+python get_units.py 1973045020_1

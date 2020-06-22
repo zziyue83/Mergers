@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="millercoors did"
+#SBATCH --job-name="millercoors select products"
 #SBATCH -A b1048
 #SBATCH -p buyin
 #SBATCH --mail-type=BEGIN,END,FAIL
@@ -11,4 +11,4 @@
 
 module load python/anaconda3.6
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Main
-python compute_did.py 1912896020_1 
+python select_products.py 1912896020_1 

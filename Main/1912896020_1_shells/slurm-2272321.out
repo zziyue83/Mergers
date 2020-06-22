@@ -1,0 +1,4 @@
+  File "compute_did.py", line 119
+    total_sales_post = ms.total_sales[ms['post_merger'] == 1].sum()
+                                                                  ^
+IndentationError: unindent does not match any outer indentation level
