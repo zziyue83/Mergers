@@ -72,6 +72,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 		store_table = load_store_table(year)
 		store_map = store_table.to_dict()
 		dma_map = store_map['dma_code']
+		upc_ver_map = aux.get_upc_ver_uc_map(year)
 
 		for group, module in zip(groups, modules):
 			movement_table = aux.load_chunked_year_module_movement_table(year, group, module)
@@ -98,15 +99,15 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 				data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
 				data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
 				data_chunk['module'] = int(module)
-				area_time_upc = data_chunk.groupby(['year', month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
+				area_time_upc['upc_ver_uc'] = area_time_upc['upc'].map(upc_ver_map)
+				area_time_upc = data_chunk.groupby(['year', month_or_quarter, 'upc', 'upc_ver_uc', 'dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = data_chunk.columns)
 				area_time_upc_list.append(area_time_upc)
 
 	area_time_upc = pd.concat(area_time_upc_list)
-	area_time_upc = area_time_upc.groupby(['year', month_or_quarter, 'upc','dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
-	for to_add in add_from_map:
-		area_time_upc[to_add] = area_time_upc['upc'].map(product_map[to_add])
+	area_time_upc = area_time_upc.groupby(['year', month_or_quarter, 'upc', 'upc_ver_uc', 'dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
+	area_time_upc = area_time_upc.join(product_map[to_add], on=['upc','upc_ver_uc'], how='left')
 	area_time_upc = clean_data(code, area_time_upc)
-	area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion']) 
+	area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion'])
 	area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi'] * area_time_upc['conversion']
 	area_time_upc['prices'] = area_time_upc['sales'] / area_time_upc['volume']
 	area_time_upc.drop(['week_end','store_code_uc'], axis=1, inplace=True)
@@ -123,7 +124,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	# Save the output if this is month
 	if month_or_quarter == 'month':
 		market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
-	
+
 	# Shares = volume / market size.  Map market sizes back and get shares.
 	area_time_upc = area_time_upc.join(market_sizes.drop('total_volume', axis=1), on = ['dma_code', 'year', month_or_quarter])
 	area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
@@ -161,7 +162,7 @@ def write_brands_upc(code, agg, upc_set):
 	agg['max_year'] = agg.groupby('upc')['year'].transform('max')
 	agg = agg.drop('year', axis = 1)
 	agg = agg.drop_duplicates()
-	
+
 	# add extra nielsen data features from Annual_Files/products_extra_year.tsv
 	years = agg['max_year'].unique()
 	features_list = []
@@ -170,19 +171,19 @@ def write_brands_upc(code, agg, upc_set):
 		features_list.append(this_features)
 	features = pd.concat(features_list)
 	features = features.drop('upc_ver_uc', axis = 1)
-	
+
 	# drop columns with no variation
 	columns = features.columns.drop('panel_year')
 	for column in columns:
 		variation = len(features[column].unique())
 		if variation <= 1:
 			features = features.drop(column, axis = 1)
-	
+
 	# merge extra characteristics with agg
 	agg = agg.merge(features, how = 'left', left_on = ['upc', 'max_year'], right_on = ['upc', 'panel_year'])
 	agg = agg.drop(['max_year', 'panel_year'], axis = 1)
 	agg = agg.sort_values(by = 'brand_descr')
-	
+
 	characteristics = agg.columns.drop(['upc', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module'])
 	for column in characteristics:
 		print(column)
@@ -241,7 +242,7 @@ if 'MaxUPC' not in info_dict:
 if 'RegionalShareCutoff' not in info_dict:
 	info_dict['RegionalShareCutoff'] = 0.05
 
-acceptable_upcs = get_acceptable_upcs(area_month_upc[['upc', 'shares', 'volume']], 
+acceptable_upcs = get_acceptable_upcs(area_month_upc[['upc', 'shares', 'volume']],
 	share_cutoff = float(info_dict["InitialShareCutoff"]),
 	number_cutoff = int(info_dict["MaxUPC"]),
 	regional_share_cutoff = float(info_dict["RegionalShareCutoff"]))
