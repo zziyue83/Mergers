@@ -337,7 +337,8 @@ for timetype in ['month', 'quarter']:
 	print(df.columns)
 	if timetype == 'month':
 		write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
-	did(df, info_dict["DateCompleted"], merging_parties, timetype)
+	dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
+	did(df, dt, merging_parties, timetype)
 
 log_out.close()
 log_err.close()
