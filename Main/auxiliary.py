@@ -122,7 +122,7 @@ def append_owners(code, df, month_or_quarter):
 		max_month = (3*df.loc[df['year']==max_year,'quarter']).max()
 
 	# Remove Onwership that starts later than the latest time in the dataframe
-	brand_to_owner = brand_to_owner[(brand_to_owner['start_year'] > min_year) | ((brand_to_owner['start_year'] == min_year)&(brand_to_owner['start_month'] >= min_month))]
+	brand_to_owner = brand_to_owner[(brand_to_owner['start_year'] > max_year) | ((brand_to_owner['start_year'] == max_year)&(brand_to_owner['start_month'] > max_month))]
 
 	brand_to_owner.loc[(brand_to_owner['start_year']==0) | (brand_to_owner['start_year']<min_year),'start_year'] = min_year
 	brand_to_owner.loc[(brand_to_owner['start_month']==0) | (brand_to_owner['start_year']<min_year) | ((brand_to_owner['start_year']==min_year)&(brand_to_owner['start_month']<min_month)),'start_month'] = min_month
@@ -147,11 +147,11 @@ def append_owners(code, df, month_or_quarter):
 
 	brand_dates = brand_to_owner_test.groupby('brand_code_uc')[['start_date_test', 'end_date_test']].agg(['min', 'max'])
 	if ((brand_dates.start_date_test['min']!=min_date).sum() + (brand_dates.end_date_test['max']!=max_date).sum() > 0):
-		print('Ownership definitions either do not span the entire sample period or span more than the sample period:')
+		print('Ownership definitions does not span the entire sample period:')
 		for index, row in brand_dates.iterrows():
 			if row.start_date_test['min'] != min_date or row.end_date_test['max'] != max_date:
 				print(index)
-		raise Exception('Ownership definitions either do not span the entire sample period.')
+		raise Exception('Ownership definitions does not span the entire sample period.')
 
 	brand_to_owner_test['owner_num'] = brand_to_owner_test.groupby('brand_code_uc').cumcount()+1
 	max_num_owner = brand_to_owner_test['owner_num'].max()
