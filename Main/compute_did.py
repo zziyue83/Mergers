@@ -37,7 +37,6 @@ def compute_hhi_map(df, owner_col = 'owner'):
 	print(df.head())
 	df = df['hhi']
 	hhi_map = df.to_dict()
-	print(hhi_map)
 	return hhi_map
 
 def add_dhhi(df, merging_date, month_or_quarter):
