@@ -48,7 +48,7 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 							data_chunk = data_chunk[data_chunk.month <= max_month]
 
 					data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
-					data_chunk = data_chunk.join(product_map[to_add], on=['upc','upc_ver_uc'], how='left')
+					data_chunk = data_chunk.join(product_map[add_from_map], on=['upc','upc_ver_uc'], how='left')
 
 					data_chunk = clean_data(code, data_chunk)
 					data_chunk = data_chunk[['size1_amount', 'size1_units', 'units', 'multi']]
