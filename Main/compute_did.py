@@ -42,7 +42,6 @@ def compute_hhi_map(df, owner_col = 'owner'):
 def add_dhhi(df, merging_date, month_or_quarter):
 
 	# Pull merger year and merger month (or quarter)
-	merging_date = datetime.strptime(merging_date, '%Y-%m-%d')
 	if month_or_quarter == 'month':
 		merger_month_or_quarter = merging_date.month
 	elif month_or_quarter == 'quarter':
