@@ -95,7 +95,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	# Get inside HHI post at the DMA level
 	post_hhi_map = compute_hhi_map(df_post_own[['dma_code', 'shares', 'owner']])
-	df['post_hhi'] = df['dma_code'].map(post_hhi_map['hhi'])
+	df['post_hhi'] = df['dma_code'].map(post_hhi_map)
 
 	# Compute DHHI and return
 	df['dhhi'] = df['post_hhi'] - df['pre_hhi']
