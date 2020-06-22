@@ -98,7 +98,7 @@ def get_product_map(groups):
 # dataset_found_uc                           ALL
 # size1_change_flag_uc                         0
 
-def append_owners(code, df, month_or_quarter):
+def append_owners(code, df, month_or_quarter,add_dhhi = False):
 	# Load list of UPCs and brands
 	upcs = pd.read_csv('../../../All/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
 	upcs = upcs['brand_code_uc']
@@ -173,20 +173,34 @@ def append_owners(code, df, month_or_quarter):
 		brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=brand_to_owner.start_month, day=1))
 		brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=brand_to_owner.end_month, day=1))
 		df['date'] = pd.to_datetime(dict(year=df.year, month=df.month, day=1))
-		sqlcode = '''
-		select df.upc, df.year, df.month, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
-		from df
-		inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
-		'''
+		if add_dhhi:
+			sqlcode = '''
+			select df.upc, df.year, df.month, df.shares, df.dma_code, df.brand_code_uc, brand_to_owner.owner
+			from df
+			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+			'''
+		else:
+			sqlcode = '''
+			select df.upc, df.year, df.month, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
+			from df
+			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+			'''
 	elif month_or_quarter == 'quarter':
 		brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=3*(np.ceil(brand_to_owner.start_month/3)-1)+1, day=1))
 		brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=3*(np.floor(brand_to_owner.end_month/3)), day=1))
 		df['date'] = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1))
-		sqlcode = '''
-		select df.upc, df.year, df.quarter, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
-		from df
-		inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
-		'''
+		if add_dhhi:
+			sqlcode = '''
+			select df.upc, df.year, df.quarter, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
+			from df
+			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+			'''
+		else:
+			sqlcode = '''
+			select df.upc, df.year, df.quarter, df.shares, df.dma_code, df.brand_code_uc, brand_to_owner.owner
+			from df
+			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+			'''
 	df_own = ps.sqldf(sqlcode,locals())
 	return df_own
 
