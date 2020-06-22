@@ -121,10 +121,10 @@ def append_owners(code, df, month_or_quarter):
 		min_month = (3*(df.loc[df['year']==min_year,'quarter']-1)+1).min()
 		max_month = (3*df.loc[df['year']==max_year,'quarter']).max()
 
-	brand_to_owner.loc[brand_to_owner['start_year']==0,'start_year'] = min_year
-	brand_to_owner.loc[brand_to_owner['start_month']==0,'start_month'] = min_month
-	brand_to_owner.loc[brand_to_owner['end_year']==0,'end_year'] = max_year
-	brand_to_owner.loc[brand_to_owner['end_month']==0,'end_month'] = max_month
+	brand_to_owner.loc[(brand_to_owner['start_year']==0) | (brand_to_owner['start_year']<min_year),'start_year'] = min_year
+	brand_to_owner.loc[(brand_to_owner['start_month']==0) | (brand_to_owner['start_year']<min_year) | ((brand_to_owner['start_year']=min_year)&(brand_to_owner['start_month']<min_month)),'start_month'] = min_month
+	brand_to_owner.loc[(brand_to_owner['end_year']==0) | (brand_to_owner['end_year']>max_year),'end_year'] = max_year
+	brand_to_owner.loc[(brand_to_owner['end_month']==0) | (brand_to_owner['end_year']>max_year) | ((brand_to_owner['end_year']=max_year)&(brand_to_owner['end_month']>max_month)),'end_month'] = max_month
 
 	# Throw error if (1) dates don't span the entirety of the sample period or
 	# (2) ownership dates overlap
@@ -148,7 +148,7 @@ def append_owners(code, df, month_or_quarter):
 		for index, row in brand_dates.iterrows():
 			if row.start_date_test['min'] != min_date or row.end_date_test['max'] != max_date:
 				print(index)
-		raise Exception('Ownership definitions either do not span the entire sample period or span more than the sample period.')
+		raise Exception('Ownership definitions either do not span the entire sample period.')
 
 	brand_to_owner_test['owner_num'] = brand_to_owner_test.groupby('brand_code_uc').cumcount()+1
 	max_num_owner = brand_to_owner_test['owner_num'].max()
