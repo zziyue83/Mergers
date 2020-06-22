@@ -156,7 +156,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	# Add DHHI, add DMA/UPC indicator, log price and post-merger indicator
 	df = add_dhhi(df, merging_date, month_or_quarter)
 	df['dma_upc'] = df['dma_code'].astype(str) + "_" + df['upc'].astype(str)
-	df['lprice'] = np.log(df['prices_adj'])
+	df['lprice'] = np.log(df['prices'])
 	df['post_merger'] = 0
 	df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
 	df['merging'] = df['owner'].isin(merging_parties)
@@ -183,7 +183,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	data['post_merger_dhhi'] = data['post_merger']*data['dhhi']
 
 	# Add demographics
-	data['log_hhinc_per_person_adj'] = np.log(data['hhinc_per_person_adj'])
+	data['log_hhinc_per_person_adj'] = np.log(data['hhinc_per_person'])
 
 	with open('../../../Data/m_' + code + '/output/did_' + month_or_quarter + '.csv', "wb") as csvfile:
 		header = ["model","post_merger*merging", "post_merger*merging_se", "post_merger*merging_pval", "post_merger*dhhi", "post_merger*dhhi_se", "post_merger*dhhi_pval", "post_merger", "post_merger_se", "post_merger_pval", "trend", "trend_se", "trend_pval", "log_hhinc_per_person_adj", "log_hhinc_per_person_adj_se", "log_hhinc_per_person_adj_pval", "N", "r2", "product", "time"]
