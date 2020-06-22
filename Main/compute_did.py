@@ -66,6 +66,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 			df_pre[month_or_quarter] = 4
 		df_pre['year'] = merger_year - 1
 
+	print(df_pre_own.columns)
 	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter)
 
 	# Get inside HHI pre at the DMA level
@@ -331,9 +332,7 @@ merging_parties = aux.get_merging_parties(info_dict["MergingParties"])
 
 for timetype in ['month', 'quarter']:
 	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
-	print(df.columns)
 	df = aux.append_owners(code, df, timetype)
-	print(df.columns)
 	if timetype == 'month':
 		write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
 	dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')

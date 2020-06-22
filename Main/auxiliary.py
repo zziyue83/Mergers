@@ -184,7 +184,6 @@ def append_owners(code, df, month_or_quarter):
 		from df
 		inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
 		'''
-	print(df.columns)
 	df_own = ps.sqldf(sqlcode,locals())
 	return df_own
 
