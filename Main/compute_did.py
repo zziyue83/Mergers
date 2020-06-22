@@ -162,7 +162,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	df['merging'] = df['owner'].isin(merging_parties)
 
 	# Append demographics and adjust for inflation
-	df = df.append_aggregate_demographics(df, month_or_quarter)
+	df = append_aggregate_demographics(df, month_or_quarter)
 	df = aux.adjust_inflation(df, ['hhinc_per_person'], month_or_quarter)
 
 	min_year = df['year'].min()
