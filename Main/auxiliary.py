@@ -149,7 +149,7 @@ def append_owners(code, df, month_or_quarter):
 		print(brand_dates.columns)
 		for index, row in brand_dates.iterrows():
 			if row.start_date_test['min'] != min_date or row.end_date_test['max'] != max_date:
-				print(row['brand'])
+				print(row['brand_code_uc'])
 		raise Exception('Ownership definitions either do not span the entire sample period or span more than the sample period.')
 
 	brand_to_owner_test['owner_num'] = brand_to_owner_test.groupby('brand_code_uc').cumcount()+1
