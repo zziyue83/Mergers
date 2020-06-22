@@ -122,7 +122,7 @@ def append_owners(code, df, month_or_quarter):
 		max_month = (3*df.loc[df['year']==max_year,'quarter']).max()
 
 	# Remove Onwership that starts later than the latest time in the dataframe
-	brand_to_owner = brand_to_owner[(brand_to_owner['start_year'] > max_year) | ((brand_to_owner['start_year'] == max_year)&(brand_to_owner['start_month'] > max_month))]
+	brand_to_owner = brand_to_owner[(brand_to_owner['start_year'] < max_year) | ((brand_to_owner['start_year'] == max_year)&(brand_to_owner['start_month'] <= max_month))]
 
 	brand_to_owner.loc[(brand_to_owner['start_year']==0) | (brand_to_owner['start_year']<min_year),'start_year'] = min_year
 	brand_to_owner.loc[(brand_to_owner['start_month']==0) | (brand_to_owner['start_year']<min_year) | ((brand_to_owner['start_year']==min_year)&(brand_to_owner['start_month']<min_month)),'start_month'] = min_month
@@ -159,8 +159,7 @@ def append_owners(code, df, month_or_quarter):
 	brand_to_owner_test = brand_to_owner_test.unstack('owner_num')
 	brand_to_owner_test.columns = ['{}_{}'.format(var, num) for var, num in brand_to_owner_test.columns]
 
-	print(max_num_owner)
-	for ii in range(2,int(max_num_owner+1)):
+	for ii in range(2,max_num_owner+1):
 		overlap_or_gap = (brand_to_owner_test['start_year_' + str(ii)] < brand_to_owner_test['end_year_' + str(ii-1)]) | \
 			((brand_to_owner_test['start_year_' + str(ii)] == brand_to_owner_test['end_year_' + str(ii-1)]) & \
 			(brand_to_owner_test['start_month_' + str(ii)] != (brand_to_owner_test['end_month_' + str(ii-1)] + 1))) | \
