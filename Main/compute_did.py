@@ -5,7 +5,7 @@ import statsmodels.api as sm
 import numpy as np
 import unicodecsv as csv
 import auxiliary as aux
-import datetime
+from datetime import datetime
 
 def append_aggregate_demographics(df, month_or_quarter):
 
