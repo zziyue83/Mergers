@@ -31,14 +31,17 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 			these_units.loc[these_units.units == this_unit, 'conversion'] = convert_factor
 			convertible.loc[convertible.units == this_unit, 'conversion'] = convert_factor
 
+	# Convert the total quantity
+	convertible['total_quantity'] = convertible['total_quantity'] * convertible['conversion']
+
 	# The "method" for convert = 0 is mapped to the "method" for the convert = 1
 	# with the largest quantity
 	where_largest = convertible.total_quantity.idxmax()
 	if method == 'mode':
-		base_size = convertible.iloc[where_largest]['mode']
+		base_size = convertible.loc[where_largest]['mode']
 		other_size = these_units[these_units.convert == 0]['mode']
 	else:
-		base_size = convertible.iloc[where_largest]['median']
+		base_size = convertible.loc[where_largest]['median']
 		other_size = these_units[these_units.convert == 0]['median']
 
 	these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
