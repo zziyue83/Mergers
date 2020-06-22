@@ -159,7 +159,8 @@ def append_owners(code, df, month_or_quarter):
 	brand_to_owner_test = brand_to_owner_test.unstack('owner_num')
 	brand_to_owner_test.columns = ['{}_{}'.format(var, num) for var, num in brand_to_owner_test.columns]
 
-	for ii in range(2,max_num_owner+1):
+	print(max_num_owner)
+	for ii in range(2,int(max_num_owner+1)):
 		overlap_or_gap = (brand_to_owner_test['start_year_' + str(ii)] < brand_to_owner_test['end_year_' + str(ii-1)]) | \
 			((brand_to_owner_test['start_year_' + str(ii)] == brand_to_owner_test['end_year_' + str(ii-1)]) & \
 			(brand_to_owner_test['start_month_' + str(ii)] != (brand_to_owner_test['end_month_' + str(ii-1)] + 1))) | \
