@@ -232,6 +232,7 @@ def adjust_inflation(df, all_vars, month_or_quarter, rename_var = True):
 
 	# Merge CPIU onto dataframe and adjust prices
 	df = df.join(cpiu, on=['year', month_or_quarter], how = 'left')
+	print(all_vars)
 	for var in all_vars:
 		if rename_var:
 			df[var] = df[var] * (df['cpiu_201001'] / df['cpiu'])
