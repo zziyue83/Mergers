@@ -35,8 +35,7 @@ def compute_hhi_map(df, owner_col = 'owner'):
 	df = df.groupby('dma_code').sum()
 	df = df.rename(columns = {'shares2' : 'hhi'})
 	print(df.head())
-	df = df[['dma_code', 'hhi']]
-	df = df.set_index('dma_code')
+	df = df['hhi']
 	hhi_map = df.to_dict()
 	return hhi_map
 
