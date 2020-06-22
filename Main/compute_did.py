@@ -125,8 +125,8 @@ def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'm
 	# Get a dataframe that is pre-sales, post-sales, pre-shares, post-shares for all merging parties
 	rows_list = []
 	for party in df.owner.unique():
-		party_sales_pre = df.sales[df['owner'] == party & df['post_merger'] == 0].sum()
-		party_sales_post = df.sales[df['owner'] == party & df['post_merger'] == 1].sum()
+		party_sales_pre = df.sales[(df['owner'] == party) & (df['post_merger'] == 0)].sum()
+		party_sales_post = df.sales[(df['owner'] == party) & (df['post_merger'] == 1)].sum()
 		party_share_pre = party_sales_pre / total_sales_pre
 		party_share_post = party_sales_post / total_sales_post
 
