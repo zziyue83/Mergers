@@ -50,7 +50,8 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	# First, create shares for pre-merger period at the DMA level
 	df_pre = df.loc[(df['year'] < merger_year) | ((df['year'] == merger_year) & (df[month_or_quarter] < merger_month_or_quarter))].copy()
-	df_pre = df_pre.groupby(['upc','dma_code'])['shares'].agg('sum').reset_index()
+	print(df_pre.columns)
+	df_pre = df_pre.groupby(['upc','dma_code'])['shares','brand_code_uc'].agg({'shares':'sum','brand_code_uc':'first'}).reset_index()
 	df_pre['dma_share'] = df_pre.groupby('dma_code')['shares'].transform('sum') # We may want to generalize this. Right now, it assumes that market size is constant over time.
 	df_pre['inside_share'] = df_pre['shares']/df_pre['dma_share']
 	print(df_pre.columns)
@@ -68,7 +69,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 		df_pre['year'] = merger_year - 1
 
 	print(df_pre.columns)
-	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter)
+	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter,add_dhhi = True)
 
 	# Get inside HHI pre at the DMA level
 	pre_hhi_map = compute_hhi_map(df_pre_own[['dma_code', 'shares', 'owner']])
@@ -90,7 +91,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	df_post['year'] = merger_year
 
-	df_post_own = aux.append_owners(code, df_post, month_or_quarter)
+	df_post_own = aux.append_owners(code, df_post, month_or_quarter,add_dhhi= True)
 
 	# Get inside HHI post at the DMA level
 	post_hhi_map = compute_hhi_map(df_post_own[['dma_code', 'shares', 'owner']])
