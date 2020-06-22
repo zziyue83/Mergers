@@ -31,9 +31,6 @@ def get_conversion_map(code, final_unit, method = 'mode'):
 			these_units.loc[these_units.units == this_unit, 'conversion'] = convert_factor
 			convertible.loc[convertible.units == this_unit, 'conversion'] = convert_factor
 
-	# Convert the total quantity
-	convertible['total_quantity'] = convertible['total_quantity'] * convertible['conversion']
-
 	# The "method" for convert = 0 is mapped to the "method" for the convert = 1
 	# with the largest quantity
 	where_largest = convertible.total_quantity.idxmax()
