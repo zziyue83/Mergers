@@ -105,7 +105,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
 	area_time_upc = pd.concat(area_time_upc_list)
 	area_time_upc = area_time_upc.groupby(['year', month_or_quarter, 'upc', 'upc_ver_uc', 'dma_code'], as_index = False).aggregate(aggregation_function).reindex(columns = area_time_upc.columns)
-	area_time_upc = area_time_upc.join(product_map[to_add], on=['upc','upc_ver_uc'], how='left')
+	area_time_upc = area_time_upc.join(product_map[add_from_map], on=['upc','upc_ver_uc'], how='left')
 	area_time_upc = clean_data(code, area_time_upc)
 	area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion'])
 	area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi'] * area_time_upc['conversion']
