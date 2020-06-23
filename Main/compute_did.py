@@ -23,8 +23,9 @@ def append_aggregate_demographics(df, month_or_quarter):
 	# df['hhinc_per_person'] = df[['year','dma_code']].map(demog_map)
 	print(dma_stats.columns)
 	print(dma_stats.head())
-	df = df.merge(dma_stats['hhinc_per_person'],left_on=['year','dma_code'],right_on=['year,dma_code'])
-
+	df = df.merge(dma_stats['hhinc_per_person'],left_on=['year','dma_code'],right_on=['year','dma_code'])
+	print(df.columns)
+	print(df.head())
 	return df
 
 def compute_hhi_map(df, owner_col = 'owner'):
