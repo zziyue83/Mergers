@@ -167,7 +167,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	df = aux.adjust_inflation(df, ['hhinc_per_person'], month_or_quarter)
 
 	min_year = df['year'].min()
-	temp = df[df['year' == min_year]]
+	temp = df[df['year'] == min_year]
 	min_month_or_quarter = temp[month_or_quarter].min()
 	if month_or_quarter == 'month':
 		num_periods = 12
