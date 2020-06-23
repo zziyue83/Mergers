@@ -196,6 +196,10 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 		# No fixed effects
 		exog_vars = ['post_merger_merging', 'post_merger', 'trend']
+		print(data[exog_vars].head())
+		print(data['post_merger_merging'].unique())
+		print(data['post_merger'].unique())
+		print(data['trend'].unique())
 		exog = sm.add_constant(data[exog_vars])
 		mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
 		reg_nofe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
