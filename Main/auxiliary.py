@@ -54,7 +54,6 @@ def get_merging_parties(info_str):
 	all_parties = re.finditer('{(.*?)}', info_str, re.DOTALL)
 	merging_parties = []
 	for i in all_parties:
-		print(i.group(1).strip())
 		merging_parties.append(i.group(1).strip())
 	return merging_parties
 
@@ -233,7 +232,6 @@ def adjust_inflation(df, all_vars, month_or_quarter, rename_var = True):
 
 	# Merge CPIU onto dataframe and adjust prices
 	df = df.join(cpiu, on=['year', month_or_quarter], how = 'left')
-	print(df.columns)
 	for var in all_vars:
 		if rename_var:
 			df[var] = df[var] * (df['cpiu_201001'] / df['cpiu'])

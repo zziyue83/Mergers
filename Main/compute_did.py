@@ -21,8 +21,6 @@ def append_aggregate_demographics(df, month_or_quarter):
 
 	# Map to main dataframe
 	df = df.merge(dma_stats,left_on=['year','dma_code'],right_on=['year','dma_code'])
-	print(df.columns)
-	print(df.head())
 	return df
 
 def compute_hhi_map(df, owner_col = 'owner'):
@@ -35,7 +33,6 @@ def compute_hhi_map(df, owner_col = 'owner'):
 	df['shares2'] = df['shares'] * df['shares']
 	df = df.groupby('dma_code').sum()
 	df = df.rename(columns = {'shares2' : 'hhi'})
-	print(df.head())
 	df = df['hhi']
 	hhi_map = df.to_dict()
 	return hhi_map
@@ -51,11 +48,9 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	# First, create shares for pre-merger period at the DMA level
 	df_pre = df.loc[(df['year'] < merger_year) | ((df['year'] == merger_year) & (df[month_or_quarter] < merger_month_or_quarter))].copy()
-	print(df_pre.columns)
 	df_pre = df_pre.groupby(['upc','dma_code'])['shares','brand_code_uc'].agg({'shares':'sum','brand_code_uc':'first'}).reset_index()
 	df_pre['dma_share'] = df_pre.groupby('dma_code')['shares'].transform('sum') # We may want to generalize this. Right now, it assumes that market size is constant over time.
 	df_pre['inside_share'] = df_pre['shares']/df_pre['dma_share']
-	print(df_pre.columns)
 	df_pre = df_pre[['upc','dma_code','inside_share']]
 	df_pre = df_pre.rename(columns = {'inside_share' : 'shares'})
 
@@ -69,7 +64,6 @@ def add_dhhi(df, merging_date, month_or_quarter):
 			df_pre[month_or_quarter] = 4
 		df_pre['year'] = merger_year - 1
 
-	print(df_pre.columns)
 	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter,add_dhhi = True)
 
 	# Get inside HHI pre at the DMA level
@@ -161,7 +155,6 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	df['post_merger'] = 0
 	df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
 	df['merging'] = df['owner'].isin(merging_parties)
-	print(df[df['owner'] == 'SABMiller'])
 
 	# Append demographics and adjust for inflation
 	df = append_aggregate_demographics(df, month_or_quarter)
@@ -198,10 +191,6 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 		# No fixed effects
 		exog_vars = ['post_merger_merging', 'post_merger', 'trend']
-		print(data[exog_vars].head())
-		print(data['post_merger_merging'].unique())
-		print(data['post_merger'].unique())
-		print(data['trend'].unique())
 		exog = sm.add_constant(data[exog_vars])
 		mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
 		reg_nofe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
@@ -342,7 +331,6 @@ sys.stderr = log_err
 
 info_dict = aux.parse_info(code)
 merging_parties = aux.get_merging_parties(info_dict["MergingParties"])
-print(merging_parties)
 
 for timetype in ['month', 'quarter']:
 	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
