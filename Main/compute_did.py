@@ -187,7 +187,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	# Add demographics
 	data['log_hhinc_per_person_adj'] = np.log(data['hhinc_per_person'])
 
-	with open('../../../Data/m_' + code + '/output/did_' + month_or_quarter + '.csv', "w") as csvfile:
+	with open('../../../All/m_' + code + '/output/did_' + month_or_quarter + '.csv', "w") as csvfile:
 		header = ["model","post_merger*merging", "post_merger*merging_se", "post_merger*merging_pval", "post_merger*dhhi", "post_merger*dhhi_se", "post_merger*dhhi_pval", "post_merger", "post_merger_se", "post_merger_pval", "trend", "trend_se", "trend_pval", "log_hhinc_per_person_adj", "log_hhinc_per_person_adj_se", "log_hhinc_per_person_adj_pval", "N", "r2", "product", "time"]
 		writer = csv.writer(csvfile, delimiter = ',', encoding = 'utf-8')
 		writer.writerow(header)
