@@ -152,7 +152,7 @@ def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'm
 		rows_list.append(this_dict)
 	overlap_df = pd.DataFrame(rows_list)
 	overlap_df = overlap_df.sort_values(by = 'merging_party', ascending = False)
-	overlap_df.to_csv('../../../All/m_' + code + '/output/overlap.csv', sep = ',', encoding = 'utf-8')
+	overlap_df.to_csv('../../../All/m_' + code + '/output/overlap.csv', sep = ',', encoding = 'utf-8', index = False)
 
 
 def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
