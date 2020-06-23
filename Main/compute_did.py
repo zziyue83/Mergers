@@ -20,7 +20,9 @@ def append_aggregate_demographics(df, month_or_quarter):
 	demog_map = dma_stats.to_dict()
 
 	# Map to main dataframe
-	df['hhinc_per_person'] = df[['year','dma_code']].map(demog_map)
+	# df['hhinc_per_person'] = df[['year','dma_code']].map(demog_map)
+	print(dma_stats.columns) 
+	df = df.merge(dma_stats['hhinc_per_person'],left_on=['year','dma_code'],right_on=['year,dma_code'])
 
 	return df
 
