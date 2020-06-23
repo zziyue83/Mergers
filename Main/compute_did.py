@@ -16,12 +16,13 @@ def append_aggregate_demographics(df, month_or_quarter):
 	agent_data['hhinc_per_person'] = agent_data['HINCP_ADJ'] / agent_data['hhmember']
 
 	# Compute mean demographics by DMA and month or quarter
-	dma_stats = agent_data.groupby(['year','dma_code'])['hhinc_per_person'].agg('median')
+	dma_stats = agent_data.groupby(['year','dma_code'])['hhinc_per_person'].agg('median').reset_index()
 	demog_map = dma_stats.to_dict()
 
 	# Map to main dataframe
 	# df['hhinc_per_person'] = df[['year','dma_code']].map(demog_map)
-	print(dma_stats.columns) 
+	print(dma_stats.columns)
+	print(dma_stats.head())
 	df = df.merge(dma_stats['hhinc_per_person'],left_on=['year','dma_code'],right_on=['year,dma_code'])
 
 	return df
