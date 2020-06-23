@@ -25,7 +25,7 @@ def append_aggregate_demographics(df, month_or_quarter):
 	print(dma_stats.head())
 	print(df.columns)
 	print(df.head())
-	df = df.merge(dma_stats['hhinc_per_person'],left_on=['year','dma_code'],right_on=['year','dma_code'])
+	df = df.merge(dma_stats,left_on=['year','dma_code'],right_on=['year','dma_code'])
 	print(df.columns)
 	print(df.head())
 	return df
