@@ -20,11 +20,6 @@ def append_aggregate_demographics(df, month_or_quarter):
 	demog_map = dma_stats.to_dict()
 
 	# Map to main dataframe
-	# df['hhinc_per_person'] = df[['year','dma_code']].map(demog_map)
-	print(dma_stats.columns)
-	print(dma_stats.head())
-	print(df.columns)
-	print(df.head())
 	df = df.merge(dma_stats,left_on=['year','dma_code'],right_on=['year','dma_code'])
 	print(df.columns)
 	print(df.head())
@@ -172,7 +167,8 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	df = aux.adjust_inflation(df, ['hhinc_per_person'], month_or_quarter)
 
 	min_year = df['year'].min()
-	min_month_or_quarter = df[df['year'] == min_year, month_or_quarter].min()
+	temp = df[df['year' == min_year]]
+	min_month_or_quarter = temp[month_or_quarter].min()
 	if month_or_quarter == 'month':
 		num_periods = 12
 	else:
