@@ -174,8 +174,8 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	else:
 		num_periods = 4
 	df['trend'] = 0
-	df.loc[df['year'] == min_year, 'trend'] = df[df['year'] == min_year, month_or_quarter] - min_month_or_quarter
-	df.loc[df['year'] > min_year, 'trend'] = (num_periods - min_month_or_quarter) + num_periods * (df[df['year'] > min_year, 'year'] - min_year - 1) + df[df['year'] > min_year, month_or_quarter]
+	df.loc[df['year'] == min_year, 'trend'] = df.loc[df['year'] == min_year, month_or_quarter] - min_month_or_quarter
+	df.loc[df['year'] > min_year, 'trend'] = (num_periods - min_month_or_quarter) + num_periods * (df.loc[df['year'] > min_year, 'year'] - min_year - 1) + df[df['year'] > min_year, month_or_quarter]
 
 	df['time_index'] = df['year']*100 + df[month_or_quarter]
 	data = df.set_index(['dma_upc', 'time_index'])
