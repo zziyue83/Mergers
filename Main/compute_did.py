@@ -71,7 +71,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 			df_pre[month_or_quarter] = 3
 		df_pre['year'] = merger_year - 1
 
-	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter,add_dhhi = True)
+	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter, add_dhhi = True)
 
 	# Get inside HHI pre at the DMA level
 	pre_hhi_map = compute_hhi_map(df_pre_own[['dma_code', 'shares', 'owner']])
@@ -102,7 +102,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 			df_post['quarter'] = merger_month_or_quarter + 1
 			df_post['year'] = merger_year
 
-	df_post_own = aux.append_owners(code, df_post, month_or_quarter,add_dhhi= True)
+	df_post_own = aux.append_owners(code, df_post, month_or_quarter, add_dhhi = True)
 
 	# Get inside HHI post at the DMA level
 	post_hhi_map = compute_hhi_map(df_post_own[['dma_code', 'shares', 'owner']])
