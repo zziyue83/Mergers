@@ -54,6 +54,7 @@ def get_merging_parties(info_str):
 	all_parties = re.finditer('{(.*?)}', info_str, re.DOTALL)
 	merging_parties = []
 	for i in all_parties:
+		print(i)
 		merging_parties.append(i)
 	return merging_parties
 
