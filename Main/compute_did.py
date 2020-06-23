@@ -246,7 +246,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		writer.writerow(res_nofe_dhhi)
 
 		# Product/market fixed effects, DHHI
-		mod = PanelOLS(data['lprice'], exog_dhhi, entity_effects = True, time_effects = False)
+		mod = PanelOLS(data['lprice'], data[exog_vars_dhhi], entity_effects = True, time_effects = False)
 		reg_dma_product_fe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_dma_product_fe_dhhi = ['DMA/Product FE, DHHI','','','', \
 			str(reg_dma_product_fe_dhhi.params[0]),str(reg_dma_product_fe_dhhi.std_errors[0]),str(reg_dma_product_fe_dhhi.pvalues[0]), \
@@ -312,7 +312,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		writer.writerow(res_nofe_dhhi_demog)
 
 		# Product/market fixed effects, DHHI, demographics
-		mod = PanelOLS(data['lprice'], exog_vars_dhhi, entity_effects = True, time_effects = False)
+		mod = PanelOLS(data['lprice'], data[exog_vars_dhhi], entity_effects = True, time_effects = False)
 		reg_dma_product_fe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_dma_product_fe_dhhi_demog = ['DMA/Product FE, DHHI, Demographics','','','', \
 			str(reg_dma_product_fe_dhhi_demog.params[0]),str(reg_dma_product_fe_dhhi_demog.std_errors[0]),str(reg_dma_product_fe_dhhi_demog.pvalues[0]), \
