@@ -195,13 +195,13 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 		df['date'] = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1))
 		if add_dhhi:
 			sqlcode = '''
-			select df.upc, df.year, df.quarter, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
+			select df.upc, df.year, df.quarter, df.shares, df.dma_code, df.brand_code_uc, brand_to_owner.owner
 			from df
 			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
 			'''
 		else:
 			sqlcode = '''
-			select df.upc, df.year, df.quarter, df.shares, df.dma_code, df.brand_code_uc, brand_to_owner.owner
+			select df.upc, df.year, df.quarter, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
 			from df
 			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
 			'''
