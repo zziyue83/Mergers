@@ -54,8 +54,8 @@ def get_merging_parties(info_str):
 	all_parties = re.finditer('{(.*?)}', info_str, re.DOTALL)
 	merging_parties = []
 	for i in all_parties:
-		print(i)
-		merging_parties.append(i)
+		print(i.group(1).strip())
+		merging_parties.append(i.group(1).strip())
 	return merging_parties
 
 def load_chunked_year_module_movement_table(year, group, module, path = ''):
