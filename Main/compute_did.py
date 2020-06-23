@@ -54,14 +54,21 @@ def add_dhhi(df, merging_date, month_or_quarter):
 	df_pre = df_pre[['upc','dma_code','inside_share']]
 	df_pre = df_pre.rename(columns = {'inside_share' : 'shares'})
 
-	if merger_month_or_quarter > 1:
-		df_pre[month_or_quarter] = merger_month_or_quarter - 1
+	# Subtract 2 months/quarters for the "pre" just to deal with indexing issues
+	if merger_month_or_quarter > 2:
+		df_pre[month_or_quarter] = merger_month_or_quarter - 2
 		df_pre['year'] = merger_year
-	else:
+	elif merger_month_or_quarter == 2:
 		if month_or_quarter == 'month':
 			df_pre[month_or_quarter] = 12
 		elif month_or_quarter == 'quarter':
 			df_pre[month_or_quarter] = 4
+		df_pre['year'] = merger_year - 1
+	elif merger_month_or_quarter == 1:
+		if month_or_quarter == 'month':
+			df_pre[month_or_quarter] = 11
+		elif month_or_quarter == 'quarter':
+			df_pre[month_or_quarter] = 3
 		df_pre['year'] = merger_year - 1
 
 	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter,add_dhhi = True)
@@ -73,18 +80,27 @@ def add_dhhi(df, merging_date, month_or_quarter):
 	# Now, get owners post merger
 	df_post = df_pre.copy()
 
+	# Add 2 months/quarters for the "post" just to deal with indexing issues
 	if month_or_quarter == 'month':
-		if merger_month_or_quarter == 12:
+		if merger_month_or_quarter == 11:
 			df_post['month'] = 1
+			df_post['year'] = merger_year + 1
+		elif merger_month_or_quarter == 12:
+			df_post['month'] = 2
+			df_post['year'] = merger_year + 1
 		else:
 			df_post['month'] = merger_month_or_quarter + 1
+			df_post['year'] = merger_year
 	elif month_or_quarter == 'quarter':
-		if merger_month_or_quarter == 4:
+		if merger_month_or_quarter == 3:
 			df_post['quarter'] = 1
+			df_post['year'] = merger_year + 1
+		elif merger_month_or_quarter == 4:
+			df_post['quarter'] = 2
+			df_post['year'] = merger_year + 1
 		else:
 			df_post['quarter'] = merger_month_or_quarter + 1
-
-	df_post['year'] = merger_year
+			df_post['year'] = merger_year
 
 	df_post_own = aux.append_owners(code, df_post, month_or_quarter,add_dhhi= True)
 
