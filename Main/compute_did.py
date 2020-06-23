@@ -161,6 +161,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	df['post_merger'] = 0
 	df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
 	df['merging'] = df['owner'].isin(merging_parties)
+	print(df[df['owner'] == 'SABMiller'])
 
 	# Append demographics and adjust for inflation
 	df = append_aggregate_demographics(df, month_or_quarter)
@@ -173,9 +174,10 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		num_periods = 12
 	else:
 		num_periods = 4
-	df['trend'] = 0
-	df.loc[df['year'] == min_year]['trend'] = df.loc[df['year'] == min_year][month_or_quarter] - min_month_or_quarter
-	df.loc[df['year'] > min_year]['trend'] = (num_periods - min_month_or_quarter) + num_periods * (df.loc[df['year'] > min_year]['year'] - min_year - 1) + df[df['year'] > min_year][month_or_quarter]
+	# df['trend'] = 0
+	df['trend'] = (df['year'] - min_year)*num_periods + df[month_or_quarter] - min_month_or_quarter
+	# df.loc[df['year'] == min_year]['trend'] = df.loc[df['year'] == min_year][month_or_quarter] - min_month_or_quarter
+	# df.loc[df['year'] > min_year]['trend'] = (num_periods - min_month_or_quarter) + num_periods * (df.loc[df['year'] > min_year]['year'] - min_year - 1) + df[df['year'] > min_year][month_or_quarter]
 
 	df['time_index'] = df['year']*100 + df[month_or_quarter]
 	data = df.set_index(['dma_upc', 'time_index'])
@@ -340,6 +342,7 @@ sys.stderr = log_err
 
 info_dict = aux.parse_info(code)
 merging_parties = aux.get_merging_parties(info_dict["MergingParties"])
+print(merging_parties)
 
 for timetype in ['month', 'quarter']:
 	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
