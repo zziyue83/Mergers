@@ -11,6 +11,7 @@
 
 module load python/anaconda3.6
 
+
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Main
-python get_units.py 2975652020_1
+python select_products.py 2600981020_1
 
