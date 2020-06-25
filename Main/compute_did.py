@@ -6,6 +6,7 @@ import numpy as np
 import unicodecsv as csv
 import auxiliary as aux
 from datetime import datetime
+from statsmodels.iolib.summary2 import summary_col
 
 def append_aggregate_demographics(df, month_or_quarter):
 
@@ -336,6 +337,11 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 			str(reg_time_fe_dhhi_demog.params[1]),str(reg_time_fe_dhhi_demog.std_errors[1]),str(reg_time_fe_dhhi_demog.pvalues[1]), \
 			str(reg_time_fe_dhhi_demog.nobs),str(reg_time_fe_dhhi_demog.rsquared),'Yes','Yes']
 		writer.writerow(res_time_fe_dhhi_demog)
+
+		print(summary_col([res_nofe, res_dma_product_fe, res_time_fe], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
+		print(summary_col([res_nofe_dhhi, res_dma_product_fe_dhhi, res_time_fe_dhhi], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
+		print(summary_col([res_nofe_demog, res_dma_product_fe_demog, res_time_fe_demog], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
+		print(summary_col([res_nofe_dhhi_demog, res_dma_product_fe_dhhi_demog, res_time_fe_dhhi_demog], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
 
 		# Should we think about a case where we do a dummy for the second-largest firm too?
 
