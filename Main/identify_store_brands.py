@@ -34,17 +34,14 @@ def get_store_brands(code, years, groups, modules, month_or_quarter = 'month'):
                 parent_upc_list.append(parent_upc)
 
     parent_upc = pd.concat(parent_upc_list)
-    print(parent_upc)
-
     parent_upc_grouped = parent_upc[['parent_code','upc','brand_code_uc','brand_descr']].drop_duplicates().groupby('upc')
-    print(parent_upc_grouped)
 
     for upc, parent_upc_group in parent_upc_grouped:
         if len(list(set(parent_upc_group.parent_code))) == 1:
             store_brands_list.append(parent_upc_group)
 
     store_brands = pd.concat(store_brands_list)
-    print(store_brands)
+    print(store_brands.head())
 
     base_folder = '../../../All/m_' + code + '/intermediate/'
     store_brands.to_csv(base_folder + 'store_brands.csv', index = False, sep = ',', encoding = 'utf-8')
