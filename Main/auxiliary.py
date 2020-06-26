@@ -184,10 +184,10 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 			brand_to_owner_test['overlap'] = overlap_or_gap
 			print(brand_to_owner_test[brand_to_owner_test['overlap'] != 0][['start_date_test_1','end_date_test_1','start_date_test_2','end_date_test_2','start_date_test_3','end_date_test_3']])
 			print(brand_to_owner_test[brand_to_owner_test['overlap'] != 0].index)
-			print(brand_to_owner_test.loc[[582568]])
-			print(brand_to_owner_test.loc[[594982]])
-			print(brand_to_owner_test.loc[[606506]])
-			print(brand_to_owner_test.loc[[666355]])
+			print(brand_to_owner_test.iloc[582568])
+			print(brand_to_owner_test.iloc[594982])
+			print(brand_to_owner_test.iloc[606506])
+			print(brand_to_owner_test.iloc[666355])
 			raise Exception('There are gaps or overlap in the ownership mapping.')
 
 	# Merge on brand and date intervals
