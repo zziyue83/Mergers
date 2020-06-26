@@ -186,11 +186,12 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	df['post_merger'] = 0
 	df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
 	df['merging'] = df['owner'].isin(merging_parties)
+	print(df.head())
 
 	# Append demographics and adjust for inflation
 	df = append_aggregate_demographics(df, month_or_quarter)
 	df = aux.adjust_inflation(df, ['hhinc_per_person'], month_or_quarter)
-
+	print(df.head())
 	min_year = df['year'].min()
 	temp = df[df['year'] == min_year]
 	min_month_or_quarter = temp[month_or_quarter].min()
@@ -212,7 +213,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 
 	# Add demographics
 	data['log_hhinc_per_person_adj'] = np.log(data['hhinc_per_person'])
-
+	print(data.head())
 	with open('../../../All/m_' + code + '/output/did_' + month_or_quarter + '.csv', "wb") as csvfile:
 		header = ["model","post_merger*merging", "post_merger*merging_se", "post_merger*merging_pval", "post_merger*dhhi", "post_merger*dhhi_se", "post_merger*dhhi_pval", "post_merger", "post_merger_se", "post_merger_pval", "trend", "trend_se", "trend_pval", "log_hhinc_per_person_adj", "log_hhinc_per_person_adj_se", "log_hhinc_per_person_adj_pval", "N", "r2", "product", "time"]
 		writer = csv.writer(csvfile, delimiter = ',', encoding = 'utf-8')
