@@ -354,10 +354,10 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 			str(reg_time_fe_dhhi_demog.nobs),str(reg_time_fe_dhhi_demog.rsquared),'Yes','Yes']
 		writer.writerow(res_time_fe_dhhi_demog_csv)
 
-		print(summary_col(results = [reg_nofe, reg_dma_product_fe, reg_time_fe], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
-		print(summary_col(results = [reg_nofe_dhhi, reg_dma_product_fe_dhhi, reg_time_fe_dhhi], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
-		print(summary_col(results = [reg_nofe_demog, reg_dma_product_fe_demog, reg_time_fe_demog], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
-		print(summary_col(results = [reg_nofe_dhhi_demog, reg_dma_product_fe_dhhi_demog, reg_time_fe_dhhi_demog], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
+		# print(summary_col(results = [reg_nofe, reg_dma_product_fe, reg_time_fe], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
+		# print(summary_col(results = [reg_nofe_dhhi, reg_dma_product_fe_dhhi, reg_time_fe_dhhi], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
+		# print(summary_col(results = [reg_nofe_demog, reg_dma_product_fe_demog, reg_time_fe_demog], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
+		# print(summary_col(results = [reg_nofe_dhhi_demog, reg_dma_product_fe_dhhi_demog, reg_time_fe_dhhi_demog], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
 
 		# Should we think about a case where we do a dummy for the second-largest firm too?
 
