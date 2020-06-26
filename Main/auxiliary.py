@@ -129,7 +129,8 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 
 	min_index = brand_to_owner[(brand_to_owner['start_year']==0) | (brand_to_owner['start_year']<min_year) | ((brand_to_owner['start_year']==min_year)&(brand_to_owner['start_month']<min_month))].index.to_list()
 	max_index = brand_to_owner[(brand_to_owner['end_year']==0) | (brand_to_owner['end_year']>max_year) | ((brand_to_owner['end_year']==max_year)&(brand_to_owner['end_month']>max_month))].index.to_list()
-
+	print(min_index)
+	print(max_index)
 	brand_to_owner.loc[min_index, 'start_year'] = min_year
 	brand_to_owner.loc[min_index, 'start_month'] = min_month
 	brand_to_owner.loc[max_index, 'end_year'] = max_year
