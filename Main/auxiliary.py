@@ -149,9 +149,9 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 		brand_to_owner_test['end_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.end_year, month=3*(np.floor(brand_to_owner_test.end_month/3)), day=1))
 
 	brand_dates = brand_to_owner_test.groupby('brand_code_uc')[['start_date_test', 'end_date_test']].agg(['min', 'max'])
+	print(min_date, max_date)
 	if ((brand_dates.start_date_test['min']!=min_date).sum() + (brand_dates.end_date_test['max']!=max_date).sum() > 0):
 		print('Ownership definitions does not span the entire sample period:')
-		print(min_date, max_date)
 		for index, row in brand_dates.iterrows():
 			if row.start_date_test['min'] != min_date or row.end_date_test['max'] != max_date:
 				print(index)

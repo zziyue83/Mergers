@@ -71,14 +71,6 @@ def add_dhhi(df, merging_date, month_or_quarter):
 		elif month_or_quarter == 'quarter':
 			df_pre[month_or_quarter] = 3
 		df_pre['year'] = merger_year - 1
-	# if month_or_quarter == 'month':
-	# 	new_month = df_post['month'] - 2
-	# 	df_post['year'] = df_post['year'] + (new_month/12).astype(int)
-	# 	df_post['month'] = new_month%12
-	# elif month_or_quarter == 'quarter':
-	# 	new_quarter = df_post['quarter'] + 2
-	# 	df_post['year'] = df_post['year'] + (new_quarter/4).astype(int)
-	# 	df_post['quarter'] = new_quarter%4
 
 	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter, add_dhhi = True)
 
@@ -111,14 +103,16 @@ def add_dhhi(df, merging_date, month_or_quarter):
 	# 		df_post['quarter'] = merger_month_or_quarter + 2
 	# 		df_post['year'] = merger_year
 
-	if month_or_quarter == 'month':
-		new_month = df_post['month'] + 2
-		df_post['year'] = df_post['year'] + (new_month/12).astype(int)
-		df_post['month'] = new_month%12
-	elif month_or_quarter == 'quarter':
-		new_quarter = df_post['quarter'] + 2
-		df_post['year'] = df_post['year'] + (new_quarter/4).astype(int)
-		df_post['quarter'] = new_quarter%4
+	# if month_or_quarter == 'month':
+	# 	new_month = df_post['month'] + 2
+	# 	df_post['year'] = df_post['year'] + (new_month/12).astype(int)
+	# 	df_post['month'] = new_month%12
+	# elif month_or_quarter == 'quarter':
+	# 	new_quarter = df_post['quarter'] + 2
+	# 	df_post['year'] = df_post['year'] + (new_quarter/4).astype(int)
+	# 	df_post['quarter'] = new_quarter%4
+	df_post['year'] = merger_year
+	df_post[month_or_quarter] = merger_month_or_quarter
 
 
 	df_post_own = aux.append_owners(code, df_post, month_or_quarter, add_dhhi = True)
