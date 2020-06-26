@@ -123,6 +123,8 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	# Compute DHHI and return
 	df['dhhi'] = df['post_hhi'] - df['pre_hhi']
+	for i in range(10):
+		print(df.iloc[i])
 
 	return df
 
@@ -221,6 +223,7 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		# No fixed effects
 		exog_vars = ['post_merger_merging', 'post_merger', 'trend']
 		exog = sm.add_constant(data[exog_vars])
+		print(data[exog_vars].head())
 		mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
 		reg_nofe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_nofe = ['No FE',str(reg_nofe.params[0]),str(reg_nofe.std_errors[0]), str(reg_nofe.pvalues[0]), \
