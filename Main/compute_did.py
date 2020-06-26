@@ -358,7 +358,11 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		# print(summary_col(results = [reg_nofe_dhhi, reg_dma_product_fe_dhhi, reg_time_fe_dhhi], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
 		# print(summary_col(results = [reg_nofe_demog, reg_dma_product_fe_demog, reg_time_fe_demog], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
 		# print(summary_col(results = [reg_nofe_dhhi_demog, reg_dma_product_fe_dhhi_demog, reg_time_fe_dhhi_demog], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
-
+		results = [reg_nofe, reg_dma_product_fe, reg_time_fe] + [reg_nofe_dhhi, reg_dma_product_fe_dhhi, reg_time_fe_dhhi] + [reg_nofe_demog, reg_dma_product_fe_demog, reg_time_fe_demog] + [reg_nofe_dhhi_demog, reg_dma_product_fe_dhhi_demog, reg_time_fe_dhhi_demog]
+		titles = ['NoFE', 'Product-DMA', 'P-DMA, T']+['NoFE', 'Product-DMA', 'P-DMA, T']+['NoFE', 'Product-DMA', 'P-DMA, T']+['NoFE', 'Product-DMA', 'P-DMA, T']
+		for i in range(len(results)):
+			print(titles[i])
+			print(results[i])
 		# Should we think about a case where we do a dummy for the second-largest firm too?
 
 code = sys.argv[1]
