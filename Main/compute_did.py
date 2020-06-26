@@ -21,12 +21,13 @@ def append_aggregate_demographics(df, month_or_quarter):
 	demog_map = dma_stats.to_dict()
 
 	# Map to main dataframe
-	print(df.head())
-	print(dma_stats.head())
-	print(df['year'].unique())
-	print(dma_stats['year'].unique())
+	data_years = df['year'].unique()
+	agent_years = df['year'].unique()
+	for year in data_years:
+		if year not in agent_years:
+			raise Exception('demographics data do not span the whole dataset.')
 	df = df.merge(dma_stats,left_on=['year','dma_code'],right_on=['year','dma_code'])
-	print(df.head())
+
 	return df
 
 def compute_hhi_map(df, owner_col = 'owner'):
@@ -128,8 +129,6 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	# Compute DHHI and return
 	df['dhhi'] = df['post_hhi'] - df['pre_hhi']
-	for i in range(10):
-		print(df.iloc[i])
 
 	return df
 
@@ -191,7 +190,6 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 	df['post_merger'] = 0
 	df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
 	df['merging'] = df['owner'].isin(merging_parties)
-	print(df.head())
 
 	# Append demographics and adjust for inflation
 	df = append_aggregate_demographics(df, month_or_quarter)
@@ -227,7 +225,6 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		# No fixed effects
 		exog_vars = ['post_merger_merging', 'post_merger', 'trend']
 		exog = sm.add_constant(data[exog_vars])
-		print(data[exog_vars].head())
 		mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
 		reg_nofe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_nofe = ['No FE',str(reg_nofe.params[0]),str(reg_nofe.std_errors[0]), str(reg_nofe.pvalues[0]), \
