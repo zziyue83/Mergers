@@ -90,7 +90,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 			df_post['month'] = 2
 			df_post['year'] = merger_year + 1
 		else:
-			df_post['month'] = merger_month_or_quarter + 1
+			df_post['month'] = merger_month_or_quarter + 2
 			df_post['year'] = merger_year
 	elif month_or_quarter == 'quarter':
 		if merger_month_or_quarter == 3:
@@ -100,7 +100,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 			df_post['quarter'] = 2
 			df_post['year'] = merger_year + 1
 		else:
-			df_post['quarter'] = merger_month_or_quarter + 1
+			df_post['quarter'] = merger_month_or_quarter + 2
 			df_post['year'] = merger_year
 
 	df_post_own = aux.append_owners(code, df_post, month_or_quarter, add_dhhi = True)
