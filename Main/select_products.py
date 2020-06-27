@@ -70,7 +70,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 		max_year = 2008
 		max_month = 12
 		max_quarter = 4
-		years = filter(lambda x: x <= 2008, years)
+		years = list(filter(lambda x: int(x) <= 2008, years))
 
 	area_time_upc_list = []
 	product_map = aux.get_product_map(list(set(groups)))
