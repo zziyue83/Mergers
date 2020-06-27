@@ -227,10 +227,10 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		exog = sm.add_constant(data[exog_vars])
 		mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
 		reg_nofe = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
-		res_nofe_csv = ['No FE',str(reg_nofe.params[0]),str(reg_nofe.std_errors[0]), str(reg_nofe.pvalues[0]), \
+		res_nofe_csv = ['No FE',str(reg_nofe.params[1]),str(reg_nofe.std_errors[1]), str(reg_nofe.pvalues[1]), \
 			'','','', \
-			str(reg_nofe.params[1]),str(reg_nofe.std_errors[1]),str(reg_nofe.pvalues[1]), \
 			str(reg_nofe.params[2]),str(reg_nofe.std_errors[2]),str(reg_nofe.pvalues[2]), \
+			str(reg_nofe.params[3]),str(reg_nofe.std_errors[3]),str(reg_nofe.pvalues[3]), \
 			'','','', \
 			str(reg_nofe.nobs),str(reg_nofe.rsquared),'No','No']
 		writer.writerow(res_nofe_csv)
@@ -260,9 +260,9 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		mod = PanelOLS(data['lprice'], exog_dhhi, entity_effects = False, time_effects = False)
 		reg_nofe_dhhi = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_nofe_dhhi_csv = ['No FE, DHHI','','','', \
-			str(reg_nofe_dhhi.params[0]),str(reg_nofe_dhhi.std_errors[0]),str(reg_nofe_dhhi.pvalues[0]), \
 			str(reg_nofe_dhhi.params[1]),str(reg_nofe_dhhi.std_errors[1]),str(reg_nofe_dhhi.pvalues[1]), \
 			str(reg_nofe_dhhi.params[2]),str(reg_nofe_dhhi.std_errors[2]),str(reg_nofe_dhhi.pvalues[2]), \
+			str(reg_nofe_dhhi.params[3]),str(reg_nofe_dhhi.std_errors[3]),str(reg_nofe_dhhi.pvalues[3]), \
 			'','','', \
 			str(reg_nofe_dhhi.nobs),str(reg_nofe_dhhi.rsquared),'No','No']
 		writer.writerow(res_nofe_dhhi_csv)
@@ -292,11 +292,11 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		exog = sm.add_constant(data[exog_vars])
 		mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
 		reg_nofe_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
-		res_nofe_demog_csv = ['No FE, Demographics',str(reg_nofe_demog.params[0]),str(reg_nofe_demog.std_errors[0]),str(reg_nofe_demog.pvalues[0]), \
+		res_nofe_demog_csv = ['No FE, Demographics',str(reg_nofe_demog.params[1]),str(reg_nofe_demog.std_errors[1]),str(reg_nofe_demog.pvalues[1]), \
 			'','','', \
-			str(reg_nofe_demog.params[1]),str(reg_nofe_demog.std_errors[1]),str(reg_nofe_demog.pvalues[1]), \
 			str(reg_nofe_demog.params[2]),str(reg_nofe_demog.std_errors[2]),str(reg_nofe_demog.pvalues[2]), \
 			str(reg_nofe_demog.params[3]),str(reg_nofe_demog.std_errors[3]),str(reg_nofe_demog.pvalues[3]), \
+			str(reg_nofe_demog.params[4]),str(reg_nofe_demog.std_errors[4]),str(reg_nofe_demog.pvalues[4]), \
 			str(reg_nofe_demog.nobs),str(reg_nofe_demog.rsquared),'No','No']
 		writer.writerow(res_nofe_demog_csv)
 
@@ -326,10 +326,10 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 		mod = PanelOLS(data['lprice'], exog_dhhi, entity_effects = False, time_effects = False)
 		reg_nofe_dhhi_demog = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
 		res_nofe_dhhi_demog_csv = ['No FE, DHHI, Demographics','','','', \
-			str(reg_nofe_dhhi_demog.params[0]),str(reg_nofe_dhhi_demog.std_errors[0]),str(reg_nofe_dhhi_demog.pvalues[0]), \
 			str(reg_nofe_dhhi_demog.params[1]),str(reg_nofe_dhhi_demog.std_errors[1]),str(reg_nofe_dhhi_demog.pvalues[1]), \
 			str(reg_nofe_dhhi_demog.params[2]),str(reg_nofe_dhhi_demog.std_errors[2]),str(reg_nofe_dhhi_demog.pvalues[2]), \
 			str(reg_nofe_dhhi_demog.params[3]),str(reg_nofe_dhhi_demog.std_errors[3]),str(reg_nofe_dhhi_demog.pvalues[3]), \
+			str(reg_nofe_dhhi_demog.params[4]),str(reg_nofe_dhhi_demog.std_errors[4]),str(reg_nofe_dhhi_demog.pvalues[4]), \
 			str(reg_nofe_dhhi_demog.nobs),str(reg_nofe_dhhi_demog.rsquared),'No','No']
 		writer.writerow(res_nofe_dhhi_demog_csv)
 
