@@ -31,7 +31,6 @@ def track_progress(base_folder):
 			infotxt = merger_folder + 'info.txt'
 			if os.path.exists(infotxt):
 				info = parse_info(merger_folder + 'info.txt')
-				ra = info['ResearchAssistant']
 				progress['RA'][-1] = info.get('ResearchAssistant', 'not entered')
 			else:
 				continue
