@@ -460,17 +460,22 @@ sys.stdout = log_out
 sys.stderr = log_err
 
 info_dict = aux.parse_info(code)
-merging_parties = aux.get_merging_parties(info_dict["MergingParties"])
+merging_parties = aux.get_parties(info_dict["MergingParties"])
 
 for timetype in ['month', 'quarter']:
 	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
 	df = aux.append_owners(code, df, timetype)
 	if timetype == 'month':
 		overlap_df = write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
-		major_competitor = get_major_competitor(overlap_df)
+		if "MajorCompetitor" in info_dict:
+			major_competitor = aux.get_parties(info_dict["MajorCompetitor"])
+			print("Getting major competitor from info.txt")
+		else:
+			major_competitor = get_major_competitor(overlap_df)
+			print("Getting major competitor from shares")
+		print(major_competitor)
+		
 	dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
-	if code == '1912896020_1':
-		major_competitor = ['Anheuser-Busch', 'InBev', 'AB InBev']
 	did(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype)
 
 print("compute_did successfully terminated")
