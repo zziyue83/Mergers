@@ -354,8 +354,8 @@ def did(df, merging_date, merging_parties, month_or_quarter = 'month'):
 			str(reg_time_fe_dhhi_demog.nobs),str(reg_time_fe_dhhi_demog.rsquared),'Yes','Yes']
 		writer.writerow(res_time_fe_dhhi_demog_csv)
 
-		print(compare({'NoFE' : reg_nofe, 'P-D' : reg_dma_product_fe, 'P-D, T' : reg_time_fe, 'NoFE' : reg_nofe_dhhi, 'P-D' : reg_dma_product_fe_dhhi, 'P-D, T' : reg_time_fe_dhhi}))
-		print(compare({'NoFE' : reg_nofe_demog, 'P-D' : reg_dma_product_fe_demog, 'P-D, T' : reg_time_fe_demog, 'NoFE' : reg_nofe_dhhi_demog, 'P-D' : reg_dma_product_fe_dhhi_demog, 'P-D, T' : reg_time_fe_dhhi_demog}))
+		print(compare({'NoFE' : reg_nofe, 'P-D' : reg_dma_product_fe, 'P-D, T' : reg_time_fe, 'NoFE, HHI' : reg_nofe_dhhi, 'P-D, HHI' : reg_dma_product_fe_dhhi, 'P-D, T, HHI' : reg_time_fe_dhhi}))
+		print(compare({'NoFE' : reg_nofe_demog, 'P-D' : reg_dma_product_fe_demog, 'P-D, T' : reg_time_fe_demog, 'NoFE, HHI' : reg_nofe_dhhi_demog, 'P-D, HHI' : reg_dma_product_fe_dhhi_demog, 'P-D, T, HHI' : reg_time_fe_dhhi_demog}))
 
 		# print(summary_col(results = [reg_nofe, reg_dma_product_fe, reg_time_fe], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
 		# print(summary_col(results = [reg_nofe_dhhi, reg_dma_product_fe_dhhi, reg_time_fe_dhhi], model_names = ['NoFE', 'Product-DMA', 'P-DMA, T']))
