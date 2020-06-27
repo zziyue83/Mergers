@@ -16,6 +16,8 @@ def pull_dma_shares(year):
 
         # Keep FIPS and DMA information and remove duplicates
         stores_data_sub = stores_data[['year','fips_state_code','fips_county_code','dma_code','dma_descr']]
+        stores_data_sub.fips_state_code = stores_data_sub.fips_state_code.fillna(value='')
+        stores_data_sub.fips_county_code = stores_data_sub.fips_county_code.fillna(value='')
         stores_data_sub = stores_data_sub.drop_duplicates()
 
         # Replace county FIPS with relevant zeros
