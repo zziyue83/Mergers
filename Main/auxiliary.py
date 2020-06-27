@@ -50,7 +50,7 @@ def get_years(initial_year_string, final_year_string, pre_months = 24, post_mont
 			years.append(str(this_year))
 	return years
 
-def get_merging_parties(info_str):
+def get_parties(info_str):
 	all_parties = re.finditer('{(.*?)}', info_str, re.DOTALL)
 	merging_parties = []
 	for i in all_parties:
