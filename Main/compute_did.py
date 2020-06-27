@@ -450,7 +450,7 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 
 		print(compare({'NoFE' : reg_nofe, 'P-D' : reg_dma_product_fe, 'P-D, T' : reg_time_fe, 'NoFE, HHI' : reg_nofe_dhhi, 'P-D, HHI' : reg_dma_product_fe_dhhi, 'P-D, T, HHI' : reg_time_fe_dhhi}))
 		print(compare({'NoFE' : reg_nofe_demog, 'P-D' : reg_dma_product_fe_demog, 'P-D, T' : reg_time_fe_demog, 'NoFE, HHI' : reg_nofe_dhhi_demog, 'P-D, HHI' : reg_dma_product_fe_dhhi_demog, 'P-D, T, HHI' : reg_time_fe_dhhi_demog}))
-		print(compare({'NoFE' : reg_nofe_major, 'P-D' : reg_dma_product_fe_major, 'P-D, T' : reg_time_fe_major, 'NoFE, Demo' : reg_nofe_demog_major, 'P-D, Demo' : reg_dma_product_fe_demog_major, 'P-D, Demo' : reg_time_fe_demog_major}))
+		print(compare({'NoFE' : reg_nofe_major, 'P-D' : reg_dma_product_fe_major, 'P-D, T' : reg_time_fe_major, 'NoFE, Demo' : reg_nofe_demog_major, 'P-D, Demo' : reg_dma_product_fe_demog_major, 'P-D, T, Demo' : reg_time_fe_demog_major}))
 
 
 code = sys.argv[1]
