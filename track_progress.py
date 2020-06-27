@@ -53,7 +53,7 @@ def track_progress(base_folder):
 				progress['step9'][-1] = 'complete'
 
 	df = pd.DataFrame.from_dict(progress)
-	df = df.sort_values(by = 'RA')
+	df = df.sort_values(by = 'RA').reset_index()
 	df.to_csv('progress.csv', sep = ',')
 
 base_folder = '../../All/'
