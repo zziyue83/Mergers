@@ -142,7 +142,7 @@ def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'm
 		merger_month_or_quarter = merger_month
 	elif month_or_quarter == 'quarter':
 		merger_month_or_quarter = np.ceil(merger_month/3)
-	
+
 	# First get total sales in entire market pre and post
 	ms = pd.read_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', delimiter = ',')
 	ms['post_merger'] = 0
@@ -382,7 +382,7 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 		exog = sm.add_constant(data[exog_vars])
 		mod = PanelOLS(data['lprice'], exog, entity_effects = False, time_effects = False)
 		reg_nofe_demog_major = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
-		res_nofe_demog_major_csv = ['No FE, Demographics',str(reg_nofe_demog_major.params[1]),str(reg_nofe_demog_major.std_errors[1]),str(reg_nofe_demog_major.pvalues[1]), \
+		res_nofe_demog_major_csv = ['No FE, Major, Demographics',str(reg_nofe_demog_major.params[1]),str(reg_nofe_demog_major.std_errors[1]),str(reg_nofe_demog_major.pvalues[1]), \
 			'','','', \
 			str(reg_nofe_demog_major.params[2]),str(reg_nofe_demog_major.std_errors[2]),str(reg_nofe_demog_major.pvalues[2]),\
 			str(reg_nofe_demog_major.params[3]),str(reg_nofe_demog_major.std_errors[3]),str(reg_nofe_demog_major.pvalues[3]), \
@@ -394,7 +394,7 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 		# Product/market fixed effects, demographics
 		mod = PanelOLS(data['lprice'], data[exog_vars], entity_effects = True, time_effects = False)
 		reg_dma_product_fe_demog_major = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
-		res_dma_product_fe_demog_major_csv = ['DMA/Product FE, Demographics',str(reg_dma_product_fe_demog_major.params[0]),str(reg_dma_product_fe_demog_major.std_errors[0]),str(reg_dma_product_fe_demog.pvalues[0]), \
+		res_dma_product_fe_demog_major_csv = ['DMA/Product FE, Major, Demographics',str(reg_dma_product_fe_demog_major.params[0]),str(reg_dma_product_fe_demog_major.std_errors[0]),str(reg_dma_product_fe_demog.pvalues[0]), \
 			'','','', \
 			str(reg_dma_product_fe_demog_major.params[1]),str(reg_dma_product_fe_demog_major.std_errors[1]),str(reg_dma_product_fe_demog_major.pvalues[1]), \
 			str(reg_dma_product_fe_demog_major.params[2]),str(reg_dma_product_fe_demog_major.std_errors[2]),str(reg_dma_product_fe_demog_major.pvalues[2]), \
@@ -406,7 +406,7 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 		# Product/market and time fixed effects, demographics
 		mod = PanelOLS(data['lprice'], data[['post_merger_merging','post_merger_major','log_hhinc_per_person_adj']], entity_effects = True, time_effects = True)
 		reg_time_fe_demog_major = mod.fit(cov_type = 'clustered', clusters = data['dma_code'])
-		res_time_fe_demog_major_csv = ['Time FE, Demographics',str(reg_time_fe_demog_major.params[0]),str(reg_time_fe_demog_major.std_errors[0]),str(reg_time_fe_demog_major.pvalues[0]), \
+		res_time_fe_demog_major_csv = ['Time FE, Major, Demographics',str(reg_time_fe_demog_major.params[0]),str(reg_time_fe_demog_major.std_errors[0]),str(reg_time_fe_demog_major.pvalues[0]), \
 			'','','','','','', \
 			str(reg_time_fe_demog_major.params[1]),str(reg_time_fe_demog_major.std_errors[1]),str(reg_time_fe_demog_major.pvalues[1]), \
 			'','','',\
