@@ -34,7 +34,7 @@ def track_progress(base_folder):
 				progress['RA'][-1] = info.get('ResearchAssistant', 'not entered')
 			else:
 				continue
-	df = pd.from_dict(progress)
+	df = pd.DataFrame.from_dict(progress)
 	df.to_csv('progress.csv', sep = ',')
 
 base_folder = '../../All/'
