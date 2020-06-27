@@ -469,6 +469,8 @@ for timetype in ['month', 'quarter']:
 		overlap_df = write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
 		major_competitor = get_major_competitor(overlap_df)
 	dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
+	if code == '1912896020_1':
+		major_competitor = ['Anheuser-Busch', 'InBev', 'AB InBev']
 	did(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype)
 
 print("compute_did successfully terminated")
