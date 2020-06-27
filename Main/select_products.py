@@ -66,6 +66,12 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	min_quarter = np.ceil(min_month/3)
 	max_quarter = np.ceil(max_month/3)
 
+	if ((code=='1817013020_3') & (max_year > 2008)):
+		max_year = 2008
+		max_month = 12
+		max_quarter = 4
+		years = filter(lambda x: x <= 2008, years)
+
 	area_time_upc_list = []
 	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['brand_code_uc', 'brand_descr', 'multi', 'size1_units', 'size1_amount']
