@@ -163,7 +163,7 @@ def write_overlap(code, df, merging_date, merging_parties, month_or_quarter = 'm
 		party_sales = df.sales[df['owner'] == party].sum()
 		party_share_pre = party_sales_pre / total_sales_pre
 		party_share_post = party_sales_post / total_sales_post
-		part_share = party_sales / total_sales
+		party_share = party_sales / total_sales
 
 		if party in merging_parties:
 			is_merging_party = 1
