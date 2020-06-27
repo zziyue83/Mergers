@@ -134,7 +134,7 @@ def assemble_agent_data(year,period,month_or_quarter,dma,hhids,pids,nodes_weight
 
 # Log file
 log_out = open("assemble_agent_data.log","a")
-sys.stdout = log
+sys.stdout = log_out
 
 # Set up inputs and run
 if len(sys.argv) != 7:
