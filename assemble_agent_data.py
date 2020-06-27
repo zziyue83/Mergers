@@ -4,9 +4,6 @@ import sys
 import pandas as pd
 import pyblp
 
-log = open("assemble_agent_data.log","a")
-sys.stdout = log
-
 # Define function to pull DMA-FIPS crosswalk for each year (from Nielsen stores file)
 def pull_dma_shares(year):
 
@@ -135,6 +132,10 @@ def assemble_agent_data(year,period,month_or_quarter,dma,hhids,pids,nodes_weight
         agent_data[month_or_quarter] = period
         return(agent_data)
 
+# Log file
+log_out = open("assemble_agent_data.log","a")
+sys.stdout = log
+
 # Set up inputs and run
 if len(sys.argv) != 7:
     print('Error: There must be six arguments.')
@@ -196,3 +197,5 @@ if (month_or_quarter == 'quarter') | (month_or_quarter == 'month'):
         out_file = 'Clean/agent_data_' + month_or_quarter + '.csv'
 
         agent_full.to_csv (out_file, index = None, header=True)
+
+log_out.close()
