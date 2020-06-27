@@ -24,7 +24,7 @@ def track_progress(base_folder):
 	for folder in os.listdir(base_folder):
 		if len(folder) > 10 and folder[0] == 'm':
 			progress['merger'].append(folder)
-			progress['RA'].append('not entered')
+			progress['RA'].append('info.txt does not exist')
 			for step in range(1,11):
 				progress['step'+str(step)].append('incomplete')
 			merger_folder = base_folder + folder + '/'
@@ -32,7 +32,7 @@ def track_progress(base_folder):
 			if os.path.exists(infotxt):
 				info = parse_info(merger_folder + 'info.txt')
 				ra = info['ResearchAssistant']
-				progress['RA'][-1] = ra
+				progress['RA'][-1] = info.get('ResearchAssistant', 'not entered')
 			else:
 				continue
 	df = pd.from_dict(progress)
