@@ -88,26 +88,26 @@ def add_dhhi(df, merging_date, month_or_quarter):
 	df_post = df_pre.copy()
 
 	# Add 2 months/quarters for the "post" just to deal with indexing issues
-	# if month_or_quarter == 'month':
-	# 	if merger_month_or_quarter == 11:
-	# 		df_post['month'] = 1
-	# 		df_post['year'] = merger_year + 1
-	# 	elif merger_month_or_quarter == 12:
-	# 		df_post['month'] = 2
-	# 		df_post['year'] = merger_year + 1
-	# 	else:
-	# 		df_post['month'] = merger_month_or_quarter + 2
-	# 		df_post['year'] = merger_year
-	# elif month_or_quarter == 'quarter':
-	# 	if merger_month_or_quarter == 3:
-	# 		df_post['quarter'] = 1
-	# 		df_post['year'] = merger_year + 1
-	# 	elif merger_month_or_quarter == 4:
-	# 		df_post['quarter'] = 2
-	# 		df_post['year'] = merger_year + 1
-	# 	else:
-	# 		df_post['quarter'] = merger_month_or_quarter + 2
-	# 		df_post['year'] = merger_year
+	if month_or_quarter == 'month':
+		if merger_month_or_quarter == 11:
+	 		df_post['month'] = 1
+	 		df_post['year'] = merger_year + 1
+	 	elif merger_month_or_quarter == 12:
+	 		df_post['month'] = 2
+	 		df_post['year'] = merger_year + 1
+	 	else:
+	 		df_post['month'] = merger_month_or_quarter + 2
+	 		df_post['year'] = merger_year
+	elif month_or_quarter == 'quarter':
+	 	if merger_month_or_quarter == 3:
+	 		df_post['quarter'] = 1
+	 		df_post['year'] = merger_year + 1
+	 	elif merger_month_or_quarter == 4:
+	 		df_post['quarter'] = 2
+	 		df_post['year'] = merger_year + 1
+	 	else:
+	 		df_post['quarter'] = merger_month_or_quarter + 2
+	 		df_post['year'] = merger_year
 
 	# if month_or_quarter == 'month':
 	# 	new_month = df_post['month'] + 2
@@ -117,8 +117,8 @@ def add_dhhi(df, merging_date, month_or_quarter):
 	# 	new_quarter = df_post['quarter'] + 2
 	# 	df_post['year'] = df_post['year'] + (new_quarter/4).astype(int)
 	# 	df_post['quarter'] = new_quarter%4
-	df_post['year'] = merger_year
-	df_post[month_or_quarter] = merger_month_or_quarter
+	# df_post['year'] = merger_year
+	# df_post[month_or_quarter] = merger_month_or_quarter
 
 
 	df_post_own = aux.append_owners(code, df_post, month_or_quarter, add_dhhi = True)
