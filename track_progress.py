@@ -40,7 +40,7 @@ def track_progress(base_folder):
 			if os.path.exists(merger_folder+'intermediate/market_coverage.csv'):
 				progress['step3'][-1] = 'complete'
 			if os.path.exists(merger_folder+'properties/ownership.csv'):
-				progress['step5'][-1] = 'complete'
+				progress['step4'][-1] = 'complete'
 			if os.path.exists(merger_folder+'output/did_month.csv'):
 				progress['step5'][-1] = 'complete'
 			if os.path.exists(merger_folder+'properties/characteristics.csv'):
@@ -53,6 +53,7 @@ def track_progress(base_folder):
 				progress['step9'][-1] = 'complete'
 
 	df = pd.DataFrame.from_dict(progress)
+	df = df.sort_values(by = 'RA')
 	df.to_csv('progress.csv', sep = ',')
 
 base_folder = '../../All/'
