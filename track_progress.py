@@ -32,8 +32,26 @@ def track_progress(base_folder):
 			if os.path.exists(infotxt):
 				info = parse_info(merger_folder + 'info.txt')
 				progress['RA'][-1] = info.get('ResearchAssistant', 'not entered')
+				progress['step1'][-1] = 'complete'
 			else:
 				continue
+			if os.path.exists(merger_folder+'properties/units_edited.csv'):
+				progress['step2'][-1] = 'complete'
+			if os.path.exists(merger_folder+'intermediate/market_coverage.csv'):
+				progress['step3'][-1] = 'complete'
+			if os.path.exists(merger_folder+'properties/ownership.csv'):
+				progress['step5'][-1] = 'complete'
+			if os.path.exists(merger_folder+'output/did_month.csv'):
+				progress['step5'][-1] = 'complete'
+			if os.path.exists(merger_folder+'properties/characteristics.csv'):
+				progress['step6'][-1] = 'complete'
+			if os.path.exists(merger_folder+'intermediate/distances.csv'):
+				progress['step7'][-1] = 'complete'
+			if 'Instruments' in infotxt:
+				progress['step8'][-1] = 'complete'
+			if os.path.exists(merger_folder+'output/first_stage.csv'):
+				progress['step9'][-1] = 'complete'
+
 	df = pd.DataFrame.from_dict(progress)
 	df.to_csv('progress.csv', sep = ',')
 
