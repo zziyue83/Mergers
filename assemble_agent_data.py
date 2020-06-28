@@ -80,14 +80,18 @@ def import_pums(year,hhids,pids):
         return(pums_data)
 
 # Define function to sample demographics for a given year, dma, and number of draws
-def sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data):
+def sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data,dma_to_puma_prior,pums_data_prior):
 
         # Limit PUMA shares to relevant DMA
         puma_shares = dma_to_puma[dma_to_puma['dma_code']==dma]
-        print(puma_shares.loc[puma_shares['dma_code']==dma])
 
         # Merge shares onto PUMS data
         pums_data_shares = pd.merge(pums_data,puma_shares,on=['STATE','PUMA'],how='inner')
+
+        # If empty for the current year, use prior year
+        if pums_data_shares.empty():
+                puma_shares = dma_to_puma_prior[dma_to_puma_prior['dma_code']==dma]
+                pums_data_shares = pd.merge(pums_data_prior,puma_shares,on=['STATE','PUMA'],how='inner')
 
         # Create counts of observations by PUMA
         pums_data_shares['int'] = 1
@@ -95,7 +99,6 @@ def sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data):
 
         # Sampling probability
         pums_data_shares['sprob'] = pums_data_shares['dma_share']/pums_data_shares['obs']
-        print(pums_data_shares.loc[pums_data_shares['dma_code']==dma])
 
         # Draw from empirical distribution
         pums_sample_dma = pums_data_shares.sample(n=ndraw, replace=True, weights='sprob', random_state=1)
@@ -119,13 +122,13 @@ def assemble_nodes_weights(num_rc,level):
         nodes_weights = pd.concat([weights, nodes], axis=1)
         return(nodes_weights)
 
-def assemble_agent_data(year,period,month_or_quarter,dma,hhids,pids,nodes_weights,dma_to_puma,pums_data):
+def assemble_agent_data(year,period,month_or_quarter,dma,hhids,pids,nodes_weights,dma_to_puma,pums_data,dma_to_puma_prior,pums_data_prior):
 
         # Determine number of draws
         ndraw = nodes_weights.shape[0]
 
         # Draw from empirical distribution for the given year and quarter
-        demographics = sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data)
+        demographics = sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data,dma_to_puma_prior,pums_data_prior)
 
         # Concatenate with nodes and weights
         nodes_weights.reset_index(drop=True, inplace=True)
@@ -172,10 +175,12 @@ if (month_or_quarter == 'quarter') | (month_or_quarter == 'month'):
 
                 # List of unique DMAs
                 dma_to_puma = pull_dma_shares(yr)
+                dma_to_puma_prior = pull_dma_shares(yr-1)
                 dma_unique = dma_to_puma['dma_code'].drop_duplicates()
 
                 # PUMS data
                 pums_data = import_pums(yr,hhids,pids)
+                pums_data_prior = import_pums(yr-1,hhids,pids)
 
                 for pp in range(1,periods[0]+1):
 
@@ -185,7 +190,7 @@ if (month_or_quarter == 'quarter') | (month_or_quarter == 'month'):
                                 count += 1
                                 print(str(yr)+'P'+str(pp)+'DMA'+dd)
 
-                                agents = assemble_agent_data(yr,pp,month_or_quarter,dd,hhids,pids,nodes_weights,dma_to_puma,pums_data)
+                                agents = assemble_agent_data(yr,pp,month_or_quarter,dd,hhids,pids,nodes_weights,dma_to_puma,pums_data,dma_to_puma_prior,pums_data_prior)
 
                                 # Append to full dataset
                                 if count == 1:
