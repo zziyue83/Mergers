@@ -94,6 +94,7 @@ def sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data):
 
         # Sampling probability
         pums_data_shares['sprob'] = pums_data_shares['dma_share']/pums_data_shares['obs']
+        print(pums_data_shares.loc[pums_data_shares['dma_code']==502)])
 
         # Draw from empirical distribution
         pums_sample_dma = pums_data_shares.sample(n=ndraw, replace=True, weights='sprob', random_state=1)
