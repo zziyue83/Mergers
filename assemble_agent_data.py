@@ -84,6 +84,7 @@ def sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data):
 
         # Limit PUMA shares to relevant DMA
         puma_shares = dma_to_puma[dma_to_puma['dma_code']==dma]
+        print(puma_shares.loc[puma_shares['dma_code']==dma])
 
         # Merge shares onto PUMS data
         pums_data_shares = pd.merge(pums_data,puma_shares,on=['STATE','PUMA'],how='inner')
