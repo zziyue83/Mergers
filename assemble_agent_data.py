@@ -92,6 +92,7 @@ def sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data,dma_to_p
         if pums_data_shares.empty:
                 puma_shares = dma_to_puma_prior[dma_to_puma_prior['dma_code']==dma]
                 pums_data_shares = pd.merge(pums_data_prior,puma_shares,on=['STATE','PUMA'],how='inner')
+                pums_data_shares['YEAR'] = year
 
         # Create counts of observations by PUMA
         pums_data_shares['int'] = 1
