@@ -175,12 +175,21 @@ if (month_or_quarter == 'quarter') | (month_or_quarter == 'month'):
 
                 # List of unique DMAs
                 dma_to_puma = pull_dma_shares(yr)
-                dma_to_puma_prior = pull_dma_shares(yr-1)
+
+                if yr == 2006:
+                        dma_to_puma_prior = dma_to_puma
+                else:
+                        dma_to_puma_prior = pull_dma_shares(yr-1)
+
                 dma_unique = dma_to_puma['dma_code'].drop_duplicates()
 
                 # PUMS data
                 pums_data = import_pums(yr,hhids,pids)
-                pums_data_prior = import_pums(yr-1,hhids,pids)
+
+                if yr == 2006:
+                        pums_data_prior = pums_data
+                else:
+                        pums_data_prior = import_pums(yr-1,hhids,pids)
 
                 for pp in range(1,periods[0]+1):
 
