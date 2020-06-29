@@ -145,7 +145,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 		min_date = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1)).min()
 		max_date = pd.to_datetime(dict(year=df.year, month=3*df.quarter, day=1)).max()
 		brand_to_owner_test['start_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.start_year, month=3*(np.ceil(brand_to_owner_test.start_month/3)-1)+1, day=1))
-		brand_to_owner_test['end_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.end_year, month=3*(np.floor(brand_to_owner_test.end_month/3)), day=1))
+		brand_to_owner_test['end_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.end_year, month=3*(np.ceil(brand_to_owner_test.end_month/3)), day=1))
 
 	brand_dates = brand_to_owner_test.groupby('brand_code_uc')[['start_date_test', 'end_date_test']].agg(['min', 'max'])
 	if ((brand_dates.start_date_test['min']!=min_date).sum() + (brand_dates.end_date_test['max']!=max_date).sum() > 0):
@@ -156,7 +156,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 				print('start_date: ', row.start_date_test['min'])
 				print('end_date: ', row.end_date_test['max'])
 
-		
+
 
 
 	brand_to_owner_test['owner_num'] = brand_to_owner_test.groupby('brand_code_uc').cumcount()+1
@@ -197,7 +197,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 			'''
 	elif month_or_quarter == 'quarter':
 		brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=3*(np.ceil(brand_to_owner.start_month/3)-1)+1, day=1))
-		brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=3*(np.floor(brand_to_owner.end_month/3)), day=1))
+		brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=3*(np.ceil(brand_to_owner.end_month/3)), day=1))
 		df['date'] = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1))
 		if add_dhhi:
 			sqlcode = '''
