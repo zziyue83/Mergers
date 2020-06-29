@@ -18,6 +18,9 @@ def append_aggregate_demographics(df, month_or_quarter):
 
 	# Compute mean demographics by DMA and month or quarter
 	dma_stats = agent_data.groupby(['year','dma_code'])['hhinc_per_person'].agg('median').reset_index()
+
+	# For data error with median HH income = 0, set median equal to prior year's
+	dma_stats.loc[(dma_stats['dma_code']==528) & (dma_stats['year']==2014),'hhinc_per_person'] = dma_stats.loc[(dma_stats['dma_code']==528) & (dma_stats['year']==2013),'hhinc_per_person']
 	demog_map = dma_stats.to_dict()
 
 	# Map to main dataframe
@@ -476,7 +479,7 @@ for timetype in ['month', 'quarter']:
 			major_competitor = get_major_competitor(overlap_df)
 			print("Getting major competitor from shares")
 		print(major_competitor)
-		
+
 	dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
 	did(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype)
 
