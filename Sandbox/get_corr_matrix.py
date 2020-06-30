@@ -58,9 +58,10 @@ def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code =
             if upper_corr.loc[i, col] > upcCutoff:
                 corr_upcs_list.append((i, col, len(brand_data[[i, col]].dropna())))
     corr_upcs = pd.DataFrame(corr_upcs_list, columns = ['brand_1','brand_2', 'n_rows_without_missing_value'])
+    corr_upcs = corr_upcs[corr_upcs['brand_1'] != corr_upcs['brand_2']]
     time_4 = timeit.default_timer() - time_3
     print(time_4)
-    corr_upcs.to_csv('../../../All/m_' + code + '/intermediate/' + test_brand_code + '_correlated_upcs_v2.csv', sep = ',')
+    corr_upcs.to_csv('../../../All/m_' + code + '/intermediate/' + test_brand_code + '_correlated_upcs.csv', sep = ',', index = False)
 
     # more generalized code
     '''brands = pd.read_csv('../../../All/m_' + code + '/intermediate/brands.csv')

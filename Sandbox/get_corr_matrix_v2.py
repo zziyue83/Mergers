@@ -29,7 +29,8 @@ def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code =
 
     brand_data_list = []
     product_map = aux.get_product_map(list(set(groups)))
-    print(timeit.default_timer())
+    time_1 = timeit.default_timer()
+    print(time_1)
 
     for group, module in zip(groups, modules):
         for year in years:
@@ -49,15 +50,16 @@ def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code =
                 brand_data_chunk = data_chunk[data_chunk['brand_code_uc'] == int(test_brand_code)]
                 brand_data_chunk = brand_data_chunk[['upc','store-week','price']].drop_duplicates()
                 brand_data_list.append(brand_data_chunk)
-    
-    print(timeit.default_timer())
+    time_2 = timeit.default_timer() - time_1
+    print(time_2)
         
     brand_data = pd.concat(brand_data_list).dropna(subset=['price']).drop_duplicates()
     brand_data = brand_data.pivot_table(index = 'store-week', columns = 'upc', values = 'price', aggfunc = 'first')
     print(brand_data)
     corr = vcorrcoef(brand_data)
     print(corr)
-    print(timeit.default_timer())
+    time_3 = timeit.default_timer() - time_2
+    print(time_3)
     corr.to_csv('../../../All/m_' + code + '/intermediate/' + test_brand_code + '_corr_v2.csv', sep = ',')
     
     upper_corr = corr.where(np.triu(np.ones(corr.shape)).astype(np.bool))
@@ -67,8 +69,10 @@ def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code =
             if upper_corr.loc[i, col] > upcCutoff:
                 corr_upcs_list.append((i, col, len(brand_data[[i, col]].dropna())))
     corr_upcs = pd.DataFrame(corr_upcs_list, columns = ['brand_1','brand_2', 'n_rows_without_missing_value'])
-    print(timeit.default_timer())
-    corr_upcs.to_csv('../../../All/m_' + code + '/intermediate/' + test_brand_code + '_correlated_upcs_v2.csv', sep = ',')
+    corr_upcs = corr_upcs[corr_upcs['brand_1'] != corr_upcs['brand_2']]
+    time_4 = timeit.default_timer() - time_3
+    print(time_4)
+    corr_upcs.to_csv('../../../All/m_' + code + '/intermediate/' + test_brand_code + '_correlated_upcs_v2.csv', sep = ',', index = False)
 
 code = sys.argv[1]
 test_brand_code = sys.argv[2]
