@@ -35,7 +35,42 @@ def corr(df):
 
     return r'''
 
+
 @numba.njit
+def my_corr(u, min_periods = 50):
+    m = u.shape[0]
+    n = u.shape[1]
+ 
+    z = np.zeros((n, n))
+ 
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                z[i, j] = 1.0
+            elif i > j:
+                z[i, j] = z[j, i]
+            else:
+                val = 0.0
+                mean1 = 0.0
+                mean2 = 0.0
+                sq1 = 0.0
+                sq2 = 0.0
+                okay = 0
+                for k in range(m):
+                    if not np.isnan(u[k, i]) and not np.isnan(u[k, j]):
+                        okay += 1
+                        val += u[k, i] * u[k, j]
+                        mean1 += u[k, i]
+                        sq1 += u[k, i] * u[k, i]
+                        mean2 += u[k, j]
+                        sq2 += u[k, j] * u[k, j]
+                if okay >= min_periods:
+                    z[i, j] = (val - mean1 * mean2) / (((sq1 - mean1**2) * (sq2 - mean2**2)) ** 0.5)
+                else:
+                    z[i, j] = 0.0
+ 
+    return z
+
 def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code = '568830', pre_months = 24, post_months = 24, brandnumber = 10, upcCutoff = 0.96):
 
     dt = datetime.strptime(merger_date, '%Y-%m-%d')
@@ -76,7 +111,10 @@ def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code =
     brand_data_df = brand_data_df[['upc','store-week','price']].drop_duplicates()
     brand_data_df = brand_data_df.pivot_table(index = 'store-week', columns = 'upc', values = 'price', aggfunc = 'first')
     print(brand_data_df)
-    corr = brand_data_df.corr()
+    bd_numpy = brand_data_df.to_numpy()
+    corr_numpy = my_corr(bd_numpy)
+    corr = pd.DataFrame(corr_numpy, index = brand_data_df.columns, columns = brand_data_df.columns)
+    # corr = brand_data_df.corr()
     print(corr)
     time_3 = time.process_time()
     print(time_3 - time_2)
