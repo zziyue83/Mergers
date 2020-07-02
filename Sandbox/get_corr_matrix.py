@@ -1,13 +1,39 @@
-import re
 import sys
 from datetime import datetime
-import unicodecsv as csv
 import auxiliary as aux
 from tqdm import tqdm
 import os
 import pandas as pd
 import numpy as np
-import timeit
+from numba import jit
+import time
+
+'''def get_den(u):
+    n = len(u)
+    z = np.zeros((n, n))
+
+    for i in range(n):
+        for j in range(n):
+            if i > j:
+                z[i, j] = z[j, i]
+            else:
+                z[i, j] = np.sqrt(u[i]*u[j])
+                
+    return z
+
+def corr(df):
+    start = time.process_time()
+    
+    df = df.fillna(0)
+    x_mean = np.mean(df,axis=0)
+    r_num = np.transpose(df-x_mean).dot(df-x_mean)
+    r_den = get_den(np.sum((df-x_mean)**2,axis=0))
+    r = r_num/r_den
+
+    process_time = time.process_time() - start
+    print(process_time)
+
+    return r'''
 
 def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code = '568830', pre_months = 24, post_months = 24, brandnumber = 10, upcCutoff = 0.96):
 
@@ -16,9 +42,9 @@ def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code =
     min_year, min_month = aux.int_to_month(month_int - pre_months)
     max_year, max_month = aux.int_to_month(month_int + post_months)
 
-    brand_data_list = []
+    data_list = []
     product_map = aux.get_product_map(list(set(groups)))
-    time_1 = timeit.default_timer()
+    time_1 = time.process_time()
     print(time_1)
 
     for group, module in zip(groups, modules):
@@ -35,20 +61,24 @@ def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code =
                         data_chunk = data_chunk[data_chunk.month <= max_month]
                 data_chunk['store-week'] = data_chunk['store_code_uc'].astype(str) + ' ' + data_chunk['week_end'].astype(str)
                 data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
-                data_chunk = data_chunk.join(product_map[['brand_code_uc']], on=['upc','upc_ver_uc'], how='left')
-                brand_data_chunk = data_chunk[data_chunk['brand_code_uc'] == int(test_brand_code)]
-                brand_data_chunk = brand_data_chunk[['upc','store-week','price']].drop_duplicates()
-                brand_data_list.append(brand_data_chunk)
-    time_2 = timeit.default_timer() - time_1
-    print(time_2)
-
-    brand_data = pd.concat(brand_data_list).dropna(subset=['price']).drop_duplicates()
-    brand_data = brand_data.pivot_table(index = 'store-week', columns = 'upc', values = 'price', aggfunc = 'first')
-    print(brand_data)
-    corr = brand_data.corr()
+                data_chunk = data_chunk.dropna(subset=['price']).groupby(['upc','store-week','upc_ver_uc'], as_index = False).agg({'price': 'first'})
+                data_list.append(data_chunk)
+                
+    data_df = pd.concat(data_list)
+    data_df = data_df.join(product_map[['brand_code_uc']], on=['upc','upc_ver_uc'], how='left')
+    data_df = data_df.groupby(['upc','store-week','brand_code_uc'], as_index = False).agg({'price': 'first'})
+    data_df.to_csv('../../../All/m_' + code + '/intermediate/data_df.csv', sep = ',', index = False)
+    time_2 = time.process_time()
+    print(time_2 - time_1)
+    
+    brand_data_df = data_df[data_df['brand_code_uc'] == int(test_brand_code)]
+    brand_data_df = brand_data_df[['upc','store-week','price']].drop_duplicates()
+    brand_data_df = brand_data_df.pivot_table(index = 'store-week', columns = 'upc', values = 'price', aggfunc = 'first')
+    print(brand_data_df)
+    corr = brand_data_df.corr()
     print(corr)
-    time_3 = timeit.default_timer() - time_2
-    print(time_3)
+    time_3 = time.process_time()
+    print(time_3 - time_2)
     corr.to_csv('../../../All/m_' + code + '/intermediate/' + test_brand_code + '_corr.csv', sep = ',')
 
     upper_corr = corr.where(np.triu(np.ones(corr.shape)).astype(np.bool))
@@ -56,11 +86,10 @@ def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code =
     for col in upper_corr:
         for i, row_value in upper_corr[col].iteritems():
             if upper_corr.loc[i, col] > upcCutoff:
-                corr_upcs_list.append((i, col, len(brand_data[[i, col]].dropna())))
+                corr_upcs_list.append((i, col, len(brand_data_df[[i, col]].dropna())))
     corr_upcs = pd.DataFrame(corr_upcs_list, columns = ['brand_1','brand_2', 'n_rows_without_missing_value'])
     corr_upcs = corr_upcs[corr_upcs['brand_1'] != corr_upcs['brand_2']]
-    time_4 = timeit.default_timer() - time_3
-    print(time_4)
+    print(time.process_time() - time_3)
     corr_upcs.to_csv('../../../All/m_' + code + '/intermediate/' + test_brand_code + '_correlated_upcs.csv', sep = ',', index = False)
 
     # more generalized code
