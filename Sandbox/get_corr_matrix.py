@@ -5,7 +5,7 @@ from tqdm import tqdm
 import os
 import pandas as pd
 import numpy as np
-from numba import njit
+import numba
 import time
 
 '''def get_den(u):
@@ -35,7 +35,7 @@ def corr(df):
 
     return r'''
 
-@njit
+@numba.njit
 def get_corr_matrix(code, years, groups, modules, merger_date, test_brand_code = '568830', pre_months = 24, post_months = 24, brandnumber = 10, upcCutoff = 0.96):
 
     dt = datetime.strptime(merger_date, '%Y-%m-%d')
