@@ -165,7 +165,7 @@ def get_largest_brand_left_out(agg, upc_set, month_or_quarter = 'month'):
 	return largest_brand_left_out
 
 def write_brands_upc(code, agg, upc_set):
-	agg = agg[['upc', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module']]
+	agg = agg[['upc', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module', 'volume']]
 	agg = agg[agg.upc.isin(upc_set)]
 	agg['year'] = agg['year'].astype(int)
 	agg['max_year'] = agg.groupby('upc')['year'].transform('max')
@@ -193,18 +193,22 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg.drop(['max_year', 'panel_year'], axis = 1)
 	agg = agg.sort_values(by = 'brand_descr')
 
-	characteristics = agg.columns.drop(['upc', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module'])
+	characteristics = agg.columns.drop(['upc', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module', 'volume'])
 	for column in characteristics:
 		print(column)
 		print(agg[column].describe())
 
 	base_folder = '../../../All/m_' + code + '/intermediate/'
-	agg.to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
+	agg.drop(['volume'], axis = 1).to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique upcs')
 
-	agg = agg[['brand_code_uc', 'brand_descr']]
+	agg = agg[['brand_code_uc', 'brand_descr', 'volume']]
+	total_volume = agg.volume.sum()
 	agg = agg.rename(columns = {'brand_descr' : 'brand'})
-	agg = agg.drop_duplicates().reset_index(drop=True)
+	agg = agg.groupby(['brand_code_uc', 'brand'], as_index = False).sum()
+	agg['overall_brand_share'] = agg['volume'] / total_volume
+	agg = agg.drop(['volume'], axis = 1)
+	# agg = agg.drop_duplicates().reset_index(drop=True)
 	agg.to_csv(base_folder + 'brands.csv', index = False, sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique brands')
 
