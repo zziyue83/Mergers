@@ -169,7 +169,9 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg[agg.upc.isin(upc_set)]
 	agg['year'] = agg['year'].astype(int)
 	agg['max_year'] = agg.groupby('upc')['year'].transform('max')
-	agg = agg.drop('year', axis = 1)
+	agg['tot_volume'] = agg.groupby('upc')['volume'].transform('sum')
+	agg = agg.drop(['year','volume'], axis = 1)
+	agg = agg.rename(columns={'tot_volume': 'volume'})
 	agg = agg.drop_duplicates()
 
 	# add extra nielsen data features from Annual_Files/products_extra_year.tsv
