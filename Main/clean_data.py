@@ -23,6 +23,6 @@ def clean_data(code, df):
 
 	elif code == '2735179020_11':
 		# This is a typo on eyeliner
-		df.loc[(df.multi * df.size1_amount == 39) & (df.size1_units == 'OZ'), 'size1_amount'] = 0.39
+		df.loc[(df.multi * df.size1_amount == 39) & (df.size1_units == 'OZ'), 'size1_amount'] = 0.039
 
 	return df
