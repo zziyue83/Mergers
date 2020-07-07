@@ -21,4 +21,8 @@ def clean_data(code, df):
 		df.loc[df.size1_units == 'CT', 'size1_amount'] = df.size1_amount[df.size1_units == 'CT'] * 3.75
 		df.loc[df.size1_units == 'CT', 'size1_units'] = 'OZ'
 
+	elif code == '2735179020_11':
+		# This is a typo on eyeliner
+		df.loc[(df.multi * df.size1_amount == 39) & (df.size1_units == 'OZ'), 'size1_amount'] = 0.39
+
 	return df
