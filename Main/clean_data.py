@@ -25,4 +25,10 @@ def clean_data(code, df):
 		# This is a typo on eyeliner
 		df.loc[(df.multi * df.size1_amount == 39) & (df.size1_units == 'OZ'), 'size1_amount'] = 0.039
 
+	elif code == '2735179020_20':
+		# These are typos in sizes and units of hair accesories
+		df.loc[(df.multi * df.size1_amount == 4.6) & (df.size1_units == 'OZ'), 'size1_amount'] = 4
+		df.loc[(df.multi * df.size1_amount == 0.005) & (df.size1_units == 'OZ'), 'size1_amount'] = 5
+		df.loc[df.size1_units == 'OZ', 'size1_units'] = 'CT'	
+
 	return df
