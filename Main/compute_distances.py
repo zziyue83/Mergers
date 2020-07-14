@@ -238,13 +238,13 @@ def geocoding_dmas():
     geocoded_dmas = pd.DataFrame(major_cities)
     return geocoded_dmas
 
-def geocoding_locations(code, locations):
+def geocoding_locations(code, locations, netid):
     df1 = locations.dropna(subset=['location'])
     df1 = df1[['location', 'lat', 'lon']]
     df1 = df1.drop_duplicates()
 
     dict_list = []
-    geolocator = Nominatim()
+    geolocator = Nominatim(user_agent=netid)
     for index, row in df1.iterrows():
         this_location = row['location']
 
@@ -270,15 +270,15 @@ def geocoding_locations(code, locations):
     locations['lon'] = locations['location'].map(geocoded_locations['lon'])
     return locations
 
-def compute_distances(code, month_or_quarter = 'quarter'):
+def compute_distances(code, netid, month_or_quarter = 'quarter'):
     locations = pd.read_csv('../../../All/m_' + code + '/properties/locations.csv')
-    locations = geocoding_locations(code, locations)
+    locations = geocoding_locations(code, locations, netid)
     locations['owner-brand'] = locations['owner'] + ' ' + locations['brand_code_uc'].astype(str)
     locations = locations[['owner-brand','location','lat','lon']]
 
     # get all upcs-dma pair and add brand_code_uc and owner
     df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv')
-    df = df[['upc','dma_code']].drop_duplicates()
+    df = df.groupby(['upc','dma_code','year',month_or_quarter], as_index=False).agg({'prices':'first','shares':'first','sales':'first'})
     df = aux.append_owners(code, df, month_or_quarter)
     
     df['owner-brand'] = df['owner'] + ' ' + df['brand_code_uc'].astype(str)
@@ -289,15 +289,16 @@ def compute_distances(code, month_or_quarter = 'quarter'):
     df['dma_lon'] = df['dma_code'].map(geocoded_dmas.drop_duplicates('dma_code').set_index('dma_code')['longitude'])
     df['distance'] = 6371.01 * np.arccos(np.sin(df['lat'].map(radians))*np.sin(df['dma_lat'].map(radians)) + np.cos(df['lat'].map(radians))*np.cos(df['dma_lat'].map(radians))*np.cos(df['lon'].map(radians) - df['dma_lon'].map(radians)))
     distance = df.groupby(['brand_code_uc','owner','dma_code'], as_index=False).agg({'distance': 'min'})
-    distance.to_csv('../../../Data/m_' + code + '/intermediate/distances.csv', sep = ',', encoding = 'utf-8')
+    distance.to_csv('../../../All/m_' + code + '/intermediate/distances.csv', sep = ',', encoding = 'utf-8', index = False)
 
 code = sys.argv[1]
+netid = sys.argv[2]
 log_out = open('../../../All/m_' + code + '/output/compute_distances.log', 'w')
 log_err = open('../../../All/m_' + code + '/output/compute_distances.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
-compute_distances(code)
+compute_distances(code, netid)
 
 log_out.close()
 log_err.close()

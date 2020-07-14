@@ -133,7 +133,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 
 	# Throw error if (1) dates don't span the entirety of the sample period or
 	# (2) ownership dates overlap
-	brand_to_owner_test = brand_to_owner.copy()
+	brand_to_owner_test = brand_to_owner.copy().reset_index()
 	brand_to_owner_test = brand_to_owner_test.sort_values(by=['brand_code_uc', 'start_year', 'start_month'])
 
 	if month_or_quarter == 'month':
