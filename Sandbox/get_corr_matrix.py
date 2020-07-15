@@ -61,15 +61,10 @@ def get_corr_matrix(code, years, groups, modules, merger_date, upcCutoff = '0.96
                         print('corr computation time')
                         print(time_4 - time_3)
                         corr_unpivoted = corr.melt(id_vars=['upc_1'], var_name='upc_2', value_name='correlation')
-                        print(corr_unpivoted)
                         df = pd.concat([corr_unpivoted, pd.DataFrame(np.sort(corr_unpivoted[['upc_1','upc_2']], axis=1))], axis=1)
-                        print(df)
                         df = df.drop_duplicates(df.columns.difference(corr_unpivoted.columns))[corr_unpivoted.columns]
-                        print(df)
                         df = df.dropna(subset=['correlation'])
-                        print(df)
                         upc_brand_year = df[df['upc_1'] != df['upc_2']]
-                        print(upc_brand_year)
                         upc_brand_year['brand_code'] = brand_code
                         upc_brand_year['year'] = year
                         upc_brand_year['group'] = group
@@ -90,13 +85,11 @@ def get_corr_matrix(code, years, groups, modules, merger_date, upcCutoff = '0.96
 
         if len(upcs_list) > 0:
             upcs_df = pd.concat(upcs_list)
-            print(upcs_df)
             min_upcs = upcs_df.groupby(['upc_1','upc_2','brand_code'], as_index = False).agg({'group': 'first', 'module': 'first', 'correlation': 'min'})
             corr_upcs = min_upcs[min_upcs['correlation'] > float(corrCutoff)]
             corr_upcs_list.append(corr_upcs)
 
     corr_df = pd.concat(corr_upcs_list)
-    print(corr_df)
     corr_df.to_csv('../../../All/m_' + code + '/intermediate/correlated_upcs_' + corrCutoff + '_cutoff.csv', sep = ',', index = False)
 
 code = sys.argv[1]
