@@ -4,9 +4,6 @@ import sys
 import pandas as pd
 import pyblp
 
-log = open("assemble_agent_data.log","a")
-sys.stdout = log
-
 # Define function to pull DMA-FIPS crosswalk for each year (from Nielsen stores file)
 def pull_dma_shares(year):
 
@@ -16,6 +13,8 @@ def pull_dma_shares(year):
 
         # Keep FIPS and DMA information and remove duplicates
         stores_data_sub = stores_data[['year','fips_state_code','fips_county_code','dma_code','dma_descr']]
+        stores_data_sub.fips_state_code = stores_data_sub.fips_state_code.fillna(value='')
+        stores_data_sub.fips_county_code = stores_data_sub.fips_county_code.fillna(value='')
         stores_data_sub = stores_data_sub.drop_duplicates()
 
         # Replace county FIPS with relevant zeros
@@ -81,13 +80,19 @@ def import_pums(year,hhids,pids):
         return(pums_data)
 
 # Define function to sample demographics for a given year, dma, and number of draws
-def sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data):
+def sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data,dma_to_puma_prior,pums_data_prior):
 
         # Limit PUMA shares to relevant DMA
         puma_shares = dma_to_puma[dma_to_puma['dma_code']==dma]
 
         # Merge shares onto PUMS data
         pums_data_shares = pd.merge(pums_data,puma_shares,on=['STATE','PUMA'],how='inner')
+
+        # If empty for the current year, use prior year
+        if pums_data_shares.empty:
+                puma_shares = dma_to_puma_prior[dma_to_puma_prior['dma_code']==dma]
+                pums_data_shares = pd.merge(pums_data_prior,puma_shares,on=['STATE','PUMA'],how='inner')
+                pums_data_shares['YEAR'] = year
 
         # Create counts of observations by PUMA
         pums_data_shares['int'] = 1
@@ -118,13 +123,13 @@ def assemble_nodes_weights(num_rc,level):
         nodes_weights = pd.concat([weights, nodes], axis=1)
         return(nodes_weights)
 
-def assemble_agent_data(year,period,month_or_quarter,dma,hhids,pids,nodes_weights,dma_to_puma,pums_data):
+def assemble_agent_data(year,period,month_or_quarter,dma,hhids,pids,nodes_weights,dma_to_puma,pums_data,dma_to_puma_prior,pums_data_prior):
 
         # Determine number of draws
         ndraw = nodes_weights.shape[0]
 
         # Draw from empirical distribution for the given year and quarter
-        demographics = sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data)
+        demographics = sample_demographics(year,dma,hhids,pids,ndraw,dma_to_puma,pums_data,dma_to_puma_prior,pums_data_prior)
 
         # Concatenate with nodes and weights
         nodes_weights.reset_index(drop=True, inplace=True)
@@ -132,6 +137,10 @@ def assemble_agent_data(year,period,month_or_quarter,dma,hhids,pids,nodes_weight
         agent_data = pd.concat([nodes_weights, demographics], axis=1)
         agent_data[month_or_quarter] = period
         return(agent_data)
+
+# Log file
+log_out = open("assemble_agent_data.log","a")
+sys.stdout = log_out
 
 # Set up inputs and run
 if len(sys.argv) != 7:
@@ -167,10 +176,21 @@ if (month_or_quarter == 'quarter') | (month_or_quarter == 'month'):
 
                 # List of unique DMAs
                 dma_to_puma = pull_dma_shares(yr)
+
+                if yr == 2006:
+                        dma_to_puma_prior = dma_to_puma
+                else:
+                        dma_to_puma_prior = pull_dma_shares(yr-1)
+
                 dma_unique = dma_to_puma['dma_code'].drop_duplicates()
 
                 # PUMS data
                 pums_data = import_pums(yr,hhids,pids)
+
+                if yr == 2006:
+                        pums_data_prior = pums_data
+                else:
+                        pums_data_prior = import_pums(yr-1,hhids,pids)
 
                 for pp in range(1,periods[0]+1):
 
@@ -180,7 +200,7 @@ if (month_or_quarter == 'quarter') | (month_or_quarter == 'month'):
                                 count += 1
                                 print(str(yr)+'P'+str(pp)+'DMA'+dd)
 
-                                agents = assemble_agent_data(yr,pp,month_or_quarter,dd,hhids,pids,nodes_weights,dma_to_puma,pums_data)
+                                agents = assemble_agent_data(yr,pp,month_or_quarter,dd,hhids,pids,nodes_weights,dma_to_puma,pums_data,dma_to_puma_prior,pums_data_prior)
 
                                 # Append to full dataset
                                 if count == 1:
@@ -190,11 +210,9 @@ if (month_or_quarter == 'quarter') | (month_or_quarter == 'month'):
 
         # Export to csv
         agent_full = agent_full[['YEAR',month_or_quarter,'dma_code','weight','nodes0','nodes1','hhmember'] + hhids + pids]
-<<<<<<< HEAD
-        agent_full = agent_full.rename(columns = {'YEAR' : 'year', 'dma_code': 'dma'})
-=======
         agent_full = agent_full.rename(columns = {'YEAR' : 'year'})
->>>>>>> 5b38140848f8b2c5a839cce232a0ea2485ef7c27
         out_file = 'Clean/agent_data_' + month_or_quarter + '.csv'
 
         agent_full.to_csv (out_file, index = None, header=True)
+
+log_out.close()

@@ -17,6 +17,11 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 	min_year, min_month = aux.int_to_month(month_int - pre_months)
 	max_year, max_month = aux.int_to_month(month_int + post_months)
 
+	if ((code=='1817013020_3') & (max_year > 2008)):
+		max_year = 2008
+		max_month = 12
+		years = list(filter(lambda x: int(x) <= 2008, years))
+
 	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['size1_units', 'size1_amount', 'multi']
 
