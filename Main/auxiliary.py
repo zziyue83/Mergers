@@ -50,11 +50,11 @@ def get_years(initial_year_string, final_year_string, pre_months = 24, post_mont
 			years.append(str(this_year))
 	return years
 
-def get_merging_parties(info_str):
+def get_parties(info_str):
 	all_parties = re.finditer('{(.*?)}', info_str, re.DOTALL)
 	merging_parties = []
 	for i in all_parties:
-		merging_parties.append(i)
+		merging_parties.append(i.group(1).strip())
 	return merging_parties
 
 def load_chunked_year_module_movement_table(year, group, module, path = ''):
@@ -98,7 +98,7 @@ def get_product_map(groups):
 # dataset_found_uc                           ALL
 # size1_change_flag_uc                         0
 
-def append_owners(code, df, month_or_quarter):
+def append_owners(code, df, month_or_quarter,add_dhhi = False):
 	# Load list of UPCs and brands
 	upcs = pd.read_csv('../../../All/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
 	upcs = upcs['brand_code_uc']
@@ -123,15 +123,17 @@ def append_owners(code, df, month_or_quarter):
 
 	# Remove Onwership that starts later than the latest time in the dataframe
 	brand_to_owner = brand_to_owner[(brand_to_owner['start_year'] < max_year) | ((brand_to_owner['start_year'] == max_year)&(brand_to_owner['start_month'] <= max_month))]
+	# Remove Onwership that ends earlier than the earliest time in the dataframe
+	brand_to_owner = brand_to_owner[(brand_to_owner['end_year'] > min_year) | ((brand_to_owner['end_year'] == min_year)&(brand_to_owner['end_month'] >= min_month)) | (brand_to_owner['end_year'] == 0)]
 
-	brand_to_owner.loc[(brand_to_owner['start_year']==0) | (brand_to_owner['start_year']<min_year),'start_year'] = min_year
 	brand_to_owner.loc[(brand_to_owner['start_month']==0) | (brand_to_owner['start_year']<min_year) | ((brand_to_owner['start_year']==min_year)&(brand_to_owner['start_month']<min_month)),'start_month'] = min_month
-	brand_to_owner.loc[(brand_to_owner['end_year']==0) | (brand_to_owner['end_year']>max_year),'end_year'] = max_year
+	brand_to_owner.loc[(brand_to_owner['start_year']==0) | (brand_to_owner['start_year']<min_year),'start_year'] = min_year
 	brand_to_owner.loc[(brand_to_owner['end_month']==0) | (brand_to_owner['end_year']>max_year) | ((brand_to_owner['end_year']==max_year)&(brand_to_owner['end_month']>max_month)),'end_month'] = max_month
+	brand_to_owner.loc[(brand_to_owner['end_year']==0) | (brand_to_owner['end_year']>max_year),'end_year'] = max_year
 
 	# Throw error if (1) dates don't span the entirety of the sample period or
 	# (2) ownership dates overlap
-	brand_to_owner_test = brand_to_owner.copy()
+	brand_to_owner_test = brand_to_owner.copy().reset_index()
 	brand_to_owner_test = brand_to_owner_test.sort_values(by=['brand_code_uc', 'start_year', 'start_month'])
 
 	if month_or_quarter == 'month':
@@ -142,8 +144,11 @@ def append_owners(code, df, month_or_quarter):
 	elif month_or_quarter == 'quarter':
 		min_date = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1)).min()
 		max_date = pd.to_datetime(dict(year=df.year, month=3*df.quarter, day=1)).max()
-		brand_to_owner_test['start_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.start_year, month=3*(np.ceil(brand_to_owner_test.start_month/3)-1)+1, day=1))
-		brand_to_owner_test['end_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.end_year, month=3*(np.floor(brand_to_owner_test.end_month/3)), day=1))
+		brand_to_owner_test.loc[:,'start_month'] = 3*(np.ceil(brand_to_owner_test['start_month']/3)-1)+1
+		brand_to_owner_test.loc[:,'end_year'] = np.where(3*(np.floor(brand_to_owner_test.end_month/3)) > 0, brand_to_owner_test.end_year, brand_to_owner_test.end_year - 1)
+		brand_to_owner_test.loc[:,'end_month'] = np.where(3*(np.floor(brand_to_owner_test.end_month/3)) > 0, 3*(np.floor(brand_to_owner_test.end_month/3)), 12)
+		brand_to_owner_test['start_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.start_year, month=brand_to_owner_test.start_month, day=1))
+		brand_to_owner_test['end_date_test'] = pd.to_datetime(dict(year=brand_to_owner_test.end_year, month=brand_to_owner_test.end_month, day=1))
 
 	brand_dates = brand_to_owner_test.groupby('brand_code_uc')[['start_date_test', 'end_date_test']].agg(['min', 'max'])
 	if ((brand_dates.start_date_test['min']!=min_date).sum() + (brand_dates.end_date_test['max']!=max_date).sum() > 0):
@@ -151,7 +156,8 @@ def append_owners(code, df, month_or_quarter):
 		for index, row in brand_dates.iterrows():
 			if row.start_date_test['min'] != min_date or row.end_date_test['max'] != max_date:
 				print(index)
-		raise Exception('Ownership definitions does not span the entire sample period.')
+				print('start_date: ', row.start_date_test['min'])
+				print('end_date: ', row.end_date_test['max'])
 
 	brand_to_owner_test['owner_num'] = brand_to_owner_test.groupby('brand_code_uc').cumcount()+1
 	max_num_owner = brand_to_owner_test['owner_num'].max()
@@ -166,6 +172,10 @@ def append_owners(code, df, month_or_quarter):
 			((brand_to_owner_test['start_year_' + str(ii)] > brand_to_owner_test['end_year_' + str(ii-1)]) & \
 			((brand_to_owner_test['start_month_' + str(ii)] != 1) | (brand_to_owner_test['end_month_' + str(ii-1)] != 12)))
 		if overlap_or_gap.sum() > 0:
+			brand_to_owner_test['overlap'] = overlap_or_gap
+			indices = brand_to_owner_test[brand_to_owner_test['overlap'] != 0].index.tolist()
+			for index in indices:
+				print(brand_to_owner_test.loc[index])
 			raise Exception('There are gaps or overlap in the ownership mapping.')
 
 	# Merge on brand and date intervals
@@ -173,20 +183,37 @@ def append_owners(code, df, month_or_quarter):
 		brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=brand_to_owner.start_month, day=1))
 		brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=brand_to_owner.end_month, day=1))
 		df['date'] = pd.to_datetime(dict(year=df.year, month=df.month, day=1))
-		sqlcode = '''
-		select df.upc, df.year, df.month, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
-		from df
-		inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
-		'''
+		if add_dhhi:
+			sqlcode = '''
+			select df.upc, df.year, df.month, df.shares, df.dma_code, df.brand_code_uc, brand_to_owner.owner
+			from df
+			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+			'''
+		else:
+			sqlcode = '''
+			select df.upc, df.year, df.month, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
+			from df
+			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+			'''
 	elif month_or_quarter == 'quarter':
-		brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=3*(np.ceil(brand_to_owner.start_month/3)-1)+1, day=1))
-		brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=3*(np.floor(brand_to_owner.end_month/3)), day=1))
+		brand_to_owner.loc[:,'start_month'] = 3*(np.ceil(brand_to_owner['start_month']/3)-1)+1
+		brand_to_owner.loc[:,'end_year'] = np.where(3*(np.floor(brand_to_owner.end_month/3)) > 0, brand_to_owner.end_year, brand_to_owner.end_year - 1)
+		brand_to_owner.loc[:,'end_month'] = np.where(3*(np.floor(brand_to_owner.end_month/3)) > 0, 3*(np.floor(brand_to_owner.end_month/3)), 12)
+		brand_to_owner['start_date'] = pd.to_datetime(dict(year=brand_to_owner.start_year, month=brand_to_owner.start_month, day=1))
+		brand_to_owner['end_date'] = pd.to_datetime(dict(year=brand_to_owner.end_year, month=brand_to_owner.end_month, day=1))
 		df['date'] = pd.to_datetime(dict(year=df.year, month=3*(df.quarter-1)+1, day=1))
-		sqlcode = '''
-		select df.upc, df.year, df.quarter, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
-		from df
-		inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
-		'''
+		if add_dhhi:
+			sqlcode = '''
+			select df.upc, df.year, df.quarter, df.shares, df.dma_code, df.brand_code_uc, brand_to_owner.owner
+			from df
+			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+			'''
+		else:
+			sqlcode = '''
+			select df.upc, df.year, df.quarter, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
+			from df
+			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
+			'''
 	df_own = ps.sqldf(sqlcode,locals())
 	return df_own
 

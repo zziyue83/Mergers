@@ -66,6 +66,12 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	min_quarter = np.ceil(min_month/3)
 	max_quarter = np.ceil(max_month/3)
 
+	if ((code=='1817013020_3') & (max_year > 2008)):
+		max_year = 2008
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2008, years))
+
 	area_time_upc_list = []
 	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['brand_code_uc', 'brand_descr', 'multi', 'size1_units', 'size1_amount']
@@ -159,11 +165,13 @@ def get_largest_brand_left_out(agg, upc_set, month_or_quarter = 'month'):
 	return largest_brand_left_out
 
 def write_brands_upc(code, agg, upc_set):
-	agg = agg[['upc', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module']]
+	agg = agg[['upc', 'brand_code_uc', 'year', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module', 'volume']]
 	agg = agg[agg.upc.isin(upc_set)]
 	agg['year'] = agg['year'].astype(int)
 	agg['max_year'] = agg.groupby('upc')['year'].transform('max')
-	agg = agg.drop('year', axis = 1)
+	agg['tot_volume'] = agg.groupby('upc')['volume'].transform('sum')
+	agg = agg.drop(['year','volume'], axis = 1)
+	agg = agg.rename(columns={'tot_volume': 'volume'})
 	agg = agg.drop_duplicates()
 
 	# add extra nielsen data features from Annual_Files/products_extra_year.tsv
@@ -187,18 +195,22 @@ def write_brands_upc(code, agg, upc_set):
 	agg = agg.drop(['max_year', 'panel_year'], axis = 1)
 	agg = agg.sort_values(by = 'brand_descr')
 
-	characteristics = agg.columns.drop(['upc', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module'])
+	characteristics = agg.columns.drop(['upc', 'brand_code_uc', 'brand_descr', 'size1_units', 'size1_amount', 'multi', 'module', 'volume'])
 	for column in characteristics:
 		print(column)
 		print(agg[column].describe())
 
 	base_folder = '../../../All/m_' + code + '/intermediate/'
-	agg.to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
+	agg.drop(['volume'], axis = 1).to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique upcs')
 
-	agg = agg[['brand_code_uc', 'brand_descr']]
+	agg = agg[['brand_code_uc', 'brand_descr', 'volume']]
+	total_volume = agg.volume.sum()
 	agg = agg.rename(columns = {'brand_descr' : 'brand'})
-	agg = agg.drop_duplicates().reset_index(drop=True)
+	agg = agg.groupby(['brand_code_uc', 'brand'], as_index = False).sum()
+	agg['overall_brand_share'] = agg['volume'] / total_volume
+	agg = agg.drop(['volume'], axis = 1)
+	# agg = agg.drop_duplicates().reset_index(drop=True)
 	agg.to_csv(base_folder + 'brands.csv', index = False, sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique brands')
 
