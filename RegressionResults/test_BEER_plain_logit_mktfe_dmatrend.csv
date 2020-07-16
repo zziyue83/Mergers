@@ -1,0 +1,82 @@
+,0
+step,2
+optimization_time,0.0
+cumulative_optimization_time,0.0
+total_time,0.4903109073638916
+cumulative_total_time,1.4669253826141357
+converged,True
+cumulative_converged,True
+optimization_iterations,0
+cumulative_optimization_iterations,0
+objective_evaluations,1
+cumulative_objective_evaluations,2
+fp_converged,[]
+cumulative_fp_converged,[]
+fp_iterations,[]
+cumulative_fp_iterations,[]
+contraction_evaluations,[]
+cumulative_contraction_evaluations,[]
+parameters,"[[-1.82424203e+01]
+ [ 3.41556868e-03]]"
+parameter_covariances,"[[ 9.50306108e+05 -2.29009899e+01]
+ [-2.29009899e+01  1.26247879e-02]]"
+theta,[]
+sigma,[]
+pi,[]
+rho,[]
+beta,"[[-1.82424203e+01]
+ [ 3.41556868e-03]]"
+gamma,[]
+sigma_se,[]
+pi_se,[]
+rho_se,[]
+beta_se,"[[3.11236567e+00]
+ [3.58732646e-04]]"
+gamma_se,[]
+sigma_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+pi_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+rho_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+beta_bounds,"(array([[-inf],
+       [-inf]]), array([[inf],
+       [inf]]))"
+gamma_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+delta,"[[ -9.34176278]
+ [ -8.16133843]
+ [-10.65227482]
+ ...
+ [ -7.68440727]
+ [ -7.39363413]
+ [-10.10852288]]"
+tilde_costs,[]
+clipped_costs,"[[False]
+ [False]
+ [False]
+ ...
+ [False]
+ [False]
+ [False]]"
+xi,"[[-0.59992132]
+ [ 1.60965322]
+ [-1.55654227]
+ ...
+ [ 1.55277802]
+ [ 3.21056769]
+ [-0.57200321]]"
+omega,[]
+micro,[]
+objective,[[1.80181083]]
+xi_by_theta_jacobian,[]
+omega_by_theta_jacobian,[]
+micro_by_theta_jacobian,[]
+gradient,[]
+projected_gradient,[]
+projected_gradient_norm,nan
+hessian,[]
+reduced_hessian,[]
+reduced_hessian_eigenvalues,[]
+W,"[[ 0.36322878 -0.01380235 -0.01091777]
+ [-0.01380235  0.00070293  0.00037374]
+ [-0.01091777  0.00037374  0.00277101]]"
+updated_W,"[[ 0.36322449 -0.01380225 -0.01091758]
+ [-0.01380225  0.00070293  0.00037373]
+ [-0.01091758  0.00037373  0.00277097]]"

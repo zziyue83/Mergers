@@ -1,0 +1,82 @@
+,0
+step,2
+optimization_time,0.0
+cumulative_optimization_time,0.0
+total_time,0.7885057926177979
+cumulative_total_time,1.9309866428375244
+converged,True
+cumulative_converged,True
+optimization_iterations,0
+cumulative_optimization_iterations,0
+objective_evaluations,1
+cumulative_objective_evaluations,2
+fp_converged,[]
+cumulative_fp_converged,[]
+fp_iterations,[]
+cumulative_fp_iterations,[]
+contraction_evaluations,[]
+cumulative_contraction_evaluations,[]
+parameters,"[[-0.04104988]
+ [-0.91368792]]"
+parameter_covariances,"[[ 0.04867754  1.08346445]
+ [ 1.08346445 24.11574501]]"
+theta,[]
+sigma,[]
+pi,[]
+rho,[]
+beta,"[[-0.04104988]
+ [-0.91368792]]"
+gamma,[]
+sigma_se,[]
+pi_se,[]
+rho_se,[]
+beta_se,"[[0.00016816]
+ [0.00374281]]"
+gamma_se,[]
+sigma_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+pi_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+rho_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+beta_bounds,"(array([[-inf],
+       [-inf]]), array([[inf],
+       [inf]]))"
+gamma_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+delta,"[[ -9.0508126 ]
+ [ -7.90805533]
+ [-10.16232344]
+ ...
+ [-11.40778217]
+ [-15.1207973 ]
+ [-10.95520871]]"
+tilde_costs,[]
+clipped_costs,"[[False]
+ [False]
+ [False]
+ ...
+ [False]
+ [False]
+ [False]]"
+xi,"[[ 0.34181177]
+ [ 2.63786014]
+ [-2.6119135 ]
+ ...
+ [-2.81681609]
+ [-5.85053437]
+ [-2.46412971]]"
+omega,[]
+micro,[]
+objective,[[1.13675598e-24]]
+xi_by_theta_jacobian,[]
+omega_by_theta_jacobian,[]
+micro_by_theta_jacobian,[]
+gradient,[]
+projected_gradient,[]
+projected_gradient_norm,nan
+hessian,[]
+reduced_hessian,[]
+reduced_hessian_eigenvalues,[]
+W,"[[-6.14352492e-33  4.26981588e-32 -1.24217149e-16]
+ [ 4.26981588e-32  2.95822839e-31 -6.30486582e-16]
+ [-1.24217149e-16 -6.30486582e-16  1.26872811e+00]]"
+updated_W,"[[-6.14352492e-33  4.26981588e-32 -1.24217149e-16]
+ [ 4.26981588e-32  2.95822839e-31 -6.30486582e-16]
+ [-1.24217149e-16 -6.30486582e-16  1.26872811e+00]]"

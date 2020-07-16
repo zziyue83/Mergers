@@ -1,0 +1,82 @@
+,0
+step,2
+optimization_time,0.0
+cumulative_optimization_time,0.0
+total_time,1.8189635276794434
+cumulative_total_time,4.828938245773315
+converged,True
+cumulative_converged,True
+optimization_iterations,0
+cumulative_optimization_iterations,0
+objective_evaluations,1
+cumulative_objective_evaluations,2
+fp_converged,[]
+cumulative_fp_converged,[]
+fp_iterations,[]
+cumulative_fp_iterations,[]
+contraction_evaluations,[]
+cumulative_contraction_evaluations,[]
+parameters,"[[-0.00134387]
+ [-0.16607399]]"
+parameter_covariances,"[[2.32745007e+00 2.87622703e+02]
+ [2.87622703e+02 3.55439717e+04]]"
+theta,[]
+sigma,[]
+pi,[]
+rho,[]
+beta,"[[-0.00134387]
+ [-0.16607399]]"
+gamma,[]
+sigma_se,[]
+pi_se,[]
+rho_se,[]
+beta_se,"[[0.0008965 ]
+ [0.11078748]]"
+gamma_se,[]
+sigma_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+pi_bounds,"(array([], shape=(0, 0), dtype=float64), array([], shape=(0, 0), dtype=float64))"
+rho_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+beta_bounds,"(array([[-inf],
+       [-inf]]), array([[inf],
+       [inf]]))"
+gamma_bounds,"(array([], shape=(0, 1), dtype=float64), array([], shape=(0, 1), dtype=float64))"
+delta,"[[ -9.0508126 ]
+ [ -7.90805533]
+ [-10.16232344]
+ ...
+ [-11.0049681 ]
+ [ -9.60558702]
+ [ -8.94254861]]"
+tilde_costs,[]
+clipped_costs,"[[False]
+ [False]
+ [False]
+ ...
+ [False]
+ [False]
+ [False]]"
+xi,"[[-0.33974546]
+ [ 0.80300259]
+ [-1.45128488]
+ ...
+ [-0.55362286]
+ [ 0.84576567]
+ [ 1.50878297]]"
+omega,[]
+micro,[]
+objective,[[7.67816416e-32]]
+xi_by_theta_jacobian,[]
+omega_by_theta_jacobian,[]
+micro_by_theta_jacobian,[]
+gradient,[]
+projected_gradient,[]
+projected_gradient_norm,nan
+hessian,[]
+reduced_hessian,[]
+reduced_hessian_eigenvalues,[]
+W,"[[3.38041940e-19 2.87129288e-18 3.27350237e-08]
+ [2.87129288e-18 2.43884608e-17 2.78047861e-07]
+ [3.27350237e-08 2.78047861e-07 3.16996694e+03]]"
+updated_W,"[[8.11593832e-19 6.89075202e-18 1.35498194e-07]
+ [6.89075202e-18 5.85052009e-17 1.15043288e-06]
+ [1.35498194e-07 1.15043288e-06 2.26218583e+04]]"

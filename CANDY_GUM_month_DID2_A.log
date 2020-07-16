@@ -1,0 +1,210 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2020.5.5)  7 MAY 2020 17:00
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**\documentclass{report}
+
+*                      \usepackage{booktabs}
+(/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+*                      \begin{document}\begin{center}
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen103
+\lightrulewidth=\dimen104
+\cmidrulewidth=\dimen105
+\belowrulesep=\dimen106
+\belowbottomsep=\dimen107
+\aboverulesep=\dimen108
+\abovetopsep=\dimen109
+\cmidrulesep=\dimen110
+\cmidrulekern=\dimen111
+\defaultaddspace=\dimen112
+\@cmidla=\count88
+\@cmidlb=\count89
+\@aboverulesep=\dimen113
+\@belowrulesep=\dimen114
+\@thisruleclass=\count90
+\@lastruleclass=\count91
+\@thisrulewidth=\dimen115
+)
+No file file.aux.
+\openout1 = `file.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 0.
+LaTeX Font Info:    ... okay on input line 0.
+
+*\begin{tabular}{lclc}
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 0.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 0.
+
+*\toprule
+
+*\textbf{Dep. Variable:}                          & log\_adjusted\_price & \tex
+tbf{  R-squared:         }   &      0.0020      \\
+
+*\textbf{Estimator:}                              &       PanelOLS       & \tex
+tbf{  R-squared (Between):}  &     -0.0219      \\
+
+*\textbf{No. Observations:}                       &       26461581       & \tex
+tbf{  R-squared (Within):}   &      0.0020      \\
+
+*\textbf{Date:}                                   &   Mon, May 04 2020   & \tex
+tbf{  R-squared (Overall):}  &     -0.0005      \\
+
+*\textbf{Time:}                                   &       17:56:06       & \tex
+tbf{  Log-likelihood     }   &    -8.202e+06    \\
+
+*\textbf{Cov. Estimator:}                         &      Clustered       & \tex
+tbf{                     }   &                  \\
+
+*\textbf{}                                        &                      & \tex
+tbf{  F-statistic:       }   &        1e+04     \\
+
+*\textbf{Entities:}                               &       2060522        & \tex
+tbf{  P-value            }   &      0.0000      \\
+
+*\textbf{Avg Obs:}                                &        12.842        & \tex
+tbf{  Distribution:      }   &  F(5,24401054)   \\
+
+*\textbf{Min Obs:}                                &        1.0000        & \tex
+tbf{                     }   &                  \\
+
+*\textbf{Max Obs:}                                &        48.000        & \tex
+tbf{  F-statistic (robust):} &      579.62      \\
+
+*\textbf{}                                        &                      & \tex
+tbf{  P-value            }   &      0.0000      \\
+
+*\textbf{Time periods:}                           &          48          & \tex
+tbf{  Distribution:      }   &  F(5,24401054)   \\
+
+*\textbf{Avg Obs:}                                &      5.513e+05       & \tex
+tbf{                     }   &                  \\
+
+*\textbf{Min Obs:}                                &      4.391e+05       & \tex
+tbf{                     }   &                  \\
+
+*\textbf{Max Obs:}                                &       6.76e+05       & \tex
+tbf{                     }   &                  \\
+
+*\bottomrule
+
+*\end{tabular}
+
+*\begin{tabular}{lcccccc}
+
+*                                                 & \textbf{Parameter} & \textb
+f{Std. Err.} & \textbf{T-stat} & \textbf{P-value} & \textbf{Lower CI} & \textbf
+{Upper CI}  \\
+
+*\midrule
+
+*\textbf{const}                                   &      -0.6074       &       
+0.2496       &     -2.4333     &      0.0150      &      -1.0967      &      -0
+.1182       \\
+
+*\textbf{DHHIpostmerger}                          &      -4.2523       &       
+0.8575       &     -4.9592     &      0.0000      &      -5.9329      &      -2
+.5717       \\
+
+*\textbf{postmerger}                              &       0.0897       &       
+0.0077       &      11.624     &      0.0000      &       0.0746      &       0
+.1048       \\
+
+*\textbf{month\_since\_start}                     &      -0.0021       &     8.
+908e-05      &     -23.059     &      0.0000      &      -0.0022      &      -0
+.0019       \\
+
+*\textbf{log\_employment\_rate}                   &      -0.3553       &       
+0.0519       &     -6.8397     &      0.0000      &      -0.4571      &      -0
+.2535       \\
+
+*\textbf{log\_adjusted\_hhinc\_per\_person\_mean} &      -0.0604       &       
+0.0234       &     -2.5843     &      0.0098      &      -0.1062      &      -0
+.0146       \\
+
+*\bottomrule
+
+*\end{tabular}
+
+*%\caption{PanelOLS Estimation Summary}
+
+*\end{center}
+
+Overfull \hbox (51.6979pt too wide) detected at line 0
+ [] 
+ []
+
+
+Overfull \hbox (183.89508pt too wide) detected at line 0
+ [] 
+ []
+
+
+*
+(Please type a command or say `\end')
+*F-test for Poolability: 99.264 \newline
+
+* P-value: 0.0000 \newline
+
+* Distribution: F(2060521,24401054) \newline
+
+*  \newline
+
+* Included effects: Entity\end{document}
+
+Underfull \hbox (badness 10000) detected at line 0
+
+ []
+
+[1
+
+{/usr/share/texlive/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+(/tmp/tmp8s6crt7n/file.aux) 
+Here is how much of TeX's memory you used:
+ 284 strings out of 495063
+ 3219 string characters out of 3182202
+ 52832 words of memory out of 3000000
+ 3550 multiletter control sequences out of 15000+200000
+ 3948 words of font info for 15 fonts, out of 3000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 22i,7n,17p,192b,182s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmr10.pfb>
+Output written on /tmp/tmp8s6crt7n/file.pdf (1 page, 38298 bytes).
+PDF statistics:
+ 16 PDF objects out of 1000 (max. 8388607)
+ 10 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

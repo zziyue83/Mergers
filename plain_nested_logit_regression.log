@@ -1,0 +1,123 @@
+(1721493, 38)
+Index(['Unnamed: 0', 'upc', 'dma_code', 'month', 'volume', 'price',
+       'size1_amount', 'size1_units', 'brand_descr', 'owner initial',
+       'owner last', 'y-m-d', 'year', '# month', 'market_size',
+       'market_size_DMA', 'market_share', 'postmerger', 'month_since_start',
+       'involved', 'involvedpostmerger', 'product-region', 'time', 'cpiu',
+       'price_index', 'adjusted_price', 'log_adjusted_price',
+       'hhinc_per_person_mean', 'hhinc_per_person_median', 'employment_rate',
+       'adjusted_hhinc_per_person_mean', 'log_adjusted_hhinc_per_person_mean',
+       'log_employment_rate', 'product', 'upc_dma_code', 'distance', 'y-m',
+       'style_descr'],
+      dtype='object')
+        time     wheat        t
+0   7/1/1959  1.954636  1959-07
+1   8/3/1959  1.958810  1959-08
+2   9/1/1959  1.962905  1959-09
+3  10/1/1959  1.981318  1959-10
+4  11/2/1959  2.005690  1959-11
+       time  barley        t
+0  4/1/2000   76.95  2000-04
+1  5/1/2000   78.26  2000-05
+2  6/1/2000   78.48  2000-06
+3  7/1/2000   78.68  2000-07
+4  8/1/2000   75.13  2000-08
+             y-m  postmerger
+0        2006-01           0
+1        2006-01           0
+2        2006-01           0
+3        2006-01           0
+4        2006-01           0
+...          ...         ...
+1721488  2008-04           0
+1721489  2008-04           0
+1721490  2008-04           0
+1721491  2008-04           0
+1721492  2008-04           0
+
+[1721493 rows x 2 columns]
+             y-m  postmerger
+0        2006-01           0
+1        2006-01           0
+2        2006-01           0
+3        2006-01           0
+4        2006-01           0
+...          ...         ...
+1721488  2008-04           0
+1721489  2008-04           0
+1721490  2008-04           0
+1721491  2008-04           0
+1721492  2008-04           0
+
+[1721493 rows x 2 columns]
+0          500200601
+1          501200601
+2          502200601
+3          503200601
+4          504200601
+             ...    
+1721488    616200804
+1721489    679200804
+1721490    717200804
+1721491    753200804
+1721492    758200804
+Name: dma_code_month, Length: 1721493, dtype: object
+['dma_code_month', 'adjusted_price', 'market_share', 'month_since_start', 'upc', 'dma_code', 'owner initial', 'brand_descr', 'distance', 'style_descr', 'wheat', 'barley']
+  dma_code_month  adjusted_price  ...     wheat      barley
+0      500200601        0.134551  ...  4.356919  134.774562
+1      501200601        0.127685  ...  4.356919  134.774562
+2      502200601        0.113288  ...  4.356919  134.774562
+3      503200601        0.109541  ...  4.356919  134.774562
+4      504200601        0.129549  ...  4.356919  134.774562
+
+[5 rows x 12 columns]
+  market_ids    prices  ...  demand_instruments0  demand_instruments1
+0  500200601  0.134551  ...             4.356919           134.774562
+1  501200601  0.127685  ...             4.356919           134.774562
+2  502200601  0.113288  ...             4.356919           134.774562
+3  503200601  0.109541  ...             4.356919           134.774562
+4  504200601  0.129549  ...             4.356919           134.774562
+
+[5 rows x 12 columns]
+0          500200601
+1          501200601
+2          502200601
+3          503200601
+4          504200601
+             ...    
+1721488    616200804
+1721489    679200804
+1721490    717200804
+1721491    753200804
+1721492    758200804
+Name: market_ids, Length: 1721493, dtype: object
+Initializing the problem ...
+Absorbing demand-side fixed effects ...
+Initialized the problem after 00:00:34.
+
+Dimensions:
+====================================
+ T       N      F    K1    MD    ED 
+----  -------  ---  ----  ----  ----
+6058  1721493  28    2     4     2  
+====================================
+
+Formulations:
+========================================
+     Column Indices:          0      1  
+--------------------------  ------  ----
+X1: Linear Characteristics  prices  time
+========================================
+Dimensions:
+====================================
+ T       N      F    K1    MD    ED 
+----  -------  ---  ----  ----  ----
+6058  1721493  28    2     4     2  
+====================================
+
+Formulations:
+========================================
+     Column Indices:          0      1  
+--------------------------  ------  ----
+X1: Linear Characteristics  prices  time
+========================================

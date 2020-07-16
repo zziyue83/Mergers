@@ -1,0 +1,141 @@
+  dma_code_month  dma_code           owner initial  ... time     sugar  cocoa_beans
+0     529 200601       529  Spangler Candy Company  ...    0  0.455319     2.042433
+1     529 200603       529  Spangler Candy Company  ...    2  0.490636     2.001277
+3     618 200601       618  Spangler Candy Company  ...    0  0.455319     2.042433
+4     640 200602       640  Spangler Candy Company  ...    1  0.519318     2.012356
+6     693 200603       693  Spangler Candy Company  ...    2  0.490636     2.001277
+
+[5 rows x 11 columns]
+Initializing the problem ...
+Absorbing demand-side fixed effects ...
+Initialized the problem after 00:05:09.
+
+Dimensions:
+==========================================
+ T       N       F    K1    MD    ED    H 
+----  --------  ---  ----  ----  ----  ---
+5740  15581618  89    2     4     2     1 
+==========================================
+
+Formulations:
+========================================
+     Column Indices:          0      1  
+--------------------------  ------  ----
+X1: Linear Characteristics  prices  time
+========================================
+Solving the problem ...
+
+Rho Initial Values:
+=============
+ All Groups  
+-------------
++7.000000E-01
+=============
+
+Rho Lower Bounds:
+=============
+ All Groups  
+-------------
++0.000000E+00
+=============
+
+Rho Upper Bounds:
+=============
+ All Groups  
+-------------
++9.900000E-01
+=============
+
+Starting optimization ...
+
+GMM   Optimization   Objective   Fixed Point  Contraction    Objective      Objective      Projected                 
+Step   Iterations   Evaluations  Iterations   Evaluations      Value       Improvement   Gradient Norm      Theta    
+----  ------------  -----------  -----------  -----------  -------------  -------------  -------------  -------------
+ 1         0             1            0            0       +6.004775E+04                 +4.310878E+04  +7.000000E-01
+ 1         0             2            0            0       +4.874328E+04  +1.130447E+04  +0.000000E+00  +9.900000E-01
+
+Optimization completed after 02:30:53.
+Computing the Hessian and and updating the weighting matrix ...
+Computed results after 03:48:08.
+
+Problem Results Summary:
+===================================================================
+GMM     Objective      Projected       Reduced     Weighting Matrix
+Step      Value      Gradient Norm     Hessian     Condition Number
+----  -------------  -------------  -------------  ----------------
+ 1    +4.874328E+04  +0.000000E+00  +0.000000E+00   +1.242542E+08  
+===================================================================
+
+Starting optimization ...
+
+GMM   Optimization   Objective   Fixed Point  Contraction    Objective      Objective      Projected                 
+Step   Iterations   Evaluations  Iterations   Evaluations      Value       Improvement   Gradient Norm      Theta    
+----  ------------  -----------  -----------  -----------  -------------  -------------  -------------  -------------
+ 2         0             1            0            0       +4.680536E+04                 +0.000000E+00  +9.900000E-01
+
+Optimization completed after 01:16:36.
+Computing the Hessian and estimating standard errors ...
+Computed results after 03:46:58.
+
+Problem Results Summary:
+======================================================================================
+GMM     Objective      Projected       Reduced     Weighting Matrix  Covariance Matrix
+Step      Value      Gradient Norm     Hessian     Condition Number  Condition Number 
+----  -------------  -------------  -------------  ----------------  -----------------
+ 2    +4.680536E+04  +0.000000E+00  +0.000000E+00   +1.557084E+08      +2.613417E+06  
+======================================================================================
+
+Cumulative Statistics:
+======================================
+Computation  Optimization   Objective 
+   Time       Iterations   Evaluations
+-----------  ------------  -----------
+ 11:22:35         1             5     
+======================================
+
+Rho Estimates (Robust SEs in Parentheses):
+===============
+  All Groups   
+---------------
+ +9.900000E-01 
+(+8.224123E-03)
+===============
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices            time      
+---------------  ---------------
+ +2.274167E+00    +1.975641E-02 
+(+5.189807E-02)  (+3.974394E-04)
+================================
+Problem Results Summary:
+======================================================================================
+GMM     Objective      Projected       Reduced     Weighting Matrix  Covariance Matrix
+Step      Value      Gradient Norm     Hessian     Condition Number  Condition Number 
+----  -------------  -------------  -------------  ----------------  -----------------
+ 2    +4.680536E+04  +0.000000E+00  +0.000000E+00   +1.557084E+08      +2.613417E+06  
+======================================================================================
+
+Cumulative Statistics:
+======================================
+Computation  Optimization   Objective 
+   Time       Iterations   Evaluations
+-----------  ------------  -----------
+ 11:22:35         1             5     
+======================================
+
+Rho Estimates (Robust SEs in Parentheses):
+===============
+  All Groups   
+---------------
+ +9.900000E-01 
+(+8.224123E-03)
+===============
+
+Beta Estimates (Robust SEs in Parentheses):
+================================
+    prices            time      
+---------------  ---------------
+ +2.274167E+00    +1.975641E-02 
+(+5.189807E-02)  (+3.974394E-04)
+================================
