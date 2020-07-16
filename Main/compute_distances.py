@@ -283,11 +283,12 @@ def compute_distances(code, netid, month_or_quarter = 'quarter'):
     
     df['owner-brand'] = df['owner'] + ' ' + df['brand_code_uc'].astype(str)
     df = df.merge(locations, left_on = 'owner-brand', right_on = 'owner-brand', how = 'outer')
-    
+
     geocoded_dmas = geocoding_dmas()
     df['dma_lat'] = df['dma_code'].map(geocoded_dmas.drop_duplicates('dma_code').set_index('dma_code')['latitude'])
     df['dma_lon'] = df['dma_code'].map(geocoded_dmas.drop_duplicates('dma_code').set_index('dma_code')['longitude'])
     df['distance'] = 6371.01 * np.arccos(np.sin(df['lat'].map(radians))*np.sin(df['dma_lat'].map(radians)) + np.cos(df['lat'].map(radians))*np.cos(df['dma_lat'].map(radians))*np.cos(df['lon'].map(radians) - df['dma_lon'].map(radians)))
+    df['distance'] = np.where(distance['location'] == 0, np.mean(distance['distance']), distance['distance'])
     distance = df.groupby(['brand_code_uc','owner','dma_code'], as_index=False).agg({'distance': 'min'})
     distance.to_csv('../../../All/m_' + code + '/intermediate/distances.csv', sep = ',', encoding = 'utf-8', index = False)
 
