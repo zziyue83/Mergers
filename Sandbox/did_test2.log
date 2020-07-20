@@ -1,0 +1,58 @@
+
+  ___  ____  ____  ____  ____ (R)
+ /__    /   ____/   /   ____/
+___/   /   /___/   /   /___/   14.2   Copyright 1985-2015 StataCorp LP
+  Statistics/Data Analysis            StataCorp
+                                      4905 Lakeway Drive
+     MP - Parallel Edition            College Station, Texas 77845 USA
+                                      800-STATA-PC        http://www.stata.com
+                                      979-696-4600        stata@stata.com
+                                      979-696-4601 (fax)
+
+25-user 4-core Stata network perpetual license:
+       Serial number:  501406210780
+         Licensed to:  NUIT ART - Research Computing
+                       Anton Verlygo (anton@northwestern.edu)
+
+Notes:
+      1.  Stata is running in batch mode.
+      2.  Unicode is supported; see help unicode_advice.
+      3.  More than 2 billion observations are allowed; see help obs_advice.
+      4.  Maximum number of variables is set to 5000; see help set_maxvar.
+
+. do /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/did_test2.do ../../
+> ../All/m_1973045020_2/intermediate ../output/ month 
+
+. 
+. clear all
+
+. 
+. set more off
+
+. 
+. /* Passing *args: month_or_quarter = `0' */
+. 
+. cd `1'
+/projects/b1048/gillanes/Mergers/All/m_1973045020_2/intermediate
+
+. import delimited "stata_did_`3'.csv", encoding(ISO-8859-1)
+(22 vars, 1,392,984 obs)
+
+. 
+. *Fixed Effects*
+. egen entity_effects = group(upc dma_code)
+
+. egen time_effects = group(year `3') /* same goes for month*/
+
+. egen time_calendar = group(`3') /* same goes for month*/
+
+. 
+. 
+. /* WEIGHTING SCHEMES */
+. 
+. gen pre_vol = volume * (1 - post_merger)
+volume not found
+r(111);
+
+end of do-file
+r(111);
