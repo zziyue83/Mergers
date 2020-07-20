@@ -43,15 +43,15 @@ est sto PMT_FE
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE") append
 
 
-/******************************/
+/********************************/
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging trend, abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger trend, abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE") append
 
-reghdfe lprice post_merger_merging, abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger, abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends") append
 
@@ -84,11 +84,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major"
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging post_merger_major, abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger post_merger_major trend, abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_M
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Major") append
 
-reghdfe lprice post_merger_merging post_merger_major, abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger post_merger_major, abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_M
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Major") append
 
@@ -118,11 +118,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major"
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_dhhi trend, abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_dhhi post_merger trend, abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_DHHI
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, DHHI") append
 
-reghdfe lprice post_merger_dhhi, abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_dhhi post_merger, abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_DHHI
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, DHHI") append
 
@@ -152,11 +152,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Demogr
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging post_merger_major trend, abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger log_hhinc_per_person_adj trend, abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_d
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Demographics") append
 
-reghdfe lprice post_merger_merging post_merger_major, abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger log_hhinc_per_person_adj, abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_d
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Demographics") append
 
@@ -184,11 +184,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major,
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging post_merger_major log_hhinc_per_person_adj trend, abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger post_merger_major log_hhinc_per_person_adj trend, abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_d_M
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Major, Demographics") append
 
-reghdfe lprice post_merger_merging post_merger_major log_hhinc_per_person_adj, abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger post_merger_major log_hhinc_per_person_adj, abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_d_M
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Major, Demographics") append
 
@@ -215,11 +215,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, DHHI, 
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_dhhi log_hhinc_per_person_adj trend, abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj, abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_d_D
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, DHHI, Demographics") append
 
-reghdfe lprice post_merger_dhhi log_hhinc_per_person_adj, abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_dhhi post_merger log_hhinc_per_person_adj, abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_d_D
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, DHHI, Demographics") append
 
@@ -265,11 +265,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE") appen
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE") append
 
-reghdfe lprice post_merger_merging [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends") append
 
@@ -302,11 +302,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major"
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging post_merger_major trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger post_merger_major trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_M_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Major") append
 
-reghdfe lprice post_merger_merging post_merger_major [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger post_merger_major [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_M_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Major") append
 
@@ -336,11 +336,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major"
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_dhhi trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_dhhi post_merger trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_DHHI_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, DHHI") append
 
-reghdfe lprice post_merger_dhhi [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_dhhi post_merger [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_DHHI_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, DHHI") append
 
@@ -370,11 +370,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Demogr
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging post_merger_major trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger log_hhinc_per_person_adj trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_d_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Demographics") append
 
-reghdfe lprice post_merger_merging post_merger_major [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger log_hhinc_per_person_adj [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_d_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Demographics") append
 
@@ -402,11 +402,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major,
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging post_merger_major log_hhinc_per_person_adj trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger post_merger_major log_hhinc_per_person_adj trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_d_M_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Major, Demographics") append
 
-reghdfe lprice post_merger_merging post_merger_major log_hhinc_per_person_adj [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger post_merger_major log_hhinc_per_person_adj [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_d_M_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Major, Demographics") append
 
@@ -433,11 +433,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, DHHI, 
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_dhhi log_hhinc_per_person_adj trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj [aw = weights1], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_d_D_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, DHHI, Demographics") append
 
-reghdfe lprice post_merger_dhhi log_hhinc_per_person_adj [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_dhhi post_merger log_hhinc_per_person_adj [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_d_D_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, DHHI, Demographics") append
 
@@ -457,7 +457,6 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Tre
 /******************************/
 /******************************/
 /******************************/
-
 
 
 /*CHECKED!*/
@@ -484,11 +483,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE") appen
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE") append
 
-reghdfe lprice post_merger_merging [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends") append
 
@@ -521,11 +520,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major"
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging post_merger_major trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger post_merger_major trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_M_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Major") append
 
-reghdfe lprice post_merger_merging post_merger_major [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger post_merger_major [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_M_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Major") append
 
@@ -555,11 +554,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major"
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_dhhi trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_dhhi post_merger trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_DHHI_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, DHHI") append
 
-reghdfe lprice post_merger_dhhi [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_dhhi post_merger [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_DHHI_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, DHHI") append
 
@@ -589,11 +588,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Demogr
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging post_merger_major trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger log_hhinc_per_person_adj trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_d_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Demographics") append
 
-reghdfe lprice post_merger_merging post_merger_major [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger log_hhinc_per_person_adj [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_d_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Demographics") append
 
@@ -621,11 +620,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major,
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_merging post_merger_major log_hhinc_per_person_adj trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_merging post_merger post_merger_major log_hhinc_per_person_adj trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_d_M_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Major, Demographics") append
 
-reghdfe lprice post_merger_merging post_merger_major log_hhinc_per_person_adj [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_merging post_merger post_merger_major log_hhinc_per_person_adj [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_d_M_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Major, Demographics") append
 
@@ -652,11 +651,11 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, DHHI, 
 /*CHECK THIS NEW SPECIFICATIONS*/
 /******************************/
 
-areg lprice post_merger_dhhi log_hhinc_per_person_adj trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+areg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj [aw = weights2], abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_d_D_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, DHHI, Demographics") append
 
-reghdfe lprice post_merger_dhhi log_hhinc_per_person_adj [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
+reghdfe lprice post_merger_dhhi post_merger log_hhinc_per_person_adj [aw = weights2], abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t_d_D_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, DHHI, Demographics") append
 
