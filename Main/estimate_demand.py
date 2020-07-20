@@ -9,6 +9,7 @@ import pyhdfe
 import statsmodels.api as sm
 import pickle
 import scipy.sparse as sp
+import special_cases_for_estimation as special_cases
 
 # Set pyblp options
 pyblp.options.digits = 3
@@ -98,31 +99,37 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 		add_blp = True
 		instrument_names.remove('blp')
 
-	# First get the distances and merge with df
-	distances = pd.read_csv('../../../All/m_' + code + '/intermediate/distances.csv', delimiter = ',', index_col = ['brand_code_uc', 'owner', 'dma_code'])
-	df = df.joint(distances, on = ['brand_code_uc', 'owner', 'dma_code'], how = 'left')
+	if 'distance-diesel' in instrument_names:
+		# First get the distances and merge with df
+		distances = pd.read_csv('../../../All/m_' + code + '/intermediate/distances.csv', delimiter = ',', index_col = ['brand_code_uc', 'owner', 'dma_code'])
+		df = df.join(distances, on = ['brand_code_uc', 'owner', 'dma_code'], how = 'left')
 
-	# Next, get the diesel prices and merge with df
-	diesel = pd.read_csv('../../../All/instruments/diesel.csv', delimiter = ',')
-	diesel_data['date'] = pd.to_datetime(diesel_data['date'])
-	diesel_data['year'] = diesel_data['date'].dt.year
+		# Next, get the diesel prices and merge with df
+		diesel_data = pd.read_csv('../../../All/instruments/diesel.csv', delimiter = ',')
+		diesel_data['date'] = pd.to_datetime(diesel_data['date'])
+		diesel_data['year'] = diesel_data['date'].dt.year
 
-	if month_or_quarter == 'month':
-		diesel_data[month_or_quarter] = diesel_data['date'].dt.month
-	elif month_or_quarter == 'quarter':
-		diesel_data[month_or_quarter] = np.ceil(diesel_data['date'].dt.month/3)
+		if month_or_quarter == 'month':
+			diesel_data[month_or_quarter] = diesel_data['date'].dt.month
+		elif month_or_quarter == 'quarter':
+			diesel_data[month_or_quarter] = np.ceil(diesel_data['date'].dt.month/3)
 
-	diesel_data_period = diesel_data.groupby([month_or_quarter, 'year'])['value'].agg('mean')
+		diesel_data_period = diesel_data.groupby([month_or_quarter, 'year'])['value'].agg('mean')
 
-	df = df.join(diesel_data_period, on = [month_or_quarter, 'year'], how = 'left')
-	df.rename(columns={'value': 'diesel'}, inplace=True)
+		df = df.join(diesel_data_period, on = [month_or_quarter, 'year'], how = 'left')
+		df.rename(columns={'value': 'diesel'}, inplace=True)
 
-	# Then get diesel prices to multiply
-	df['demand_instruments0'] = df['distance'] * df['diesel']
-	df = df.drop(['distance', 'diesel'])
+		# Then get diesel prices to multiply
+		df['demand_instruments0'] = df['distance'] * df['diesel']
+		df = df.drop(['distance', 'diesel'], axis=1)
+		
+		instrument_names.remove('distance-diesel')
+		i = 1
+
+	else:
+		i = 0
 
 	# Then get the remaining instruments
-	i = 1
 	for instrument in instrument_names:
 		inst_data = pd.read_csv('../../../All/instruments/' + instrument + '.csv', delimiter = ',')
 		inst_data['date'] = pd.to_datetime(inst_data['date'])
@@ -143,9 +150,9 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 
 def gather_product_data(code, month_or_quarter = 'month'):
 	info_dict = aux.parse_info(code)
-	characteristics = aux.get_characteristics(info_dict["Characteristics"])
-	nest = aux.get_nest(info_dict["Nest"])
-	instrument_names = aux.get_instruments(info_dict["Instruments"])
+	characteristics = aux.get_insts_or_chars_or_nests(info_dict["Characteristics"])
+	nest = aux.get_insts_or_chars_or_nests(info_dict["Nest"])
+	instrument_names = aux.get_insts_or_chars_or_nests(info_dict["Instruments"])
 
 	to_append = characteristics
 	if (nest is not None) and (nest not in characteristics):
@@ -156,8 +163,9 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	char_map = char_df.to_dict()
 
 	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', delimiter = ',')
-	df = aux.append_owners(code, df)
+	df = aux.append_owners(code, df, month_or_quarter)
 	df = add_characteristics(code, df, char_map, to_append)
+	df = special_cases.special_cases_for_estimation(code, df)
 	df, num_instruments, add_differentiation, add_blp = add_instruments(code, df, instrument_names, month_or_quarter)
 
 	return df, characteristics, nest, num_instruments, add_differentiation, add_blp
@@ -165,14 +173,14 @@ def gather_product_data(code, month_or_quarter = 'month'):
 def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month',
 	num_instruments = 0, add_differentiation = False, add_blp = False):
 
-	df['market_ids'] = df['dma_code'].astype(str) + '_' + df[month_or_quarter].astype(str)
+	df['market_ids'] = df['dma_code'].astype(str) +  '_' + df['year'].astype(str) + '_' + df[month_or_quarter].astype(str)
 	df = df.rename(columns = {'owner' : 'firm_ids'})
 
 	# Baseline formulation
 	num_chars = 2
 	string_chars = '1 + prices'
 	for this_char in chars:
-		string_chars = string_chars + ' + ' this_char
+		string_chars = string_chars + ' + ' + this_char
 		num_chars += 1
 	formulation_char = pyblp.Formulation(string_chars, absorb = 'C(dma_code) + C(' + month_or_quarter + ')') # These are seasonality FEs
 	formulation_fe = pyblp.Formulation('0 + prices', absorb = 'C(upc) + C(dma_code) + C(' + month_or_quarter + ')')
@@ -197,9 +205,11 @@ def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month'
 		else:
 			df['nesting_ids'] = df[nests]
 
-	return formulation_char, formulation_fe, df
+	return formulation_char, formulation_fe, df, num_chars
 
-def get_partial_f(df, chars):
+def get_partial_f(df, chars, month_or_quarter):
+
+	df['time'] = df['year'].astype(str) + '_' + df[month_or_quarter].astype(str)
 
 	# First get the various characteristics and instruments
 	endog_mat = df[['prices', 'shares']].to_numpy()
@@ -208,7 +218,7 @@ def get_partial_f(df, chars):
 	instruments_mat = df[filter_col].to_numpy()
 
 	# Now generate the residualization
-	fixed_effects = df['upc',TIME,'dma_code']
+	fixed_effects = df[['upc','time','dma_code']]
 	alg = pyhdfe.create(fixed_effects, drop_singletons = False)
 	endog_resid = alg.residualize(endog_mat)
 	characteristics_resid = alg.residualize(characteristics_mat)
@@ -217,16 +227,16 @@ def get_partial_f(df, chars):
 	instruments_resid = np.concatenate((characteristics_resid, instruments_resid), axis = 1)
 
 	# Compute the partial F and partial R^2
-	piP_full = np.linalg.lstsq(instruments_resid, endog_resid)
+	piP_full = np.linalg.lstsq(instruments_resid, endog_resid)[0]
 	eP_full = endog_resid - instruments_resid @ piP_full
 	sigmaP_full = (eP_full.T @ eP_full)
 
-	piP_reduced = np.linalg.lstsq(characteristics_resid, endog_resid)
+	piP_reduced = np.linalg.lstsq(characteristics_resid, endog_resid)[0]
 	eP_reduced = endog_resid - characteristics_resid @ piP_reduced
 	sigmaP_reduced = (eP_reduced.T @ eP_reduced)
 
-	partialF = ((sigmaP_reduced - sigmaP_full) @ np.linalg.inv(sigmaP_full)) * (characteristics_resid.shape[0] - instruments_resid.shape[1]) / (instruments_resid.shape[1] - characteristics_resid.shape[1]);
-	partialR2 = (sigmaP_reduced - sigmaP_full) @ np.linalg.inv(sigmaP_reduced)
+	partialF = ((sigmaP_reduced - sigmaP_full) / sigmaP_full) * (characteristics_resid.shape[0] - instruments_resid.shape[1]) / (instruments_resid.shape[1] - characteristics_resid.shape[1])
+	partialR2 = (sigmaP_reduced - sigmaP_full) / sigmaP_reduced
 
 	partialF = np.diag(partialF)
 	partialR2 = np.diag(partialR2)
@@ -243,7 +253,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
 
 	# First get the formulations
-	formulation_char, formulation_fe, df = create_formulation(code, df, chars,
+	formulation_char, formulation_fe, df, num_chars = create_formulation(code, df, chars,
 		nests = nests, month_or_quarter = month_or_quarter,
 		num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
 
@@ -289,12 +299,12 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 		print("Did not run estimation")
 
 		# Get the first stage of instruments
-		partialF, partialR2 = get_partial_f(df, chars)
+		partialF, partialR2 = get_partial_f(df, chars, month_or_quarter)
 		return None
 	else:
 		return None
 
-def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars = None, nests = None,
+def crossvalidate_demand(code, df, cutoff_date = None, timespan = 'pre', chars = None, nest = None,
 	month_or_quarter = 'month', estimate_type = 'logit',
 	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True,
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
@@ -383,6 +393,14 @@ code = sys.argv[1]
 month_or_quarter = sys.argv[2]
 estimate_type = sys.argv[3]
 
+log_out = open('../../../All/m_' + code + '/output/estimate_demand.log', 'w')
+log_err = open('../../../All/m_' + code + '/output/estimate_demand.err', 'w')
+sys.stdout = log_out
+sys.stderr = log_err
+
 df, characteristics, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
 estimate_demand(code, df, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
 	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
+
+log_out.close()
+log_err.close()
