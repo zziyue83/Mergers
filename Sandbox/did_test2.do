@@ -6,6 +6,8 @@ set more off
 /* Passing *args: month_or_quarter = `0' */
 
 cd `1'
+log using `2'/did_stata_`3', text replace
+
 import delimited "stata_did_`3'.csv", encoding(ISO-8859-1)
 
 *Fixed Effects*
@@ -16,11 +18,11 @@ egen time_calendar = group(`3') /* same goes for month*/
 
 /* WEIGHTING SCHEMES */
 
-gen pre_vol = volume * (1 - post_merger)
-egen weights1 = total(pre_vol), by(upc)
-egen weights2 = total(pre_vol), by(dma_code)
-replace weights1 = round(weights1)
-replace weights2 = round(weights2)
+*gen pre_vol = volume * (1 - post_merger)
+*egen weights1 = total(pre_vol), by(upc)
+*egen weights2 = total(pre_vol), by(dma_code)
+*replace weights1 = round(weights1)
+*replace weights2 = round(weights2)
 
 
 /*CHECKED!*/
