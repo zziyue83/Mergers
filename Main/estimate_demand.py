@@ -271,7 +271,6 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 		else:
 			problem = pyblp.Problem(formulation_char, dr)
 
-		print(problem)
 		if nests is None:
 			results = problem.solve()
 		else:
@@ -400,6 +399,7 @@ sys.stdout = log_out
 sys.stderr = log_err
 
 df, characteristics, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
+print(df.shape)
 estimate_demand(code, df, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
 	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
 
