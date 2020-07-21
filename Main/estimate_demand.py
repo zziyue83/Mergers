@@ -207,10 +207,17 @@ def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month'
 
 	return formulation_char, formulation_fe, df, num_chars
 
-def get_partial_f(df, chars, month_or_quarter):
+def get_partial_f(df, chars, nests, month_or_quarter):
+
+	# Get endogenous variables (if nests, compute within-nest share)
+	if nests is not None:
+		df['total_nest_shares'] = df.groupby(['market_ids','nesting_ids'])['shares'].transform('sum')
+		df['log_within_nest_shares'] = np.log(df['shares']/df['total_nest_shares'])
+		endog_mat = df[['prices', 'shares', 'log_within_nest_shares']].to_numpy()
+	else:
+		endog_mat = df[['prices', 'shares']].to_numpy()
 
 	# First get the various characteristics and instruments
-	endog_mat = df[['prices', 'shares']].to_numpy()
 	characteristics_mat = df[chars].to_numpy()
 	filter_col = [col for col in df if col.startswith('demand_instruments')]
 	instruments_mat = df[filter_col].to_numpy()
@@ -301,7 +308,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 		print("Did not run estimation")
 
 		# Get the first stage of instruments
-		partialF, partialR2 = get_partial_f(df, chars, month_or_quarter)
+		partialF, partialR2 = get_partial_f(df, chars, nests, month_or_quarter)
 		print(partialF)
 		print(partialR2)
 		return None
