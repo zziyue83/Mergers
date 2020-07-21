@@ -302,6 +302,8 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 		# Get the first stage of instruments
 		partialF, partialR2 = get_partial_f(df, chars, month_or_quarter)
+		print(partialF)
+		print(partialR2)
 		return None
 	else:
 		return None
