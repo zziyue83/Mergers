@@ -36,7 +36,7 @@ Notes:
 /projects/b1048/gillanes/Mergers/All/m_1973045020_2/intermediate
 
 . import delimited "stata_did_`3'.csv", encoding(ISO-8859-1)
-(22 vars, 1,392,984 obs)
+(23 vars, 1,392,984 obs)
 
 . 
 . *Fixed Effects*
@@ -51,8 +51,2478 @@ Notes:
 . /* WEIGHTING SCHEMES */
 . 
 . gen pre_vol = volume * (1 - post_merger)
-volume not found
-r(111);
 
-end of do-file
-r(111);
+. egen weights1 = total(pre_vol), by(upc)
+
+. egen weights2 = total(pre_vol), by(dma_code)
+
+. replace weights1 = round(weights1)
+(1,305,201 real changes made)
+
+. replace weights2 = round(weights2)
+(1,322,349 real changes made)
+
+. 
+. 
+. /*CHECKED!*/
+. * No Fixed-Effects
+. reg lprice post_merger_merging post_merger trend, vce(cluster dma_code)
+
+Linear regression                               Number of obs     =  1,392,984
+                                                F(3, 204)         =    3302.49
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0146
+                                                Root MSE          =      .5008
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0578794   .0028754   -20.13   0.000    -.0635487     -.05221
+ post_merger |   .0905892   .0019464    46.54   0.000     .0867515    .0944269
+       trend |   .0019834   .0000601    32.98   0.000     .0018648    .0021019
+       _cons |    2.99989   .0019183  1563.87   0.000     2.996108    3.003673
+------------------------------------------------------------------------------
+
+. est sto NO_FE
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE") repl
+> ace
+dir : seeout
+
+. 
+. /*CHECKED!*/
+. * Product/Market Fixed-Effects
+. areg lprice post_merger_merging post_merger trend, abs(entity_effects) vce(cl
+> uster dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   3,    204)   =    2707.12
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9387
+                                                Adj R-squared     =     0.9373
+                                                Root MSE          =     0.1263
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   -.002802   .0015742    -1.78   0.077    -.0059059    .0003019
+ post_merger |   .0532111   .0013039    40.81   0.000     .0506403     .055782
+       trend |   .0007802   .0000546    14.28   0.000     .0006725    .0008879
+       _cons |   3.036995   .0012726  2386.52   0.000     3.034486    3.039504
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (31157 categories)
+
+. est sto PM_FE
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE") append
+dir : seeout
+
+. 
+. /*CHECK HOW THEY TREAT SINGLETONS!*/
+. /*NON-CHECKED YET*/
+. * Product/Market and Time Fixed-Effects
+. reghdfe lprice post_merger_merging, abs(entity_effects time_effects) vce(clus
+> ter dma_code) keepsingletons
+WARNING: Singleton observations not dropped; statistical significance is biased
+>  (link)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,984
+Absorbing 2 HDFE groups                           F(   1,    204) =       6.05
+Statistics robust to heteroskedasticity           Prob > F        =     0.0147
+                                                  R-squared       =     0.9403
+                                                  Adj R-squared   =     0.9390
+                                                  Within R-sq.    =     0.0001
+Number of clusters (dma_code) =        205        Root MSE        =     0.1246
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0038632   .0015702    -2.46   0.015    -.0069591   -.0007673
+       _cons |   3.085392   .0004338  7113.03   0.000     3.084537    3.086247
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     31157       31157           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE") ap
+> pend
+dir : seeout
+
+. 
+. 
+. /********************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_merging post_merger trend, abs(time_calendar) vce(clu
+> ster dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   3,    204)   =    3408.24
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0150
+                                                Adj R-squared     =     0.0150
+                                                Root MSE          =     0.5007
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0578645   .0028756   -20.12   0.000    -.0635343   -.0521948
+ post_merger |   .0954381   .0018595    51.33   0.000     .0917719    .0991044
+       trend |   .0018823   .0000596    31.59   0.000     .0017648    .0019998
+       _cons |   3.000372   .0019236  1559.77   0.000     2.996579    3.004165
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE"
+> ) append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_merging post_merger, abs(dma_code##c.trend) vce(cl
+> uster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,984
+Absorbing 1 HDFE group                            F(   2,    204) =    1353.80
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0183
+                                                  Adj R-squared   =     0.0180
+                                                  Within R-sq.    =     0.0025
+Number of clusters (dma_code) =        205        Root MSE        =     0.4999
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0582359    .002871   -20.28   0.000    -.0638965   -.0525752
+ post_merger |   .0908828   .0019511    46.58   0.000     .0870358    .0947297
+       _cons |   3.055945   .0006248  4890.81   0.000     3.054713    3.057177
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. /*CHECKED!*/
+. * No Fixed-Effects, but with Major
+. reg lprice post_merger_merging post_merger post_merger_major trend, vce(clust
+> er dma_code)
+
+Linear regression                               Number of obs     =  1,392,984
+                                                F(4, 204)         =    4790.01
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0146
+                                                Root MSE          =      .5008
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0532587   .0049939   -10.66   0.000     -.063105   -.0434123
+ post_merger |   .0845598   .0045506    18.58   0.000     .0755875     .093532
+post_merg~or |   .0097709   .0049977     1.96   0.052     -.000083    .0196247
+       trend |    .002037    .000058    35.14   0.000     .0019227    .0021513
+       _cons |   2.999068   .0020295  1477.75   0.000     2.995067     3.00307
+------------------------------------------------------------------------------
+
+. est sto NO_FE_M
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Major
+> ") append
+dir : seeout
+
+. 
+. /*CHECKED!*/
+. * Product/market Fixed-Effects (Time Trend)
+. areg lprice post_merger_merging post_merger post_merger_major trend, abs(enti
+> ty_effects) vce(cluster dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   4,    204)   =    2309.25
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9389
+                                                Adj R-squared     =     0.9375
+                                                Root MSE          =     0.1261
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0154643   .0017123     9.03   0.000     .0120882    .0188404
+ post_merger |   .0292133   .0017076    17.11   0.000     .0258464    .0325801
+post_merg~or |    .038607   .0011025    35.02   0.000     .0364332    .0407808
+       trend |   .0010088   .0000585    17.24   0.000     .0008935    .0011242
+       _cons |   3.033358   .0013257  2288.19   0.000     3.030744    3.035972
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (31157 categories)
+
+. est sto PM_FE_M
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE, Major") append
+dir : seeout
+
+. 
+. /*CHECK HOW THEY TREAT SINGLETONS!*/
+. /*NON-CHECKED YET*/
+. * Product/market and Time Fixed-Effects
+. reghdfe lprice post_merger_merging post_merger_major, abs(entity_effects time
+> _effects) vce(cluster dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,958
+Absorbing 2 HDFE groups                           F(   2,    204) =     819.28
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.9405
+                                                  Adj R-squared   =     0.9392
+                                                  Within R-sq.    =     0.0034
+Number of clusters (dma_code) =        205        Root MSE        =     0.1244
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |     .01498   .0016958     8.83   0.000     .0116363    .0183236
+post_merg~or |   .0395277    .000997    39.65   0.000     .0375619    .0414935
+       _cons |   3.076245   .0005176  5943.70   0.000     3.075225    3.077265
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     31131       31131           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_M
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Maj
+> or") append
+dir : seeout
+
+. 
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_merging post_merger post_merger_major trend, abs(time
+> _calendar) vce(cluster dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   4,    204)   =    5021.79
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0150
+                                                Adj R-squared     =     0.0150
+                                                Root MSE          =     0.5007
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0516087   .0050399   -10.24   0.000    -.0615456   -.0416718
+ post_merger |    .087449   .0044716    19.56   0.000     .0786324    .0962656
+post_merg~or |   .0132246   .0050971     2.59   0.010     .0031748    .0232744
+       trend |   .0019506   .0000564    34.57   0.000     .0018393    .0020618
+       _cons |   2.999298    .002027  1479.67   0.000     2.995301    3.003294
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_M
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE,
+>  Major") append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_merging post_merger post_merger_major, abs(dma_cod
+> e##c.trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,984
+Absorbing 1 HDFE group                            F(   3,    204) =    1243.68
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0183
+                                                  Adj R-squared   =     0.0180
+                                                  Within R-sq.    =     0.0025
+Number of clusters (dma_code) =        205        Root MSE        =     0.4999
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0540945   .0049716   -10.88   0.000    -.0638967   -.0442922
+ post_merger |   .0854791   .0045405    18.83   0.000     .0765269    .0944314
+post_merg~or |   .0087559   .0049729     1.76   0.080    -.0010491    .0185608
+       _cons |   3.056568    .000691  4423.72   0.000     3.055205     3.05793
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_M
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends, Major") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. 
+. * No Fixed-Effects, DHHI
+. reg lprice post_merger_dhhi post_merger trend, vce(cluster dma_code)
+
+Linear regression                               Number of obs     =  1,392,984
+                                                F(3, 204)         =    2853.99
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0131
+                                                Root MSE          =     .50119
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.6040918   .2551586    -2.37   0.019    -1.107178   -.1010056
+ post_merger |   .0649709   .0038613    16.83   0.000     .0573577    .0725841
+       trend |   .0020407   .0000601    33.96   0.000     .0019223    .0021592
+       _cons |   2.999011   .0019026  1576.25   0.000      2.99526    3.002762
+------------------------------------------------------------------------------
+
+. est sto NO_FE_DHHI
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, DHHI"
+> ) append
+dir : seeout
+
+. 
+. * Product/market Fixed-Effects, DHHI
+. areg lprice post_merger_dhhi post_merger trend, abs(entity_effects) vce(clust
+> er dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   3,    204)   =    1717.31
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9387
+                                                Adj R-squared     =     0.9373
+                                                Root MSE          =     0.1263
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.1927924   .1154896    -1.67   0.097    -.4204986    .0349139
+ post_merger |   .0543327   .0021646    25.10   0.000     .0500649    .0586005
+       trend |   .0007835    .000054    14.51   0.000     .0006771      .00089
+       _cons |   3.036918   .0012426  2443.95   0.000     3.034468    3.039368
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (31157 categories)
+
+. est sto PM_FE_DHHI
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE, DHHI") append
+dir : seeout
+
+. 
+. *Product/market and Time Fixed-Effects, DHHI.
+. reghdfe lprice post_merger_dhhi, abs(entity_effects time_effects) vce(cluster
+>  dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,958
+Absorbing 2 HDFE groups                           F(   1,    204) =       2.91
+Statistics robust to heteroskedasticity           Prob > F        =     0.0898
+                                                  R-squared       =     0.9403
+                                                  Adj R-squared   =     0.9390
+                                                  Within R-sq.    =     0.0000
+Number of clusters (dma_code) =        205        Root MSE        =     0.1246
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.1940014   .1137981    -1.70   0.090    -.4183727    .0303699
+       _cons |    3.08569   .0007908  3901.84   0.000      3.08413    3.087249
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     31131       31131           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_DHHHI
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Maj
+> or") append
+dir : seeout
+
+. 
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_dhhi post_merger trend, abs(time_calendar) vce(cluste
+> r dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   3,    204)   =    2946.88
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0135
+                                                Adj R-squared     =     0.0135
+                                                Root MSE          =     0.5011
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |   -.604199   .2552277    -2.37   0.019    -1.107421   -.1009766
+ post_merger |   .0698598   .0038382    18.20   0.000     .0622923    .0774274
+       trend |   .0019387   .0000598    32.41   0.000     .0018207    .0020566
+       _cons |   2.999507   .0019098  1570.56   0.000     2.995742    3.003273
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_DHHI
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE,
+>  DHHI") append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_dhhi post_merger, abs(dma_code##c.trend) vce(clust
+> er dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,984
+Absorbing 1 HDFE group                            F(   2,    204) =     961.70
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0167
+                                                  Adj R-squared   =     0.0164
+                                                  Within R-sq.    =     0.0008
+Number of clusters (dma_code) =        205        Root MSE        =     0.5004
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.1009906   .1189237    -0.85   0.397    -.3354679    .1334867
+ post_merger |   .0579146   .0022171    26.12   0.000     .0535431     .062286
+       _cons |    3.05669   .0006317  4838.55   0.000     3.055444    3.057935
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_DHHI
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends, DHHI") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. * No Fixed-Effects, Demographics
+. reg lprice post_merger_merging post_merger trend log_hhinc_per_person_adj, vc
+> e(cluster dma_code)
+
+Linear regression                               Number of obs     =  1,392,984
+                                                F(4, 204)         =    2459.20
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0146
+                                                Root MSE          =     .50079
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0578633    .002874   -20.13   0.000    -.0635299   -.0521968
+ post_merger |   .0905088   .0019617    46.14   0.000     .0866411    .0943765
+       trend |    .001963   .0000605    32.43   0.000     .0018437    .0020823
+log_hhinc_~j |  -.0162348   .0085206    -1.91   0.058    -.0330346    .0005649
+       _cons |   3.165696   .0867466    36.49   0.000     2.994661     3.33673
+------------------------------------------------------------------------------
+
+. est sto NO_FE_d
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Demog
+> raphics") append
+dir : seeout
+
+. 
+. * Product/market Fixed-Effects, Demographics
+. areg lprice post_merger_merging post_merger trend log_hhinc_per_person_adj, a
+> bs(entity_effects) vce(cluster dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   4,    204)   =    2031.73
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9387
+                                                Adj R-squared     =     0.9373
+                                                Root MSE          =     0.1263
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0028074   .0015748    -1.78   0.076    -.0059124    .0002976
+ post_merger |   .0532292   .0013017    40.89   0.000     .0506627    .0557958
+       trend |   .0007851   .0000555    14.15   0.000     .0006757    .0008945
+log_hhinc_~j |   .0037058   .0040743     0.91   0.364    -.0043272    .0117389
+       _cons |   2.999141   .0417218    71.88   0.000      2.91688    3.081402
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (31157 categories)
+
+. *note: this one  seemed to have both Time F-E and Time-Trends*
+. est sto PM_FE_d
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products
+>  FE, Demographics") append
+dir : seeout
+
+. 
+. * Product/market and Time Fixed-Effects, Demographics
+. reghdfe lprice post_merger_merging log_hhinc_per_person_adj, abs(entity_effec
+> ts time_effects) vce(cluster dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,958
+Absorbing 2 HDFE groups                           F(   2,    204) =       3.47
+Statistics robust to heteroskedasticity           Prob > F        =     0.0330
+                                                  R-squared       =     0.9403
+                                                  Adj R-squared   =     0.9390
+                                                  Within R-sq.    =     0.0001
+Number of clusters (dma_code) =        205        Root MSE        =     0.1246
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0038651     .00157    -2.46   0.015    -.0069607   -.0007696
+log_hhinc_~j |  -.0031038   .0032657    -0.95   0.343    -.0095426    .0033351
+       _cons |   3.116991   .0332347    93.79   0.000     3.051464    3.182518
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     31131       31131           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_d
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Dem
+> ographics") append
+dir : seeout
+
+. 
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_merging post_merger log_hhinc_per_person_adj trend, a
+> bs(time_calendar) vce(cluster dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   4,    204)   =    2534.01
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0150
+                                                Adj R-squared     =     0.0150
+                                                Root MSE          =     0.5007
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |    -.05785   .0028743   -20.13   0.000    -.0635172   -.0521828
+ post_merger |   .0952619   .0018889    50.43   0.000     .0915376    .0989861
+log_hhinc_~j |  -.0152035   .0085224    -1.78   0.076    -.0320067    .0015998
+       trend |   .0018662   .0000598    31.21   0.000     .0017483    .0019841
+       _cons |    3.15561   .0867384    36.38   0.000     2.984592    3.326629
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_d
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE,
+>  Demographics") append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_merging post_merger log_hhinc_per_person_adj, abs(
+> dma_code##c.trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,984
+Absorbing 1 HDFE group                            F(   3,    204) =     900.48
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0183
+                                                  Adj R-squared   =     0.0180
+                                                  Within R-sq.    =     0.0025
+Number of clusters (dma_code) =        205        Root MSE        =     0.4999
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0582217   .0028712   -20.28   0.000    -.0638827   -.0525607
+ post_merger |   .0908246   .0019569    46.41   0.000     .0869663     .094683
+log_hhinc_~j |  -.0113428   .0044657    -2.54   0.012    -.0201477   -.0025379
+       _cons |   3.171385    .045427    69.81   0.000     3.081819    3.260952
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_d
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends, Demographics") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. * No Fixed-Effects, Demographics, but with Major
+. reg lprice post_merger_merging post_merger post_merger_major trend log_hhinc_
+> per_person_adj, vce(cluster dma_code)
+
+Linear regression                               Number of obs     =  1,392,984
+                                                F(5, 204)         =    3782.94
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0147
+                                                Root MSE          =     .50079
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0531511   .0049985   -10.63   0.000    -.0630064   -.0432958
+ post_merger |   .0843595   .0045684    18.47   0.000     .0753522    .0933668
+post_merg~or |    .009964     .00501     1.99   0.048     .0000861     .019842
+       trend |   .0020175   .0000574    35.16   0.000     .0019044    .0021307
+log_hhinc_~j |  -.0163751   .0085329    -1.92   0.056     -.033199    .0004488
+       _cons |    3.16629   .0867852    36.48   0.000     2.995179    3.337401
+------------------------------------------------------------------------------
+
+. est sto NO_FE_d_M
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Major
+> , Demographics") append
+dir : seeout
+
+. 
+. *Products/market Fixed-Effects, Major, Demographics
+. areg lprice post_merger_merging post_merger post_merger_major trend log_hhinc
+> _per_person_adj, abs(entity_effects) vce(cluster dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   5,    204)   =    1846.56
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9389
+                                                Adj R-squared     =     0.9375
+                                                Root MSE          =     0.1261
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0154481   .0017131     9.02   0.000     .0120705    .0188257
+ post_merger |   .0292392   .0017019    17.18   0.000     .0258835    .0325949
+post_merg~or |   .0385776   .0010983    35.12   0.000     .0364121    .0407431
+       trend |   .0010107   .0000592    17.08   0.000      .000894    .0011274
+log_hhinc_~j |   .0015635   .0040066     0.39   0.697    -.0063361    .0094632
+       _cons |    3.01739   .0410262    73.55   0.000       2.9365     3.09828
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (31157 categories)
+
+. est sto PM_FE_d_M
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE, Major, Demographics") append
+dir : seeout
+
+. 
+. *Products/market and Time Fixed-Effects, Major, Demographics
+. reghdfe lprice post_merger_merging post_merger_major log_hhinc_per_person_adj
+> , abs(entity_effects time_effects) vce(cluster dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,958
+Absorbing 2 HDFE groups                           F(   3,    204) =     553.85
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.9405
+                                                  Adj R-squared   =     0.9392
+                                                  Within R-sq.    =     0.0034
+Number of clusters (dma_code) =        205        Root MSE        =     0.1244
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0149772   .0016958     8.83   0.000     .0116338    .0183207
+post_merg~or |    .039526   .0009972    39.64   0.000     .0375598    .0414922
+log_hhinc_~j |  -.0030469   .0032523    -0.94   0.350    -.0094593    .0033656
+       _cons |   3.107249   .0331229    93.81   0.000     3.041942    3.172556
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     31131       31131           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_d_M
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Maj
+> or, Demographics") append
+dir : seeout
+
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_merging post_merger post_merger_major log_hhinc_per_p
+> erson_adj trend, abs(time_calendar) vce(cluster dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   5,    204)   =    3950.97
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0151
+                                                Adj R-squared     =     0.0151
+                                                Root MSE          =     0.5007
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0515351   .0050415   -10.22   0.000    -.0614752   -.0415951
+ post_merger |   .0871959   .0044985    19.38   0.000     .0783264    .0960655
+post_merg~or |   .0133493   .0051034     2.62   0.010     .0032871    .0234114
+log_hhinc_~j |  -.0153312   .0085282    -1.80   0.074    -.0321459    .0014835
+       trend |   .0019349   .0000558    34.65   0.000     .0018248     .002045
+       _cons |    3.15583    .086717    36.39   0.000     2.984854    3.326807
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_d_M
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE,
+>  Major, Demographics") append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_merging post_merger post_merger_major log_hhinc_pe
+> r_person_adj, abs(dma_code##c.trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,984
+Absorbing 1 HDFE group                            F(   4,    204) =     926.07
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0183
+                                                  Adj R-squared   =     0.0180
+                                                  Within R-sq.    =     0.0025
+Number of clusters (dma_code) =        205        Root MSE        =     0.4999
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0539945   .0049748   -10.85   0.000     -.063803   -.0441859
+ post_merger |   .0853068   .0045477    18.76   0.000     .0763402    .0942734
+post_merg~or |   .0089357   .0049781     1.79   0.074    -.0008795    .0187508
+log_hhinc_~j |  -.0119704   .0045276    -2.64   0.009    -.0208974   -.0030435
+       _cons |   3.178409   .0460953    68.95   0.000     3.087525    3.269293
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_d_M
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends, Major, Demographics") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. *No Fixed-Effects, DHHI, Demographics
+. reg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj, vce(c
+> luster dma_code)
+
+Linear regression                               Number of obs     =  1,392,984
+                                                F(4, 204)         =    1983.50
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0131
+                                                Root MSE          =     .50117
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |   -.734916   .2476916    -2.97   0.003     -1.22328   -.2465521
+ post_merger |   .0667357   .0037638    17.73   0.000     .0593147    .0741566
+       trend |   .0020146    .000061    33.04   0.000     .0018944    .0021348
+log_hhinc_~j |  -.0208824   .0085098    -2.45   0.015    -.0376607    -.004104
+       _cons |    3.21228   .0867426    37.03   0.000     3.041253    3.383307
+------------------------------------------------------------------------------
+
+. est sto NO_FE_DHHI_d
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, DHHI,
+>  Demographics") append
+dir : seeout
+
+. 
+. *Product/market Fixed-Effects, DHHI, Demographics
+. areg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj, abs(
+> entity_effects) vce(cluster dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   4,    204)   =    1289.35
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9387
+                                                Adj R-squared     =     0.9373
+                                                Root MSE          =     0.1263
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.1969563   .1159452    -1.70   0.091    -.4255609    .0316483
+ post_merger |   .0544078   .0021664    25.11   0.000     .0501364    .0586793
+       trend |   .0007888   .0000548    14.39   0.000     .0006807    .0008969
+log_hhinc_~j |   .0039908   .0040732     0.98   0.328    -.0040402    .0120218
+       _cons |   2.996153    .041697    71.86   0.000     2.913941    3.078366
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (31157 categories)
+
+. est sto PM_FE_DHHI_d
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE, DHHI, Demographics") append
+dir : seeout
+
+. 
+. *Product/market and Time Fixed-Effects, DHHI, Demographics
+. reghdfe lprice post_merger_dhhi log_hhinc_per_person_adj, abs(entity_effects 
+> time_effects) vce(cluster dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,958
+Absorbing 2 HDFE groups                           F(   2,    204) =       1.70
+Statistics robust to heteroskedasticity           Prob > F        =     0.1855
+                                                  R-squared       =     0.9403
+                                                  Adj R-squared   =     0.9390
+                                                  Within R-sq.    =     0.0001
+Number of clusters (dma_code) =        205        Root MSE        =     0.1246
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.1910885   .1131795    -1.69   0.093    -.4142402    .0320631
+log_hhinc_~j |  -.0027897   .0032443    -0.86   0.391    -.0091863     .003607
+       _cons |   3.114055   .0330781    94.14   0.000     3.048836    3.179274
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     31131       31131           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_DHHI_d
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, DHH
+> I, Demographics") append
+dir : seeout
+
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj, abs(
+> time_calendar) vce(cluster dma_code)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   4,    204)   =    2058.88
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0135
+                                                Adj R-squared     =     0.0135
+                                                Root MSE          =     0.5011
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.7283175   .2481088    -2.94   0.004    -1.217504    -.239131
+ post_merger |   .0714024   .0037354    19.12   0.000     .0640375    .0787672
+       trend |   .0019177   .0000604    31.74   0.000     .0017985    .0020368
+log_hhinc_~j |  -.0198121   .0085125    -2.33   0.021    -.0365959   -.0030284
+       _cons |   3.201802   .0867407    36.91   0.000     3.030779    3.372826
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_d_D
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE,
+>  DHHI, Demographics") append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_dhhi post_merger log_hhinc_per_person_adj, abs(dma
+> _code##c.trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,984
+Absorbing 1 HDFE group                            F(   3,    204) =     642.46
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0167
+                                                  Adj R-squared   =     0.0164
+                                                  Within R-sq.    =     0.0009
+Number of clusters (dma_code) =        205        Root MSE        =     0.5004
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.0815332   .1201877    -0.68   0.498    -.3185027    .1554363
+ post_merger |   .0575859   .0022387    25.72   0.000      .053172    .0619999
+log_hhinc_~j |  -.0120733   .0045242    -2.67   0.008    -.0209935    -.003153
+       _cons |   3.179564   .0460219    69.09   0.000     3.088824    3.270304
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_d_D
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends, DHHI, Demographics") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. /******************************/
+. /*********WEIGHTS1*************/
+. /******************************/
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. 
+. /*CHECKED!*/
+. * No Fixed-Effects
+. reg lprice post_merger_merging post_merger trend [aw = weights1], vce(cluster
+>  dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression                               Number of obs     =  1,358,138
+                                                F(3, 204)         =    2047.84
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0148
+                                                Root MSE          =     .49777
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |    .003328   .0027987     1.19   0.236    -.0021902    .0088461
+ post_merger |   .0605383   .0021258    28.48   0.000     .0563469    .0647297
+       trend |   .0020873   .0000709    29.43   0.000     .0019474    .0022271
+       _cons |   2.962194   .0019926  1486.60   0.000     2.958265    2.966122
+------------------------------------------------------------------------------
+
+. est sto NO_FE_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE") repl
+> ace
+dir : seeout
+
+. 
+. /*CHECKED!*/
+. * Product/Market Fixed-Effects
+. areg lprice post_merger_merging post_merger trend [aw = weights1], abs(entity
+> _effects) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   3,    204)   =    2831.47
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9412
+                                                Adj R-squared     =     0.9399
+                                                Root MSE          =     0.1229
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0049073   .0017565     2.79   0.006     .0014441    .0083705
+ post_merger |   .0492313   .0014406    34.17   0.000     .0463909    .0520718
+       trend |   .0011954   .0000613    19.51   0.000     .0010746    .0013162
+       _cons |   2.990488   .0013018  2297.14   0.000     2.987921    2.993055
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (29153 categories)
+
+. est sto PM_FE_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE") append
+dir : seeout
+
+. 
+. /*CHECK HOW THEY TREAT SINGLETONS!*/
+. /*NON-CHECKED YET*/
+. * Product/Market and Time Fixed-Effects
+. reghdfe lprice post_merger_merging [aw = weights1], abs(entity_effects time_e
+> ffects) vce(cluster dma_code) keepsingletons
+WARNING: Singleton observations not dropped; statistical significance is biased
+>  (link)
+(MWFE estimator converged in 5 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,138
+Absorbing 2 HDFE groups                           F(   1,    204) =       5.95
+Statistics robust to heteroskedasticity           Prob > F        =     0.0155
+                                                  R-squared       =     0.9434
+                                                  Adj R-squared   =     0.9421
+                                                  Within R-sq.    =     0.0001
+Number of clusters (dma_code) =        205        Root MSE        =     0.1206
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0043011   .0017627     2.44   0.016     .0008256    .0077766
+       _cons |    3.04415   .0004621  6587.94   0.000     3.043239    3.045061
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     29153       29153           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE") ap
+> pend
+dir : seeout
+
+. 
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_merging post_merger trend [aw = weights1], abs(time_c
+> alendar) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   3,    204)   =    2023.80
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0152
+                                                Adj R-squared     =     0.0152
+                                                Root MSE          =     0.4977
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0033965   .0027982     1.21   0.226    -.0021207    .0089136
+ post_merger |   .0627791   .0020531    30.58   0.000     .0587312    .0668271
+       trend |   .0020743   .0000699    29.69   0.000     .0019366     .002212
+       _cons |   2.961532   .0020086  1474.42   0.000     2.957572    2.965493
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE"
+> ) append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_merging post_merger [aw = weights1], abs(dma_code#
+> #c.trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,138
+Absorbing 1 HDFE group                            F(   2,    204) =     792.75
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0183
+                                                  Adj R-squared   =     0.0180
+                                                  Within R-sq.    =     0.0011
+Number of clusters (dma_code) =        205        Root MSE        =     0.4970
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0029265   .0028045     1.04   0.298    -.0026031    .0084561
+ post_merger |   .0609649    .002138    28.52   0.000     .0567495    .0651802
+       _cons |   3.017635   .0006985  4320.28   0.000     3.016258    3.019012
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. /*CHECKED!*/
+. * No Fixed-Effects, but with Major
+. reg lprice post_merger_merging post_merger post_merger_major trend [aw = weig
+> hts1], vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression                               Number of obs     =  1,358,138
+                                                F(4, 204)         =    6611.16
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0212
+                                                Root MSE          =     .49616
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .1098133   .0049821    22.04   0.000     .0999902    .1196364
+ post_merger |  -.0725707   .0049269   -14.73   0.000    -.0822849   -.0628565
+post_merg~or |   .1938497   .0050257    38.57   0.000     .1839406    .2037587
+       trend |   .0030959   .0000664    46.64   0.000      .002965    .0032268
+       _cons |   2.947218   .0019342  1523.73   0.000     2.943404    2.951031
+------------------------------------------------------------------------------
+
+. est sto NO_FE_M_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Major
+> ") append
+dir : seeout
+
+. 
+. /*CHECKED!*/
+. * Product/market Fixed-Effects (Time Trend)
+. areg lprice post_merger_merging post_merger post_merger_major trend [aw = wei
+> ghts1], abs(entity_effects) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   4,    204)   =    2655.68
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9415
+                                                Adj R-squared     =     0.9403
+                                                Root MSE          =     0.1226
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0321821   .0019624    16.40   0.000      .028313    .0360513
+ post_merger |    .014992   .0022782     6.58   0.000     .0105001    .0194838
+post_merg~or |   .0498847    .001597    31.24   0.000     .0467358    .0530335
+       trend |   .0014631   .0000675    21.69   0.000     .0013301    .0015961
+       _cons |   2.986445   .0013766  2169.37   0.000      2.98373    2.989159
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (29153 categories)
+
+. est sto PM_FE_M_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE, Major") append
+dir : seeout
+
+. 
+. /*CHECK HOW THEY TREAT SINGLETONS!*/
+. /*NON-CHECKED YET*/
+. * Product/market and Time Fixed-Effects
+. reghdfe lprice post_merger_merging post_merger_major [aw = weights1], abs(ent
+> ity_effects time_effects) vce(cluster dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 5 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,112
+Absorbing 2 HDFE groups                           F(   2,    204) =     713.97
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.9437
+                                                  Adj R-squared   =     0.9424
+                                                  Within R-sq.    =     0.0053
+Number of clusters (dma_code) =        205        Root MSE        =     0.1203
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0331845   .0019333    17.16   0.000     .0293727    .0369963
+post_merg~or |   .0520858   .0013788    37.78   0.000     .0493672    .0548043
+       _cons |   3.031505   .0005777  5247.21   0.000     3.030366    3.032644
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     29127       29127           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_M_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Maj
+> or") append
+dir : seeout
+
+. 
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_merging post_merger post_merger_major trend [aw = wei
+> ghts1], abs(time_calendar) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   4,    204)   =    6423.48
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0219
+                                                Adj R-squared     =     0.0219
+                                                Root MSE          =     0.4960
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .1134456   .0050489    22.47   0.000     .1034908    .1234003
+ post_merger |   -.072605   .0048964   -14.83   0.000    -.0822591    -.062951
+post_merg~or |   .2001869    .005153    38.85   0.000     .1900269     .210347
+       trend |   .0030685   .0000648    47.36   0.000     .0029408    .0031963
+       _cons |   2.946391   .0019476  1512.83   0.000     2.942551    2.950231
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_M_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE,
+>  Major") append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_merging post_merger post_merger_major [aw = weight
+> s1], abs(dma_code##c.trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,138
+Absorbing 1 HDFE group                            F(   3,    204) =    1881.68
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0246
+                                                  Adj R-squared   =     0.0243
+                                                  Within R-sq.    =     0.0075
+Number of clusters (dma_code) =        205        Root MSE        =     0.4954
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .1089528   .0050016    21.78   0.000     .0990914    .1188141
+ post_merger |  -.0715705   .0049686   -14.40   0.000    -.0813668   -.0617741
+post_merg~or |   .1929971   .0050687    38.08   0.000     .1830033     .202991
+       _cons |   3.029441   .0007846  3861.16   0.000     3.027894    3.030988
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_M_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends, Major") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. 
+. * No Fixed-Effects, DHHI
+. reg lprice post_merger_dhhi post_merger trend [aw = weights1], vce(cluster dm
+> a_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression                               Number of obs     =  1,358,138
+                                                F(3, 204)         =    1899.15
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0148
+                                                Root MSE          =     .49776
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.4779026   .2453042    -1.95   0.053    -.9615593    .0057541
+ post_merger |   .0694139   .0039163    17.72   0.000     .0616923    .0771356
+       trend |   .0020841   .0000714    29.21   0.000     .0019434    .0022248
+       _cons |   2.962241   .0019903  1488.35   0.000     2.958317    2.966165
+------------------------------------------------------------------------------
+
+. est sto NO_FE_DHHI_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, DHHI"
+> ) append
+dir : seeout
+
+. 
+. * Product/market Fixed-Effects, DHHI
+. areg lprice post_merger_dhhi post_merger trend [aw = weights1], abs(entity_ef
+> fects) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   3,    204)   =    1583.98
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9412
+                                                Adj R-squared     =     0.9399
+                                                Root MSE          =     0.1229
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |   .0241294   .1262222     0.19   0.849     -.224738    .2729967
+ post_merger |   .0519352   .0025358    20.48   0.000     .0469355    .0569349
+       trend |   .0011918    .000061    19.53   0.000     .0010715    .0013121
+       _cons |   2.990527    .001298  2303.96   0.000     2.987967    2.993086
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (29153 categories)
+
+. est sto PM_FE_DHHI_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE, DHHI") append
+dir : seeout
+
+. 
+. *Product/market and Time Fixed-Effects, DHHI.
+. reghdfe lprice post_merger_dhhi [aw = weights1], abs(entity_effects time_effe
+> cts) vce(cluster dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 5 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,112
+Absorbing 2 HDFE groups                           F(   1,    204) =       0.03
+Statistics robust to heteroskedasticity           Prob > F        =     0.8547
+                                                  R-squared       =     0.9434
+                                                  Adj R-squared   =     0.9421
+                                                  Within R-sq.    =     0.0000
+Number of clusters (dma_code) =        205        Root MSE        =     0.1206
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |   .0229736   .1252872     0.18   0.855    -.2240502    .2699975
+       _cons |   3.045141   .0007872  3868.24   0.000     3.043588    3.046693
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     29127       29127           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_DHHHI_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Maj
+> or") append
+dir : seeout
+
+. 
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_dhhi post_merger trend [aw = weights1], abs(time_cale
+> ndar) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   3,    204)   =    1895.71
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0153
+                                                Adj R-squared     =     0.0153
+                                                Root MSE          =     0.4976
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.4778892     .24535    -1.95   0.053    -.9616362    .0058578
+ post_merger |   .0716946   .0038996    18.39   0.000     .0640059    .0793832
+       trend |   .0020711   .0000704    29.41   0.000     .0019323    .0022099
+       _cons |    2.96158   .0020073  1475.43   0.000     2.957623    2.965538
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_DHHI_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE,
+>  DHHI") append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_dhhi post_merger [aw = weights1], abs(dma_code##c.
+> trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,138
+Absorbing 1 HDFE group                            F(   2,    204) =     798.03
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0183
+                                                  Adj R-squared   =     0.0180
+                                                  Within R-sq.    =     0.0011
+Number of clusters (dma_code) =        205        Root MSE        =     0.4970
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |   .2347458    .153531     1.53   0.128    -.0679652    .5374568
+ post_merger |   .0594563   .0028421    20.92   0.000     .0538526    .0650601
+       _cons |   3.017592   .0007007  4306.79   0.000     3.016211    3.018974
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_DHHI_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends, DHHI") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. * No Fixed-Effects, Demographics
+. reg lprice post_merger_merging post_merger trend log_hhinc_per_person_adj [aw
+>  = weights1], vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression                               Number of obs     =  1,358,138
+                                                F(4, 204)         =    1576.75
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0148
+                                                Root MSE          =     .49777
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0033437   .0027983     1.19   0.234    -.0021736    .0088611
+ post_merger |    .060492   .0021236    28.49   0.000     .0563049     .064679
+       trend |   .0020821   .0000708    29.42   0.000     .0019426    .0022217
+log_hhinc_~j |  -.0049005   .0080652    -0.61   0.544    -.0208024    .0110014
+       _cons |   3.012218   .0821427    36.67   0.000     2.850261    3.174176
+------------------------------------------------------------------------------
+
+. est sto NO_FE_d_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Demog
+> raphics") append
+dir : seeout
+
+. 
+. * Product/market Fixed-Effects, Demographics
+. areg lprice post_merger_merging post_merger trend log_hhinc_per_person_adj [a
+> w = weights1], abs(entity_effects) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   4,    204)   =    2126.73
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9412
+                                                Adj R-squared     =     0.9399
+                                                Root MSE          =     0.1229
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0049044   .0017574     2.79   0.006     .0014393    .0083694
+ post_merger |    .049247   .0014362    34.29   0.000     .0464153    .0520788
+       trend |   .0011974   .0000622    19.26   0.000     .0010748    .0013199
+log_hhinc_~j |   .0017176   .0049911     0.34   0.731     -.008123    .0115583
+       _cons |    2.97295   .0510633    58.22   0.000     2.872271     3.07363
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (29153 categories)
+
+. *note: this one  seemed to have both Time F-E and Time-Trends*
+. est sto PM_FE_d_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products
+>  FE, Demographics") append
+dir : seeout
+
+. 
+. * Product/market and Time Fixed-Effects, Demographics
+. reghdfe lprice post_merger_merging log_hhinc_per_person_adj [aw = weights1], 
+> abs(entity_effects time_effects) vce(cluster dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 5 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,112
+Absorbing 2 HDFE groups                           F(   2,    204) =       3.40
+Statistics robust to heteroskedasticity           Prob > F        =     0.0354
+                                                  R-squared       =     0.9434
+                                                  Adj R-squared   =     0.9421
+                                                  Within R-sq.    =     0.0001
+Number of clusters (dma_code) =        205        Root MSE        =     0.1206
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0042978   .0017622     2.44   0.016     .0008233    .0077724
+log_hhinc_~j |  -.0041664   .0041253    -1.01   0.314    -.0123001    .0039673
+       _cons |    3.08656   .0419684    73.54   0.000     3.003812    3.169307
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     29127       29127           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_d_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Dem
+> ographics") append
+dir : seeout
+
+. 
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_merging post_merger log_hhinc_per_person_adj trend [a
+> w = weights1], abs(time_calendar) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   4,    204)   =    1553.96
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0153
+                                                Adj R-squared     =     0.0152
+                                                Root MSE          =     0.4977
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0034098   .0027978     1.22   0.224    -.0021065    .0089261
+ post_merger |   .0627123   .0020516    30.57   0.000     .0586673    .0667573
+log_hhinc_~j |   -.004327   .0080693    -0.54   0.592     -.020237     .011583
+       trend |   .0020705   .0000696    29.73   0.000     .0019332    .0022078
+       _cons |   3.005695   .0821683    36.58   0.000     2.843687    3.167703
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_d_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE,
+>  Demographics") append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_merging post_merger log_hhinc_per_person_adj [aw =
+>  weights1], abs(dma_code##c.trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,138
+Absorbing 1 HDFE group                            F(   3,    204) =     526.25
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0183
+                                                  Adj R-squared   =     0.0180
+                                                  Within R-sq.    =     0.0011
+Number of clusters (dma_code) =        205        Root MSE        =     0.4969
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0029613   .0028044     1.06   0.292     -.002568    .0084906
+ post_merger |   .0607886   .0021495    28.28   0.000     .0565504    .0650267
+log_hhinc_~j |  -.0188338   .0065738    -2.86   0.005    -.0317951   -.0058725
+       _cons |   3.209374   .0669037    47.97   0.000     3.077463    3.341285
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_d_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends, Demographics") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. * No Fixed-Effects, Demographics, but with Major
+. reg lprice post_merger_merging post_merger post_merger_major trend log_hhinc_
+> per_person_adj [aw = weights1], vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression                               Number of obs     =  1,358,138
+                                                F(5, 204)         =    5299.15
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0212
+                                                Root MSE          =     .49616
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .1099099   .0049794    22.07   0.000     .1000923    .1197276
+ post_merger |   -.072735   .0049194   -14.79   0.000    -.0824345   -.0630355
+post_merg~or |   .1939788   .0050195    38.64   0.000      .184082    .2038756
+       trend |   .0030882   .0000663    46.56   0.000     .0029574     .003219
+log_hhinc_~j |  -.0080041   .0082591    -0.97   0.334    -.0242882      .00828
+       _cons |   3.028914   .0841428    36.00   0.000     2.863013    3.194815
+------------------------------------------------------------------------------
+
+. est sto NO_FE_d_M_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Major
+> , Demographics") append
+dir : seeout
+
+. 
+. *Products/market Fixed-Effects, Major, Demographics
+. areg lprice post_merger_merging post_merger post_merger_major trend log_hhinc
+> _per_person_adj [aw = weights1], abs(entity_effects) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   5,    204)   =    2124.30
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9415
+                                                Adj R-squared     =     0.9403
+                                                Root MSE          =     0.1226
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0322004   .0019649    16.39   0.000     .0283264    .0360745
+ post_merger |     .01496   .0022695     6.59   0.000     .0104853    .0194348
+post_merg~or |   .0499141    .001588    31.43   0.000     .0467832    .0530451
+       trend |   .0014619   .0000681    21.46   0.000     .0013276    .0015962
+log_hhinc_~j |  -.0012765   .0049951    -0.26   0.799    -.0111251    .0085721
+       _cons |   2.999476    .051095    58.70   0.000     2.898734    3.100218
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (29153 categories)
+
+. est sto PM_FE_d_M_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE, Major, Demographics") append
+dir : seeout
+
+. 
+. *Products/market and Time Fixed-Effects, Major, Demographics
+. reghdfe lprice post_merger_merging post_merger_major log_hhinc_per_person_adj
+>  [aw = weights1], abs(entity_effects time_effects) vce(cluster dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 5 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,112
+Absorbing 2 HDFE groups                           F(   3,    204) =     485.36
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.9437
+                                                  Adj R-squared   =     0.9424
+                                                  Within R-sq.    =     0.0054
+Number of clusters (dma_code) =        205        Root MSE        =     0.1203
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0331791    .001933    17.16   0.000     .0293679    .0369902
+post_merg~or |   .0520817   .0013794    37.76   0.000     .0493619    .0548014
+log_hhinc_~j |  -.0040528   .0040964    -0.99   0.324    -.0121295    .0040239
+       _cons |   3.072752   .0417166    73.66   0.000     2.990501    3.155003
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     29127       29127           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_d_M_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Maj
+> or, Demographics") append
+dir : seeout
+
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_merging post_merger post_merger_major log_hhinc_per_p
+> erson_adj trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   5,    204)   =    5137.54
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0219
+                                                Adj R-squared     =     0.0219
+                                                Root MSE          =     0.4960
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .1135078   .0050461    22.49   0.000     .1035586    .1234569
+ post_merger |  -.0727583   .0048879   -14.89   0.000    -.0823956   -.0631211
+post_merg~or |   .2002631   .0051478    38.90   0.000     .1901134    .2104128
+log_hhinc_~j |  -.0065872   .0082384    -0.80   0.425    -.0228306    .0096562
+       trend |   .0030631   .0000647    47.35   0.000     .0029356    .0031906
+       _cons |   3.013616   .0839176    35.91   0.000     2.848159    3.179073
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_d_M_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE,
+>  Major, Demographics") append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_merging post_merger post_merger_major log_hhinc_pe
+> r_person_adj [aw = weights1], abs(dma_code##c.trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,138
+Absorbing 1 HDFE group                            F(   4,    204) =    1361.08
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0247
+                                                  Adj R-squared   =     0.0244
+                                                  Within R-sq.    =     0.0075
+Number of clusters (dma_code) =        205        Root MSE        =     0.4953
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .1093537    .005009    21.83   0.000     .0994776    .1192298
+ post_merger |  -.0723039   .0049961   -14.47   0.000    -.0821545   -.0624533
+post_merg~or |   .1936161   .0050832    38.09   0.000     .1835937    .2036385
+log_hhinc_~j |  -.0329469   .0090756    -3.63   0.000    -.0508409   -.0150529
+       _cons |   3.364898   .0924397    36.40   0.000     3.182638    3.547157
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_d_M_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends, Major, Demographics") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. *No Fixed-Effects, DHHI, Demographics
+. reg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj [aw = 
+> weights1], vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression                               Number of obs     =  1,358,138
+                                                F(4, 204)         =    1422.72
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0148
+                                                Root MSE          =     .49776
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |   -.526051   .2432708    -2.16   0.032    -1.005698   -.0464036
+ post_merger |   .0700413   .0039079    17.92   0.000     .0623362    .0777464
+       trend |    .002076   .0000714    29.06   0.000     .0019351    .0022169
+log_hhinc_~j |   -.007747    .008025    -0.97   0.336    -.0235696    .0080757
+       _cons |   3.041322   .0818258    37.17   0.000     2.879989    3.202655
+------------------------------------------------------------------------------
+
+. est sto NO_FE_DHHI_d_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, DHHI,
+>  Demographics") append
+dir : seeout
+
+. 
+. *Product/market Fixed-Effects, DHHI, Demographics
+. areg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj [aw =
+>  weights1], abs(entity_effects) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   4,    204)   =    1191.41
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9412
+                                                Adj R-squared     =     0.9399
+                                                Root MSE          =     0.1229
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |   .0222578    .126325     0.18   0.860    -.2268122    .2713279
+ post_merger |   .0519757   .0025277    20.56   0.000     .0469919    .0569595
+       trend |   .0011938   .0000619    19.29   0.000     .0010717    .0013158
+log_hhinc_~j |   .0017166    .004986     0.34   0.731    -.0081142    .0115473
+       _cons |      2.973   .0510063    58.29   0.000     2.872433    3.073567
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (29153 categories)
+
+. est sto PM_FE_DHHI_d_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE, DHHI, Demographics") append
+dir : seeout
+
+. 
+. *Product/market and Time Fixed-Effects, DHHI, Demographics
+. reghdfe lprice post_merger_dhhi log_hhinc_per_person_adj [aw = weights1], abs
+> (entity_effects time_effects) vce(cluster dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 5 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,112
+Absorbing 2 HDFE groups                           F(   2,    204) =       0.57
+Statistics robust to heteroskedasticity           Prob > F        =     0.5673
+                                                  R-squared       =     0.9434
+                                                  Adj R-squared   =     0.9421
+                                                  Within R-sq.    =     0.0000
+Number of clusters (dma_code) =        205        Root MSE        =     0.1206
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |   .0276131   .1243943     0.22   0.825    -.2176503    .2728765
+log_hhinc_~j |  -.0042293   .0041105    -1.03   0.305    -.0123337    .0038752
+       _cons |   3.088152    .041883    73.73   0.000     3.005573    3.170731
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     29127       29127           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_DHHI_d_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, DHH
+> I, Demographics") append
+dir : seeout
+
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj [aw =
+>  weights1], abs(time_calendar) vce(cluster dma_code)
+(sum of wgt is   7.8196e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,358,138
+                                                F(   4,    204)   =    1420.35
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0153
+                                                Adj R-squared     =     0.0153
+                                                Root MSE          =     0.4976
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |  -.5223816   .2435232    -2.15   0.033    -1.002527   -.0422364
+ post_merger |   .0722308    .003886    18.59   0.000      .064569    .0798927
+       trend |   .0020648   .0000704    29.33   0.000      .001926    .0022036
+log_hhinc_~j |  -.0071588   .0080316    -0.89   0.374    -.0229944    .0086768
+       _cons |   3.034645   .0818747    37.06   0.000     2.873216    3.196074
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_d_D_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE,
+>  DHHI, Demographics") append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_dhhi post_merger log_hhinc_per_person_adj [aw = we
+> ights1], abs(dma_code##c.trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,358,138
+Absorbing 1 HDFE group                            F(   3,    204) =     535.18
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0183
+                                                  Adj R-squared   =     0.0180
+                                                  Within R-sq.    =     0.0011
+Number of clusters (dma_code) =        205        Root MSE        =     0.4969
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~i |   .2641994   .1525165     1.73   0.085    -.0365113    .5649101
+ post_merger |   .0588822   .0028562    20.62   0.000     .0532507    .0645137
+log_hhinc_~j |  -.0189929   .0065717    -2.89   0.004    -.0319501   -.0060357
+       _cons |    3.21095   .0668933    48.00   0.000     3.079059    3.342841
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_d_D_w1
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends, DHHI, Demographics") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. 
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. /******************************/
+. /*********WEIGHTS2*************/
+. /******************************/
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. /*CHECKED!*/
+. * No Fixed-Effects
+. reg lprice post_merger_merging post_merger trend [aw = weights2], vce(cluster
+>  dma_code)
+(sum of wgt is   5.4043e+11)
+
+Linear regression                               Number of obs     =  1,392,984
+                                                F(3, 204)         =     773.32
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0117
+                                                Root MSE          =     .52283
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0361196   .0077636    -4.65   0.000    -.0514267   -.0208124
+ post_merger |   .0788364   .0049758    15.84   0.000     .0690259    .0886469
+       trend |   .0018358   .0000752    24.42   0.000     .0016876     .001984
+       _cons |   2.997725   .0036337   824.98   0.000     2.990561     3.00489
+------------------------------------------------------------------------------
+
+. est sto NO_FE_w2
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE") repl
+> ace
+dir : seeout
+
+. 
+. /*CHECKED!*/
+. * Product/Market Fixed-Effects
+. areg lprice post_merger_merging post_merger trend [aw = weights2], abs(entity
+> _effects) vce(cluster dma_code)
+(sum of wgt is   5.4043e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   3,    204)   =     531.29
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9395
+                                                Adj R-squared     =     0.9381
+                                                Root MSE          =     0.1308
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0057506   .0035879     1.60   0.111    -.0013234    .0128247
+ post_merger |   .0526049   .0020924    25.14   0.000     .0484794    .0567304
+       trend |   .0007813   .0000936     8.35   0.000     .0005968    .0009658
+       _cons |   3.028945   .0027948  1083.79   0.000     3.023435    3.034455
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (31157 categories)
+
+. est sto PM_FE_w2
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE") append
+dir : seeout
+
+. 
+. /*CHECK HOW THEY TREAT SINGLETONS!*/
+. /*NON-CHECKED YET*/
+. * Product/Market and Time Fixed-Effects
+. reghdfe lprice post_merger_merging [aw = weights2], abs(entity_effects time_e
+> ffects) vce(cluster dma_code) keepsingletons
+WARNING: Singleton observations not dropped; statistical significance is biased
+>  (link)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,984
+Absorbing 2 HDFE groups                           F(   1,    204) =       1.89
+Statistics robust to heteroskedasticity           Prob > F        =     0.1705
+                                                  R-squared       =     0.9410
+                                                  Adj R-squared   =     0.9397
+                                                  Within R-sq.    =     0.0001
+Number of clusters (dma_code) =        205        Root MSE        =     0.1292
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0048795   .0035476     1.38   0.171    -.0021152    .0118743
+       _cons |   3.077533   .0010029  3068.60   0.000     3.075556    3.079511
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+--------------------------------------------------------+
+    Absorbed FE | Categories  - Redundant  = Num. Coefs |
+----------------+---------------------------------------|
+ entity_effects |     31157       31157           0    *|
+   time_effects |        55           0          55     |
+--------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_FE_w2
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE") ap
+> pend
+dir : seeout
+
+. 
+. 
+. /******************************/
+. /*CHECK THIS NEW SPECIFICATIONS*/
+. /******************************/
+. 
+. areg lprice post_merger_merging post_merger trend [aw = weights2], abs(time_c
+> alendar) vce(cluster dma_code)
+(sum of wgt is   5.4043e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   3,    204)   =     869.09
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0122
+                                                Adj R-squared     =     0.0122
+                                                Root MSE          =     0.5227
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0361145   .0077591    -4.65   0.000    -.0514129   -.0208162
+ post_merger |    .084873   .0048845    17.38   0.000     .0752425    .0945036
+       trend |   .0016972   .0000742    22.88   0.000     .0015509    .0018434
+       _cons |   2.998682   .0036926   812.08   0.000     2.991402    3.005963
+-------------+----------------------------------------------------------------
+time_calen~r |   absorbed                                      (12 categories)
+
+. est sto PMT_C_w2
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE"
+> ) append
+dir : seeout
+
+. 
+. reghdfe lprice post_merger_merging post_merger [aw = weights2], abs(dma_code#
+> #c.trend) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =  1,392,984
+Absorbing 1 HDFE group                            F(   2,    204) =     448.43
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.0149
+                                                  Adj R-squared   =     0.0147
+                                                  Within R-sq.    =     0.0014
+Number of clusters (dma_code) =        205        Root MSE        =     0.5221
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0365624   .0078441    -4.66   0.000    -.0520282   -.0210965
+ post_merger |   .0790705   .0050089    15.79   0.000     .0691946    .0889464
+       _cons |   3.050061   .0009668  3154.77   0.000     3.048154    3.051967
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+----------------------------------------------------------+
+      Absorbed FE | Categories  - Redundant  = Num. Coefs |
+------------------+---------------------------------------|
+         dma_code |       205         205           0    *|
+ dma_code#c.trend |       205           0         205    ?|
+----------------------------------------------------------+
+? = number of redundant parameters may be higher
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. est sto PMT_t_w2
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> Trends") append
+dir : seeout
+
+. 
+. /******************************/
+. /******************************/
+. /******************************/
+. 
+. 
+. /*CHECKED!*/
+. * No Fixed-Effects, but with Major
+. reg lprice post_merger_merging post_merger post_merger_major trend [aw = weig
+> hts2], vce(cluster dma_code)
+(sum of wgt is   5.4043e+11)
+
+Linear regression                               Number of obs     =  1,392,984
+                                                F(4, 204)         =     959.01
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0123
+                                                Root MSE          =     .52268
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |  -.0100639   .0144601    -0.70   0.487    -.0385743    .0184465
+ post_merger |   .0446916   .0135161     3.31   0.001     .0180425    .0713407
+post_merg~or |    .055881   .0149377     3.74   0.000     .0264289    .0853331
+       trend |   .0021419   .0001152    18.60   0.000     .0019148     .002369
+       _cons |    2.99303   .0038684   773.72   0.000     2.985403    3.000657
+------------------------------------------------------------------------------
+
+. est sto NO_FE_M_w2
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Major
+> ") append
+dir : seeout
+
+. 
+. /*CHECKED!*/
+. * Product/market Fixed-Effects (Time Trend)
+. areg lprice post_merger_merging post_merger post_merger_major trend [aw = wei
+> ghts2], abs(entity_effects) vce(cluster dma_code)
+(sum of wgt is   5.4043e+11)
+
+Linear regression, absorbing indicators         Number of obs     =  1,392,984
+                                                F(   4,    204)   =     408.57
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9398
+                                                Adj R-squared     =     0.9384
+                                                Root MSE          =     0.1306
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+post_merge~g |   .0245944   .0043812     5.61   0.000     .0159562    .0332326
+ post_merger |   .0277237   .0026977    10.28   0.000     .0224046    .0330427
+post_merg~or |    .040443   .0026918    15.02   0.000     .0351356    .0457504
+       trend |   .0010183   .0001003    10.15   0.000     .0008205    .0012162
+       _cons |   3.025195   .0029223  1035.19   0.000     3.019433    3.030957
+-------------+----------------------------------------------------------------
+entity_eff~s |   absorbed                                   (31157 categories)
+
+. est sto PM_FE_M_w2
+
+. outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product 
+> FE, Major") append
+dir : seeout
+
+. 
+. /*CHECK HOW THEY TREAT SINGLETONS!*/
+. /*NON-CHECKED YET*/
+. * Product/market and Time Fixed-Effects
+. reghdfe lprice post_merger_merging post_merger_major [aw = weights2], abs(ent
+> ity_effects time_effects) vce(cluster dma_code)
+(dropped 26 singleton observations)
+(MWFE estimator converged in 6 iterations)
