@@ -209,8 +209,6 @@ def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month'
 
 def get_partial_f(df, chars, month_or_quarter):
 
-	df['time'] = df['year'].astype(str) + '_' + df[month_or_quarter].astype(str)
-
 	# First get the various characteristics and instruments
 	endog_mat = df[['prices', 'shares']].to_numpy()
 	characteristics_mat = df[chars].to_numpy()
@@ -218,7 +216,7 @@ def get_partial_f(df, chars, month_or_quarter):
 	instruments_mat = df[filter_col].to_numpy()
 
 	# Now generate the residualization
-	fixed_effects = df[['upc','time','dma_code']]
+	fixed_effects = df[['upc',month_or_quarter,'dma_code']]
 	alg = pyhdfe.create(fixed_effects, drop_singletons = False)
 	endog_resid = alg.residualize(endog_mat)
 	characteristics_resid = alg.residualize(characteristics_mat)
@@ -235,8 +233,8 @@ def get_partial_f(df, chars, month_or_quarter):
 	eP_reduced = endog_resid - characteristics_resid @ piP_reduced
 	sigmaP_reduced = (eP_reduced.T @ eP_reduced)
 
-	partialF = ((sigmaP_reduced - sigmaP_full) / sigmaP_full) * (characteristics_resid.shape[0] - instruments_resid.shape[1]) / (instruments_resid.shape[1] - characteristics_resid.shape[1])
-	partialR2 = (sigmaP_reduced - sigmaP_full) / sigmaP_reduced
+	partialF = ((sigmaP_reduced - sigmaP_full) @ np.linalg.inv(sigmaP_full)) * (characteristics_resid.shape[0] - instruments_resid.shape[1]) / (instruments_resid.shape[1] - characteristics_resid.shape[1])
+	partialR2 = (sigmaP_reduced - sigmaP_full) @ np.linalg.inv(sigmaP_reduced)
 
 	partialF = np.diag(partialF)
 	partialR2 = np.diag(partialR2)
@@ -304,6 +302,8 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 		# Get the first stage of instruments
 		partialF, partialR2 = get_partial_f(df, chars, month_or_quarter)
+		print(partialF)
+		print(partialR2)
 		return None
 	else:
 		return None
