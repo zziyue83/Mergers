@@ -122,7 +122,7 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 		# Then get diesel prices to multiply
 		df['demand_instruments0'] = df['distance'] * df['diesel']
 		df = df.drop(['distance', 'diesel'], axis=1)
-		
+
 		instrument_names.remove('distance-diesel')
 		i = 1
 
@@ -271,6 +271,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 		else:
 			problem = pyblp.Problem(formulation_char, dr)
 
+		print(problem)
 		if nests is None:
 			results = problem.solve()
 		else:
