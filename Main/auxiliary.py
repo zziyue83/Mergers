@@ -21,6 +21,15 @@ def parse_info(code):
 		info_dict[info_name] = info_content
 	return info_dict
 
+def get_insts_or_chars_or_nests(full_string):
+	if ', ' in full_string:
+		info_list = full_string.split(', ')
+	elif ',' in full_string:
+		info_list = full_string.split(',')
+	else:
+		info_list = full_string
+	return info_list
+
 def get_groups_and_modules(full_string):
 	all_group_module = re.finditer('{(.*?),(.*?)}', full_string, re.DOTALL)
 	groups = []
