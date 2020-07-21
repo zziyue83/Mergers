@@ -275,7 +275,11 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 			results = problem.solve()
 		else:
 			num_nests = len(df['nesting_ids'].unique())
-			with pyblp.parallel(num_parallel):
+
+			if num_parallel > 1:
+				with pyblp.parallel(num_parallel):
+					results = problem.solve(rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
+			else:
 				results = problem.solve(rho = 0.7 * np.ones((num_nests, 1)), optimization = optimization)
 
 		return results
