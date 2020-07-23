@@ -168,8 +168,8 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	print(df.shape)
 	df = add_characteristics(code, df, char_map, to_append)
 	print(df.shape)
-	df = special_cases.special_cases_for_estimation(code, df)
-	print(df.shape)
+	#df = special_cases.special_cases_for_estimation(code, df)
+	#print(df.shape)
 	df, num_instruments, add_differentiation, add_blp = add_instruments(code, df, instrument_names, month_or_quarter)
 
 	return df, characteristics, nest, num_instruments, add_differentiation, add_blp
