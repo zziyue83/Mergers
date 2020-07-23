@@ -412,7 +412,7 @@ sys.stderr = log_err
 df, characteristics, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
 print(df.shape)
 estimate_demand(code, df, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
-	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp)
+	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = False)
 
 log_out.close()
 log_err.close()
