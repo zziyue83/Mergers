@@ -274,7 +274,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 		if linear_fe:
 			problem = pyblp.Problem(formulation_fe, df)
 		else:
-			problem = pyblp.Problem(formulation_char, dr)
+			problem = pyblp.Problem(formulation_char, df)
 
 		if nests is None:
 			results = problem.solve()
