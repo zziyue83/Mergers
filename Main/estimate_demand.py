@@ -178,7 +178,7 @@ def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month'
 
 	# Baseline formulation
 	num_chars = 2
-	string_chars = '1 + prices'
+	string_chars = '0 + prices'
 	for this_char in chars:
 		string_chars = string_chars + ' + ' + this_char
 		num_chars += 1
