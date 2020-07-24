@@ -9,7 +9,6 @@ import pyhdfe
 import statsmodels.api as sm
 import pickle
 import scipy.sparse as sp
-import special_cases_for_estimation as special_cases
 
 # Set pyblp options
 pyblp.options.digits = 3
@@ -167,8 +166,6 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	df = aux.append_owners(code, df, month_or_quarter)
 	print(df.shape)
 	df = add_characteristics(code, df, char_map, to_append)
-	print(df.shape)
-	df = special_cases.special_cases_for_estimation(code, df)
 	print(df.shape)
 	df, num_instruments, add_differentiation, add_blp = add_instruments(code, df, instrument_names, month_or_quarter)
 
