@@ -3,42 +3,40 @@ clear all
 
 set more off
 
-/* Passing *args: month_or_quarter = `0' */
+/* *args: input_path       = `1' */
+/* *args: output_path      = `2' */
+/* *args: month_or_quarter = `3' */
 
 cd `1'
 log using `2'/did_stata_`3', text replace
 
 import delimited "stata_did_`3'.csv", encoding(ISO-8859-1)
 
-*Fixed Effects*
+/* Fixed Effects */
 egen entity_effects = group(upc dma_code)
 egen time_effects = group(year `3') /* same goes for month*/
 egen time_calendar = group(`3') /* same goes for month*/
 
 
 /* WEIGHTING SCHEMES */
+gen pre_vol = volume * (1 - post_merger)
+egen weights1 = total(pre_vol), by(upc)
+egen weights2 = total(pre_vol), by(dma_code)
+replace weights1 = round(weights1)
+replace weights2 = round(weights2)
 
-*gen pre_vol = volume * (1 - post_merger)
-*egen weights1 = total(pre_vol), by(upc)
-*egen weights2 = total(pre_vol), by(dma_code)
-*replace weights1 = round(weights1)
-*replace weights2 = round(weights2)
 
-
-/*CHECKED!*/
 * No Fixed-Effects
 reg lprice post_merger_merging post_merger trend, vce(cluster dma_code)
 est sto NO_FE
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE") replace
 
-/*CHECKED!*/
 * Product/Market Fixed-Effects
 areg lprice post_merger_merging post_merger trend, abs(entity_effects) vce(cluster dma_code)
 est sto PM_FE
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product FE") append
 
-/*CHECK HOW THEY TREAT SINGLETONS!*/
-/*NON-CHECKED YET*/
+
 * Product/Market and Time Fixed-Effects
 reghdfe lprice post_merger_merging, abs(entity_effects time_effects) vce(cluster dma_code) keepsingletons
 est sto PMT_FE
@@ -46,45 +44,43 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE") appen
 
 
 /********************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*      NEW SPECIFICATIONS     */
 /******************************/
 
+* Calendar Fixed-Effects
 areg lprice post_merger_merging post_merger trend, abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE") append
 
+* Dma-Specific Time Trends
 reghdfe lprice post_merger_merging post_merger, abs(dma_code##c.trend) vce(cluster dma_code)
 est sto PMT_t
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends") append
 
-/******************************/
-/******************************/
-/******************************/
 
 
-/*CHECKED!*/
+
 * No Fixed-Effects, but with Major
 reg lprice post_merger_merging post_merger post_merger_major trend, vce(cluster dma_code)
 est sto NO_FE_M
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Major") append
 
-/*CHECKED!*/
+
 * Product/market Fixed-Effects (Time Trend)
 areg lprice post_merger_merging post_merger post_merger_major trend, abs(entity_effects) vce(cluster dma_code)
 est sto PM_FE_M
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product FE, Major") append
 
-/*CHECK HOW THEY TREAT SINGLETONS!*/
-/*NON-CHECKED YET*/
+
 * Product/market and Time Fixed-Effects
 reghdfe lprice post_merger_merging post_merger_major, abs(entity_effects time_effects) vce(cluster dma_code)
 est sto PMT_FE_M
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major") append
 
 
-/******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
-/******************************/
+/*******************************/
+/*     NEW SPECIFICATIONS     */
+/*****************************/
 
 areg lprice post_merger_merging post_merger post_merger_major trend, abs(time_calendar) vce(cluster dma_code)
 est sto PMT_C_M
@@ -117,7 +113,7 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major"
 
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*      NEW SPECIFICATIONS    */
 /******************************/
 
 areg lprice post_merger_dhhi post_merger trend, abs(time_calendar) vce(cluster dma_code)
@@ -131,6 +127,115 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Tre
 /******************************/
 /******************************/
 /******************************/
+
+
+
+
+/********************************/
+/*     NAIVE SPECIFICATIONS    */
+/******************************/
+
+
+gen np_dhhi = post_merger*dhhi
+gen np_HHI = post_merger*post_hhi
+
+*No FE
+
+*No Fixed-Effects naive DHHI and post-HHI
+reg lprice post_hhi dhhi post_merger np_dhhi np_HHI trend, vce(cluster dma_code)
+est sto np_D_H
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Naive DHHI & post HHI") append
+
+*No Fixed-Effects naive post-HHI
+reg lprice post_hhi post_merger np_HHI trend, vce(cluster dma_code)
+est sto np_H
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Naive post HHI") append
+
+*No Fixed-Effects naive DHHI
+reg lprice dhhi post_merger np_dhhi trend, vce(cluster dma_code)
+est sto np_D
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Naive DHHI") append
+
+*Product/market FE
+
+*Product/market Fixed-Effects, naive DHHI and post-HHI
+areg lprice post_hhi dhhi post_merger np_dhhi np_HHI trend, abs(entity_effects) vce(cluster dma_code)
+est sto PM_FE_np_D_H
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI & post HHI") append
+
+*Product/market Fixed-Effects, naive post-HHI
+areg lprice post_hhi post_merger np_HHI trend, abs(entity_effects) vce(cluster dma_code)
+est sto PM_FE_np_H
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive post HHI") append
+
+*Product/market Fixed-Effects, naive DHHI
+areg lprice dhhi post_merger np_dhhi trend, abs(entity_effects) vce(cluster dma_code)
+est sto PM_FE_np_D
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI") append
+
+*Product/Market and Time FE
+
+*Product/market Fixed-Effects, naive DHHI and post-HHI
+reghdfe lprice np_dhhi np_HHI, abs(entity_effects time_effects) vce(cluster dma_code)
+est sto PMT_FE_np_D_H
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI & post HHI") append
+
+*Product/market Fixed-Effects, naive post-HHI
+reghdfe lprice np_HHI, abs(entity_effects time_effects) vce(cluster dma_code)
+est sto PMT_FE_np_H
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive post HHI") append
+
+*Product/market Fixed-Effects, naive DHHI
+reghdfe lprice np_dhhi, abs(entity_effects time_effects) vce(cluster dma_code)
+est sto PMT_FE_np_D
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI") append
+
+
+
+
+/******************************/
+/*      NEW SPECIFICATIONS    */
+/******************************/
+
+*Calendar Fixed-Effects, naive DHHI and post-HHI
+areg lprice post_hhi dhhi post_merger np_dhhi np_HHI trend, abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_D_H
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Naive DHHI & post HHI") append
+
+*Calendar Fixed-Effects, naive DHHI and post-HHI
+reghdfe lprice post_hhi dhhi post_merger np_dhhi np_HHI trend, abs(dma_code##c.trend) vce(cluster dma_code)
+est sto PMT_FE_t_np_D_H
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Naive DHHI & post HHI") append
+
+*Calendar Fixed-Effects, naive post-HHI
+areg lprice post_hhi post_merger np_HHI trend, abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_H
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Naive post HHI") append
+
+*Calendar Fixed-Effects, naive post-HHI
+reghdfe lprice post_hhi post_merger np_HHI trend, abs(dma_code##c.trend) vce(cluster dma_code)
+est sto PMT_FE_t_np_H
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Naive post HHI") append
+
+*Calendar Fixed-Effects, naive DHHI
+areg lprice dhhi post_merger np_dhhi trend, abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_D
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Naive DHHI") append
+
+*Calendar Fixed-Effects, naive DHHI
+reghdfe lprice dhhi post_merger np_dhhi trend, abs(dma_code##c.trend) vce(cluster dma_code)
+est sto PMT_FE_t_np_D
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Naive DHHI") append
+
+
+
+/******************************/
+/******************************/
+/******************************/
+
+
+
+
 
 
 * No Fixed-Effects, Demographics
@@ -151,7 +256,7 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Demogr
 
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_merging post_merger log_hhinc_per_person_adj trend, abs(time_calendar) vce(cluster dma_code)
@@ -183,7 +288,7 @@ est sto PMT_FE_d_M
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major, Demographics") append
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_merging post_merger post_merger_major log_hhinc_per_person_adj trend, abs(time_calendar) vce(cluster dma_code)
@@ -214,7 +319,7 @@ est sto PMT_FE_DHHI_d
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, DHHI, Demographics") append
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj, abs(time_calendar) vce(cluster dma_code)
@@ -264,7 +369,7 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE") appen
 
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_merging post_merger trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
@@ -278,6 +383,30 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Tre
 /******************************/
 /******************************/
 /******************************/
+
+
+
+/********************************/
+/*     NAIVE SPECIFICATIONS    */
+/******************************/
+
+
+reg lprice post_hhi dhhi post_merger np_dhhi np_HHI trend [aw = weights1], vce(cluster dma_code)
+est sto np_D_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Naive DHHI & post HHI") append
+
+reg lprice post_hhi post_merger np_HHI trend [aw = weights1], vce(cluster dma_code)
+est sto np_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Naive post HHI") append
+
+reg lprice dhhi post_merger np_dhhi trend [aw = weights1], vce(cluster dma_code)
+est sto np_D_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Naive DHHI") append
+
+/******************************/
+/******************************/
+/******************************/
+
 
 
 /*CHECKED!*/
@@ -301,7 +430,7 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major"
 
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_merging post_merger post_merger_major trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
@@ -335,7 +464,7 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major"
 
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_dhhi post_merger trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
@@ -349,6 +478,110 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Tre
 /******************************/
 /******************************/
 /******************************/
+
+
+
+
+/********************************/
+/*     NAIVE SPECIFICATIONS    */
+/******************************/
+
+
+gen np_dhhi = post_merger*dhhi
+gen np_HHI = post_merger*post_hhi
+
+*No FE
+
+*No Fixed-Effects naive DHHI and post-HHI
+reg lprice post_hhi dhhi post_merger np_dhhi np_HHI trend [aw = weights1], vce(cluster dma_code)
+est sto np_D_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Naive DHHI & post HHI") append
+
+*No Fixed-Effects naive post-HHI
+reg lprice post_hhi post_merger np_HHI trend [aw = weights1], vce(cluster dma_code)
+est sto np_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Naive post HHI") append
+
+*No Fixed-Effects naive DHHI
+reg lprice dhhi post_merger np_dhhi trend [aw = weights1], vce(cluster dma_code)
+est sto np_D_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Naive DHHI") append
+
+*Product/market FE
+
+*Product/market Fixed-Effects, naive DHHI and post-HHI
+areg lprice post_hhi dhhi post_merger np_dhhi np_HHI trend [aw = weights1], abs(entity_effects) vce(cluster dma_code)
+est sto PM_FE_np_D_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI & post HHI") append
+
+*Product/market Fixed-Effects, naive post-HHI
+areg lprice post_hhi post_merger np_HHI trend [aw = weights1], abs(entity_effects) vce(cluster dma_code)
+est sto PM_FE_np_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive post HHI") append
+
+*Product/market Fixed-Effects, naive DHHI
+areg lprice dhhi post_merger np_dhhi trend [aw = weights1], abs(entity_effects) vce(cluster dma_code)
+est sto PM_FE_np_D_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI") append
+
+*Product/Market and Time FE
+
+*Product/market Fixed-Effects, naive DHHI and post-HHI
+reghdfe lprice np_dhhi np_HHI [aw = weights1], abs(entity_effects time_effects) vce(cluster dma_code)
+est sto PMT_FE_np_D_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI & post HHI") append
+
+*Product/market Fixed-Effects, naive post-HHI
+reghdfe lprice np_HHI [aw = weights1], abs(entity_effects time_effects) vce(cluster dma_code)
+est sto PMT_FE_np_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive post HHI") append
+
+*Product/market Fixed-Effects, naive DHHI
+reghdfe lprice np_dhhi [aw = weights1], abs(entity_effects time_effects) vce(cluster dma_code)
+est sto PMT_FE_np_D_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI") append
+
+
+/******************************/
+/*      NEW SPECIFICATIONS    */
+/******************************/
+
+*Calendar Fixed-Effects, naive DHHI and post-HHI
+areg lprice post_hhi dhhi post_merger np_dhhi np_HHI trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_D_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Naive DHHI & post HHI") append
+
+*Calendar Fixed-Effects, naive DHHI and post-HHI
+reghdfe lprice post_hhi dhhi post_merger np_dhhi np_HHI trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_D_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Naive DHHI & post HHI") append
+
+*Calendar Fixed-Effects, naive post-HHI
+areg lprice post_hhi post_merger np_HHI trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Naive post HHI") append
+
+*Calendar Fixed-Effects, naive post-HHI
+reghdfe lprice post_hhi post_merger np_HHI trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_H_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Naive post HHI") append
+
+*Calendar Fixed-Effects, naive DHHI
+areg lprice dhhi post_merger np_dhhi trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_D_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Naive DHHI") append
+
+*Calendar Fixed-Effects, naive DHHI
+reghdfe lprice dhhi post_merger np_dhhi trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_D_w1
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Naive DHHI") append
+
+
+
+/******************************/
+/******************************/
+/******************************/
+
 
 
 * No Fixed-Effects, Demographics
@@ -369,7 +602,7 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Demogr
 
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_merging post_merger log_hhinc_per_person_adj trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
@@ -401,7 +634,7 @@ est sto PMT_FE_d_M_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major, Demographics") append
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_merging post_merger post_merger_major log_hhinc_per_person_adj trend [aw = weights1], abs(time_calendar) vce(cluster dma_code)
@@ -432,7 +665,7 @@ est sto PMT_FE_DHHI_d_w1
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, DHHI, Demographics") append
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj [aw = weights1], abs(time_calendar) vce(cluster dma_code)
@@ -482,7 +715,7 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE") appen
 
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_merging post_merger trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
@@ -496,6 +729,7 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Tre
 /******************************/
 /******************************/
 /******************************/
+
 
 
 /*CHECKED!*/
@@ -519,7 +753,7 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major"
 
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_merging post_merger post_merger_major trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
@@ -587,7 +821,7 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Demogr
 
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_merging post_merger log_hhinc_per_person_adj trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
@@ -601,6 +835,108 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Tre
 /******************************/
 /******************************/
 /******************************/
+
+
+
+
+/********************************/
+/*     NAIVE SPECIFICATIONS    */
+/******************************/
+
+
+*No FE
+
+*No Fixed-Effects naive DHHI and post-HHI
+reg lprice post_hhi dhhi post_merger np_dhhi np_HHI trend [aw = weights2], vce(cluster dma_code)
+est sto np_D_H_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Naive DHHI & post HHI") append
+
+*No Fixed-Effects naive post-HHI
+reg lprice post_hhi post_merger np_HHI trend [aw = weights2], vce(cluster dma_code)
+est sto np_H_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Naive post HHI") append
+
+*No Fixed-Effects naive DHHI
+reg lprice dhhi post_merger np_dhhi trend [aw = weights2], vce(cluster dma_code)
+est sto np_D_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("No FE, Naive DHHI") append
+
+*Product/market FE
+
+*Product/market Fixed-Effects, naive DHHI and post-HHI
+areg lprice post_hhi dhhi post_merger np_dhhi np_HHI trend [aw = weights2], abs(entity_effects) vce(cluster dma_code)
+est sto PM_FE_np_D_H_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI & post HHI") append
+
+*Product/market Fixed-Effects, naive post-HHI
+areg lprice post_hhi post_merger np_HHI trend [aw = weights2], abs(entity_effects) vce(cluster dma_code)
+est sto PM_FE_np_H_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive post HHI") append
+
+*Product/market Fixed-Effects, naive DHHI
+areg lprice dhhi post_merger np_dhhi trend [aw = weights2], abs(entity_effects) vce(cluster dma_code)
+est sto PM_FE_np_D_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI") append
+
+*Product/Market and Time FE
+
+*Product/market Fixed-Effects, naive DHHI and post-HHI
+reghdfe lprice np_dhhi np_HHI [aw = weights2], abs(entity_effects time_effects) vce(cluster dma_code)
+est sto PMT_FE_np_D_H_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI & post HHI") append
+
+*Product/market Fixed-Effects, naive post-HHI
+reghdfe lprice np_HHI [aw = weights2], abs(entity_effects time_effects) vce(cluster dma_code)
+est sto PMT_FE_np_H_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive post HHI") append
+
+*Product/market Fixed-Effects, naive DHHI
+reghdfe lprice np_dhhi [aw = weights2], abs(entity_effects time_effects) vce(cluster dma_code)
+est sto PMT_FE_np_D_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI") append
+
+
+
+/******************************/
+/*      NEW SPECIFICATIONS    */
+/******************************/
+
+*Calendar Fixed-Effects, naive DHHI and post-HHI
+areg lprice post_hhi dhhi post_merger np_dhhi np_HHI trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_D_H_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Naive DHHI & post HHI") append
+
+*Calendar Fixed-Effects, naive DHHI and post-HHI
+reghdfe lprice post_hhi dhhi post_merger np_dhhi np_HHI trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_D_H_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Naive DHHI & post HHI") append
+
+*Calendar Fixed-Effects, naive post-HHI
+areg lprice post_hhi post_merger np_HHI trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_H_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Naive post HHI") append
+
+*Calendar Fixed-Effects, naive post-HHI
+reghdfe lprice post_hhi post_merger np_HHI trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_H_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Naive post HHI") append
+
+*Calendar Fixed-Effects, naive DHHI
+areg lprice dhhi post_merger np_dhhi trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_D_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Calendar FE, Naive DHHI") append
+
+*Calendar Fixed-Effects, naive DHHI
+reghdfe lprice dhhi post_merger np_dhhi trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
+est sto PMT_FE_t_np_D_w2
+outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Trends, Naive DHHI") append
+
+
+
+/******************************/
+/******************************/
+/******************************/
+
 
 
 * No Fixed-Effects, Demographics, but with Major
@@ -619,7 +955,7 @@ est sto PMT_FE_d_M_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, Major, Demographics") append
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_merging post_merger post_merger_major log_hhinc_per_person_adj trend [aw = weights2], abs(time_calendar) vce(cluster dma_code)
@@ -650,7 +986,7 @@ est sto PMT_FE_DHHI_d_w2
 outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("Time FE, DHHI, Demographics") append
 
 /******************************/
-/*CHECK THIS NEW SPECIFICATIONS*/
+/*     NEW SPECIFICATIONS     */
 /******************************/
 
 areg lprice post_merger_dhhi post_merger trend log_hhinc_per_person_adj [aw = weights2], abs(time_calendar) vce(cluster dma_code)
