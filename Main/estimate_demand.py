@@ -154,7 +154,7 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	instrument_names = aux.get_insts_or_chars_or_nests(info_dict["Instruments"])
 
 	to_append = characteristics
-	if (nest is not None) and (nest not in characteristics):
+	if (nest is not None) and (nest not in characteristics) and (nest != 'inside'):
 		to_append.append(nest)
 
 	# Get the characteristics map
