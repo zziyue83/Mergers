@@ -487,9 +487,6 @@ outreg2 using `2'/did_stata_`3'.txt, stats(coef se pval) ctitle("DMA/Product Tre
 /******************************/
 
 
-gen np_dhhi = post_merger*dhhi
-gen np_HHI = post_merger*post_hhi
-
 *No FE
 
 *No Fixed-Effects naive DHHI and post-HHI
