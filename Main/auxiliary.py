@@ -21,15 +21,6 @@ def parse_info(code):
 		info_dict[info_name] = info_content
 	return info_dict
 
-def get_insts_or_chars_or_nests(full_string):
-	if ', ' in full_string:
-		info_list = full_string.split(', ')
-	elif ',' in full_string:
-		info_list = full_string.split(',')
-	else:
-		info_list = full_string
-	return info_list
-
 def get_groups_and_modules(full_string):
 	all_group_module = re.finditer('{(.*?),(.*?)}', full_string, re.DOTALL)
 	groups = []
@@ -200,7 +191,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 			'''
 		else:
 			sqlcode = '''
-			select df.upc, df.year, df.month, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
+			select df.upc, df.year, df.month, df.prices, df.shares, df.volume, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
 			from df
 			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
 			'''
@@ -219,7 +210,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 			'''
 		else:
 			sqlcode = '''
-			select df.upc, df.year, df.quarter, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
+			select df.upc, df.year, df.quarter, df.prices, df.shares, df.volume, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
 			from df
 			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
 			'''
