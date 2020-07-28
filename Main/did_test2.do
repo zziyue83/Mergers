@@ -12,6 +12,11 @@ log using `2'/did_stata_`3', text replace
 
 import delimited "stata_did_`3'.csv", encoding(ISO-8859-1)
 
+/*Install Packages*/
+
+ssc install outreg2
+ssc install reghdfe
+
 /* Fixed Effects */
 egen entity_effects = group(upc dma_code)
 egen time_effects = group(year `3') /* same goes for month*/
