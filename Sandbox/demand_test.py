@@ -10,6 +10,7 @@ import pyhdfe
 import statsmodels.api as sm
 import pickle
 import scipy.sparse as sp
+#import knitro
 
 def recover_fixed_effects(fe_columns, fe_vals, omit_constant = True):
 	# If there's only one FE, then this is easy
@@ -145,12 +146,12 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 
 def gather_product_data(code, month_or_quarter = 'month'):
 	info_dict = aux.parse_info(code)
-	characteristics = aux.get_insts_or_chars_or_nests(info_dict["Characteristics"])
+	characteristics_ls = aux.get_insts_or_chars_or_nests(info_dict["Characteristics"])
 	nest = aux.get_insts_or_chars_or_nests(info_dict["Nest"])
-	instrument_names = aux.get_insts_or_chars_or_nests(info_dict["Instruments"])
+	instrument_ls = aux.get_insts_or_chars_or_nests(info_dict["Instruments"])
 
-	to_append = characteristics
-	if (nest is not None) and (nest not in characteristics) and (nest != 'inside'):
+	to_append = characteristics_ls
+	if (nest is not None) and (nest not in characteristics_ls) and (nest != 'inside'):
 		to_append.append(nest)
 
 	# Get the characteristics map
@@ -163,9 +164,9 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	print(df.shape)
 	df = add_characteristics(code, df, char_map, to_append)
 	print(df.shape)
-	df, num_instruments, add_differentiation, add_blp = add_instruments(code, df, instrument_names, month_or_quarter)
+	df, num_instruments, add_differentiation, add_blp = add_instruments(code, df, instrument_ls, month_or_quarter)
 
-	return df, characteristics, nest, num_instruments, add_differentiation, add_blp	
+	return df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp	
 
 def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month',
 	num_instruments = 0, add_differentiation = False, add_blp = False):
@@ -202,7 +203,7 @@ def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month'
 		else:
 			df['nesting_ids'] = df[nests]
 
-	return formulation_char, formulation_fe, df, num_char
+	return formulation_char, formulation_fe, df, num_chars
 
 def get_partial_f(df, chars, nests, month_or_quarter):
 
@@ -251,7 +252,7 @@ def write_to_file(results, code, filepath):
 		pickle.dump(results.to_dict(), fout)
 
 def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', linear_fe = True,
-	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = True,
+	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = False,
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
 
 	# First get the formulations
@@ -263,7 +264,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 	if use_knitro:
 		optimization = pyblp.Optimization('knitro', method_options = {'knitro_dir' : '/software/knitro/10.3'})
 	else:
-		optimization = pyblp.Optimization('l-bgfs-b')
+		optimization = pyblp.Optimization('l-bfgs-b')
 
 	# Estimate
 	if estimate_type == 'logit':
@@ -277,9 +278,8 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 		fixed_effects = df[['upc',month_or_quarter,'dma_code']]
 		alg = pyhdfe.create(fixed_effects, drop_singletons = False)
 		characteristics_resid = alg.residualize(characteristics_mat)
-		characteristics_resid = sm.add_constant(characteristics_resid)
+		characteristics_resid = sm.add_constant(characteristics_resid) # need it??
 		instruments_resid = alg.residualize(instruments_mat)
-		instruments_resid = np.concatenate((characteristics_resid, instruments_resid), axis = 1)
 
 
 		#estimate nested-logit with upc fixed-effects
@@ -297,14 +297,14 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				df['log_within_nest_shares_resid'] = endog_resid[:, [2]]
 
 				dependent = df['shares_resid']
-				endogenous = df['prices_resid', 'log_within_nest_shares_resid']
-				instruments = df['instruments_resid']	#this is an issue because of dimensions of inst_resid...
-
+				endogenous = df[['prices_resid', 'log_within_nest_shares_resid']]
+				# instruments = df['instruments_resid']	#this is an issue because of dimensions of inst_resid...
 
 				#Regress endog_resid on instruments_resid
-				results = IV2SLS(dependent=dependent,
+				'''results = IV2SLS(dependent=dependent,
 								endog=endogenous, 		#no exog??
-								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])
+								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])'''
+				results = IV2SLS(dependent=dependent,endog=endogenous,instruments=instruments_resid).fit(cov_type='clustered', clusters=df['dma_code'])
 
 
 			#logit with upc fixed effects
@@ -319,11 +319,12 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				dependent = df['shares_resid']
 				endogenous = df['prices_resid']
-				instruments = df['instruments_resid']	#this is an issue as well since instruments_resid is other dimension
+				# instruments = df['instruments_resid']	#this is an issue as well since instruments_resid is other dimension
 
-				results = IV2SLS(dependent=dependent,
+				'''results = IV2SLS(dependent=dependent,
 								endog=endogenous,	#no exog??
-								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])
+								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])'''
+				results = IV2SLS(dependent=dependent,endog=endogenous,instruments=instruments_resid).fit(cov_type='clustered', clusters=df['dma_code'])
 
 
 		#estimate nested logit with characteristics
@@ -343,15 +344,15 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				dependent = df['shares_resid']
 				endogenous = df['prices_resid', 'log_within_nest_shares_resid']
-				exogenous = df['characteristics_resid'] #this is an issue since char_resid has more dimensions
-				instruments = df['instruments_resid']	#this is an issue as well
-
+				# exogenous = df['characteristics_resid'] #this is an issue since char_resid has more dimensions
+				# instruments = df['instruments_resid']	#this is an issue as well
 
 				#Regress endog_resid on instruments_resid
-				results = IV2SLS(dependent=dependent,
+				'''results = IV2SLS(dependent=dependent,
 								exog=exogenous,
 								endog=endogenous,
-								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])
+								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])'''
+				results = IV2SLS(dependent=dependent,exog=characteristics_resid,endog=endogenous,instruments=instruments_resid).fit(cov_type='clustered', clusters=df['dma_code'])
 
 
 			#logit with product characteristics
@@ -366,16 +367,17 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				dependent = df['shares_resid']
 				endogenous = df['prices_resid']
-				exogenous = df['characteristics_resid'] #this is an issue since char_resid has more dimensiones
-				instruments = df['instruments_resid']	#this is an issue as well since instruments_resid is other dimension
 
-				results = IV2SLS(dependent=dependent,
+				# exogenous = df['characteristics_resid'] #this is an issue since char_resid has more dimensiones
+				# instruments = df['instruments_resid']	#this is an issue as well since instruments_resid is other dimension
+
+				'''results = IV2SLS(dependent=dependent,
 								exog=exogenous,
 								endog=endogenous,
-								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])
-
-
-
+								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])'''
+				results = IV2SLS(dependent=dependent,exog=characteristics_resid,endog=endogenous,instruments=instruments_resid).fit(cov_type='clustered', clusters=df['dma_code'])
+		
+		print(results)
 		return results
 
 
@@ -407,21 +409,19 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 
 
-
-
 code = sys.argv[1]
 month_or_quarter = sys.argv[2]
 estimate_type = sys.argv[3]
 
-log_out = open('../../../All/m_' + code + '/output/estimate_demand.log', 'w')
-log_err = open('../../../All/m_' + code + '/output/estimate_demand.err', 'w')
-sys.stdout = log_out
-sys.stderr = log_err
+#log_out = open('../../../All/m_' + code + '/output/estimate_demand.log', 'w')
+#log_err = open('../../../All/m_' + code + '/output/estimate_demand.err', 'w')
+#sys.stdout = log_out
+#sys.stderr = log_err
 
-df, characteristics, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
+df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
 print(df.shape)
-estimate_demand(code, df, chars = characteristics, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
+estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
 	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = True)
 
-log_out.close()
-log_err.close()
+#log_out.close()
+#log_err.close()
