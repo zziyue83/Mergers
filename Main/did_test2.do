@@ -3,6 +3,8 @@ clear all
 
 set more off
 
+est clear
+
 /* *args: input_path       = `1' */
 /* *args: output_path      = `2' */
 /* *args: month_or_quarter = `3' */
