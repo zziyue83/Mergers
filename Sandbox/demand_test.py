@@ -251,6 +251,18 @@ def write_to_file(results, code, filepath):
 	with open('../../../All/m_' + code + '/output/' + filepath + '.p', 'wb') as fout:
 		pickle.dump(results.to_dict(), fout)
 
+'''
+The LHS should be log(share) - log(outside share) rather than share.
+So we'll have to first compute log(share) - log(outside share).
+Then, we'll residualize that variable, as well as prices and within-nest share.
+We'll need to correct the standard errors for lost degrees of freedom (see here).
+I also think we should just be using robust standard errors rather than clustering by DMA.
+
+so we'll want to add up the share of products by market/time rather than just market
+so by DMA code and either quarter/year or month/year
+yes, log(s_jt) - log(s_0t) is as you described it
+'''
+
 def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', linear_fe = True,
 	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = False,
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
@@ -266,117 +278,121 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 	else:
 		optimization = pyblp.Optimization('l-bfgs-b')
 
-	# Estimate
+	# Estimate logit - nested logit
 	if estimate_type == 'logit':
 
-		# set up variables
-		characteristics_mat = df[chars].to_numpy()
-		filter_col = [col for col in df if col.startswith('demand_instruments')]
-		instruments_mat = df[filter_col].to_numpy()
 
-		# Initialize demeaning algorithm and demean variables
-		fixed_effects = df[['upc',month_or_quarter,'dma_code']]
-		alg = pyhdfe.create(fixed_effects, drop_singletons = False)
-		characteristics_resid = alg.residualize(characteristics_mat)
-		characteristics_resid = sm.add_constant(characteristics_resid) # need it??
-		instruments_resid = alg.residualize(instruments_mat)
-
-
-		#estimate nested-logit with upc fixed-effects
+		#upc fixed-effects specs
 		if linear_fe:
+
+			# set up variables
+			characteristics_mat = df[chars].to_numpy()
+			filter_col = [col for col in df if col.startswith('demand_instruments')]
+			instruments_mat = df[filter_col].to_numpy()
+
+			# Initialize demeaning algorithm and demean variables (upc dma time - FE).
+			fixed_effects = df[['upc', month_or_quarter, 'dma_code']] #for linear_fe specs
+			alg = pyhdfe.create(fixed_effects, drop_singletons = False)
+			characteristics_resid = alg.residualize(characteristics_mat)
+			characteristics_resid = sm.add_constant(characteristics_resid)
+			instruments_resid = alg.residualize(instruments_mat)
+
+			#nested logit
 			if nests is not None:
 
+				df['outside_share'] = 1 - df.groupby(['market_ids'])['shares'].transform('sum')
 				df['total_nest_shares'] = df.groupby(['market_ids','nesting_ids'])['shares'].transform('sum')
 				df['log_within_nest_shares'] = np.log(df['shares']/df['total_nest_shares'])
-				endog_mat = df[['prices', 'shares', 'log_within_nest_shares']].to_numpy()
+				df['logsj_logs0'] = np.log(df['shares']) - np.log(df['outside_share']) #our RHS variable
 
+				endog_mat = df[['prices', 'logsj_logs0', 'log_within_nest_shares']].to_numpy()
 				endog_resid = alg.residualize(endog_mat)
 
-				df['shares_resid'] = endog_resid[:, [1]]
+				df['logsj_logs0_resid'] = endog_resid[:, [1]] #RHS residualized
 				df['prices_resid'] = endog_resid[:, [0]]
 				df['log_within_nest_shares_resid'] = endog_resid[:, [2]]
 
-				dependent = df['shares_resid']
+				dependent = df['logsj_logs0_resid']
 				endogenous = df[['prices_resid', 'log_within_nest_shares_resid']]
-				# instruments = df['instruments_resid']	#this is an issue because of dimensions of inst_resid...
 
-				#Regress endog_resid on instruments_resid
-				'''results = IV2SLS(dependent=dependent,
-								endog=endogenous, 		#no exog??
-								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])'''
-				results = IV2SLS(dependent=dependent,endog=endogenous,instruments=instruments_resid).fit(cov_type='clustered', clusters=df['dma_code'])
+				results = IV2SLS(dependent=dependent, exog=, endog=endogenous, instruments=instruments_resid)
+				se = results.fit(cov_type='robust')
+				se_adjusted = np.sqrt(np.square(se) * result.df_resid / (result.df_resid - algorithm.degrees)) #dof adjustments
 
 
-			#logit with upc fixed effects
+			#logit
 			else:
 
-				endog_mat = df[['prices', 'shares']].to_numpy()
-
+				endog_mat = df[['prices', 'logsj_logs0']].to_numpy()
 				endog_resid = alg.residualize(endog_mat)
 
-				df['shares_resid'] = endog_resid[:, [1]]
+				df['logsj_logs0_resid'] = endog_resid[:, [1]]
 				df['prices_resid'] = endog_resid[:, [0]]
 
-				dependent = df['shares_resid']
+				dependent = df['logsj_logs0_resid']
 				endogenous = df['prices_resid']
-				# instruments = df['instruments_resid']	#this is an issue as well since instruments_resid is other dimension
 
-				'''results = IV2SLS(dependent=dependent,
-								endog=endogenous,	#no exog??
-								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])'''
-				results = IV2SLS(dependent=dependent,endog=endogenous,instruments=instruments_resid).fit(cov_type='clustered', clusters=df['dma_code'])
+				results = IV2SLS(dependent=dependent, exog=, endog=endogenous, instruments=instruments_resid)
+				se = results.fit(cov_type='robust')
+				se_adjusted = np.sqrt(np.square(se) * result.df_resid / (result.df_resid - algorithm.degrees)) #dof adjustments
 
 
-		#estimate nested logit with characteristics
+		#characteristics specs
 		else:
+
+			# set up variables
+			characteristics_mat = df[chars].to_numpy()
+			filter_col = [col for col in df if col.startswith('demand_instruments')]
+			instruments_mat = df[filter_col].to_numpy()
+
+			# Initialize demeaning algorithm and demean variables (dma time - FE).
+			fixed_effects = df[[month_or_quarter, 'dma_code']] #no upc FE here
+			alg = pyhdfe.create(fixed_effects, drop_singletons = False)
+			characteristics_resid = alg.residualize(characteristics_mat)
+			characteristics_resid = sm.add_constant(characteristics_resid)
+			instruments_resid = alg.residualize(instruments_mat)
+
+			#nested logit
 			if nests is not None:
 
+				df['outside_share'] = 1 - df.groupby(['market_ids'])['shares'].transform('sum')
 				df['total_nest_shares'] = df.groupby(['market_ids','nesting_ids'])['shares'].transform('sum')
 				df['log_within_nest_shares'] = np.log(df['shares']/df['total_nest_shares'])
-				endog_mat = df[['prices', 'shares', 'log_within_nest_shares']].to_numpy()
+				df['logsj_logs0'] = np.log(df['shares']) - np.log(df['outside_share']) #our RHS variable
 
+				endog_mat = df[['prices', 'logsj_logs0', 'log_within_nest_shares']].to_numpy()
 				endog_resid = alg.residualize(endog_mat)
 
 				#Regress endog_resid on instruments_resid
-				df['shares_resid'] = endog_resid[:, [1]]
+				df['logsj_logs0_resid'] = endog_resid[:, [1]]
 				df['prices_resid'] = endog_resid[:, [0]]
 				df['log_within_nest_shares_resid'] = endog_resid[:, [2]]
 
-				dependent = df['shares_resid']
+				dependent = df['logsj_logs0_resid']
 				endogenous = df['prices_resid', 'log_within_nest_shares_resid']
-				# exogenous = df['characteristics_resid'] #this is an issue since char_resid has more dimensions
-				# instruments = df['instruments_resid']	#this is an issue as well
 
-				#Regress endog_resid on instruments_resid
-				'''results = IV2SLS(dependent=dependent,
-								exog=exogenous,
-								endog=endogenous,
-								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])'''
-				results = IV2SLS(dependent=dependent,exog=characteristics_resid,endog=endogenous,instruments=instruments_resid).fit(cov_type='clustered', clusters=df['dma_code'])
+				results = IV2SLS(dependent=dependent, exog=characteristics_resid, endog=endogenous, instruments=instruments_resid)
+				se = results.fit(cov_type='robust')
+				se_adjusted = np.sqrt(np.square(se) * result.df_resid / (result.df_resid - algorithm.degrees)) #dof adjustments
 
 
-			#logit with product characteristics
+			#logit
 			else:
 
-				endog_mat = df[['prices', 'shares']].to_numpy()
-
+				endog_mat = df[['prices', 'logsj_logs0']].to_numpy()
 				endog_resid = alg.residualize(endog_mat)
 
-				df['shares_resid'] = endog_resid[:, [1]]
+				df['logsj_logs0_resid'] = endog_resid[:, [1]]
 				df['prices_resid'] = endog_resid[:, [0]]
 
-				dependent = df['shares_resid']
+				dependent = df['logsj_logs0_resid']
 				endogenous = df['prices_resid']
 
-				# exogenous = df['characteristics_resid'] #this is an issue since char_resid has more dimensiones
-				# instruments = df['instruments_resid']	#this is an issue as well since instruments_resid is other dimension
+				results = IV2SLS(dependent=dependent, exog=characteristics_resid, endog=endogenous, instruments=instruments_resid)
+				se = results.fit(cov_type='robust')
+				se_adjusted = np.sqrt(np.square(se) * result.df_resid / (result.df_resid - algorithm.degrees)) #dof adjustments
 
-				'''results = IV2SLS(dependent=dependent,
-								exog=exogenous,
-								endog=endogenous,
-								instruments=instruments).fit(cov_type='clustered', clusters=df['dma_code'])'''
-				results = IV2SLS(dependent=dependent,exog=characteristics_resid,endog=endogenous,instruments=instruments_resid).fit(cov_type='clustered', clusters=df['dma_code'])
-		
+
 		print(results)
 		return results
 
