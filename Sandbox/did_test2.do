@@ -16,9 +16,9 @@ import delimited "stata_did_`3'.csv", encoding(ISO-8859-1)
 
 /*Install Packages*/
 
-*ssc install outreg2
-*ssc install ftools
-*ssc install reghdfe
+ssc install outreg2
+ssc install ftools
+ssc install reghdfe
 
 /* Fixed Effects */
 egen entity_effects = group(upc dma_code)
@@ -66,7 +66,7 @@ est sto PMT_t
 outreg2 using `2'/did_stata_`3'_nw.txt, stats(coef se pval) ctitle("DMA/Product Trends") append
 
 
-
+*MAJOR*
 
 * No Fixed-Effects, but with Major
 reg lprice post_merger_merging post_merger post_merger_major trend, vce(cluster dma_code)
@@ -102,7 +102,7 @@ outreg2 using `2'/did_stata_`3'_nw.txt, stats(coef se pval) ctitle("DMA/Product 
 /******************************/
 /******************************/
 
-
+*DHHI
 
 * No Fixed-Effects, DHHI
 reg lprice post_merger_dhhi post_merger trend, vce(cluster dma_code)
@@ -137,11 +137,7 @@ outreg2 using `2'/did_stata_`3'_nw.txt, stats(coef se pval) ctitle("DMA/Product 
 /******************************/
 
 
-
-
-/********************************/
-/*     NAIVE SPECIFICATIONS    */
-/******************************/
+*NAIVE SPECIFICATIONS
 
 
 gen np_dhhi = post_merger*dhhi
@@ -199,10 +195,6 @@ est sto PMT_FE_np_D
 outreg2 using `2'/did_stata_`3'_nw.txt, stats(coef se pval) ctitle("DMA/Products FE, Naive DHHI") append
 
 
-
-
-/******************************/
-/*      NEW SPECIFICATIONS    */
 /******************************/
 
 *Calendar Fixed-Effects, naive DHHI and post-HHI
