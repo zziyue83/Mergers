@@ -263,7 +263,7 @@ so by DMA code and either quarter/year or month/year
 yes, log(s_jt) - log(s_0t) is as you described it
 '''
 
-def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', linear_fe = True,
+def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', linear_fe = False,
 	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = False,
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
 
@@ -290,13 +290,11 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 			filter_col = [col for col in df if col.startswith('demand_instruments')]
 			instruments_mat = df[filter_col].to_numpy()
 
-			# Initialize demeaning algorithm and demean variables (upc dma time - FE).
-			fixed_effects = df[['upc', month_or_quarter, 'dma_code']] #for linear_fe specs
+			# Initialize demeaning algorithm and demean variables (upc dma - FE).
+			fixed_effects = df[['upc', 'dma_code']] #loosen FE for now
 			alg = pyhdfe.create(fixed_effects, drop_singletons = False)
-			characteristics_resid = alg.residualize(characteristics_mat)
-			characteristics_resid = sm.add_constant(characteristics_resid)
 			instruments_resid = alg.residualize(instruments_mat)
-
+			
 			#nested logit
 			if nests is not None:
 
@@ -312,12 +310,12 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				df['prices_resid'] = endog_resid[:, [0]]
 				df['log_within_nest_shares_resid'] = endog_resid[:, [2]]
 
+				month_or_quarter = df[month_or_quarter]
 				dependent = df['logsj_logs0_resid']
 				endogenous = df[['prices_resid', 'log_within_nest_shares_resid']]
 
-				results = IV2SLS(dependent=dependent, exog=, endog=endogenous, instruments=instruments_resid)
-				se = results.fit(cov_type='robust')
-				se_adjusted = np.sqrt(np.square(se) * result.df_resid / (result.df_resid - algorithm.degrees)) #dof adjustments
+				results = IV2SLS(dependent=dependent, exog=month_or_quarter, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
+				se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
 
 
 			#logit
@@ -329,12 +327,12 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				df['logsj_logs0_resid'] = endog_resid[:, [1]]
 				df['prices_resid'] = endog_resid[:, [0]]
 
+				month_or_quarter = df[month_or_quarter]
 				dependent = df['logsj_logs0_resid']
 				endogenous = df['prices_resid']
 
-				results = IV2SLS(dependent=dependent, exog=, endog=endogenous, instruments=instruments_resid)
-				se = results.fit(cov_type='robust')
-				se_adjusted = np.sqrt(np.square(se) * result.df_resid / (result.df_resid - algorithm.degrees)) #dof adjustments
+				results = IV2SLS(dependent=dependent, exog=month_or_quarter, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
+				se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
 
 
 		#characteristics specs
@@ -369,11 +367,10 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				df['log_within_nest_shares_resid'] = endog_resid[:, [2]]
 
 				dependent = df['logsj_logs0_resid']
-				endogenous = df['prices_resid', 'log_within_nest_shares_resid']
+				endogenous = df[['prices_resid', 'log_within_nest_shares_resid']]
 
-				results = IV2SLS(dependent=dependent, exog=characteristics_resid, endog=endogenous, instruments=instruments_resid)
-				se = results.fit(cov_type='robust')
-				se_adjusted = np.sqrt(np.square(se) * result.df_resid / (result.df_resid - algorithm.degrees)) #dof adjustments
+				results = IV2SLS(dependent=dependent, exog=characteristics_resid, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
+				se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
 
 
 			#logit
@@ -388,12 +385,10 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				dependent = df['logsj_logs0_resid']
 				endogenous = df['prices_resid']
 
-				results = IV2SLS(dependent=dependent, exog=characteristics_resid, endog=endogenous, instruments=instruments_resid)
-				se = results.fit(cov_type='robust')
-				se_adjusted = np.sqrt(np.square(se) * result.df_resid / (result.df_resid - algorithm.degrees)) #dof adjustments
-
-
+				results = IV2SLS(dependent=dependent, exog=characteristics_resid, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
+				se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
 		print(results)
+		print(se_adjusted)
 		return results
 
 
@@ -437,7 +432,7 @@ estimate_type = sys.argv[3]
 df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
 print(df.shape)
 estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
-	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = True)
+	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = False)
 
 #log_out.close()
 #log_err.close()

@@ -259,7 +259,7 @@ def adjust_inflation(df, all_vars, month_or_quarter, rename_var = True):
 	df = df.drop(['cpiu_201001', 'cpiu'], axis = 1)
 	return df
 
-def load_problem_results(code, results_pickle, month_or_quarter):
+'''def load_problem_results(code, results_pickle, month_or_quarter):
 
 	# Create fake formulation that is just a logit
 	product_data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
@@ -286,4 +286,4 @@ def load_problem_results(code, results_pickle, month_or_quarter):
 		setattr(results, k, results_dict[k])
 
 
-	return results, df
+	return results, df'''
