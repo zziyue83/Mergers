@@ -22,13 +22,13 @@ def parse_info(code):
 	return info_dict
 
 def get_insts_or_chars_or_nests(full_string):
-	if ', ' in full_string:
-		info_list = full_string.split(', ')
-	elif ',' in full_string:
-		info_list = full_string.split(',')
-	else:
-		info_list = full_string
-	return info_list
+ 	if ', ' in full_string:
+ 		info_list = full_string.split(', ')
+ 	elif ',' in full_string:
+ 		info_list = full_string.split(',')
+ 	else:
+ 		info_list = full_string
+ 	return info_list
 
 def get_groups_and_modules(full_string):
 	all_group_module = re.finditer('{(.*?),(.*?)}', full_string, re.DOTALL)
@@ -142,7 +142,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 
 	# Throw error if (1) dates don't span the entirety of the sample period or
 	# (2) ownership dates overlap
-	brand_to_owner_test = brand_to_owner.copy().reset_index()
+	brand_to_owner_test = brand_to_owner.copy()
 	brand_to_owner_test = brand_to_owner_test.sort_values(by=['brand_code_uc', 'start_year', 'start_month'])
 
 	if month_or_quarter == 'month':
@@ -200,7 +200,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 			'''
 		else:
 			sqlcode = '''
-			select df.upc, df.year, df.month, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
+			select df.upc, df.year, df.month, df.prices, df.shares, df.volume, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
 			from df
 			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
 			'''
@@ -219,7 +219,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 			'''
 		else:
 			sqlcode = '''
-			select df.upc, df.year, df.quarter, df.prices, df.shares, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
+			select df.upc, df.year, df.quarter, df.prices, df.shares, df.volume, df.dma_code, df.brand_code_uc, df.sales, brand_to_owner.owner
 			from df
 			inner join brand_to_owner on df.brand_code_uc=brand_to_owner.brand_code_uc AND df.date >= brand_to_owner.start_date AND df.date <= brand_to_owner.end_date
 			'''
@@ -259,7 +259,7 @@ def adjust_inflation(df, all_vars, month_or_quarter, rename_var = True):
 	df = df.drop(['cpiu_201001', 'cpiu'], axis = 1)
 	return df
 
-'''def load_problem_results(code, results_pickle, month_or_quarter):
+def load_problem_results(code, results_pickle, month_or_quarter):
 
 	# Create fake formulation that is just a logit
 	product_data = pd.read_csv(pyblp.data.NEVO_PRODUCTS_LOCATION)
@@ -286,4 +286,4 @@ def adjust_inflation(df, all_vars, month_or_quarter, rename_var = True):
 		setattr(results, k, results_dict[k])
 
 
-	return results, df'''
+	return results, df
