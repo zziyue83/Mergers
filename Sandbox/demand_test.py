@@ -251,17 +251,7 @@ def write_to_file(results, code, filepath):
 	with open('../../../All/m_' + code + '/output/' + filepath + '.p', 'wb') as fout:
 		pickle.dump(results.to_dict(), fout)
 
-'''
-The LHS should be log(share) - log(outside share) rather than share.
-So we'll have to first compute log(share) - log(outside share).
-Then, we'll residualize that variable, as well as prices and within-nest share.
-We'll need to correct the standard errors for lost degrees of freedom (see here).
-I also think we should just be using robust standard errors rather than clustering by DMA.
 
-so we'll want to add up the share of products by market/time rather than just market
-so by DMA code and either quarter/year or month/year
-yes, log(s_jt) - log(s_0t) is as you described it
-'''
 
 def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', linear_fe = False,
 	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = False,
@@ -294,7 +284,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 			fixed_effects = df[['upc', 'dma_code']] #loosen FE for now
 			alg = pyhdfe.create(fixed_effects, drop_singletons = False)
 			instruments_resid = alg.residualize(instruments_mat)
-			
+
 			#nested logit
 			if nests is not None:
 
