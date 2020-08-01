@@ -191,7 +191,6 @@ def get_major_competitor(df, ownership_groups = None):
 	print(major_competitor)
 	return major_competitor
 
-
 def did(df, merging_date, merging_parties, major_competitor = None, month_or_quarter = 'month'):
 
 	# Pull merger year and merger month (or quarter)
@@ -244,7 +243,6 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 	if use_stata:
 		data.to_csv('../../../All/m_' + code + '/intermediate/stata_did_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8', index = False)
 
-
 		dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/did_test2.do"
 		DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
 		path_input = "../../../All/m_" + code + "/intermediate"
@@ -253,10 +251,13 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 
 		subprocess.call(cmd)
 
-		read_file = pd.read_csv(path_input + "/"+ path_output + "did_stata_" + timetype + ".txt", sep = "\t")
-		read_file = read_file.replace(np.nan, '', regex=True)
-		read_file.to_csv(path_input + "/" + path_output + "did_stata_" + timetype + ".csv", index=None)
+		estimate_type = ['0', '1', '2', '3']
 
+		for est_type in estimate_type:
+
+			read_file = pd.read_csv(path_input + "/"+ path_output + "did_stata_" + timetype + '_' + est_type + ".txt", sep = "\t")
+			read_file = read_file.replace(np.nan, '', regex=True)
+			read_file.to_csv(path_input + "/" + path_output + "did_stata_" + timetype + '_' + est_type + ".csv", index=None)
 
 
 
