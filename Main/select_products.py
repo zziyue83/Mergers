@@ -66,11 +66,34 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	min_quarter = np.ceil(min_month/3)
 	max_quarter = np.ceil(max_month/3)
 
+	#manual fix for baby strained food
 	if ((code=='1817013020_3') & (max_year > 2008)):
 		max_year = 2008
 		max_month = 12
 		max_quarter = 4
 		years = list(filter(lambda x: int(x) <= 2008, years))
+
+	#manual fix for bread
+	if ((code=='2203820020_1') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+	#manual fix for buns
+	if ((code=='2203820020_2') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+
+	#manual fix for rolls
+	if ((code=='2203820020_3') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2012, years))
 
 	area_time_upc_list = []
 	product_map = aux.get_product_map(list(set(groups)))
