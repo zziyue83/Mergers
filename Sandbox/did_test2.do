@@ -127,7 +127,7 @@ reghdfe lprice post_merger_dhhi post_merger trend [aw = weights_`x'], abs(time_c
 est sto PMT_C_DHHI_`x'
 outreg2 using `2'/did_stata_`3'_`x'.txt, stats(coef se pval) ctitle("Calendar FE, DHHI") append
 
-reghdfe lprice post_merger_dhhi post_merger dma_code##c.trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+reghdfe lprice post_merger_dhhi post_merger dma_code#c.trend trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
 est sto PMT_t_DHHI_`x'
 outreg2 using `2'/did_stata_`3'_`x'.txt, stats(coef se pval) ctitle("DMA/Product Trends, DHHI") append
 
