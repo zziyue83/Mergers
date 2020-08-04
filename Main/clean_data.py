@@ -42,5 +42,30 @@ def clean_data(code, df):
 		df.loc[(df.size1_amount == 35) & (df.multi == 1 )& (df.size1_units == 'OZ'), 'size1_amount'] = 0.35
 		df.loc[(df.size1_amount == 150) & (df.multi == 1 )& (df.size1_units == 'OZ'), 'size1_amount'] = 0.15
 
+	elif code == '3035705020_8':
+		# These are data issues on lipsticks
+		df.loc[(1 < df.size1_amount <100) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/10
+		df.loc[(df.size1_amount >= 100) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/100
+
+	elif code == '3035705020_10':
+		# These are data issues on blushers
+		df.loc[(df.size1_amount > 1.99) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/10
+
 
 	return df
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
