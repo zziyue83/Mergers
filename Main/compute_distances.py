@@ -270,7 +270,7 @@ def geocoding_locations(code, locations, netid):
     locations['lon'] = locations['location'].map(geocoded_locations['lon'])
     return locations
 
-def compute_distances(code, netid, month_or_quarter = 'quarter'):
+def compute_distances(code, netid, month_or_quarter = 'month'):
     locations = pd.read_csv('../../../All/m_' + code + '/properties/locations.csv')
     locations = geocoding_locations(code, locations, netid)
     locations['owner-brand'] = locations['owner'] + ' ' + locations['brand_code_uc'].astype(str)
@@ -278,7 +278,7 @@ def compute_distances(code, netid, month_or_quarter = 'quarter'):
 
     # get all upcs-dma pair and add brand_code_uc and owner
     df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv')
-    df = df.groupby(['upc','dma_code','year',month_or_quarter], as_index=False).agg({'prices':'first','shares':'first','sales':'first'})
+    df = df.groupby(['upc','dma_code','year',month_or_quarter], as_index=False).agg({'prices':'first','shares':'first','sales':'first','volume':'first'})
     df = aux.append_owners(code, df, month_or_quarter)
     
     df['owner-brand'] = df['owner'] + ' ' + df['brand_code_uc'].astype(str)

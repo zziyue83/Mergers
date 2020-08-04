@@ -7,6 +7,7 @@ import unicodecsv as csv
 import auxiliary as aux
 from datetime import datetime
 from linearmodels.panel import compare
+import subprocess
 
 def append_aggregate_demographics(df, month_or_quarter):
 
@@ -190,7 +191,6 @@ def get_major_competitor(df, ownership_groups = None):
 	print(major_competitor)
 	return major_competitor
 
-
 def did(df, merging_date, merging_parties, major_competitor = None, month_or_quarter = 'month'):
 
 	# Pull merger year and merger month (or quarter)
@@ -242,6 +242,25 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 	use_stata = True
 	if use_stata:
 		data.to_csv('../../../All/m_' + code + '/intermediate/stata_did_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8', index = False)
+
+		dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/did_test2.do"
+		DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
+		path_input = "../../../All/m_" + code + "/intermediate"
+		path_output = "../output/"
+		cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter]
+
+		subprocess.call(cmd)
+
+		estimate_type = ['0', '1', '2', '3']
+
+		for est_type in estimate_type:
+
+			read_file = pd.read_csv(path_input + "/"+ path_output + "did_stata_" + timetype + '_' + est_type + ".txt", sep = "\t")
+			read_file = read_file.replace(np.nan, '', regex=True)
+			read_file.to_csv(path_input + "/" + path_output + "did_stata_" + timetype + '_' + est_type + ".csv", index=None)
+
+
+
 	else:
 		with open('../../../All/m_' + code + '/output/did_' + month_or_quarter + '.csv', "wb") as csvfile:
 			header = ["model","post_merger*merging", "post_merger*merging_se", "post_merger*merging_pval", \
