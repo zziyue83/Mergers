@@ -21,7 +21,7 @@ def clean_data(code, df):
 		df.loc[df.size1_units == 'CT', 'size1_amount'] = df.size1_amount[df.size1_units == 'CT'] * 3.75
 		df.loc[df.size1_units == 'CT', 'size1_units'] = 'OZ'
 
-	elif code == '2735179020_11':
+	elif (code == '2735179020_11' or code == '3035705020_12'):
 		# This is a typo on eyeliner
 		df.loc[(df.multi * df.size1_amount == 39) & (df.size1_units == 'OZ'), 'size1_amount'] = 0.039
 
@@ -50,6 +50,11 @@ def clean_data(code, df):
 	elif code == '3035705020_10':
 		# These are data issues on blushers
 		df.loc[(df.size1_amount > 1.99) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/10
+
+	elif code == '3035705020_10':
+		# These are data issues on concealers
+		df.loc[(6 < df.size1_amount < 10) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/10
+		df.loc[(df.size1_amount > 10) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/100
 
 
 	return df
