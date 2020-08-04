@@ -14,7 +14,7 @@ def clean_data(code, df):
 
 	elif code == '2614332020_1':
 		# These should be counts of cigarettes
-		df.loc[(df.multi * df.size1_amount == 200) & (df.size1_units == 'OZ'), 'size1_units'] = 'CT'	
+		df.loc[(df.multi * df.size1_amount == 200) & (df.size1_units == 'OZ'), 'size1_units'] = 'CT'
 
 	elif code == '2736521020_1':
 		# These are pickle-in-a-pouch-type things (not comparable to 1 jar)
@@ -29,6 +29,18 @@ def clean_data(code, df):
 		# These are typos in sizes and units of hair accesories
 		df.loc[(df.multi * df.size1_amount == 4.6) & (df.size1_units == 'OZ'), 'size1_amount'] = 4
 		df.loc[(df.multi * df.size1_amount == 0.005) & (df.size1_units == 'OZ'), 'size1_amount'] = 5
-		df.loc[df.size1_units == 'OZ', 'size1_units'] = 'CT'	
+		df.loc[df.size1_units == 'OZ', 'size1_units'] = 'CT'
+
+	elif code == '3035705020_5':
+		# These are small data isses on eye shadows
+		df.loc[(df.multi * df.size1_amount == 32) & (df.size1_units == 'OZ'), 'size1_amount'] = 0.32
+
+	elif code == '3035705020_7':
+		# These are small data isses on lip remedies
+		df.loc[(df.size1_amount == 15) & (df.multi == 1 )& (df.size1_units == 'OZ'), 'size1_amount'] = 0.15
+		df.loc[(df.size1_amount == 25) & (df.multi == 1 )& (df.size1_units == 'OZ'), 'size1_amount'] = 0.25
+		df.loc[(df.size1_amount == 35) & (df.multi == 1 )& (df.size1_units == 'OZ'), 'size1_amount'] = 0.35
+		df.loc[(df.size1_amount == 150) & (df.multi == 1 )& (df.size1_units == 'OZ'), 'size1_amount'] = 0.15
+
 
 	return df
