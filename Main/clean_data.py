@@ -44,17 +44,18 @@ def clean_data(code, df):
 
 	elif code == '3035705020_8':
 		# These are data issues on lipsticks
-		df.loc[(1 < df.size1_amount <100) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/10
-		df.loc[(df.size1_amount >= 100) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/100
+		df.loc[(df.size1_amount > 100) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/100
+		df.loc[(df.size1_amount > 1) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/10
 
 	elif code == '3035705020_10':
 		# These are data issues on blushers
 		df.loc[(df.size1_amount > 1.99) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/10
 
-	elif code == '3035705020_10':
+	elif code == '3035705020_13':
 		# These are data issues on concealers
-		df.loc[(6 < df.size1_amount < 10) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/10
 		df.loc[(df.size1_amount > 10) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/100
+		df.loc[(df.size1_amount > 6) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/10
+
 
 
 	return df
