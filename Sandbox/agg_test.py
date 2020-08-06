@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import auxiliary as aux
 import numpy as np
+import sys
 
 def check_overlap(merger_folder):
 
@@ -16,6 +17,7 @@ def check_overlap(merger_folder):
 		return True
 
 	elif merging_sum == 2:
+
 		df_merging = overlap_file[overlap_file['merging_party'] == 1]
 
 		if ((df_merging.loc[0,'pre_share'] == 0) & (df_merging.loc[1,'post_share'] == 0)) | ((df_merging.loc[0,'post_share'] == 0) & (df_merging.loc[1,'pre_share'] == 0)):
@@ -23,6 +25,8 @@ def check_overlap(merger_folder):
 
 		else:
 			return True
+
+
 
 def get_betas(base_folder):
 
@@ -32,6 +36,7 @@ def get_betas(base_folder):
 	aggregated['merger'] = []
 
 	for i in range(45):
+
 		j=i+1
 		aggregated['post_merger_merging'+'_'+str(j)] = []
 
@@ -59,14 +64,20 @@ def get_betas(base_folder):
 
 				#rename col names (just in case someone opened and saved in excel).
 				if '(1)' in did_merger.columns:
+
 					for i in did_merger.columns[1:]:
+
 						did_merger.rename(columns={i: i.lstrip('(').rstrip(')')}, inplace=True)
+
 				else:
+
 					for i in did_merger.columns[1:]:
+
 						did_merger.rename(columns={i: i.lstrip('-')}, inplace=True)
 
 					#loop through specs recovering betas
 				for i in did_merger.columns[1:46]:
+
 					aggregated['post_merger_merging'+'_'+i].append(did_merger[i]['post_merger_merging'])
 
 
@@ -79,12 +90,22 @@ def get_betas(base_folder):
 
 	df.to_csv('aggregated.csv', sep = ',')
 
+def basic_plot(specification):
+
+	spec = 'post_merger_merging_'+str(specification)
+	fig_name = spec+'.pdf'
+	df = pd.read_csv('aggregated.csv', sep=',')
+	plot = df.hist(column=spec, color='k', alpha=0.5, bins=10)
+	fig = plot[0]
+	fig[0].get_figure().savefig('output/'+fig_name)
 
 
 
 base_folder = '../../../All/'
 get_betas(base_folder)
 
+spec = sys.argv[1]
+basic_plot(spec)
 
 
 
