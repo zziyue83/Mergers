@@ -292,6 +292,7 @@ def clean_betas(df):
 
 	for col in df.columns[1:]:
 
+		df = df.replace(np.nan, '', regex=True)
 		df[col] = pd.to_numeric(df[col].astype(str).str.rstrip('*'))
 
 	return df
