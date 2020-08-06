@@ -56,7 +56,9 @@ def clean_data(code, df):
 		df.loc[(df.size1_amount > 10) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/100
 		df.loc[(df.size1_amount > 6) & (df.multi == 1) & (df.size1_units == 'OZ'), 'size1_amount'] = df['size1_amount']/10
 
-
+	elif code == '2820516020_1':
+		# These should be counts of cigarettes
+		df.loc[(df.multi * df.size1_amount == 2500) & (df.size1_units == 'CT'), 'size1_units'] = 'ML'
 
 	return df
 
