@@ -290,7 +290,8 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				df['outside_share'] = 1 - df.groupby(['market_ids'])['shares'].transform('sum')
 				df['total_nest_shares'] = df.groupby(['market_ids','nesting_ids'])['shares'].transform('sum')
-				df['log_within_nest_shares'] = np.log(df['shares']/df['total_nest_shares'])
+				df['within_nest_shares'] = df['shares']/df['total_nest_shares']
+				df['log_within_nest_shares'] = np.log(df['within_nest_shares'])
 				df['logsj_logs0'] = np.log(df['shares']) - np.log(df['outside_share']) #our RHS variable
 
 				endog_mat = df[['prices', 'logsj_logs0', 'log_within_nest_shares']].to_numpy()
@@ -305,7 +306,14 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				endogenous = df[['prices_resid', 'log_within_nest_shares_resid']]
 
 				results = IV2SLS(dependent=dependent, exog=month_or_quarter, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
-				se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
+
+				prices_param = results.params['prices_resid']
+				log_within_nest_shares_param = results.params['log_within_nest_shares_resid']
+				shares_mat = df[['within_nest_shares', 'shares']].to_numpy()
+				shares_resid = alg.residualize(shares_mat)
+				df['within_nest_shares_resid'] = endog_resid[:, [0]]
+				df['shares_resid'] = endog_resid[:, [1]]
+				own_price_elasticity = -(prices_param * df['prices_resid'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares_resid'])-df['shares_resid'])
 
 
 			#logit
@@ -322,7 +330,6 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				endogenous = df['prices_resid']
 
 				results = IV2SLS(dependent=dependent, exog=month_or_quarter, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
-				se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
 
 
 		#characteristics specs
@@ -360,7 +367,14 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				endogenous = df[['prices_resid', 'log_within_nest_shares_resid']]
 
 				results = IV2SLS(dependent=dependent, exog=characteristics_resid, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
-				se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
+
+				prices_param = results.params['prices_resid']
+				log_within_nest_shares_param = results.params['log_within_nest_shares_resid']
+				shares_mat = df[['within_nest_shares', 'shares']].to_numpy()
+				shares_resid = alg.residualize(shares_mat)
+				df['within_nest_shares_resid'] = endog_resid[:, [0]]
+				df['shares_resid'] = endog_resid[:, [1]]
+				own_price_elasticity = -(prices_param * df['prices_resid'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares_resid'])-df['shares_resid'])
 
 
 			#logit
@@ -376,9 +390,10 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				endogenous = df['prices_resid']
 
 				results = IV2SLS(dependent=dependent, exog=characteristics_resid, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
-				se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
-		print(results)
+
+		se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
 		print(se_adjusted)
+
 		return results
 
 
