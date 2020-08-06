@@ -28,17 +28,17 @@ def check_overlap(merger_folder):
 
 
 
-def get_betas(base_folder):
+def get_betas(base_folder, coefficient):
 
 	#basic specs
 	base_folder = '../../../All/'
 	aggregated = {}
 	aggregated['merger'] = []
-
+	coefficient = str(coefficient)
 	for i in range(45):
 
 		j=i+1
-		aggregated['post_merger_merging'+'_'+str(j)] = []
+		aggregated[coefficient+'_'+str(j)] = []
 
 	#loop through folders in "All"
 	for folder in os.listdir(base_folder):
@@ -49,15 +49,11 @@ def get_betas(base_folder):
 		#go inside folders with step5 finished
 		if (os.path.exists(merger_folder + '/did_stata_month_0.csv')) and check_overlap(merger_folder):
 
-			#overlap_csv = pd.read_csv(base_folder + folder + '/output/overlap.csv')
-			#no_overlap_ls = check_overlap(overlap_csv, folder, no_overlap_ls)
-			#print(no_overlap_ls)
-
 			did_merger = pd.read_csv(merger_folder + '/did_stata_month_0.csv', sep=',')
 			did_merger.index = did_merger['Unnamed: 0']
 
 			#recover only betas for which post_merger_merging exists
-			if 'post_merger_merging' in did_merger.index:
+			if coefficient in did_merger.index:
 
 				#append the m_folder name to the dictionary
 				aggregated['merger'].append(folder)
@@ -78,21 +74,22 @@ def get_betas(base_folder):
 					#loop through specs recovering betas
 				for i in did_merger.columns[1:46]:
 
-					aggregated['post_merger_merging'+'_'+i].append(did_merger[i]['post_merger_merging'])
-
-
+					aggregated[coefficient+'_'+i].append(did_merger[i][coefficient])
+			#else:
+			#	assert coefficient, "Coefficient does not exist: %r" % coefficient
 
 	df = pd.DataFrame.from_dict(aggregated)
 	df = df.sort_values(by = 'merger').reset_index().drop('index', axis=1)
 	df = aux.clean_betas(df)
-#	df = df[~df['merger'].isin(no_overlap_ls)]
 
 
 	df.to_csv('aggregated.csv', sep = ',')
 
-def basic_plot(specification):
+def basic_plot(specification, coefficient):
 
-	spec = 'post_merger_merging_'+str(specification)
+	coef = str(coefficient)
+	spec = coef+'_'+str(specification)
+
 	fig_name = spec+'.pdf'
 	df = pd.read_csv('aggregated.csv', sep=',')
 	plot = df.hist(column=spec, color='k', alpha=0.5, bins=10)
@@ -100,12 +97,13 @@ def basic_plot(specification):
 	fig[0].get_figure().savefig('output/'+fig_name)
 
 
+coef = sys.argv[1]
+spec = sys.argv[2]
 
 base_folder = '../../../All/'
-get_betas(base_folder)
+get_betas(base_folder, coef)
 
-spec = sys.argv[1]
-basic_plot(spec)
+basic_plot(spec, coef)
 
 
 
