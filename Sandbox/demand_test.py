@@ -251,8 +251,6 @@ def write_to_file(results, code, filepath):
 	with open('../../../All/m_' + code + '/output/' + filepath + '.p', 'wb') as fout:
 		pickle.dump(results.to_dict(), fout)
 
-
-
 def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', linear_fe = False,
 	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = False,
 	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
@@ -307,6 +305,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				results = IV2SLS(dependent=dependent, exog=month_or_quarter, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
 
+				#distribution of own price elasticities
 				prices_param = results.params['prices_resid']
 				log_within_nest_shares_param = results.params['log_within_nest_shares_resid']
 				shares_mat = df[['within_nest_shares', 'shares']].to_numpy()
@@ -330,6 +329,13 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				endogenous = df['prices_resid']
 
 				results = IV2SLS(dependent=dependent, exog=month_or_quarter, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
+
+				#distribution of own price elasticities
+				prices_param = results.params['prices_resid']
+				shares_mat = df[['shares']].to_numpy()
+				shares_resid = alg.residualize(shares_mat)
+				df['shares_resid'] = endog_resid[:, [0]]
+				own_price_elasticity = -(prices_param * df['prices_resid'])*(1-df['shares_resid'])
 
 
 		#characteristics specs
@@ -391,8 +397,18 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				results = IV2SLS(dependent=dependent, exog=characteristics_resid, endog=endogenous, instruments=instruments_resid).fit(cov_type='robust')
 
+				#distribution of own price elasticities
+				prices_param = results.params['prices_resid']
+				shares_mat = df[['shares']].to_numpy()
+				shares_resid = alg.residualize(shares_mat)
+				df['shares_resid'] = endog_resid[:, [0]]
+				own_price_elasticity = -(prices_param * df['prices_resid'])*(1-df['shares_resid'])
+
+
 		se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
 		print(se_adjusted)
+		print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
+		print(len([i for i in own_price_elasticity if i > 0.01])/own_price_elasticity.count())
 
 		return results
 
@@ -429,15 +445,15 @@ code = sys.argv[1]
 month_or_quarter = sys.argv[2]
 estimate_type = sys.argv[3]
 
-#log_out = open('../../../All/m_' + code + '/output/estimate_demand.log', 'w')
-#log_err = open('../../../All/m_' + code + '/output/estimate_demand.err', 'w')
-#sys.stdout = log_out
-#sys.stderr = log_err
+log_out = open('../../../All/m_' + code + '/output/estimate_demand.log', 'w')
+log_err = open('../../../All/m_' + code + '/output/estimate_demand.err', 'w')
+sys.stdout = log_out
+sys.stderr = log_err
 
 df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
 print(df.shape)
 estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
 	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = False)
 
-#log_out.close()
-#log_err.close()
+log_out.close()
+log_err.close()
