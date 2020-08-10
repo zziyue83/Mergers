@@ -41,7 +41,7 @@ def track_progress(base_folder):
 				progress['step3'][-1] = 'complete'
 			if os.path.exists(merger_folder+'properties/ownership.csv'):
 				progress['step4'][-1] = 'complete'
-			if os.path.exists(merger_folder+'output/did_month.csv'):
+			if os.path.exists(merger_folder+'output/did_stata_month_0.csv'):
 				progress['step5'][-1] = 'complete'
 			if os.path.exists(merger_folder+'properties/characteristics.csv'):
 				progress['step6'][-1] = 'complete'
