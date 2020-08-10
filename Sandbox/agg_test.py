@@ -4,6 +4,10 @@ import pandas as pd
 import auxiliary as aux
 import numpy as np
 import sys
+import seaborn as sns
+sns.set(style='ticks')
+colors = ['#838487', '#1b1c1c']
+sns.set_palette(sns.color_palette(colors))
 
 def check_overlap(merger_folder):
 
@@ -92,15 +96,15 @@ def get_betas(base_folder, coefficient):
 	df = aux.clean_betas(df)
 
 
-	df.to_csv('aggregated_2.csv', sep = ',')
+	df.to_csv('aggregated.csv', sep = ',')
 
 def basic_plot(specification, coefficient):
 
 	coef = str(coefficient)
 	spec = coef+'_'+str(specification)
 
-	fig_name = spec+'2.pdf'
-	df = pd.read_csv('aggregated_2.csv', sep=',')
+	fig_name = spec+'.pdf'
+	df = pd.read_csv('aggregated.csv', sep=',')
 	plot = df.hist(column=spec, color='k', alpha=0.5, bins=10)
 	fig = plot[0]
 	fig[0].get_figure().savefig('output/'+fig_name)
@@ -110,20 +114,28 @@ def scatter_dhhi_plot(specification, coefficient):
 	coef = str(coefficient)
 	spec = coef+'_'+str(specification)
 
-	fig_name = spec+'dhhi2'+'.pdf'
-	df = pd.read_csv('aggregated_2.csv', sep=',')
-	plot = df.plot.scatter(x='dhhi',y=spec, color='k', alpha=0.5)
+	fig_name = spec+'dhhi'+'.pdf'
+	df = pd.read_csv('aggregated.csv', sep=',')
+
+	#rescaling coefficients for dhhi
+	df['dhhi'] = df['dhhi'] * 10000
+	plot = sns.regplot(x="dhhi", y=spec, ci = None, data=df,
+						scatter_kws={"color": colors[0]}, line_kws={"color": colors[1]})
+
 	plot.get_figure().savefig('output/'+fig_name)
 
 def scatter_posthhi_plot(specification, coefficient):
 
 	coef = str(coefficient)
 	spec = coef+'_'+str(specification)
-
-	fig_name = spec+'post_hhi2'+'.pdf'
-	df = pd.read_csv('aggregated_2.csv', sep=',')
-	plot = df.plot.scatter(x='post_hhi',y=spec, color='k', alpha=0.5)
+	fig_name = spec+'post_hhi'+'.pdf'
+	df = pd.read_csv('aggregated.csv', sep=',')
+	#rescaling coefficients for dhhi
+	df['post_hhi'] = df['post_hhi'] * 10000
+	plot = sns.regplot(x="post_hhi", y=spec, ci = None, data=df,
+						scatter_kws={"color": colors[0]}, line_kws={"color": colors[1]})
 	plot.get_figure().savefig('output/'+fig_name)
+
 
 coef = sys.argv[1]
 spec = sys.argv[2]
