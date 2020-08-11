@@ -19,6 +19,7 @@ import delimited "stata_did_`3'.csv", encoding(ISO-8859-1)
 ssc install outreg2
 ssc install ftools
 ssc install reghdfe
+ssc install estout
 
 /* Fixed Effects */
 egen entity_effects = group(upc dma_code)
@@ -325,6 +326,19 @@ est clear
 
 
 }
+
+reghdfe lprice post_merger_merging post_merger trend, abs(entity_effects) vce(cluster dma_code)
+est sto tabl1
+
+reghdfe lprice post_merger_merging post_merger log_hhinc_per_person_adj trend, abs(entity_effects) vce(cluster dma_code)
+est sto tabl2
+
+esttab tabl1 tabl2 using `2'/did_stata_table_`3'.tex, replace se r2 ar2 title("Reduced Form Price Effects") mtitles("DMA/Product FE" "DMA/Product, Demographics") addnote("Data frequency: `3'.")
+
+
+est clear
+
+
 
 
 exit, STATA clear
