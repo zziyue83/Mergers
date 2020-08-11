@@ -41,6 +41,30 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		max_month = 12
 		years = list(filter(lambda x: int(x) <= 2012, years))
 
+	#manual fix for pies
+	if ((code=='2203820020_8') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+	#manual fix for bakery-remaining
+	if ((code=='2203820020_10') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+		#manual fix for cheesecake
+	if ((code=='2203820020_11') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+		#manual fix for biscuits
+	if ((code=='2203820020_12') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
 	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['size1_units', 'size1_amount', 'multi']
 
