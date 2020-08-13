@@ -19,6 +19,7 @@ import delimited "stata_did_`3'.csv", encoding(ISO-8859-1)
 ssc install outreg2
 ssc install ftools
 ssc install reghdfe
+ssc install estout
 
 /* Fixed Effects */
 egen entity_effects = group(upc dma_code)
@@ -127,7 +128,7 @@ reghdfe lprice post_merger_dhhi post_merger trend [aw = weights_`x'], abs(time_c
 est sto PMT_C_DHHI_`x'
 outreg2 using `2'/did_stata_`3'_`x'.txt, stats(coef se pval) ctitle("Calendar FE, DHHI") append
 
-reghdfe lprice post_merger_dhhi post_merger dma_code#c.trend trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+reghdfe lprice post_merger_dhhi post_merger [aw = weights_`x'], abs(dma_code##c.trend entity_effects) vce(cluster dma_code)
 est sto PMT_t_DHHI_`x'
 outreg2 using `2'/did_stata_`3'_`x'.txt, stats(coef se pval) ctitle("DMA/Product Trends, DHHI") append
 
@@ -325,6 +326,19 @@ est clear
 
 
 }
+
+reghdfe lprice post_merger_merging post_merger trend, abs(entity_effects) vce(cluster dma_code)
+est sto tabl1
+
+reghdfe lprice post_merger_merging post_merger log_hhinc_per_person_adj trend, abs(entity_effects) vce(cluster dma_code)
+est sto tabl2
+
+esttab tabl1 tabl2 using `2'/did_stata_table_`3'.tex, replace se r2 ar2 title("Reduced Form Price Effects") mtitles("DMA/Product FE" "DMA/Product, Demographics")
+
+
+est clear
+
+
 
 
 exit, STATA clear
