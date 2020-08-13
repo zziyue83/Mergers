@@ -21,22 +21,23 @@ def check_overlap(merger_folder):
 
 	overlap_file = pd.read_csv(merger_folder + '/overlap.csv', sep=',')
 	merging_sum = overlap_file['merging_party'].sum()
+	c4 = overlap_file['pre_share'].nlargest(4).sum()
 
 	if merging_sum < 2:
-		return False
+		return (False, c4)
 
 	elif merging_sum ==3:
-		return True
+		return (True, c4)
 
 	elif merging_sum == 2:
 
 		df_merging = overlap_file[overlap_file['merging_party'] == 1]
 
 		if ((df_merging.loc[0,'pre_share'] == 0) & (df_merging.loc[1,'post_share'] == 0)) | ((df_merging.loc[0,'post_share'] == 0) & (df_merging.loc[1,'pre_share'] == 0)):
-			return False
+			return (False, c4)
 
 		else:
-			return True
+			return (True, c4)
 
 
 def get_betas(base_folder):
@@ -48,6 +49,7 @@ def get_betas(base_folder):
 	aggregated['pre_hhi'] = []
 	aggregated['post_hhi'] = []
 	aggregated['dhhi'] = []
+	aggregated['c4'] = []
 	#coefficient = str(coefficient)
 
 	for i in range(45):
@@ -67,7 +69,7 @@ def get_betas(base_folder):
 		merger_folder = base_folder + folder + '/output'
 
 		#go inside folders with step5 finished
-		if (os.path.exists(merger_folder + '/did_stata_month_0.csv')) and check_overlap(merger_folder):
+		if (os.path.exists(merger_folder + '/did_stata_month_0.csv')) and check_overlap(merger_folder)[0]:
 
 			did_merger = pd.read_csv(merger_folder + '/did_stata_month_0.csv', sep=',')
 			did_merger.index = did_merger['Unnamed: 0']
@@ -78,6 +80,7 @@ def get_betas(base_folder):
 
 				#append the m_folder name and descriptive stats to the dictionary
 				aggregated['merger'].append(folder)
+				aggregated['c4'].append(check_overlap(merger_folder)[1])
 				aggregated['pre_hhi'].append(descr_data.pre_hhi.mean())
 				aggregated['post_hhi'].append(descr_data.post_hhi.mean())
 				aggregated['dhhi'].append(descr_data.dhhi.mean())
@@ -175,12 +178,34 @@ def scatter_posthhi_plot(specification, coefficient):
 	df['post_hhi'] = df['post_hhi'] * 10000
 	min_y = df[spec].min()-df[spec].std()
 	max_y = df[spec].max()+df[spec].std()
+
 	plot2 = sns.regplot(x="post_hhi", y=spec, ci = None, data=df,
 						scatter_kws={"color": colors[0]}, line_kws={"color": colors[1]})
+
 	#plot.set(xlim=(df['post_hhi'].min(), df['post_hhi'].max()))
 
 	plot2.set(ylim=(min_y, max_y))
 	plot2.get_figure().savefig('output/'+fig_name)
+	plt.clf()
+
+
+def scatter_merging_plot(specification):
+
+	spec = str(specification)
+	fig_name = 'merge_non_merging'+'.pdf'
+	df = pd.read_csv('aggregated.csv', sep=',')
+
+	#rescaling coefficients for dhhi
+	min_y = df['post_merger_'+spec].min()-df['post_merger_'+spec].std()
+	max_y = df['post_merger_'+spec].max()+df['post_merger_'+spec].std()
+
+	plot3 = sns.regplot(x='post_merger_merging_'+spec, y='post_merger_'+spec, ci = None, data=df,
+						scatter_kws={"color": colors[0]}, line_kws={"color": colors[1]})
+
+	#plot.set(xlim=(df['post_hhi'].min(), df['post_hhi'].max()))
+
+	plot3.set(ylim=(min_y, max_y))
+	plot3.get_figure().savefig('output/'+fig_name)
 	plt.clf()
 
 
@@ -203,12 +228,16 @@ def reg_table1(specification, coefficient):
 	X2 = df[['post_hhi', 'dhhi', 'dhhi_posthhi', 'post_hhi2', 'dhhi2']]
 	X2 = sm.add_constant(X2)
 
+	X3 = df[['post_hhi', 'dhhi', 'c4']]
+	X3 = sm.add_constant(X2)
+
 	model1 = sm.WLS(Y1, X1, weights=df['se_pmm_' + spec]).fit(cov_type='HC1')
 	model2 = sm.WLS(Y1, X2, weights=df['se_pmm_' + spec]).fit(cov_type='HC1')
+	model3 = sm.WLS(Y1, X3, weights=df['se_pmm_' + spec]).fit(cov_type='HC1')
 
-	table1 = summary_col (results = [model1,model2],stars=True,float_format='%0.3f',
+	table1 = summary_col (results = [model1,model2,model3],stars=True,float_format='%0.3f',
 						model_names = ['(1)\npmm','(2)\npmm'],
-						regressor_order = ['post_hhi', 'dhhi','dhhi_posthhi','post_hhi2','dhhi2','const'],
+						regressor_order = ['post_hhi', 'dhhi','dhhi_posthhi','post_hhi2','dhhi2', 'c4','const'],
 						info_dict={'N':lambda x: "{0:d}".format(int(x.nobs))})
 	print(table1)
 
@@ -228,6 +257,7 @@ basic_plot(spec, coefficient='post_merger_merging')
 basic_plot2(spec)
 scatter_dhhi_plot(spec, coef)
 scatter_posthhi_plot(spec, coef)
+scatter_merging_plot(spec)
 reg_table1(spec, coef)
 
 
