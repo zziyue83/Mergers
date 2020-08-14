@@ -11,6 +11,7 @@ import sys
 import statsmodels.api as sm
 from statsmodels.iolib.summary2 import summary_col
 import seaborn as sns
+import array_to_latex as a2l
 
 sns.set(style='ticks')
 colors = ['#838487', '#1b1c1c']
@@ -120,7 +121,7 @@ def get_betas(base_folder):
 
 	df.to_csv('aggregated.csv', sep = ',')
 
-
+#pmm hist
 def basic_plot(specification, coefficient):
 
 	coef = str(coefficient)
@@ -132,7 +133,7 @@ def basic_plot(specification, coefficient):
 	fig = plot[0]
 	fig[0].get_figure().savefig('output/'+fig_name)
 
-
+#pmm+pm hist
 def basic_plot2(specification):
 
 	#coef = str(coefficient)
@@ -144,7 +145,7 @@ def basic_plot2(specification):
 	fig = plot[0]
 	fig[0].get_figure().savefig('output/'+fig_name)
 
-
+#dhhi vs pmm
 def scatter_dhhi_plot(specification, coefficient):
 
 	coef = str(coefficient)
@@ -165,7 +166,7 @@ def scatter_dhhi_plot(specification, coefficient):
 	plot1.get_figure().savefig('output/'+fig_name)
 	plt.clf()
 
-
+#post_hhi vs pmm
 def scatter_posthhi_plot(specification, coefficient):
 
 	coef = str(coefficient)
@@ -188,7 +189,43 @@ def scatter_posthhi_plot(specification, coefficient):
 	plot2.get_figure().savefig('output/'+fig_name)
 	plt.clf()
 
+#C4 vs pmm+pm and C4 vs pmm
+def scatter_c4_plot(specification, coefficient):
 
+	coef = str(coefficient)
+	spec = str(specification)
+
+	fig_name = 'c4_tot'+'.pdf'
+	df = pd.read_csv('aggregated.csv', sep=',')
+	df['total_post_'+spec] = df['post_merger_'+spec]+df['post_merger_merging_'+spec]
+
+	#rescaling coefficients for dhhi
+	min_y = df['total_post_'+spec].min()-df['total_post_'+spec].std()
+	max_y = df['total_post_'+spec].max()+df['total_post_'+spec].std()
+
+	plot2 = sns.regplot(x="c4", y='total_post_'+spec, ci = None, data=df,
+						scatter_kws={"color": colors[0]}, line_kws={"color": colors[1]})
+	plot2.set(xlabel='C4', ylabel='pmm+pm')
+	#plot.set(xlim=(df['post_hhi'].min(), df['post_hhi'].max()))
+
+	plot2.set(ylim=(min_y, max_y))
+	plot2.get_figure().savefig('output/'+fig_name)
+	plt.clf()
+
+	fig_name1 = 'c4_pmm'+'.pdf'
+	min_y = df['post_merger_merging_'+spec].min()-df['post_merger_merging_'+spec].std()
+	max_y = df['post_merger_merging_'+spec].max()+df['post_merger_merging_'+spec].std()
+
+	plot3 = sns.regplot(x="c4", y='post_merger_merging_'+spec, ci = None, data=df,
+						scatter_kws={"color": colors[0]}, line_kws={"color": colors[1]})
+	plot3.set(xlabel='C4', ylabel='pmm')
+	#plot.set(xlim=(df['post_hhi'].min(), df['post_hhi'].max()))
+
+	plot3.set(ylim=(min_y, max_y))
+	plot3.get_figure().savefig('output/'+fig_name1)
+	plt.clf()
+
+#pm vs pmm
 def scatter_merging_plot(specification):
 
 	spec = str(specification)
@@ -208,7 +245,44 @@ def scatter_merging_plot(specification):
 	plot3.get_figure().savefig('output/'+fig_name)
 	plt.clf()
 
+	df['total_post_'+spec] = df['post_merger_'+spec]+df['post_merger_merging_'+spec]
+	plot4 = sns.regplot(x='total_post_'+spec, y='post_merger_'+spec, ci = None, data=df,
+						scatter_kws={"color": colors[0]}, line_kws={"color": colors[1]})
 
+	min_y2 = df['total_post_'+spec].min()-df['total_post_'+spec].std()
+	max_y2 = df['total_post_'+spec].max()+df['total_post_'+spec].std()
+	fig_name2 = 'merge_non_merging_total'+'.pdf'
+
+	plot3.set(ylim=(min_y2, max_y2))
+	plot3.get_figure().savefig('output/'+fig_name2)
+	plt.clf()
+
+#pm vs pmm
+def dhhi_posthhi(specification):
+
+	spec = str(specification)
+	fig_name = 'dhhi_post_hhi'+'.pdf'
+	df = pd.read_csv('aggregated.csv', sep=',')
+
+	#rescaling coefficients for dhhi
+	df['post_hhi'] = df['post_hhi'] * 10000
+	df['dhhi'] = df['dhhi'] * 10000
+
+	min_y = df['dhhi'].min()-df['dhhi'].std()
+	max_y = df['dhhi'].max()+df['dhhi'].std()
+
+	df.loc[(df['post_merger_merging_'+spec]>0), 'Size'] = 1
+	df.loc[(df['post_merger_merging_'+spec]<=0), 'Size'] = 0
+
+	plot3 = sns.scatterplot(x='post_hhi', y='dhhi',
+							data=df, hue='Size', legend='full', palette=[colors[0], colors[1]])
+
+	plot3.set(ylim=(min_y, max_y))
+	plot3.legend(title='pmm sign', loc='upper right', labels=['b>0', 'b<=0'])
+	plot3.get_figure().savefig('output/'+fig_name)
+	plt.clf()
+
+#regs
 def reg_table1(specification, coefficient):
 
 	spec = str(specification)
@@ -229,17 +303,42 @@ def reg_table1(specification, coefficient):
 	X2 = sm.add_constant(X2)
 
 	X3 = df[['post_hhi', 'dhhi', 'c4']]
-	X3 = sm.add_constant(X2)
+	X3 = sm.add_constant(X3)
 
-	model1 = sm.WLS(Y1, X1, weights=df['se_pmm_' + spec]).fit(cov_type='HC1')
-	model2 = sm.WLS(Y1, X2, weights=df['se_pmm_' + spec]).fit(cov_type='HC1')
-	model3 = sm.WLS(Y1, X3, weights=df['se_pmm_' + spec]).fit(cov_type='HC1')
+	Y2 = df['post_merger_'+spec]+df['post_merger_merging_'+spec]
+
+	weights = 1/df['se_pmm_'+spec]
+
+	model1 = sm.WLS(Y1, X1, weights=weights).fit(cov_type='HC1')
+	model2 = sm.WLS(Y1, X2, weights=weights).fit(cov_type='HC1')
+	model3 = sm.WLS(Y1, X3, weights=weights).fit(cov_type='HC1')
+	model4 = sm.OLS(Y1, X1).fit(cov_type='HC1')
+	model5 = sm.OLS(Y1, X2).fit(cov_type='HC1')
+	model6 = sm.OLS(Y1, X3).fit(cov_type='HC1')
+	model7 = sm.WLS(Y2, X1, weights=weights).fit(cov_type='HC1')
+	model8 = sm.WLS(Y2, X2, weights=weights).fit(cov_type='HC1')
+	model9 = sm.WLS(Y2, X3, weights=weights).fit(cov_type='HC1')
 
 	table1 = summary_col (results = [model1,model2,model3],stars=True,float_format='%0.3f',
-						model_names = ['(1)\npmm','(2)\npmm'],
+						model_names = ['(1)\npmm','(2)\npmm','(3)\npmm'],
 						regressor_order = ['post_hhi', 'dhhi','dhhi_posthhi','post_hhi2','dhhi2', 'c4','const'],
 						info_dict={'N':lambda x: "{0:d}".format(int(x.nobs))})
-	print(table1)
+
+	table2 = summary_col (results = [model4,model5,model6],stars=True,float_format='%0.3f',
+						model_names = ['(1)\npmm','(2)\npmm','(3)\npmm'],
+						regressor_order = ['post_hhi', 'dhhi','dhhi_posthhi','post_hhi2','dhhi2', 'c4','const'],
+						info_dict={'N':lambda x: "{0:d}".format(int(x.nobs))})
+
+	table3 = summary_col (results = [model7,model8,model9],stars=True,float_format='%0.3f',
+						model_names = ['(1)\npmm+pm','(2)\npmm+pm','(3)\npmm+pm'],
+						regressor_order = ['post_hhi', 'dhhi','dhhi_posthhi','post_hhi2','dhhi2', 'c4','const'],
+						info_dict={'N':lambda x: "{0:d}".format(int(x.nobs))})
+
+	print(table1.as_latex())
+	print(table2.as_latex())
+	print(table3.as_latex())
+
+
 
 
 coef = sys.argv[1]
@@ -258,6 +357,8 @@ basic_plot2(spec)
 scatter_dhhi_plot(spec, coef)
 scatter_posthhi_plot(spec, coef)
 scatter_merging_plot(spec)
+scatter_c4_plot(spec, coef)
+dhhi_posthhi(spec)
 reg_table1(spec, coef)
 
 
