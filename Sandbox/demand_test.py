@@ -308,11 +308,36 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				#distribution of own price elasticities
 				prices_param = results.params['prices_resid']
 				log_within_nest_shares_param = results.params['log_within_nest_shares_resid']
-				shares_mat = df[['within_nest_shares', 'shares']].to_numpy()
-				shares_resid = alg.residualize(shares_mat)
-				df['within_nest_shares_resid'] = endog_resid[:, [0]]
-				df['shares_resid'] = endog_resid[:, [1]]
-				own_price_elasticity = -(prices_param * df['prices_resid'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares_resid'])-df['shares_resid'])
+				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+
+				#marginal costs
+				J = len(df.index)
+				Own_Ind = np.zeros((J, J))
+				Nest_Ind = np.zeros((J, J))
+				dD = np.zeros((J, J))
+
+				for i in range(J):
+					for k in range(J):
+
+						Own_Ind[i, k] = (df['owner'][i] == df['owner'][k])
+						Nest_Ind[i, k] = (df['nesting_ids'][i] == df['nesting_ids'][k])
+
+						if not (i == k):
+
+							if (Nest_Ind[i, k] == True):
+
+								dD[i, k] = prices_param * df['shares'][k] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*df['within_nest_shares'][i]+df['shares'][i])
+
+							else:
+
+								dD[i, k] = prices_param * df['shares'][i] * df['shares'][k]
+
+						else:
+
+							dD[i, k] = own_price_elasticity * (df['shares'][i]/df['prices'][i])
+
+				dD = Own_Ind * dD
+				df['mg_costs'] = df['prices']+np.linalg.inv(dD)*D
 
 
 			#logit
@@ -332,11 +357,30 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				#distribution of own price elasticities
 				prices_param = results.params['prices_resid']
-				shares_mat = df[['shares']].to_numpy()
-				shares_resid = alg.residualize(shares_mat)
-				df['shares_resid'] = endog_resid[:, [0]]
-				own_price_elasticity = -(prices_param * df['prices_resid'])*(1-df['shares_resid'])
+				own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
 
+				#marginal costs
+				J = len(df.index)
+				Own_Ind = np.zeros((J, J))
+				Nest_Ind = np.zeros((J, J))
+				dD = np.zeros((J, J))
+
+				for i in range(J):
+					for k in range(J):
+
+						Own_Ind[i, k] = (df['owner'][i] == df['owner'][k])
+						Nest_Ind[i, k] = (df['nesting_ids'][i] == df['nesting_ids'][k])
+
+						if not (i == k):
+
+							dD[i, k] = - prices_param * df['shares'][i] * df['shares'][k]
+
+						else:
+
+							dD[i, k] = own_price_elasticity * (df['shares'][i]/df['prices'][i])
+
+				dD = Own_Ind * dD
+				df['mg_costs'] = df['prices']+np.linalg.inv(dD)*D
 
 		#characteristics specs
 		else:
@@ -358,7 +402,8 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				df['outside_share'] = 1 - df.groupby(['market_ids'])['shares'].transform('sum')
 				df['total_nest_shares'] = df.groupby(['market_ids','nesting_ids'])['shares'].transform('sum')
-				df['log_within_nest_shares'] = np.log(df['shares']/df['total_nest_shares'])
+				df['within_nest_shares'] = df['shares']/df['total_nest_shares']
+				df['log_within_nest_shares'] = np.log(df['within_nest_shares'])
 				df['logsj_logs0'] = np.log(df['shares']) - np.log(df['outside_share']) #our RHS variable
 
 				endog_mat = df[['prices', 'logsj_logs0', 'log_within_nest_shares']].to_numpy()
@@ -376,11 +421,37 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				prices_param = results.params['prices_resid']
 				log_within_nest_shares_param = results.params['log_within_nest_shares_resid']
-				shares_mat = df[['within_nest_shares', 'shares']].to_numpy()
-				shares_resid = alg.residualize(shares_mat)
-				df['within_nest_shares_resid'] = endog_resid[:, [0]]
-				df['shares_resid'] = endog_resid[:, [1]]
-				own_price_elasticity = -(prices_param * df['prices_resid'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares_resid'])-df['shares_resid'])
+
+				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+
+								#marginal costs
+				J = len(df.index)
+				Own_Ind = np.zeros((J, J))
+				Nest_Ind = np.zeros((J, J))
+				dD = np.zeros((J, J))
+
+				for i in range(J):
+					for k in range(J):
+
+						Own_Ind[i, k] = (df['owner'][i] == df['owner'][k])
+						Nest_Ind[i, k] = (df['nesting_ids'][i] == df['nesting_ids'][k])
+
+						if not (i == k):
+
+							if (Nest_Ind[i, k] == True):
+
+								dD[i, k] = prices_param * df['shares'][k] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*df['within_nest_shares'][i]+df['shares'][i])
+
+							else:
+
+								dD[i, k] = prices_param * df['shares'][i] * df['shares'][k]
+
+						else:
+
+							dD[i, k] = own_price_elasticity * (df['shares'][i]/df['prices'][i])
+
+				dD = Own_Ind * dD
+				df['mg_costs'] = df['prices']+np.linalg.inv(dD)*D
 
 
 			#logit
@@ -399,16 +470,44 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				#distribution of own price elasticities
 				prices_param = results.params['prices_resid']
-				shares_mat = df[['shares']].to_numpy()
-				shares_resid = alg.residualize(shares_mat)
-				df['shares_resid'] = endog_resid[:, [0]]
-				own_price_elasticity = -(prices_param * df['prices_resid'])*(1-df['shares_resid'])
+				own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
+
+				#marginal costs
+				J = len(df.index)
+				Own_Ind = np.zeros((J, J))
+				Nest_Ind = np.zeros((J, J))
+				dD = np.zeros((J, J))
+
+				for i in range(J):
+					for k in range(J):
+
+						Own_Ind[i, k] = (df['owner'][i] == df['owner'][k])
+						Nest_Ind[i, k] = (df['nesting_ids'][i] == df['nesting_ids'][k])
+
+						if not (i == k):
+
+							dD[i, k] = - prices_param * df['shares'][i] * df['shares'][k]
+
+						else:
+
+							dD[i, k] = own_price_elasticity * (df['shares'][i]/df['prices'][i])
+
+				dD = Own_Ind * dD
+				df['mg_costs'] = df['prices']+np.linalg.inv(dD)*D
 
 
 		se_adjusted = np.sqrt(np.square(results.std_errors) * results.df_resid / (results.df_resid - alg.degrees)) #dof adjustments
 		print(se_adjusted)
 		print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 		print(len([i for i in own_price_elasticity if i > 0.01])/own_price_elasticity.count())
+		print("alpha " + str(prices_param))
+		print("rho" + str(log_within_nest_shares_param))
+		print("average share " + str(df.shares.mean()))
+		print("average price " + str(df.prices.mean()))
+		print("average w-share " + str(df.within_nest_shares.mean()))
+		print("Marginal Costs: ", df['mg_costs'].describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
+
+
 
 		return results
 
@@ -444,6 +543,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 code = sys.argv[1]
 month_or_quarter = sys.argv[2]
 estimate_type = sys.argv[3]
+linear_fe = sys.argv[4]
 
 log_out = open('../../../All/m_' + code + '/output/estimate_demand.log', 'w')
 log_err = open('../../../All/m_' + code + '/output/estimate_demand.err', 'w')
@@ -453,7 +553,7 @@ sys.stderr = log_err
 df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
 print(df.shape)
 estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
-	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = False)
+	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = linear_fe)
 
 log_out.close()
 log_err.close()
