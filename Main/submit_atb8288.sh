@@ -19,8 +19,10 @@ python -m pip install --datetime --user
 python -m pip install --tqdm --user
 python -m pip install --pickle --user
 python -m pip install --upgrade xlrd --user
+python -m pip install --upgrade linearmodels --user
 
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Main
-python select_products.py 2655951020_4
+python select_products.py 1785984020_11
+
 
 
