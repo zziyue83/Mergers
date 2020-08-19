@@ -210,6 +210,10 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 	# Estimate logit - nested logit
 	if estimate_type == 'logit':
 
+		for ch in chars:
+
+			df = df.rename(columns={ch: 'char'+ch})
+
 		#upc fixed-effects specs
 		if linear_fe:
 
@@ -235,7 +239,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
 				path_input = "../../../All/m_" + code + "/intermediate"
 				path_output = "../output/"
-				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, chars, spec, routine] #check *args to pass to stata
+				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
 
 			#logit
@@ -251,7 +255,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
 				path_input = "../../../All/m_" + code + "/intermediate"
 				path_output = "../output/"
-				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, chars, spec, routine] #check *args to pass to stata
+				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
 
 
@@ -279,7 +283,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
 				path_input = "../../../All/m_" + code + "/intermediate"
 				path_output = "../output/"
-				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, chars, spec, routine] #check *args to pass to stata
+				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
 
 			#logit
@@ -295,11 +299,9 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
 				path_input = "../../../All/m_" + code + "/intermediate"
 				path_output = "../output/"
-				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, chars, spec, routine] #check *args to pass to stata
+				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
 
-
-	print(chars)
 
 	elif estimate_type == 'blp':
 
@@ -347,3 +349,4 @@ estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_qua
 
 log_out.close()
 log_err.close()
+

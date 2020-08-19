@@ -10,7 +10,6 @@ est clear
 /* *args: month_or_quarter = `3' */
 /* *args: routine          = `4' */
 /* *args: spec             = `5' */
-/* *args: chars            = `6' */
 
 
 cd `1'
@@ -20,16 +19,18 @@ import delimited "demand_`3'.csv", encoding(ISO-8859-1)
 
 /*Install Packages*/
 
-ssc install outreg2
-ssc install ftools
-ssc install reghdfe
-ssc install estout
-ssc install ivreghdfe
+ssc install outreg2, replace
+ssc install ftools, replace
+ssc install reghdfe, replace
+ssc install estout, replace
+ssc install ivreghdfe, replace
 
+di "`4'"
+di "`5'"
 
-if `4' == "Nested_Logit" {
+if "`4'" == "Nested_Logit" {
 
-	if `5' == "Linear_Fe"{
+	if "`5'" == "Linear_FE" {
 
 		eststo clear
 		*IVHDFE WITH FIRST STAGE
@@ -38,20 +39,20 @@ if `4' == "Nested_Logit" {
 
 	}
 
-	else {
+	else if "`5'" == "Chars" {
 
 		eststo clear
 		*IVHDFE WITH FIRST STAGE
-		eststo: ivreghdfe logsj_logs0 `6' (prices log_within_nest_shares = demand*), abs(dma_code) cluster(dma_code) first savefirst savefprefix(st1)
+		eststo: ivreghdfe logsj_logs0 chars* (prices log_within_nest_shares = demand*), abs(dma_code) cluster(dma_code) first savefirst savefprefix(st1)
 		esttab est1 st1* using `2'/demand_results_`3'.tex, replace
 
 	}
 }
 
 
-else `4' == "Logit" {
+else if "`4'" == "Logit" {
 
-	if `5' == "Linear_Fe"{
+	if "`5'" == "Linear_FE" {
 
 		eststo clear
 		*IVHDFE WITH FIRST STAGE
@@ -60,14 +61,23 @@ else `4' == "Logit" {
 
 	}
 
-	else {
+	else if "`5'" == "Chars" {
 
 		eststo clear
 		*IVHDFE WITH FIRST STAGE
-		eststo: ivreghdfe logsj_logs0 `6' (prices = demand*), abs(dma_code) cluster(dma_code) first savefirst savefprefix(st1)
+		eststo: ivreghdfe logsj_logs0 chars* (prices = demand*), abs(dma_code) cluster(dma_code) first savefirst savefprefix(st1)
 		esttab est1 st1* using `2'/demand_results_`3'.tex, replace
 
 	}
 }
+
+
+
+
+exit, STATA clear
+
+
+
+
 
 
