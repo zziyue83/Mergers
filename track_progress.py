@@ -15,6 +15,34 @@ def parse_info(file):
 		info_dict[info_name] = info_content
 	return info_dict
 
+def check_overlap(merger_folder):
+
+	if os.path.exists(merger_folder+'output/overlap.csv'):
+
+		overlap_file = pd.read_csv(merger_folder + 'output/overlap.csv', sep=',')
+		merging_sum = overlap_file['merging_party'].sum()
+
+		if merging_sum < 2:
+			return False
+
+		elif merging_sum ==3:
+			return True
+
+		elif merging_sum == 2:
+
+			df_merging = overlap_file[overlap_file['merging_party'] == 1]
+
+			if ((df_merging.loc[0,'pre_share'] == 0) & (df_merging.loc[1,'post_share'] == 0)) | ((df_merging.loc[0,'post_share'] == 0) & (df_merging.loc[1,'pre_share'] == 0)):
+				return False
+
+			else:
+
+				return True
+
+	else:
+
+		return False
+
 def track_progress(base_folder):
 	progress = {}
 	progress['RA'] = []
@@ -41,8 +69,12 @@ def track_progress(base_folder):
 				progress['step3'][-1] = 'complete'
 			if os.path.exists(merger_folder+'properties/ownership.csv'):
 				progress['step4'][-1] = 'complete'
-			if os.path.exists(merger_folder+'output/did_stata_month_0.csv'):
+			if os.path.exists(merger_folder+'output/did_stata_month_0.csv') & check_overlap(merger_folder):
 				progress['step5'][-1] = 'complete'
+			if os.path.exists(merger_folder+'output/did_stata_month_0.csv') & (not (check_overlap(merger_folder))):
+				progress['step5'][-1] = 'no_overlap'
+			if os.path.exists(merger_folder+'output/did_month.csv'):
+				progress['step5'][-1] = 'update'
 			if os.path.exists(merger_folder+'properties/characteristics.csv'):
 				progress['step6'][-1] = 'complete'
 			if os.path.exists(merger_folder+'intermediate/distances.csv'):
@@ -58,3 +90,6 @@ def track_progress(base_folder):
 
 base_folder = '../../All/'
 track_progress(base_folder)
+
+
+
