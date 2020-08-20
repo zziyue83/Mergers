@@ -242,6 +242,40 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
 
+				#recover alpha and rho
+				file = open('../../../All/m_' + code + '/output/demand_results_' + month_or_quarter + '.txt', mode = 'r')
+				stata_output = file.read()
+				file.close()
+				print(stata_output)
+				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+				print(prices_param)
+				print(log_within_nest_shares_param)
+				print(own_price_elasticity)
+
+				#marginal costs
+				J = df.shape[0]
+				Own_Ind = np.zeros((J, J))
+				Nest_Ind = np.zeros((J, J))
+				dD = np.zeros((J, J))
+				for i in range(J):
+					for k in range(J):
+						Own_Ind[i, k] = (df['owner'][i] == df['owner'][k])
+						Nest_Ind[i, k] = (df['nesting_ids'][i] == df['nesting_ids'][k])
+						if not (i == k):
+							if (Nest_Ind[i, k] == True):
+								dD[i, k] = prices_param * df['shares'][k] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*df['within_nest_shares'][i]+df['shares'][i])
+							else:
+								dD[i, k] = prices_param * df['shares'][i] * df['shares'][k]
+						else:
+							dD[i, k] = own_price_elasticity * (df['shares'][i]/df['prices'][i])
+				dD = Own_Ind * dD
+				df['mg_costs'] = df['prices']+np.linalg.inv(dD)*dD
+
+				print(df)
+
+
 			#logit
 			else:
 
@@ -257,6 +291,13 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				path_output = "../output/"
 				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
+				
+				#recover alpha and rho
+				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
+				stata_output = file.read()
+				file.close()
+				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
 
 
 		#characteristics specs
@@ -286,6 +327,14 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
 
+				#recover alpha and rho
+				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
+				stata_output = file.read()
+				file.close()
+				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+
 			#logit
 			else:
 
@@ -301,6 +350,13 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				path_output = "../output/"
 				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
+
+				#recover alpha and rho
+				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
+				stata_output = file.read()
+				file.close()
+				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
 
 
 	elif estimate_type == 'blp':
@@ -328,7 +384,6 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 		return None
 	else:
 		return None
-
 
 
 
