@@ -12,6 +12,7 @@ import pickle
 import scipy.sparse as sp
 import subprocess
 from scipy.sparse import csr_matrix
+from scipy.sparse.linalg import inv
 
 def add_characteristics(code, df, char_map, chars):
 	for this_char in chars:
@@ -271,9 +272,9 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 						else:
 							dD[i, k] = own_price_elasticity * (df['shares'][i]/df['prices'][i])
 				#dD = Own_Ind * dD
-				df['mg_costs'] = df['prices']+np.linalg.inv(dD)*dD
+				df['mg_costs'] = df['prices']+sparse.csr_matrix.dot(df['shares'], inv(dD))
 
-				print(df)
+				#print(df)
 
 
 			#logit

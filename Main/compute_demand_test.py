@@ -256,7 +256,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				#marginal costs
 				J = df.shape[0]
-				Own_Ind = csr_matrix((J, J), dtype=int)
+				Own_Ind = csr_matrix((J, J), dtype=int).A
 				Nest_Ind = csr_matrix((J, J), dtype=int).A
 				dD = csr_matrix((J, J), dtype=int).A
 				for i in range(J):
@@ -270,7 +270,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 								dD[i, k] = prices_param * df['shares'][i] * df['shares'][k]
 						else:
 							dD[i, k] = own_price_elasticity * (df['shares'][i]/df['prices'][i])
-				#dD = Own_Ind * dD
+				dD = Own_Ind * dD
 				df['mg_costs'] = df['prices']+np.linalg.inv(dD)*dD
 
 				print(df)

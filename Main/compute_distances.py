@@ -293,6 +293,8 @@ def compute_distances(code, netid, month_or_quarter = 'month'):
     df_dma_mean = df.copy().groupby('dma_code').agg({'distance':'mean'}).rename(columns={'distance':'mean_distance'})
     df['mean_distance'] = df['dma_code'].map(df_dma_mean['mean_distance'])
     df['distance'] = np.where(df['location'] == 0, df['mean_distance'], df['distance'])
+    df['distance'] = np.where(df['location'] == '0', df['mean_distance'], df['distance'])
+    df['distance'].replace(np.nan, np.mean(df['distance']), inplace = True)
 
     distance = df.groupby(['brand_code_uc','owner','dma_code'], as_index=False).agg({'distance': 'min'})
     distance.to_csv('../../../All/m_' + code + '/intermediate/distances.csv', sep = ',', encoding = 'utf-8', index = False)
