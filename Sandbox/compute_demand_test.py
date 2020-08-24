@@ -12,6 +12,7 @@ import pickle
 import scipy.sparse as sp
 import subprocess
 from scipy.sparse import csr_matrix
+from scipy.sparse.linalg import inv
 
 def add_characteristics(code, df, char_map, chars):
 	for this_char in chars:
@@ -103,7 +104,7 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	print(df.shape)
 	df, num_instruments, add_differentiation, add_blp = add_instruments(code, df, instrument_ls, month_or_quarter)
 
-	return df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp
+	return df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp	
 
 
 def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month',
@@ -234,6 +235,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				df['logsj_logs0'] = np.log(df['shares']) - np.log(df['outside_share']) #our RHS variable
 
 				df.to_csv('../../../All/m_' + code + '/intermediate/demand_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8', index = False)
+				print(df.loc[0])
 
 				dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/Nested_Logit.do"
 				DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
@@ -246,35 +248,47 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				file = open('../../../All/m_' + code + '/output/demand_results_' + month_or_quarter + '.txt', mode = 'r')
 				stata_output = file.read()
 				file.close()
-				print(stata_output)
 				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
 				log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
 				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
-				print(prices_param)
-				print(log_within_nest_shares_param)
 				print(own_price_elasticity)
 
 				#marginal costs
-				J = df.shape[0]
-				Own_Ind = csr_matrix((J, J), dtype=int)
-				Nest_Ind = csr_matrix((J, J), dtype=int).A
-				dD = csr_matrix((J, J), dtype=int).A
-				for i in range(J):
-					for k in range(J):
-						Own_Ind[i, k] = (df['owner'][i] == df['owner'][k])
-						Nest_Ind[i, k] = (df['nesting_ids'][i] == df['nesting_ids'][k])
-						if not (i == k):
-							if (Nest_Ind[i, k] == True):
-								dD[i, k] = prices_param * df['shares'][k] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*df['within_nest_shares'][i]+df['shares'][i])
+				#dD_inv = ()
+				dD = ()
+				for market in df['market_ids'].unique():
+					df_market = df[df['market_ids']==market]
+					J = df_market.shape[0]
+					dD_block = csr_matrix((J, J), dtype=int)
+					for i in range(J):
+						for k in range(J):
+							upc_i = df_market.iloc[i]
+							upc_k = df_market.iloc[k]
+							if (upc_i['firm_ids'] == upc_k['firm_ids']) & (i > k):
+								if (upc_i['nesting_ids'] == upc_k['nesting_ids']):
+									dD_block[i, k] = prices_param * upc_k['shares'] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*upc_i['within_nest_shares']+upc_i['shares'])
+								else:
+									dD_block[i, k] = prices_param * upc_i['shares'] * upc_k['shares']
+							elif i == k:
+								dD_block[i, k] = own_price_elasticity[i] * (upc_i['shares']/upc_i['prices'])
+							elif (upc_i['firm_ids'] == upc_k['firm_ids']) & (i < k):
+								if (upc_i['nesting_ids'] == upc_k['nesting_ids']):
+									dD_block[i, k] = prices_param * upc_k['shares'] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*upc_i['within_nest_shares']+upc_i['shares'])
+								else:
+									dD_block[i, k] = dD_block[k, i]
 							else:
-								dD[i, k] = prices_param * df['shares'][i] * df['shares'][k]
-						else:
-							dD[i, k] = own_price_elasticity * (df['shares'][i]/df['prices'][i])
-				#dD = Own_Ind * dD
-				df['mg_costs'] = df['prices']+np.linalg.inv(dD)*dD
+								dD_block[i, k] = 0
+					#dD_block_inv = inv(dD_block)
+					#print(dD_block_inv)
+					#dD_inv = dD_inv + (dD_block_inv,)
+					#print(dD_inv)
+					dD = dD + (dD_block, )
 
+				#dD_inv_diag = block_diag(dD_inv)
+				#df['mg_costs'] = df['prices']+csr_matrix.dot(df['shares'], dD_inv_diag)
+				assert np.linalg.matrix_rank(dD) == dD.shape[1], "Not full rank"
+				df['mg_costs'] = df['prices']+csr_matrix.dot(df['shares'], inv(dD)) # haven't changed yet
 				print(df)
-
 
 			#logit
 			else:
@@ -291,7 +305,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				path_output = "../output/"
 				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
-
+				
 				#recover alpha and rho
 				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
 				stata_output = file.read()
@@ -404,3 +418,4 @@ estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_qua
 
 log_out.close()
 log_err.close()
+
