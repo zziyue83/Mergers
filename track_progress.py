@@ -79,9 +79,9 @@ def track_progress(base_folder):
 				progress['step6'][-1] = 'complete'
 			if os.path.exists(merger_folder+'intermediate/distances.csv'):
 				progress['step7'][-1] = 'complete'
-			if 'Instruments' in infotxt:
+			if 'Instruments' in info:
 				progress['step8'][-1] = 'complete'
-			if os.path.exists(merger_folder+'output/first_stage.csv'):
+			if os.path.exists(merger_folder+'output/Nested_Logit.tex'):
 				progress['step9'][-1] = 'complete'
 
 	df = pd.DataFrame.from_dict(progress)
