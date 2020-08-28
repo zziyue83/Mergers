@@ -41,7 +41,7 @@ def parse_info(code):
 
 # test with merger ID 3035705020_13, Cosmetics-nail polish,
 # code = sys.argv[1]
-code = '3035705020_13'
+# code = '3035705020_13'
 if not os.path.isdir('../../../All/m_' + code + '/output'):
 	os.makedirs('../../../All/m_' + code + '/output')
 log_out = open('../../../All/m_' + code + '/output/cluster_upc_descr.log', 'w')
@@ -52,5 +52,5 @@ sys.stderr = log_err
 info_dict = parse_info(code)
 groups, modules = get_groups_and_modules(info_dict["MarketDefinition"])
 product_map = get_product_map(list(set(groups)))
-print(productMap['upc_descr'].unique())
-print(len(productMap['upc_descr'].unique()))
+print(product_map['upc_descr'].unique())
+print(len(product_map['upc_descr'].unique()))

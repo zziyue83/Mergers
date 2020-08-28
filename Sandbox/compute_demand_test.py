@@ -104,7 +104,7 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	print(df.shape)
 	df, num_instruments, add_differentiation, add_blp = add_instruments(code, df, instrument_ls, month_or_quarter)
 
-	return df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp	
+	return df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp
 
 
 def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month',
@@ -305,7 +305,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				path_output = "../output/"
 				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
-				
+
 				#recover alpha and rho
 				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
 				stata_output = file.read()
@@ -413,9 +413,9 @@ sys.stderr = log_err
 
 df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
 print(df.shape)
-estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
-	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = linear_fe)
-
-log_out.close()
-log_err.close()
-
+print(df.columns)
+# estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
+# 	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = linear_fe)
+#
+# log_out.close()
+# log_err.close()
