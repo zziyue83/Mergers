@@ -170,7 +170,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi'] * area_time_upc['conversion']
     aggregation_function = {'week_end' : 'first', 'units' : 'sum', 'prmult' : 'mean', 'price' : 'mean', 'feature' : 'first', 'display' : 'first', 'store_code_uc' : 'first', 'sales' : 'sum', 'volume' : 'sum', 'module' : 'first', 'brand_code_uc':'first', 'brand_descr':'first', 'multi':'mean', 'size1_units':'mean', 'size1_amount':'mean','upc':'first'}
     area_time_brand = area_time_upc.groupby(['brand_code_uc']).agg(aggregation_function).reindex(columns = area_time_upc.columns)
-    area_time_brand['prices'] = area_time_upc['sales'] / area_time_upc['volume']
+    area_time_brand['prices'] = area_time_brand['sales'] / area_time_brand['volume']
 	area_time_brand.drop(['week_end','store_code_uc',''], axis=1, inplace=True)
 
 	# Normalize the prices by the CPI.  Let January 2010 = 1.
