@@ -182,7 +182,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
 	# Save the output if this is month
 	if month_or_quarter == 'month':
-		market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
+		market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes_brandlevel.csv', sep = ',', encoding = 'utf-8')
 
 	# Shares = volume / market size.  Map market sizes back and get shares.
 	area_time_upc = area_time_upc.join(market_sizes.drop('total_volume', axis=1), on = ['dma_code', 'year', month_or_quarter])
@@ -267,10 +267,10 @@ def write_brands_upc(code, agg, upc_set):
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares', 'sales', 'volume']]
 	agg = agg[agg.upc.isin(upc_set)]
-	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', index = False, sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '_brandlevel.csv', index = False, sep = ',', encoding = 'utf-8')
 
 def write_market_coverage(code, agg, upc_set, largest_brand_left_out, month_or_quarter = 'month'):
-	ms = pd.read_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', delimiter = ',', index_col = ['dma_code', 'year', month_or_quarter])
+	ms = pd.read_csv('../../../All/m_' + code + '/intermediate/market_sizes_brandlevel.csv', delimiter = ',', index_col = ['dma_code', 'year', month_or_quarter])
 
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'volume']]
 	agg = agg[agg.upc.isin(upc_set)]
@@ -283,7 +283,7 @@ def write_market_coverage(code, agg, upc_set, largest_brand_left_out, month_or_q
 	print(agg.market_coverage.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 
 	agg = agg.join(largest_brand_left_out, how = 'left', on = ['dma_code', 'year', month_or_quarter])
-	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', index = False, sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage_brandlevel.csv', index = False, sep = ',', encoding = 'utf-8')
 
 code = sys.argv[1]
 log_out = open('../../../All/m_' + code + '/output/select_products_brandlevel.log', 'w')
