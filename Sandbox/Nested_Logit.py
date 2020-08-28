@@ -12,7 +12,6 @@ import pickle
 import scipy.sparse as sp
 import subprocess
 from scipy.sparse import csr_matrix
-from scipy.sparse.linalg import inv
 
 def add_characteristics(code, df, char_map, chars):
 	for this_char in chars:
@@ -208,12 +207,14 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 	else:
 		optimization = pyblp.Optimization('l-bfgs-b')
 
+
 	# Estimate logit - nested logit
 	if estimate_type == 'logit':
 
 		for ch in chars:
 
 			df = df.rename(columns={ch: 'char'+ch})
+
 
 		#upc fixed-effects specs
 		if linear_fe:
@@ -222,6 +223,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 			# set up variables
 			filter_col = [col for col in df if col.startswith('demand_instruments')]
+
 
 			#nested logit
 			if nests is not None:
@@ -237,7 +239,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				df.to_csv('../../../All/m_' + code + '/intermediate/demand_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8', index = False)
 				print(df.loc[0])
 
-				dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/Nested_Logit.do"
+				dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/Nested_Logit.do"
 				DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
 				path_input = "../../../All/m_" + code + "/intermediate"
 				path_output = "../output/"
@@ -248,56 +250,14 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				file = open('../../../All/m_' + code + '/output/demand_results_' + month_or_quarter + '.txt', mode = 'r')
 				stata_output = file.read()
 				file.close()
+				print(stata_output)
 				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
 				log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				own_price_elasticity = (prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
-				print(own_price_elasticity)
+				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+				print("Own price coefficient: " +str(prices_param))
+				print("Nesting parameter: " +str(log_within_nest_shares_param))
+				print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 
-				#marginal costs
-				#dD_inv = ()
-				print("prices param "+str(prices_param)+", and log-w-n " +str(log_within_nest_shares_param))
-				dD = ()
-				for market in df['market_ids'].unique()[0:2]:
-					df_market = df[df['market_ids']==market]
-					J = df_market.shape[0]
-					dD_block = csr_matrix((J, J), dtype=int)
-					for i in range(J):
-						for k in range(J):
-							upc_i = df_market.iloc[i]
-							upc_k = df_market.iloc[k]
-							print('share k ' + str(upc_i['shares']) + ' and share i ' +str(upc_k['shares']))
-							if (upc_i['firm_ids'] == upc_k['firm_ids']) & (i > k):
-								if (upc_i['nesting_ids'] == upc_k['nesting_ids']):
-									dD_block[i, k] = -prices_param * upc_k['shares'] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*upc_i['within_nest_shares']+upc_i['shares'])
-									#print("lowr same firm and nest: " +str(dD_block[i, k]))
-								else:
-									dD_block[i, k] = -prices_param * upc_i['shares'] * upc_k['shares']
-									#print("lowr same firm and diff nest: " +str(dD_block[i, k]))
-							elif i == k:
-								dD_block[i, k] = own_price_elasticity[i] * (upc_i['shares']/upc_i['prices'])
-								#print("diagonal: " +str(dD_block[i, k]))
-
-							elif (upc_i['firm_ids'] == upc_k['firm_ids']) & (i < k):
-								if (upc_i['nesting_ids'] == upc_k['nesting_ids']):
-									dD_block[i, k] = -prices_param * upc_k['shares'] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*upc_i['within_nest_shares']+upc_i['shares'])
-									#print("uppr same firm and nest: " +str(dD_block[i, k]))
-								else:
-									dD_block[i, k] = dD_block[k, i]
-									#print("lowr same firm and diff nest: " +str(dD_block[i, k]))
-							else:
-								dD_block[i, k] = 0
-					#dD_block_inv = inv(dD_block)
-					#print(dD_block_inv)
-					#dD_inv = dD_inv + (dD_block_inv,)
-					#print(dD_inv)
-					#print(dD_block)
-					dD = dD + (dD_block, )
-				#dD_inv_diag = block_diag(dD_inv)
-				#df['mg_costs'] = df['prices']+csr_matrix.dot(df['shares'], dD_inv_diag)
-				#dD.to_array()
-				#assert np.linalg.matrix_rank(dD) == dD.shape[1], "Not full rank"
-				#df['mg_costs'] = df['prices']+csr_matrix.dot(df['shares'], inv(dD)) # haven't changed yet
-				#print(df)
 
 			#logit
 			else:
@@ -308,19 +268,23 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				df.to_csv('../../../All/m_' + code + '/intermediate/demand_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8', index = False)
 
-				dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/Nested_Logit.do"
+				dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/Nested_Logit.do"
 				DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
 				path_input = "../../../All/m_" + code + "/intermediate"
 				path_output = "../output/"
 				cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, month_or_quarter, routine, spec] #check *args to pass to stata
 				subprocess.call(cmd)
-				
+
 				#recover alpha and rho
 				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
 				stata_output = file.read()
 				file.close()
+				print(stata_output)
 				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
 				own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
+				print("Own price coefficient: " +str(prices_param))
+#				print(log_within_nest_shares_param)
+				print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 
 
 		#characteristics specs
@@ -343,7 +307,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				df.to_csv('../../../All/m_' + code + '/intermediate/demand_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8', index = False)
 
-				dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/Nested_Logit.do"
+				dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/Nested_Logit.do"
 				DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
 				path_input = "../../../All/m_" + code + "/intermediate"
 				path_output = "../output/"
@@ -354,9 +318,14 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
 				stata_output = file.read()
 				file.close()
+				print(stata_output)
 				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
 				log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				own_price_elasticity = (prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+				print("Own price coefficient: " +str(prices_param))
+				print("Nesting parameter: " +str(log_within_nest_shares_param))
+				print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
+
 
 			#logit
 			else:
@@ -367,7 +336,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 
 				df.to_csv('../../../All/m_' + code + '/intermediate/demand_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8', index = False)
 
-				dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/Nested_Logit.do"
+				dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/Nested_Logit.do"
 				DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
 				path_input = "../../../All/m_" + code + "/intermediate"
 				path_output = "../output/"
@@ -378,8 +347,12 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
 				stata_output = file.read()
 				file.close()
+				print(stata_output)
 				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				own_price_elasticity = (prices_param * df['prices'])*(1-df['shares'])
+				own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
+				print("Own price coefficient: " +str(prices_param))
+#				print(log_within_nest_shares_param)
+				print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 
 
 	elif estimate_type == 'blp':

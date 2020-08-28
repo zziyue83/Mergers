@@ -11,7 +11,7 @@ import statsmodels.api as sm
 import pickle
 import scipy.sparse as sp
 import subprocess
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, block_diag
 from scipy.sparse.linalg import inv
 
 def add_characteristics(code, df, char_map, chars):
@@ -195,7 +195,7 @@ def get_partial_f(df, chars, nests, month_or_quarter):
 
 def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'month', estimate_type = 'logit', linear_fe = False,
 	num_instruments = 0, add_differentiation = False, add_blp = False, use_knitro = False,
-	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1):
+	integration_options = {'type' : 'grid', 'size' : 9}, num_parallel = 1, simulation = False):
 
 	# First get the formulations
 	formulation_char, formulation_fe, df, num_chars = create_formulation(code, df, chars,
@@ -235,7 +235,6 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				df['logsj_logs0'] = np.log(df['shares']) - np.log(df['outside_share']) #our RHS variable
 
 				df.to_csv('../../../All/m_' + code + '/intermediate/demand_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8', index = False)
-				print(df.loc[0])
 
 				dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/Nested_Logit.do"
 				DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
@@ -251,53 +250,42 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
 				log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
 				own_price_elasticity = (prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
-				print(own_price_elasticity)
 
 				#marginal costs
-				#dD_inv = ()
-				print("prices param "+str(prices_param)+", and log-w-n " +str(log_within_nest_shares_param))
-				dD = ()
-				for market in df['market_ids'].unique()[0:2]:
-					df_market = df[df['market_ids']==market]
-					J = df_market.shape[0]
-					dD_block = csr_matrix((J, J), dtype=int)
-					for i in range(J):
-						for k in range(J):
-							upc_i = df_market.iloc[i]
-							upc_k = df_market.iloc[k]
-							print('share k ' + str(upc_i['shares']) + ' and share i ' +str(upc_k['shares']))
-							if (upc_i['firm_ids'] == upc_k['firm_ids']) & (i > k):
-								if (upc_i['nesting_ids'] == upc_k['nesting_ids']):
-									dD_block[i, k] = -prices_param * upc_k['shares'] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*upc_i['within_nest_shares']+upc_i['shares'])
-									#print("lowr same firm and nest: " +str(dD_block[i, k]))
-								else:
-									dD_block[i, k] = -prices_param * upc_i['shares'] * upc_k['shares']
-									#print("lowr same firm and diff nest: " +str(dD_block[i, k]))
-							elif i == k:
-								dD_block[i, k] = own_price_elasticity[i] * (upc_i['shares']/upc_i['prices'])
-								#print("diagonal: " +str(dD_block[i, k]))
+				
+				if simulation:
+					df['error'] = df['shares'] - df['prices']*prices_param - df['log_within_nest_shares']*log_within_nest_shares_param
+					df_xi = df.groupby('upc').agg({'error':'mean'})
+					df['xi'] = df['upc'].map(df_xi['error'])
+					df = df.drop(['error'],axis=1)
+					simulation_check = pyblp.Simulation(pyblp.Formulation('0 + prices + log_within_nest_shares'),df,beta = [prices_param, log_within_nest_shares_param],rho = log_within_nest_shares_param,xi=df.xi)
+					simulation_results_check = simulation_check.replace_endogenous(costs = np.zeros((len(df), 1)), prices = df.prices, iteration = pyblp.Iteration(method = 'return'))
+					print(simulation_results_check)
+				else:
+					print("prices param "+str(prices_param)+", and log-w-n " +str(log_within_nest_shares_param))
+					rho = log_within_nest_shares_param
+					df['diag'] = own_price_elasticity * (df['shares']/df['prices'])
+					dD_inv = ()
 
-							elif (upc_i['firm_ids'] == upc_k['firm_ids']) & (i < k):
-								if (upc_i['nesting_ids'] == upc_k['nesting_ids']):
-									dD_block[i, k] = -prices_param * upc_k['shares'] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*upc_i['within_nest_shares']+upc_i['shares'])
-									#print("uppr same firm and nest: " +str(dD_block[i, k]))
-								else:
-									dD_block[i, k] = dD_block[k, i]
-									#print("lowr same firm and diff nest: " +str(dD_block[i, k]))
-							else:
-								dD_block[i, k] = 0
-					#dD_block_inv = inv(dD_block)
-					#print(dD_block_inv)
-					#dD_inv = dD_inv + (dD_block_inv,)
-					#print(dD_inv)
-					#print(dD_block)
-					dD = dD + (dD_block, )
-				#dD_inv_diag = block_diag(dD_inv)
-				#df['mg_costs'] = df['prices']+csr_matrix.dot(df['shares'], dD_inv_diag)
-				#dD.to_array()
-				#assert np.linalg.matrix_rank(dD) == dD.shape[1], "Not full rank"
-				#df['mg_costs'] = df['prices']+csr_matrix.dot(df['shares'], inv(dD)) # haven't changed yet
-				#print(df)
+					for market in df['market_ids'].unique():
+						df_market = df[df['market_ids']==market]
+						Owners = (df_market['firm_ids'].values.reshape(-1, 1)  == df_market['firm_ids'].values.reshape(1, -1)).astype(float)
+						Nests = (df_market['nesting_ids'].values.reshape(-1, 1)  == df_market['nesting_ids'].values.reshape(1, -1)).astype(float)
+
+						dD_block = (prices_param * np.outer(df_market['shares'],df_market['shares']) + prices_param * (rho/(1-rho)) * Nests * np.outer(df_market['shares'],df_market['within_nest_shares']))*Owners
+						np.fill_diagonal(dD_block,df_market['diag'])
+
+						dD_block = csr_matrix(dD_block)
+						dD_block_inv = inv(dD_block)
+
+						dD_inv = dD_inv + (dD_block_inv, )
+
+					dD_inv = block_diag(dD_inv)
+
+					#how to do the line below efficiently... this could be do market by market as well to avoid inverting the whole dD...
+					df['mg_costs'] = df['prices']+csr_matrix.dot(df['shares'], dD_inv)
+					print(df)
+					df.to_csv('../../../All/m_' + code + '/intermediate/demand_' + month_or_quarter + '_with_costs.csv', sep = ',', encoding = 'utf-8', index = False)
 
 			#logit
 			else:
@@ -414,6 +402,7 @@ code = sys.argv[1]
 month_or_quarter = sys.argv[2]
 estimate_type = sys.argv[3]
 linear_fe = sys.argv[4]
+simulation = sys.argv[5]
 
 log_out = open('../../../All/m_' + code + '/output/estimate_demand.log', 'w')
 log_err = open('../../../All/m_' + code + '/output/estimate_demand.err', 'w')
@@ -427,4 +416,3 @@ estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_qua
 
 log_out.close()
 log_err.close()
-

@@ -65,6 +65,10 @@ def get_betas(base_folder):
 		aggregated['se_pm_'+str(j)] = []
 		aggregated['pval_pm_'+str(j)] = []
 
+		aggregated['post_merger_merging_'+str(j)] = []
+		aggregated['se_pmm_'+str(j)] = []
+		aggregated['pval_pmm_'+str(j)] = []
+
 	#loop through folders in "All"
 	for folder in os.listdir(base_folder):
 
@@ -111,7 +115,6 @@ def get_betas(base_folder):
 					aggregated['se_pm_'+i].append(did_merger[i][(did_merger.index.get_loc('post_merger')+1)])
 					aggregated['pval_pm_'+i].append(did_merger[i][(did_merger.index.get_loc('post_merger')+2)])
 
-
 			#else:
 			#	assert coefficient, "Coefficient does not exist: %r" % coefficient
 
@@ -119,9 +122,9 @@ def get_betas(base_folder):
 
 	df = pd.DataFrame.from_dict(aggregated)
 	df = df.sort_values(by = 'merger').reset_index().drop('index', axis=1)
-	df = aux.clean_betas(df)
+	df = clean_betas(df)
 
-	df.to_csv('aggregated_name_change.csv', sep = ',')
+	df.to_csv('agg_no_overlap.csv', sep = ',')
 
 
 coef = sys.argv[1]

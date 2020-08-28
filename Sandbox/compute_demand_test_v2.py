@@ -12,7 +12,6 @@ import pickle
 import scipy.sparse as sp
 import subprocess
 from scipy.sparse import csr_matrix
-from scipy.sparse.linalg import inv
 
 def add_characteristics(code, df, char_map, chars):
 	for this_char in chars:
@@ -250,54 +249,31 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				file.close()
 				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
 				log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				own_price_elasticity = (prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
 				print(own_price_elasticity)
 
 				#marginal costs
-				#dD_inv = ()
-				print("prices param "+str(prices_param)+", and log-w-n " +str(log_within_nest_shares_param))
-				dD = ()
-				for market in df['market_ids'].unique()[0:2]:
-					df_market = df[df['market_ids']==market]
-					J = df_market.shape[0]
-					dD_block = csr_matrix((J, J), dtype=int)
-					for i in range(J):
-						for k in range(J):
-							upc_i = df_market.iloc[i]
-							upc_k = df_market.iloc[k]
-							print('share k ' + str(upc_i['shares']) + ' and share i ' +str(upc_k['shares']))
-							if (upc_i['firm_ids'] == upc_k['firm_ids']) & (i > k):
+				J = df.shape[0]
+				dD = csr_matrix((J, J), dtype=int)
+				for i in range(J):
+					for k in range(J):
+						upc_i = df.iloc[i]
+						upc_k = df.iloc[k]
+						if (upc_i['firm_ids'] == upc_k['firm_ids']):
+							if not (i == k):
 								if (upc_i['nesting_ids'] == upc_k['nesting_ids']):
-									dD_block[i, k] = -prices_param * upc_k['shares'] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*upc_i['within_nest_shares']+upc_i['shares'])
-									#print("lowr same firm and nest: " +str(dD_block[i, k]))
+									dD[i, k] = prices_param * upc_k['shares'] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*upc_i['within_nest_shares']+upc_i['shares'])
 								else:
-									dD_block[i, k] = -prices_param * upc_i['shares'] * upc_k['shares']
-									#print("lowr same firm and diff nest: " +str(dD_block[i, k]))
-							elif i == k:
-								dD_block[i, k] = own_price_elasticity[i] * (upc_i['shares']/upc_i['prices'])
-								#print("diagonal: " +str(dD_block[i, k]))
-
-							elif (upc_i['firm_ids'] == upc_k['firm_ids']) & (i < k):
-								if (upc_i['nesting_ids'] == upc_k['nesting_ids']):
-									dD_block[i, k] = -prices_param * upc_k['shares'] * ((log_within_nest_shares_param/(1-log_within_nest_shares_param))*upc_i['within_nest_shares']+upc_i['shares'])
-									#print("uppr same firm and nest: " +str(dD_block[i, k]))
-								else:
-									dD_block[i, k] = dD_block[k, i]
-									#print("lowr same firm and diff nest: " +str(dD_block[i, k]))
+									dD[i, k] = prices_param * upc_i['shares'] * upc_k['shares']
 							else:
-								dD_block[i, k] = 0
-					#dD_block_inv = inv(dD_block)
-					#print(dD_block_inv)
-					#dD_inv = dD_inv + (dD_block_inv,)
-					#print(dD_inv)
-					#print(dD_block)
-					dD = dD + (dD_block, )
-				#dD_inv_diag = block_diag(dD_inv)
-				#df['mg_costs'] = df['prices']+csr_matrix.dot(df['shares'], dD_inv_diag)
-				#dD.to_array()
-				#assert np.linalg.matrix_rank(dD) == dD.shape[1], "Not full rank"
-				#df['mg_costs'] = df['prices']+csr_matrix.dot(df['shares'], inv(dD)) # haven't changed yet
-				#print(df)
+								dD[i, k] = own_price_elasticity[i] * (upc_i['shares']/upc_i['prices'])
+								print(dD[i, k])
+								print((1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param))*upc_i['within_nest_shares']-upc_i['shares'])*prices_param*upc_i['shares'])
+						else:
+							dD[i, k] = 0
+				df['mg_costs'] = df['prices']+sparse.csr_matrix.dot(df['shares'], inv(dD))
+				print(df)
+
 
 			#logit
 			else:
@@ -356,7 +332,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				file.close()
 				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
 				log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				own_price_elasticity = (prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
 
 			#logit
 			else:
@@ -379,7 +355,7 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				stata_output = file.read()
 				file.close()
 				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				own_price_elasticity = (prices_param * df['prices'])*(1-df['shares'])
+				own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
 
 
 	elif estimate_type == 'blp':

@@ -70,9 +70,9 @@ def get_betas(base_folder):
 		merger_folder = base_folder + folder + '/output'
 
 		#go inside folders with step5 finished
-		if (os.path.exists(merger_folder + '/did_stata_month_0.csv')) and check_overlap(merger_folder)[0]:
+		if (os.path.exists(merger_folder + '/did_stata_month_1.csv')) and check_overlap(merger_folder)[0]:
 
-			did_merger = pd.read_csv(merger_folder + '/did_stata_month_0.csv', sep=',')
+			did_merger = pd.read_csv(merger_folder + '/did_stata_month_1.csv', sep=',')
 			did_merger.index = did_merger['Unnamed: 0']
 
 			descr_data = pd.read_csv(merger_folder + '/../intermediate/stata_did_month.csv', sep=',')

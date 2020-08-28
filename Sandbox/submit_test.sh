@@ -17,4 +17,4 @@ python -m pip install pyblp --user
 python -m pip install linearmodels --user
 python -m pip install pyhdfe --user
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox
-python demand_test.py 1973045020_2 quarter logit True
+python compute_demand_test.py 1912896020_1 quarter logit True

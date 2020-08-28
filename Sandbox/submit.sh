@@ -16,4 +16,4 @@ python -m pip install pyblp --user
 python -m pip install linearmodels --user
 python -m pip install pyhdfe --user
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox
-python agg_test_no_overlap.py post_merger_merging 2
+python agg_test.py post_merger_merging 2

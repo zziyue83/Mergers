@@ -4,10 +4,11 @@
 #SBATCH -p buyin
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -c 1
-#SBATCH -t 100:00:00
-#SBATCH --mail-user=yintianzhan2021@u.northwestern.edu
-#SBATCH --mem=20G
+#SBATCH -t 12:00:00
+#SBATCH --mail-user=youremail@email.com
+#SBATCH --mem=15G
 #SBATCH --nodes=1
 
 module load python/anaconda3.6
-python get_corr_matrix.py 2033113020_1
+cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Main
+python get_units.py CODE

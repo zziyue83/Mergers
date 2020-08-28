@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "agg_test_no_overlap.py", line 136, in <module>
-    get_betas(base_folder)
-  File "agg_test_no_overlap.py", line 106, in get_betas
-    aggregated['post_merger_merging'+'_'+i].append(did_merger[i]['post_merger_merging'])
-KeyError: 'post_merger_merging_1'
