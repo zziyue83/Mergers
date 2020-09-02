@@ -91,7 +91,8 @@ def gather_product_data(code, month_or_quarter = 'month'):
 
 	to_append = characteristics_ls
 	if (nest is not None) and (nest not in characteristics_ls) and (nest != 'inside'):
-		to_append.append(nest)
+		# to_append.append(nest)
+		to_append = to_append + nest
 
 	# Get the characteristics map
 	char_df = pd.read_csv('../../../All/m_' + code + '/properties/characteristics.csv', delimiter = ',', index_col = 'upc')
