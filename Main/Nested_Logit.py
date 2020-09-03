@@ -67,7 +67,7 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 		inst_data['date'] = pd.to_datetime(inst_data['date'])
 		inst_data['year'] = inst_data['date'].dt.year
 		inst_data['value'] = inst_data['value'].replace(".", "")
-		pd.to_numeric(inst_data['value'])
+		inst_data['value'] = pd.to_numeric(inst_data['value'])
 
 		if month_or_quarter == 'month':
 			inst_data[month_or_quarter] = inst_data['date'].dt.month
