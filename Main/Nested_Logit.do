@@ -42,6 +42,9 @@ if "`4'" == "Nested_Logit" {
 		estadd scalar APF2=first[4,2]
 		esttab est1 st1* using `2'/demand_results_`3'.tex, stats(N r2 F APF1 APF2, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest")) replace
 		outreg2 est1 st1* using `2'/demand_results_`3'.txt, replace
+		*REGHDFE OLS
+		reghdfe logsj_logs0 prices log_within_nest_shares, abs(dma_code upc) cluster(dma_code)
+		outreg2 using `2'/demand_results_`3'.txt, stats(coef se) append
 
 
 	}
@@ -56,7 +59,9 @@ if "`4'" == "Nested_Logit" {
 		estadd scalar APF2=first[4,2]
 		esttab est1 st1* using `2'/demand_results_`3'.tex, stats(N r2 F APF1 APF2, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest")) replace
 		outreg2 est1 st1* using `2'/demand_results_`3'.txt, replace
-
+		*REGHDFE OLS
+		reghdfe logsj_logs0 prices log_within_nest_shares chars*, abs(dma_code) cluster(dma_code)
+		outreg2 using `2'/demand_results_`3'.txt, stats(coef se) append
 
 	}
 }
@@ -73,7 +78,9 @@ else if "`4'" == "Logit" {
 		estadd scalar APF1=first[4,1]
 		esttab est1 st1* using `2'/demand_results_`3'.tex, stats(N r2 F APF1 APF2, labels("Observations" "R-squared" "F-statistic" "F-prices")) replace
 		outreg2 est1 st1* using `2'/demand_results_`3'.txt, replace
-
+		*REGHDFE OLS
+		reghdfe logsj_logs0 prices, abs(dma_code upc) cluster(dma_code)
+		outreg2 using `2'/demand_results_`3'.txt, stats(coef se) append
 
 	}
 
@@ -86,6 +93,9 @@ else if "`4'" == "Logit" {
 		estadd scalar APF1=first[4,1]
 		esttab est1 st1* using `2'/demand_results_`3'.tex, stats(N r2 F APF1 APF2, labels("Observations" "R-squared" "F-statistic" "F-prices")) replace
 		outreg2 est1 st1* using `2'/demand_results_`3'.txt, replace
+		*REGHDFE OLS
+		reghdfe logsj_logs0 prices chars*, abs(dma_code) cluster(dma_code)
+		outreg2 using `2'/demand_results_`3'.txt, stats(coef se) append
 
 
 	}
