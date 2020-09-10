@@ -122,6 +122,18 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 		max_quarter = 4
 		years = list(filter(lambda x: int(x) <= 2012, years))
 
+		#manual fix for RBC_Bread
+	if ((code=='2033113020_2') & (min_year < 2007)):
+		min_year = 2007
+		min_month = 1
+		years = list(filter(lambda x: int(x) >= 2007, years))
+
+		#manual fix for RBC_Cake
+	if ((code=='2033113020_3') & (min_year < 2007)):
+		min_year = 2007
+		min_month = 1
+		years = list(filter(lambda x: int(x) >= 2007, years))
+
 	area_time_upc_list = []
 	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['brand_code_uc', 'brand_descr', 'multi', 'size1_units', 'size1_amount']
