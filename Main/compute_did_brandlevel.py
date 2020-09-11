@@ -492,7 +492,7 @@ info_dict = aux.parse_info(code)
 merging_parties = aux.get_parties(info_dict["MergingParties"])
 
 for timetype in ['month', 'quarter']:
-	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '.csv', delimiter = ',')
+	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '_brandlevel'+'.csv', delimiter = ',')
 	df = aux.append_owners(code, df, timetype)
 	if timetype == 'month':
 		overlap_df = write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
