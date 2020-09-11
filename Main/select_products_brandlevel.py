@@ -168,7 +168,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 	area_time_upc = clean_data(code, area_time_upc)
 	area_time_upc['conversion'] = area_time_upc['size1_units'].map(conversion_map['conversion'])
 	area_time_upc['volume'] = area_time_upc['units'] * area_time_upc['size1_amount'] * area_time_upc['multi'] * area_time_upc['conversion']
-	aggregation_function = {'week_end' : 'first', 'units' : 'sum', 'prmult' : 'mean', 'price' : 'mean', 'feature' : 'first', 'display' : 'first', 'store_code_uc' : 'first', 'sales' : 'sum', 'volume' : 'sum', 'module' : 'first', 'brand_code_uc':'first', 'brand_descr':'first', 'upc':'first'}
+	aggregation_function = {'week_end' : 'first', 'units' : 'sum', 'prmult' : 'mean', 'price' : 'mean', 'feature' : 'first', 'display' : 'first', 'store_code_uc' : 'first', 'sales' : 'sum', 'volume' : 'sum', 'module' : 'first', 'brand_descr':'first', 'upc':'first'}
 
 	print(area_time_upc.columns)
 	print(area_time_upc.head())
