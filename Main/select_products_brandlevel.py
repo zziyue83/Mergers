@@ -172,7 +172,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
 	print(area_time_upc.columns)
 	print(area_time_upc.head())
-	area_time_brand = area_time_upc.groupby(['year', month_or_quarter, 'brand_code_uc', 'upc_ver_uc', 'dma_code']).agg(aggregation_function).reindex(columns = area_time_upc.columns)
+	area_time_brand = area_time_upc.groupby(['year', month_or_quarter, 'brand_code_uc', 'dma_code']).agg(aggregation_function).reindex(columns = area_time_upc.columns)
 	area_time_brand['prices'] = area_time_brand['sales'] / area_time_brand['volume']
 	area_time_brand.drop(['week_end','store_code_uc'], axis=1, inplace=True)
 
