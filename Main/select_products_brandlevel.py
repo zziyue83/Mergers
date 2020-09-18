@@ -256,8 +256,8 @@ def write_brands_upc(code, agg, brand_set):
 		print(agg[column].describe())
 
 	base_folder = '../../../All/m_' + code + '/intermediate/'
-	agg.drop(['volume'], axis = 1).to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
-	print(str(len(agg)) + ' unique upcs')
+	# agg.drop(['volume'], axis = 1).to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
+	# print(str(len(agg)) + ' unique upcs')
 
 	agg = agg[['brand_code_uc', 'brand_descr', 'volume']]
 	total_volume = agg.volume.sum()

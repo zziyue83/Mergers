@@ -48,7 +48,7 @@ def compute_hhi_map(df, owner_col = 'owner'):
 	hhi_map = df.to_dict()
 	return hhi_map
 
-def add_dhhi(df, merging_date, month_or_quarter):
+def add_dhhi_brandlevel(df, merging_date, month_or_quarter):
 
 	# Pull merger year and merger month (or quarter)
 	if month_or_quarter == 'month':
@@ -59,10 +59,10 @@ def add_dhhi(df, merging_date, month_or_quarter):
 
 	# First, create shares for pre-merger period at the DMA level
 	df_pre = df.loc[(df['year'] < merger_year) | ((df['year'] == merger_year) & (df[month_or_quarter] < merger_month_or_quarter))].copy()
-	df_pre = df_pre.groupby(['upc','dma_code'])['shares','brand_code_uc'].agg({'shares':'sum','brand_code_uc':'first'}).reset_index()
+	df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
 	df_pre['dma_share'] = df_pre.groupby('dma_code')['shares'].transform('sum') # We may want to generalize this. Right now, it assumes that market size is constant over time.
 	df_pre['inside_share'] = df_pre['shares']/df_pre['dma_share']
-	df_pre = df_pre[['upc','dma_code','inside_share']]
+	df_pre = df_pre[['brand_code_uc','dma_code','inside_share']]
 	df_pre = df_pre.rename(columns = {'inside_share' : 'shares'})
 
 	# Subtract 2 months/quarters for the "pre" just to deal with indexing issues
@@ -83,7 +83,7 @@ def add_dhhi(df, merging_date, month_or_quarter):
 		df_pre['year'] = merger_year - 1
 
 	print(df_pre[[month_or_quarter, 'year']])
-	df_pre_own = aux.append_owners(code, df_pre, month_or_quarter, add_dhhi = True)
+	df_pre_own = aux.append_owners_brandlevel(code, df_pre, month_or_quarter, add_dhhi = True)
 
 	# Get inside HHI pre at the DMA level
 	pre_hhi_map = compute_hhi_map(df_pre_own[['dma_code', 'shares', 'owner']])
@@ -191,7 +191,7 @@ def get_major_competitor(df, ownership_groups = None):
 	print(major_competitor)
 	return major_competitor
 
-def did(df, merging_date, merging_parties, major_competitor = None, month_or_quarter = 'month'):
+def did_brandlevel(df, merging_date, merging_parties, major_competitor = None, month_or_quarter = 'month'):
 
 	# Pull merger year and merger month (or quarter)
 	if month_or_quarter == 'month':
@@ -201,8 +201,8 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 	merger_year = merging_date.year
 
 	# Add DHHI, add DMA/UPC indicator, log price and post-merger indicator
-	df = add_dhhi(df, merging_date, month_or_quarter)
-	df['dma_upc'] = df['dma_code'].astype(str) + "_" + df['upc'].astype(str)
+	df = add_dhhi_brandlevel(df, merging_date, month_or_quarter)
+	df['dma_brand'] = df['dma_code'].astype(str) + "_" + df['brand_code_uc'].astype(str)
 	df['lprice'] = np.log(df['prices'])
 	df['post_merger'] = 0
 	df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
@@ -241,9 +241,9 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 
 	use_stata = True
 	if use_stata:
-		data.to_csv('../../../All/m_' + code + '/intermediate/stata_did_' + month_or_quarter + '.csv', sep = ',', encoding = 'utf-8', index = False)
+		data.to_csv('../../../All/m_' + code + '/intermediate/stata_did_' + month_or_quarter + '_brandlevel.csv', sep = ',', encoding = 'utf-8', index = False)
 
-		dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/did_test2.do"
+		dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/did_test2_brandlevel.do"
 		DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
 		path_input = "../../../All/m_" + code + "/intermediate"
 		path_output = "../output/"
@@ -255,9 +255,9 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 
 		for est_type in estimate_type:
 
-			read_file = pd.read_csv(path_input + "/"+ path_output + "did_stata_" + timetype + '_' + est_type + ".txt", sep = "\t")
+			read_file = pd.read_csv(path_input + "/"+ path_output + "brandlevel_did_stata_" + timetype + '_' + est_type + ".txt", sep = "\t")
 			read_file = read_file.replace(np.nan, '', regex=True)
-			read_file.to_csv(path_input + "/" + path_output + "did_stata_" + timetype + '_' + est_type + ".csv", index=None)
+			read_file.to_csv(path_input + "/" + path_output + "brandlevel_did_stata_" + timetype + '_' + est_type + ".csv", index=None)
 
 
 
@@ -483,8 +483,8 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 
 
 code = sys.argv[1]
-log_out = open('../../../All/m_' + code + '/output/compute_did.log', 'w')
-log_err = open('../../../All/m_' + code + '/output/compute_did.err', 'w')
+log_out = open('../../../All/m_' + code + '/output/compute_did_brandlevel.log', 'w')
+log_err = open('../../../All/m_' + code + '/output/compute_did_brandlevel.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
@@ -493,7 +493,7 @@ merging_parties = aux.get_parties(info_dict["MergingParties"])
 
 for timetype in ['month', 'quarter']:
 	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '_brandlevel'+'.csv', delimiter = ',')
-	df = aux.append_owners(code, df, timetype)
+	df = aux.append_owners_brandlevel(code, df, timetype)
 	if timetype == 'month':
 		overlap_df = write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
 		if "MajorCompetitor" in info_dict:
@@ -505,7 +505,7 @@ for timetype in ['month', 'quarter']:
 		print(major_competitor)
 
 	dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
-	did(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype)
+	did_brandlevel(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype)
 
 print("compute_did successfully terminated")
 log_out.close()
