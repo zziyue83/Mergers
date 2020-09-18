@@ -225,7 +225,7 @@ def did_brandlevel(df, merging_date, merging_parties, major_competitor = None, m
 	# df.loc[df['year'] > min_year]['trend'] = (num_periods - min_month_or_quarter) + num_periods * (df.loc[df['year'] > min_year]['year'] - min_year - 1) + df[df['year'] > min_year][month_or_quarter]
 
 	df['time_index'] = df['year']*100 + df[month_or_quarter]
-	data = df.set_index(['dma_upc', 'time_index'])
+	data = df.set_index(['dma_brand', 'time_index'])
 
 	# Add interaction terms
 	data['post_merger_merging'] = data['post_merger']*data['merging']
