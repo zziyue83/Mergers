@@ -127,7 +127,7 @@ def add_dhhi_brandlevel(df, merging_date, month_or_quarter):
 	# df_post[month_or_quarter] = merger_month_or_quarter
 
 
-	df_post_own = aux.append_owners(code, df_post, month_or_quarter, add_dhhi = True)
+	df_post_own = aux.append_owners_brandlevel(code, df_post, month_or_quarter, add_dhhi = True)
 
 	# Get inside HHI post at the DMA level
 	post_hhi_map = compute_hhi_map(df_post_own[['dma_code', 'shares', 'owner']])
