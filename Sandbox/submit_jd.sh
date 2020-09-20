@@ -9,8 +9,7 @@
 #SBATCH --mem=20G
 #SBATCH --nodes=1
 
-module load knitro/10.3
 module load python/anaconda3.6
 
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox
-python compute_demand_test-1.py 1973045020_2 quarter logit True
+python NL_agg.py

@@ -10,4 +10,4 @@
 #SBATCH --nodes=1
 
 module load python/anaconda3.6
-python compute_did_brandlevel.py 1912896020_1
+python select_products_brandlevel.py 1912896020_1

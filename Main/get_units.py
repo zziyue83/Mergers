@@ -66,16 +66,17 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		years = list(filter(lambda x: int(x) <= 2012, years))
 
 		#manual fix for RBC_Bread
-	if ((code=='2033113020_2') & (min_year < 2007)):
+	if ((code=='2033113020_2') & (int(years[0]) < 2007)):
 		min_year = 2007
 		min_month = 1
-		years = list(filter(lambda x: int(x) >= 2007, years))
+		years = years[1:]
+		print('entering here')
 
 		#manual fix for RBC_Cake
-	if ((code=='2033113020_3') & (min_year < 2007)):
+	if ((code=='2033113020_3') & (int(years[0]) < 2007)):
 		min_year = 2007
 		min_month = 1
-		years = list(filter(lambda x: int(x) >= 2007, years))
+		years = years[1:]
 
 	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['size1_units', 'size1_amount', 'multi']

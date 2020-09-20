@@ -20,9 +20,10 @@ python -m pip install --tqdm --user
 python -m pip install --pickle --user
 python -m pip install --upgrade xlrd --user
 python -m pip install --upgrade linearmodels --user
+python -m pip install --upgrade gepy --user
 
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Main
-python compute_did.py 3035705020_3
+python compute_distances.py 2129407020_4
 
 
 
