@@ -27,7 +27,7 @@ def get_insts_or_chars_or_nests(full_string):
 	elif ',' in full_string:
 		info_list = full_string.split(',')
 	else:
-		info_list = full_string
+		info_list = [full_string]
 	return info_list
 
 def get_groups_and_modules(full_string):
