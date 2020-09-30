@@ -86,12 +86,12 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 
 	# Compute shares
 	if volume:
-		df_pre['agg_volume'] = df_pre['volume'].transform('sum')
+		df_pre['agg_volume'] = df_pre['volume'].sum()
 		df_pre['inside_share_vol'] = df_pre['volume']/df_pre['agg_volume']
 		df_pre = df_pre[['upc','owner','inside_share_vol']]
 		df_pre = df_pre.rename(columns = {'inside_share_vol' : 'shares'})
 	else:
-		df_pre['agg_sales'] = df_pre['sales'].transform('sum')
+		df_pre['agg_sales'] = df_pre['sales'].sum()
 		df_pre['inside_share_sales'] = df_pre['sales']/df_pre['agg_sales']
 		df_pre = df_pre[['upc','owner','inside_share_sales']]
 		df_pre = df_pre.rename(columns = {'inside_share_sales' : 'shares'})
