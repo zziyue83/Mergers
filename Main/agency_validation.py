@@ -124,13 +124,13 @@ log_err = open('../../../All/Validation/output/agency_validation.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
-info_dict = aux.parse_info(code)
-dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
-merging_parties = aux.get_parties(info_dict["MergingParties"])
-
 df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_month.csv', delimiter = ',')
 
 for code in code_list:
+
+	info_dict = aux.parse_info(code)
+	dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
+	merging_parties = aux.get_parties(info_dict["MergingParties"])
 
 	hhi_dma_out = compute_nodivest_dhhi_dma(df, code, dt, merging_parties, volume)
 
