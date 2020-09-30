@@ -88,12 +88,12 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 	if volume:
 		df_pre['agg_volume'] = df_pre.groupby(['owner'])['volume'].transform('sum')
 		df_pre['inside_share_vol'] = df_pre['volume']/df_pre['agg_volume']
-		df_pre = df_pre[['upc','inside_share_vol']]
+		df_pre = df_pre[['upc','owner','inside_share_vol']]
 		df_pre = df_pre.rename(columns = {'inside_share_vol' : 'shares'})
 	else:
 		df_pre['agg_sales'] = df_pre.groupby(['owner'])['sales'].transform('sum')
 		df_pre['inside_share_sales'] = df_pre['sales']/df_pre['agg_sales']
-		df_pre = df_pre[['upc','inside_share_sales']]
+		df_pre = df_pre[['upc','owner','inside_share_sales']]
 		df_pre = df_pre.rename(columns = {'inside_share_sales' : 'shares'})
 
 	# Compute pre-period HHI
