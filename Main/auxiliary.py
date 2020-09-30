@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import pandasql as ps
 import os
+import tqdm 
 
 def parse_info(code):
 	file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
@@ -27,7 +28,7 @@ def get_insts_or_chars_or_nests(full_string):
 	elif ',' in full_string:
 		info_list = full_string.split(',')
 	else:
-		info_list = full_string
+		info_list = [full_string]
 	return info_list
 
 def get_groups_and_modules(full_string):
