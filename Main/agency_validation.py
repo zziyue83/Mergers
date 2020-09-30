@@ -101,21 +101,16 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 	df_pre_owner['shares2'] = df_pre_owner['shares'] * df_pre_owner['shares']
 	hhi_pre = df_pre_owner.agg({'shares2':'sum'})
 	hhi_pre = pd.DataFrame({'hhi_pre': hhi_pre})
-	#hhi_pre = hhi_pre.rename(columns = {'shares2' : 'hhi_pre'})
 	hhi_pre['merger_code'] = code
-	print(hhi_pre.head())
 
 	# Add merging party indicator
 	df_post_owner = df_pre_owner.copy()
 	df_post_owner.loc[df_post_owner['owner'].isin(merging_parties),'owner'] = 'MergedEntity'
-	print(df_post_owner.head())
 	df_post_owner = df_post_owner.groupby(['owner']).agg({'shares':'sum'}).reset_index()
 	df_post_owner['shares2'] = df_post_owner['shares'] * df_post_owner['shares']
 	hhi_post = df_post_owner.agg({'shares2':'sum'})
 	hhi_post = pd.DataFrame({'hhi_post': hhi_post})
-	#hhi_post = hhi_post.rename(columns = {'shares2' : 'hhi_post'})
 	hhi_post['merger_code'] = code
-	print(hhi_post.head())
 
 	# Join pre/post HHI and compute DHHI
 	agg_level = hhi_pre.merge(hhi_post, on='merger_code')
@@ -151,6 +146,7 @@ for code in code_list:
 	hhi_agg = compute_nodivest_dhhi_agg(df, code, dt, merging_parties, volume)
 	hhi_agg_out = hhi_agg_out.append(hhi_agg)
 
+hhi_agg_out = hhi_agg_out[['merger_code','hhi_pre','hhi_post','dhhi']]
 if volume:
 	hhi_agg_out.to_csv('../../../All/Validation/valid_vol_agg.csv', index = False, sep = ',', encoding = 'utf-8')
 else:
