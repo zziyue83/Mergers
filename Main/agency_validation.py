@@ -40,17 +40,17 @@ def compute_nodivest_dhhi_dma(df, code, merging_date, merging_parties, volume):
 	df_pre_own = aux.append_owners(code, df_pre, 'month', add_dhhi = True)
 
 	# Collapse to DMA-owner level and compute pre-period HHI
-	df_pre_dma_owner = df_pre_own.groupby(['owner','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+	df_pre_dma_owner = df_pre_own.groupby(['owner','dma_code']).agg({'shares':'sum'}).reset_index()
 	df_pre_dma_owner['shares2'] = df_pre_dma_owner['shares'] * df_pre_dma_owner['shares']
-	hhi_pre = df_pre_dma_owner.groupby(['dma_code'])['shares2'].agg({'shares2':'sum'}).reset_index()
+	hhi_pre = df_pre_dma_owner.groupby(['dma_code']).agg({'shares2':'sum'}).reset_index()
 	hhi_pre = hhi_pre.rename(columns = {'shares2' : 'hhi_pre'})
 
 	# Add merging party indicator and compute post-period HHI
 	df_post_dma_owner = df_pre_dma_owner.copy()
 	df_post_dma_owner.loc[df_post_dma_owner['owner'].isin(merging_parties),'owner'] = 'MergedEntity'
-	df_post_dma_owner = df_post_dma_owner.groupby(['owner','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+	df_post_dma_owner = df_post_dma_owner.groupby(['owner','dma_code']).agg({'shares':'sum'}).reset_index()
 	df_post_dma_owner['shares2'] = df_post_dma_owner['shares'] * df_post_dma_owner['shares']
-	hhi_post = df_post_dma_owner.groupby(['dma_code'])['shares2'].agg({'shares2':'sum'}).reset_index()
+	hhi_post = df_post_dma_owner.groupby(['dma_code']).agg({'shares2':'sum'}).reset_index()
 	hhi_post = hhi_post.rename(columns = {'shares2' : 'hhi_post'})
 
 	# Join pre/post HHI and compute DHHI
@@ -98,7 +98,7 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 
 	# Compute pre-period HHI
 	df_pre['shares2'] = df_pre['shares'] * df_pre['shares']
-	hhi_pre = df_pre['shares2'].agg({'shares2':'sum'})
+	hhi_pre = df_pre.agg({'shares2':'sum'})
 	hhi_pre = hhi_pre.to_frame()
 	hhi_pre = hhi_pre.rename(columns = {'shares2' : 'hhi_pre'})
 	hhi_pre['merger_code'] = code
@@ -106,9 +106,9 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 	# Add merging party indicator
 	df_post = df_pre.copy()
 	df_post.loc[df_post['owner'].isin(merging_parties),'owner'] = 'MergedEntity'
-	df_post = df_post.groupby(['owner'])['shares'].agg({'shares':'sum'}).reset_index()
+	df_post = df_post.groupby(['owner']).agg({'shares':'sum'}).reset_index()
 	df_post['shares2'] = df_post['shares'] * df_post['shares']
-	hhi_post = df_post['shares2'].agg({'shares2':'sum'})
+	hhi_post = df_post.agg({'shares2':'sum'})
 	hhi_post = hhi_post.to_frame()
 	hhi_post = hhi_post.rename(columns = {'shares2' : 'hhi_post'})
 	hhi_post['merger_code'] = code
@@ -128,6 +128,7 @@ log_err = open('../../../All/Validation/output/agency_validation.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
+hhi_agg_out = pd.DataFrame()
 for code in code_list:
 
 	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_month.csv', delimiter = ',')
