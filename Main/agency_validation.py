@@ -100,7 +100,7 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 	df_pre_owner = df_pre.groupby(['owner']).agg({'shares':'sum'}).reset_index()
 	df_pre_owner['shares2'] = df_pre_owner['shares'] * df_pre_owner['shares']
 	hhi_pre = df_pre_owner.agg({'shares2':'sum'})
-	hhi_pre = pd.DataFrame('hhi_pre': hhi_pre)
+	hhi_pre = pd.DataFrame({'hhi_pre': hhi_pre})
 	#hhi_pre = hhi_pre.rename(columns = {'shares2' : 'hhi_pre'})
 	hhi_pre['merger_code'] = code
 	print(hhi_pre.head())
@@ -112,7 +112,7 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 	df_post_owner = df_post_owner.groupby(['owner']).agg({'shares':'sum'}).reset_index()
 	df_post_owner['shares2'] = df_post_owner['shares'] * df_post_owner['shares']
 	hhi_post = df_post_owner.agg({'shares2':'sum'})
-	hhi_post = pd.DataFrame('hhi_post': hhi_post)
+	hhi_post = pd.DataFrame({'hhi_post': hhi_post})
 	#hhi_post = hhi_post.rename(columns = {'shares2' : 'hhi_post'})
 	hhi_post['merger_code'] = code
 	print(hhi_post.head())
