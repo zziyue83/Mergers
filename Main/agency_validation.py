@@ -44,7 +44,6 @@ def compute_nodivest_dhhi_dma(df, code, merging_date, merging_parties, volume):
 	df_pre_dma_owner['shares2'] = df_pre_dma_owner['shares'] * df_pre_dma_owner['shares']
 	hhi_pre = df_pre_dma_owner.groupby(['dma_code']).agg({'shares2':'sum'}).reset_index()
 	hhi_pre = hhi_pre.rename(columns = {'shares2' : 'hhi_pre'})
-	print(hhi_pre.head())
 
 	# Add merging party indicator and compute post-period HHI
 	df_post_dma_owner = df_pre_dma_owner.copy()
@@ -53,7 +52,6 @@ def compute_nodivest_dhhi_dma(df, code, merging_date, merging_parties, volume):
 	df_post_dma_owner['shares2'] = df_post_dma_owner['shares'] * df_post_dma_owner['shares']
 	hhi_post = df_post_dma_owner.groupby(['dma_code']).agg({'shares2':'sum'}).reset_index()
 	hhi_post = hhi_post.rename(columns = {'shares2' : 'hhi_post'})
-	print(hhi_post.head())
 
 	# Join pre/post HHI and compute DHHI
 	dma_level = hhi_pre.merge(hhi_post, on='dma_code')
@@ -88,30 +86,31 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 
 	# Compute shares
 	if volume:
-		df_pre['agg_volume'] = df_pre.groupby(['owner'])['volume'].transform('sum')
+		df_pre['agg_volume'] = df_pre['volume'].transform('sum')
 		df_pre['inside_share_vol'] = df_pre['volume']/df_pre['agg_volume']
 		df_pre = df_pre[['upc','owner','inside_share_vol']]
 		df_pre = df_pre.rename(columns = {'inside_share_vol' : 'shares'})
 	else:
-		df_pre['agg_sales'] = df_pre.groupby(['owner'])['sales'].transform('sum')
+		df_pre['agg_sales'] = df_pre['sales'].transform('sum')
 		df_pre['inside_share_sales'] = df_pre['sales']/df_pre['agg_sales']
 		df_pre = df_pre[['upc','owner','inside_share_sales']]
 		df_pre = df_pre.rename(columns = {'inside_share_sales' : 'shares'})
 
 	# Compute pre-period HHI
-	df_pre['shares2'] = df_pre['shares'] * df_pre['shares']
-	hhi_pre = df_pre.agg({'shares2':'sum'}).reset_index()
+	df_pre_owner = df_pre.groupby(['owner']).agg({'shares':'sum'}).reset_index()
+	df_pre_owner['shares2'] = df_pre_owner['shares'] * df_pre_owner['shares']
+	hhi_pre = df_pre_owner.agg({'shares2':'sum'}).reset_index()
 	hhi_pre = hhi_pre.rename(columns = {'shares2' : 'hhi_pre'})
 	hhi_pre['merger_code'] = code
 	print(hhi_pre.head())
 
 	# Add merging party indicator
-	df_post = df_pre.copy()
-	df_post.loc[df_post['owner'].isin(merging_parties),'owner'] = 'MergedEntity'
-	print(df_post.head())
-	df_post = df_post.groupby(['owner']).agg({'shares':'sum'}).reset_index()
-	df_post['shares2'] = df_post['shares'] * df_post['shares']
-	hhi_post = df_post.agg({'shares2':'sum'}).reset_index()
+	df_post_owner = df_pre_owner.copy()
+	df_post_owner.loc[df_post_owner['owner'].isin(merging_parties),'owner'] = 'MergedEntity'
+	print(df_post_owner.head())
+	df_post_owner = df_post_owner.groupby(['owner']).agg({'shares':'sum'}).reset_index()
+	df_post_owner['shares2'] = df_post_owner['shares'] * df_post_owner['shares']
+	hhi_post = df_post_owner.agg({'shares2':'sum'}).reset_index()
 	hhi_post = hhi_post.rename(columns = {'shares2' : 'hhi_post'})
 	hhi_post['merger_code'] = code
 	print(hhi_post.head())
