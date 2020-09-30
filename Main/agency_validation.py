@@ -99,6 +99,7 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 	# Compute pre-period HHI
 	df_pre['shares2'] = df_pre['shares'] * df_pre['shares']
 	hhi_pre = df_pre['shares2'].agg({'shares2':'sum'})
+	hhi_pre = hhi_pre.to_frame()
 	hhi_pre = hhi_pre.rename(columns = {'shares2' : 'hhi_pre'})
 	hhi_pre['merger_code'] = code
 
@@ -108,6 +109,7 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 	df_post = df_post.groupby(['owner'])['shares'].agg({'shares':'sum'}).reset_index()
 	df_post['shares2'] = df_post['shares'] * df_post['shares']
 	hhi_post = df_post['shares2'].agg({'shares2':'sum'})
+	hhi_post = hhi_post.to_frame()
 	hhi_post = hhi_post.rename(columns = {'shares2' : 'hhi_post'})
 	hhi_post['merger_code'] = code
 
