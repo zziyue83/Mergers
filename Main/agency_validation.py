@@ -12,7 +12,7 @@ def compute_nodivest_dhhi_dma(df, code, merging_date, merging_parties, volume):
 
 	# First, create shares for pre-merger period at the DMA level
 	df_pre = df.loc[(df['year'] < merger_year) | ((df['year'] == merger_year) & (df['month'] < merger_month_or_quarter))].copy()
-	df_pre = df_pre.groupby(['upc','dma_code'])['sales','volume','brand_code_uc'].agg({'sales':'sum','volume':'sum','brand_code_uc':'first'}).reset_index()
+	df_pre = df_pre.groupby(['upc','dma_code'])['sales','volume'].agg({'sales':'sum','volume':'sum'}).reset_index()
 
 	if volume:
 		df_pre['dma_volume'] = df_pre.groupby('dma_code')['volume'].transform('sum')
