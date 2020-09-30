@@ -103,7 +103,7 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 	hhi_pre['merger_code'] = code
 
 	# Add merging party indicator
-	df_post = dma_pre.copy()
+	df_post = df_pre.copy()
 	df_post.loc[df_post['owner'].isin(merging_parties),'owner'] = 'MergedEntity'
 	df_post = df_post.groupby(['owner'])['shares'].agg({'shares':'sum'}).reset_index()
 	df_post['shares2'] = df_post['shares'] * df_post['shares']
