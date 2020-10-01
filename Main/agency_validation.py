@@ -140,7 +140,7 @@ log_err = open('../../../All/Validation/output/agency_validation.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
-dma_descr_map = get_dma_map(2018)
+dma_descr_map = get_dma_map('2018')
 
 hhi_agg_out = pd.DataFrame()
 for code in code_list:
