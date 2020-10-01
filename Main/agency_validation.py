@@ -130,8 +130,7 @@ def get_dma_map(year):
 	dmas_descr = store_table[['dma_code','dma_descr']]
 	dmas_descr = dmas_descr.drop_duplicates()
 	dmas_descr.set_index('dma_code')
-	dma_descr_map = dmas_descr.to_dict()
-	return(dma_descr_map)
+	return(dmas_descr)
 
 code_list = sys.argv[1].split(',')
 volume = sys.argv[2]
@@ -152,7 +151,7 @@ for code in code_list:
 	merging_parties = aux.get_parties(info_dict["MergingParties"])
 
 	hhi_dma_out = compute_nodivest_dhhi_dma(df, code, dt, merging_parties, volume)
-	hhi_dma_out['dma_descr'] = hhi_dma_out['dma_code'].map(dma_descr_map)
+	hhi_dma_out = hhi_dma_out.merge(dma_descr_map, on='dma_code', how='left')
 	hhi_dma_out = hhi_dma_out[['dma_code','dma_descr','hhi_pre','hhi_post','dhhi']]
 
 	if volume:
