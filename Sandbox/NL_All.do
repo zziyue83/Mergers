@@ -27,8 +27,8 @@ ssc install reghdfe, replace
 ssc install estout, replace
 ssc install ivreghdfe, replace
 ssc install unique, replace
-ssc install rlasso, replace
-ssc install ivlasso, replace
+ssc install lassopack, replace
+ssc install pdslasso, replace
 
 di "`4'"
 di "`5'"
