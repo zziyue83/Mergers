@@ -152,7 +152,7 @@ for code in code_list:
 	merging_parties = aux.get_parties(info_dict["MergingParties"])
 
 	hhi_dma_out = compute_nodivest_dhhi_dma(df, code, dt, merging_parties, volume)
-	hhi_dma_out['dma_descr'] = hhi_dma_out.map(dma_descr_map)
+	hhi_dma_out['dma_descr'] = hhi_dma_out['dma_code'].map(dma_descr_map)
 	hhi_dma_out = hhi_dma_out[['dma_code','dma_descr','hhi_pre','hhi_post','dhhi']]
 
 	if volume:
