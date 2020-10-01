@@ -120,12 +120,27 @@ def compute_nodivest_dhhi_agg(df, code, merging_date, merging_parties, volume):
 
 	return(agg_level)
 
+def get_dma_map(year):
+
+	# Import store file
+	store_path = "../../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
+	store_table = pd.read_csv(store_path, delimiter = "\t", index_col = "store_code_uc")
+
+	# Keep unique DMA/DMA descriptions and send to dictionary
+	dmas_descr = store_table[['dma_code','dma_descr']]
+	dmas_descr = dmas_descr.drop_duplicates()
+	dmas_descr.set_index('dma_code')
+	dma_descr_map = dmas_descr.to_dict()
+	return(dma_descr_map)
+
 code_list = sys.argv[1].split(',')
 volume = sys.argv[2]
 log_out = open('../../../All/Validation/output/agency_validation.log', 'w')
 log_err = open('../../../All/Validation/output/agency_validation.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
+
+dma_descr_map = get_dma_map(2018)
 
 hhi_agg_out = pd.DataFrame()
 for code in code_list:
@@ -137,6 +152,8 @@ for code in code_list:
 	merging_parties = aux.get_parties(info_dict["MergingParties"])
 
 	hhi_dma_out = compute_nodivest_dhhi_dma(df, code, dt, merging_parties, volume)
+	hhi_dma_out['dma_descr'] = hhi_dma_out.map(dma_descr_map)
+	hhi_dma_out = hhi_dma_out[['dma_code','dma_descr','hhi_pre','hhi_post','dhhi']]
 
 	if volume:
 		hhi_dma_out.to_csv('../../../All/Validation/valid_vol_m_' + code + '.csv', index = False, sep = ',', encoding = 'utf-8')
