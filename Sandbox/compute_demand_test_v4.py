@@ -259,8 +259,10 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 					df['xi'] = df['upc'].map(df_xi['error'])
 					df = df.drop(['error'],axis=1)
 					simulation_check = pyblp.Simulation(pyblp.Formulation('0 + prices + log_within_nest_shares'),df,beta = [prices_param, log_within_nest_shares_param],rho = log_within_nest_shares_param,xi=df.xi)
+					print(simulation_check)
 					simulation_results_check = simulation_check.replace_endogenous(costs = np.zeros((len(df), 1)), prices = df.prices, iteration = pyblp.Iteration(method = 'return'))
 					print(simulation_results_check)
+					print('simulation')
 				else:
 					print("prices param "+str(prices_param)+", and log-w-n " +str(log_within_nest_shares_param))
 					rho = log_within_nest_shares_param
@@ -412,7 +414,7 @@ sys.stderr = log_err
 df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
 print(df.shape)
 estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
-	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = linear_fe)
+	num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = linear_fe, simulation = simulation)
 
 log_out.close()
 log_err.close()

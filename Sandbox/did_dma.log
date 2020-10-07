@@ -1,0 +1,1800 @@
+
+  ___  ____  ____  ____  ____ (R)
+ /__    /   ____/   /   ____/
+___/   /   /___/   /   /___/   14.2   Copyright 1985-2015 StataCorp LP
+  Statistics/Data Analysis            StataCorp
+                                      4905 Lakeway Drive
+     MP - Parallel Edition            College Station, Texas 77845 USA
+                                      800-STATA-PC        http://www.stata.com
+                                      979-696-4600        stata@stata.com
+                                      979-696-4601 (fax)
+
+25-user 4-core Stata network perpetual license:
+       Serial number:  501406210780
+         Licensed to:  NUIT ART - Research Computing
+                       Anton Verlygo (anton@northwestern.edu)
+
+Notes:
+      1.  Stata is running in batch mode.
+      2.  Unicode is supported; see help unicode_advice.
+      3.  More than 2 billion observations are allowed; see help obs_advice.
+      4.  Maximum number of variables is set to 5000; see help set_maxvar.
+
+. do /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/did_dma.do ../../..
+> /All/m_2203820020_4/intermediate ../output/ month m_2203820020_4 
+
+. 
+. clear all
+
+. set more off
+
+. set scheme s1mono
+
+. set matsize 11000
+
+. est clear
+
+. 
+. /* *args: input_path       = `1' */
+. /* *args: output_path      = `2' */
+. /* *args: month_or_quarter = `3' */
+. /* *args: merger_code      = `4' */
+. 
+. cd `1'
+/projects/b1048/gillanes/Mergers/All/m_2203820020_4/intermediate
+
+. log using `2'/did_stata_quarter, text replace
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /projects/b1048/gillanes/Mergers/All/m_2203820020_4/intermediate/.
+> ./output//did_stata_quarter.log
+  log type:  text
+ opened on:  12 Sep 2020, 02:12:54
+
+. import delimited "stata_did_quarter.csv", encoding(ISO-8859-1)
+(23 vars, 201,835 obs)
+
+. 
+. /* WEIGHTING SCHEMES */
+. gen pre_vol = volume * (1 - post_merger)
+
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+. replace weights_2 = round(weights_2)
+(186,151 real changes made)
+
+. 
+. replace dhhi = dhhi * 10000
+(148,085 real changes made)
+
+. 
+. 
+. /* MAIN ROUTINE */
+. 
+. gen tot_dma_2 = .
+(201,835 missing values generated)
+
+. reghdfe lprice post_merger##post_merger_merging##i.dma_code trend [aw=weights
+> _2], abs(upc) vce(cluster dma_code)
+(MWFE estimator converged in 1 iterations)
+warning: missing F statistic; dropped variables due to collinearity or too few 
+> clusters
+note: 1.post_merger#1.post_merger_merging omitted because of collinearity
+note: 1.post_merger#1.post_merger_merging#501.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#502.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#503.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#504.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#505.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#506.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#507.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#508.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#509.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#510.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#511.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#512.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#513.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#514.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#515.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#516.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#517.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#518.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#519.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#520.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#521.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#522.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#523.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#524.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#525.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#526.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#527.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#528.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#529.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#530.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#531.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#532.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#533.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#534.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#535.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#536.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#537.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#538.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#539.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#540.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#541.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#542.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#543.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#544.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#545.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#546.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#547.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#548.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#549.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#550.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#551.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#552.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#553.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#554.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#555.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#556.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#557.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#558.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#559.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#560.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#561.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#563.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#564.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#565.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#566.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#567.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#569.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#570.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#571.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#573.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#574.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#575.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#576.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#577.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#581.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#582.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#584.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#588.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#592.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#596.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#597.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#598.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#600.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#602.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#603.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#604.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#605.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#606.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#609.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#610.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#611.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#612.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#613.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#616.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#617.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#618.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#619.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#622.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#623.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#624.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#625.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#626.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#627.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#628.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#630.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#631.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#632.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#633.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#634.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#635.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#636.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#637.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#638.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#639.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#640.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#641.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#642.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#643.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#644.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#647.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#648.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#649.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#650.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#651.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#652.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#656.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#657.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#658.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#659.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#661.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#662.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#669.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#670.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#671.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#673.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#675.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#676.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#678.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#679.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#682.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#686.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#687.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#691.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#692.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#693.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#698.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#702.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#705.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#709.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#710.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#711.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#716.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#717.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#718.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#722.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#724.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#725.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#734.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#736.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#737.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#740.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#746.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#749.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#751.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#752.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#753.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#754.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#755.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#756.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#757.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#758.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#759.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#760.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#762.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#764.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#765.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#766.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#767.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#770.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#771.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#773.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#789.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#790.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#798.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#800.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#801.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#802.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#803.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#807.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#810.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#811.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#813.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#819.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#820.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#821.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#825.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#828.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#839.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#855.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#862.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#866.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#868.dma_code omitted because of colli
+> nearity
+note: 1.post_merger#1.post_merger_merging#881.dma_code omitted because of colli
+> nearity
+
+HDFE Linear regression                            Number of obs   =    201,835
+Absorbing 1 HDFE group                            F( 614,    204) =          .
+Statistics robust to heteroskedasticity           Prob > F        =          .
+                                                  R-squared       =     0.8585
+                                                  Adj R-squared   =     0.8579
+                                                  Within R-sq.    =     0.0392
+Number of clusters (dma_code) =        205        Root MSE        =     0.1517
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+      lprice |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+1.post_me~er |   .0527177   .0077889     6.77   0.000     .0373606    .0680747
+1.post_mer~g |  -.0540419   .0075982    -7.11   0.000     -.069023   -.0390609
+             |
+ post_merger#|
+post_merge~g |
+        0 1  |          0  (empty)
+        1 1  |          0  (omitted)
+             |
+    dma_code |
+        501  |   .0033632   .0029101     1.16   0.249    -.0023747     .009101
+        502  |  -.0760345   .0036764   -20.68   0.000    -.0832831   -.0687858
+        503  |  -.0580788   .0046856   -12.40   0.000    -.0673172   -.0488405
+        504  |  -.0362914   .0025991   -13.96   0.000     -.041416   -.0311668
+        505  |   .0077682   .0060356     1.29   0.200    -.0041318    .0196683
+        506  |  -.0322426    .000624   -51.67   0.000     -.033473   -.0310122
+        507  |  -.0411631   .0047448    -8.68   0.000    -.0505183   -.0318079
+        508  |  -.0153495   .0042004    -3.65   0.000    -.0236313   -.0070676
+        509  |  -.0565679   .0049422   -11.45   0.000    -.0663122   -.0468235
+        510  |  -.0219129    .003176    -6.90   0.000    -.0281749   -.0156509
+        511  |  -.0289357    .003086    -9.38   0.000    -.0350202   -.0228511
+        512  |  -.0221798   .0030402    -7.30   0.000     -.028174   -.0161856
+        513  |   .0029067   .0070056     0.41   0.679    -.0109059    .0167193
+        514  |  -.0573867   .0028862   -19.88   0.000    -.0630774    -.051696
+        515  |   -.033301   .0043848    -7.59   0.000    -.0419462   -.0246557
+        516  |  -.0256393   .0028373    -9.04   0.000    -.0312334   -.0200451
+        517  |  -.0392248   .0034354   -11.42   0.000    -.0459983   -.0324513
+        518  |  -.0252572   .0045536    -5.55   0.000    -.0342352   -.0162791
+        519  |  -.0197077   .0042219    -4.67   0.000    -.0280319   -.0113835
+        520  |  -.0592015   .0048412   -12.23   0.000    -.0687468   -.0496563
+        521  |  -.0322382   .0007488   -43.05   0.000    -.0337146   -.0307618
+        522  |  -.0374689   .0049341    -7.59   0.000    -.0471972   -.0277405
+        523  |  -.0137436   .0009809   -14.01   0.000    -.0156776   -.0118096
+        524  |  -.0548039    .003794   -14.44   0.000    -.0622844   -.0473235
+        525  |   .0067342   .0032069     2.10   0.037     .0004113    .0130571
+        526  |  -.0356805   .0014955   -23.86   0.000    -.0386291    -.032732
+        527  |  -.0522905   .0043208   -12.10   0.000    -.0608097   -.0437713
+        528  |  -.0257335   .0026618    -9.67   0.000    -.0309817   -.0204853
+        529  |  -.0569018   .0056546   -10.06   0.000    -.0680507   -.0457529
+        530  |  -.0078203   .0035736    -2.19   0.030    -.0148662   -.0007743
+        531  |  -.0427139   .0052891    -8.08   0.000    -.0531422   -.0322855
+        532  |  -.0191303   .0017525   -10.92   0.000    -.0225856    -.015675
+        533  |   .0013526   .0012179     1.11   0.268    -.0010486    .0037538
+        534  |  -.0399581   .0027983   -14.28   0.000    -.0454754   -.0344408
+        535  |   .0064773    .003479     1.86   0.064     -.000382    .0133367
+        536  |  -.0015621   .0025939    -0.60   0.548    -.0066765    .0035523
+        537  |  -.0047754   .0017899    -2.67   0.008    -.0083045   -.0012463
+        538  |  -.0539334   .0030274   -17.82   0.000    -.0599025   -.0479644
+        539  |  -.0217781   .0028838    -7.55   0.000    -.0274641   -.0160922
+        540  |  -.0560671   .0041243   -13.59   0.000    -.0641989   -.0479353
+        541  |  -.0563825   .0057512    -9.80   0.000    -.0677219   -.0450431
+        542  |  -.0287427   .0050532    -5.69   0.000    -.0387059   -.0187794
+        543  |  -.0650992   .0027812   -23.41   0.000    -.0705828   -.0596156
+        544  |   .0093488   .0040013     2.34   0.020     .0014596    .0172381
+        545  |  -.0365108   .0048616    -7.51   0.000    -.0460962   -.0269253
+        546  |  -.0499087   .0045672   -10.93   0.000    -.0589136   -.0409038
+        547  |  -.0011699   .0040859    -0.29   0.775    -.0092259    .0068862
+        548  |  -.0443016   .0030437   -14.56   0.000    -.0503028   -.0383004
+        549  |  -.0321548   .0018356   -17.52   0.000     -.035774   -.0285356
+        550  |  -.0216435   .0043832    -4.94   0.000    -.0302856   -.0130014
+        551  |   .0003874   .0067951     0.06   0.955    -.0130102     .013785
+        552  |   .0144753   .0027302     5.30   0.000     .0090924    .0198583
+        553  |   -.096361   .0031919   -30.19   0.000    -.1026543   -.0900678
+        554  |   .0171925   .0063421     2.71   0.007     .0046881    .0296969
+        555  |  -.0593632   .0027737   -21.40   0.000    -.0648319   -.0538944
+        556  |  -.0116411    .004403    -2.64   0.009    -.0203223   -.0029598
+        557  |  -.0485325   .0056928    -8.53   0.000    -.0597567   -.0373083
+        558  |  -.0239457   .0031515    -7.60   0.000    -.0301594    -.017732
+        559  |  -.0484987   .0056327    -8.61   0.000    -.0596045    -.037393
+        560  |  -.0396095   .0038794   -10.21   0.000    -.0472584   -.0319606
+        561  |  -.0469122   .0039613   -11.84   0.000    -.0547226   -.0391018
+        563  |  -.0844323   .0048949   -17.25   0.000    -.0940834   -.0747813
+        564  |   -.053036   .0054553    -9.72   0.000    -.0637921   -.0422799
+        565  |  -.0837687   .0035023   -23.92   0.000    -.0906741   -.0768634
+        566  |  -.0328454   .0027655   -11.88   0.000     -.038298   -.0273928
+        567  |  -.0209026   .0041196    -5.07   0.000    -.0290251   -.0127802
+        569  |  -.0580295   .0060732    -9.55   0.000    -.0700038   -.0460551
+        570  |    -.03097   .0046868    -6.61   0.000    -.0402107   -.0217292
+        571  |  -.0247413    .003042    -8.13   0.000     -.030739   -.0187435
+        573  |   -.043527   .0054285    -8.02   0.000    -.0542301   -.0328239
+        574  |  -.0417303   .0033014   -12.64   0.000    -.0482396   -.0352211
+        575  |  -.0341794   .0048152    -7.10   0.000    -.0436733   -.0246855
+        576  |  -.0279253   .0029705    -9.40   0.000    -.0337822   -.0220684
+        577  |  -.0393652   .0022483   -17.51   0.000    -.0437981   -.0349322
+        581  |  -.0491743   .0044142   -11.14   0.000    -.0578775   -.0404711
+        582  |  -.0579952   .0047293   -12.26   0.000    -.0673198   -.0486707
+        583  |  -.0196312   .0032273    -6.08   0.000    -.0259944    -.013268
+        584  |  -.0325609    .004627    -7.04   0.000    -.0416837    -.023438
+        588  |  -.0652112   .0049185   -13.26   0.000    -.0749087   -.0555137
+        592  |  -.0170812   .0039544    -4.32   0.000    -.0248779   -.0092844
+        596  |    .013929   .0058431     2.38   0.018     .0024083    .0254496
+        597  |  -.0509829   .0047414   -10.75   0.000    -.0603313   -.0416345
+        598  |   -.048686   .0051897    -9.38   0.000    -.0589183   -.0384538
+        600  |  -.0607363   .0036224   -16.77   0.000    -.0678785   -.0535942
+        602  |  -.0487783   .0048203   -10.12   0.000    -.0582822   -.0392743
+        603  |  -.0224233   .0037316    -6.01   0.000    -.0297808   -.0150658
+        604  |  -.0467953   .0045819   -10.21   0.000    -.0558293   -.0377613
+        605  |  -.0669648   .0049203   -13.61   0.000     -.076666   -.0572637
+        606  |  -.0111961   .0038604    -2.90   0.004    -.0188076   -.0035847
+        609  |  -.0258689   .0045259    -5.72   0.000    -.0347924   -.0169453
+        610  |  -.0518187   .0059489    -8.71   0.000     -.063548   -.0400895
+        611  |  -.0794577   .0051206   -15.52   0.000    -.0895538   -.0693617
+        612  |  -.0476694   .0053104    -8.98   0.000    -.0581398   -.0371991
+        613  |  -.0797013    .005373   -14.83   0.000     -.090295   -.0691077
+        616  |  -.0590082   .0048441   -12.18   0.000    -.0685592   -.0494572
+        617  |  -.0239913   .0044923    -5.34   0.000    -.0328487    -.015134
+        618  |  -.0416571    .005473    -7.61   0.000     -.052448   -.0308661
+        619  |  -.0162841   .0038521    -4.23   0.000    -.0238791   -.0086892
+        622  |   .0235228   .0042592     5.52   0.000     .0151251    .0319206
+        623  |  -.0507875   .0058345    -8.70   0.000    -.0622912   -.0392839
+        624  |  -.0871656   .0046849   -18.61   0.000    -.0964027   -.0779285
+        625  |  -.0408333   .0057257    -7.13   0.000    -.0521225   -.0295442
+        626  |  -.0625668   .0038069   -16.43   0.000    -.0700728   -.0550608
+        627  |  -.0442125   .0056312    -7.85   0.000    -.0553152   -.0331097
+        628  |  -.0093593   .0053719    -1.74   0.083    -.0199509    .0012324
+        630  |  -.0114867   .0041242    -2.79   0.006    -.0196183   -.0033552
+        631  |  -.0547084   .0042707   -12.81   0.000    -.0631287   -.0462881
+        632  |  -.0471875   .0047424    -9.95   0.000     -.056538    -.037837
+        633  |   .0317788   .0048991     6.49   0.000     .0221195    .0414382
+        634  |  -.0002636   .0046063    -0.06   0.954    -.0093457    .0088186
+        635  |   -.030726   .0046137    -6.66   0.000    -.0398227   -.0216293
+        636  |  -.0601217   .0047095   -12.77   0.000    -.0694073   -.0508362
+        637  |  -.0596542   .0043789   -13.62   0.000    -.0682879   -.0510206
+        638  |  -.0867386   .0062194   -13.95   0.000    -.0990012   -.0744761
+        639  |  -.0281095   .0029904    -9.40   0.000    -.0340054   -.0222135
+        640  |  -.0137086   .0037954    -3.61   0.000    -.0211918   -.0062255
+        641  |  -.0480695   .0045769   -10.50   0.000    -.0570936   -.0390454
+        642  |  -.0306197   .0042257    -7.25   0.000    -.0389513   -.0222881
+        643  |  -.0432921   .0057071    -7.59   0.000    -.0545445   -.0320397
+        644  |  -.0545901   .0059929    -9.11   0.000    -.0664061    -.042774
+        647  |  -.0265999   .0038907    -6.84   0.000     -.034271   -.0189287
+        648  |  -.0551736   .0044839   -12.30   0.000    -.0640143    -.046333
+        649  |  -.0750956   .0052735   -14.24   0.000    -.0854931   -.0646981
+        650  |  -.0537975   .0037864   -14.21   0.000     -.061263   -.0463319
+        651  |   -.068457    .003101   -22.08   0.000    -.0745712   -.0623428
+        652  |  -.0425706   .0047696    -8.93   0.000    -.0519746   -.0331666
+        656  |  -.0079265   .0034351    -2.31   0.022    -.0146993   -.0011537
+        657  |  -.0544665    .005686    -9.58   0.000    -.0656773   -.0432557
+        658  |   -.039661   .0060402    -6.57   0.000    -.0515703   -.0277518
+        659  |  -.0439373   .0053732    -8.18   0.000    -.0545314   -.0333432
+        661  |   .0324589    .004628     7.01   0.000     .0233341    .0415837
+        662  |   -.028655    .006044    -4.74   0.000    -.0405716   -.0167383
+        669  |  -.0330511    .005255    -6.29   0.000    -.0434121   -.0226901
+        670  |    .016408   .0034085     4.81   0.000     .0096877    .0231284
+        671  |  -.0552138   .0039759   -13.89   0.000    -.0630529   -.0473746
+        673  |  -.0234236   .0030255    -7.74   0.000    -.0293889   -.0174582
+        675  |  -.0627497   .0053539   -11.72   0.000    -.0733058   -.0521936
+        676  |  -.0749323   .0062419   -12.00   0.000    -.0872392   -.0626253
+        678  |  -.0140653   .0037607    -3.74   0.000    -.0214801   -.0066506
+        679  |   -.052638   .0051561   -10.21   0.000     -.062804   -.0424721
+        682  |  -.0602274   .0051873   -11.61   0.000     -.070455   -.0499997
+        686  |  -.0163447   .0039877    -4.10   0.000    -.0242071   -.0084822
+        687  |  -.0495096   .0052542    -9.42   0.000    -.0598692     -.03915
+        691  |  -.0618938   .0044331   -13.96   0.000    -.0706343   -.0531532
+        692  |  -.0741165   .0052056   -14.24   0.000    -.0843801   -.0638529
+        693  |  -.0351287   .0040794    -8.61   0.000     -.043172   -.0270854
+        698  |   .0014885   .0037702     0.39   0.693    -.0059451    .0089221
+        702  |   -.076031   .0045299   -16.78   0.000    -.0849623   -.0670996
+        705  |  -.0299436     .00483    -6.20   0.000    -.0394667   -.0204206
+        709  |  -.0433773   .0058206    -7.45   0.000    -.0548534   -.0319011
+        710  |  -.0105183    .003959    -2.66   0.009    -.0183241   -.0027125
+        711  |   .0263383   .0041253     6.38   0.000     .0182045    .0344721
+        716  |   .0266751    .004341     6.14   0.000     .0181161     .035234
+        717  |  -.0599115   .0048745   -12.29   0.000    -.0695224   -.0503007
+        718  |  -.0148874   .0032271    -4.61   0.000    -.0212502   -.0085245
+        722  |  -.0747436   .0058729   -12.73   0.000     -.086323   -.0631642
+        724  |  -.0442529   .0048693    -9.09   0.000    -.0538535   -.0346523
+        725  |  -.0768893   .0046144   -16.66   0.000    -.0859874   -.0677912
+        734  |  -.0319575   .0030288   -10.55   0.000    -.0379294   -.0259857
+        736  |  -.0521702    .005653    -9.23   0.000    -.0633161   -.0410244
+        737  |  -.0786999   .0050426   -15.61   0.000    -.0886422   -.0687575
+        740  |  -.0866548   .0076313   -11.36   0.000    -.1017012   -.0716085
+        746  |   .0318594    .003443     9.25   0.000      .025071    .0386479
+        749  |   -.025862   .0028299    -9.14   0.000    -.0314416   -.0202825
+        751  |   .0156802   .0060123     2.61   0.010     .0038259    .0275345
+        752  |   .0099079   .0058849     1.68   0.094    -.0016953     .021511
+        753  |   .0431707   .0058723     7.35   0.000     .0315925    .0547489
+        754  |  -.0154454   .0102338    -1.51   0.133     -.035623    .0047322
+        755  |  -.0033144   .0069655    -0.48   0.635    -.0170479    .0104192
+        756  |  -.0340984   .0052235    -6.53   0.000    -.0443973   -.0237994
+        757  |  -.0321443   .0073503    -4.37   0.000    -.0466365    -.017652
+        758  |  -.0067197   .0070371    -0.95   0.341    -.0205945     .007155
+        759  |   .0244708   .0058584     4.18   0.000       .01292    .0360216
+        760  |  -.0242888   .0068712    -3.53   0.001    -.0378364   -.0107411
+        762  |  -.0245726   .0083748    -2.93   0.004    -.0410848   -.0080603
+        764  |    .035967     .00882     4.08   0.000      .018577     .053357
+        765  |  -.0405961     .00404   -10.05   0.000    -.0485616   -.0326306
+        766  |  -.0243241    .010015    -2.43   0.016    -.0440703   -.0045778
+        767  |   .0451961   .0068534     6.59   0.000     .0316835    .0587087
+        770  |  -.0098682   .0054556    -1.81   0.072    -.0206248    .0008883
+        771  |  -.0409653   .0067247    -6.09   0.000    -.0542241   -.0277064
+        773  |   .0077004   .0063496     1.21   0.227    -.0048187    .0202196
+        789  |   .0433416   .0057521     7.53   0.000     .0320004    .0546828
+        790  |   .0288487   .0058652     4.92   0.000     .0172845     .040413
+        798  |   .0530232   .0096166     5.51   0.000     .0340625    .0719838
+        800  |  -.0472237   .0050649    -9.32   0.000    -.0572099   -.0372374
+        801  |  -.0433481   .0091714    -4.73   0.000    -.0614311   -.0252652
+        802  |    .045212   .0069388     6.52   0.000      .031531    .0588931
+        803  |  -.0310996     .00479    -6.49   0.000    -.0405439   -.0216553
+        807  |  -.0199367   .0045366    -4.39   0.000    -.0288814    -.010992
+        810  |  -.0375039    .009374    -4.00   0.000    -.0559863   -.0190216
+        811  |   .0050762    .005541     0.92   0.361    -.0058487    .0160011
+        813  |  -.0443851   .0094387    -4.70   0.000     -.062995   -.0257752
+        819  |  -.0427752   .0082312    -5.20   0.000    -.0590043   -.0265461
+        820  |  -.0194169   .0070906    -2.74   0.007    -.0333971   -.0054366
+        821  |   -.048583   .0107149    -4.53   0.000    -.0697091   -.0274569
+        825  |  -.0282265   .0048781    -5.79   0.000    -.0378445   -.0186085
+        828  |  -.0189665   .0049108    -3.86   0.000    -.0286488   -.0092842
+        839  |  -.0203391   .0053857    -3.78   0.000     -.030958   -.0097203
+        855  |  -.0335897   .0053203    -6.31   0.000    -.0440795   -.0230999
+        862  |  -.0169271   .0043789    -3.87   0.000    -.0255609   -.0082933
+        866  |  -.0649138   .0060729   -10.69   0.000    -.0768875   -.0529402
+        868  |  -.0195771   .0044403    -4.41   0.000    -.0283319   -.0108224
+        881  |  -.0506233   .0094582    -5.35   0.000    -.0692717   -.0319749
+             |
+ post_merger#|
+    dma_code |
+      1 501  |   .0108223   .0032035     3.38   0.001     .0045061    .0171385
+      1 502  |   -.010504   .0046611    -2.25   0.025    -.0196941    -.001314
+      1 503  |  -.0386975    .003706   -10.44   0.000    -.0460045   -.0313906
+      1 504  |  -.0237066   .0032998    -7.18   0.000    -.0302128   -.0172005
+      1 505  |  -.0439528   .0042344   -10.38   0.000    -.0523015   -.0356041
+      1 506  |  -.0330169   .0016785   -19.67   0.000    -.0363263   -.0297076
+      1 507  |  -.0299528   .0041217    -7.27   0.000    -.0380794   -.0218262
+      1 508  |     -.0588   .0038979   -15.08   0.000    -.0664854   -.0511146
+      1 509  |  -.0090182    .004587    -1.97   0.051    -.0180622    .0000257
+      1 510  |   -.022694   .0032561    -6.97   0.000     -.029114    -.016274
+      1 511  |  -.0244048   .0028268    -8.63   0.000    -.0299783   -.0188313
+      1 512  |  -.0164266   .0031285    -5.25   0.000    -.0225949   -.0102584
+      1 513  |   -.047057   .0052211    -9.01   0.000    -.0573512   -.0367628
+      1 514  |   -.021723   .0028525    -7.62   0.000    -.0273473   -.0160988
+      1 515  |  -.0292399   .0037186    -7.86   0.000    -.0365717    -.021908
+      1 516  |   -.065375   .0041999   -15.57   0.000    -.0736559   -.0570942
+      1 517  |  -.0214488   .0037396    -5.74   0.000    -.0288221   -.0140755
+      1 518  |  -.0192206   .0047214    -4.07   0.000    -.0285295   -.0099116
+      1 519  |  -.0247107   .0045008    -5.49   0.000    -.0335847   -.0158366
+      1 520  |  -.0230513   .0040421    -5.70   0.000     -.031021   -.0150816
+      1 521  |  -.0427923   .0016461   -26.00   0.000    -.0460379   -.0395468
+      1 522  |  -.0412051   .0047804    -8.62   0.000    -.0506304   -.0317799
+      1 523  |  -.0047629   .0012701    -3.75   0.000    -.0072672   -.0022587
+      1 524  |  -.0573007   .0039965   -14.34   0.000    -.0651805   -.0494208
+      1 525  |  -.0536009   .0036166   -14.82   0.000    -.0607316   -.0464703
+      1 526  |  -.0165244   .0026061    -6.34   0.000    -.0216627    -.011386
+      1 527  |  -.0168727    .004256    -3.96   0.000    -.0252641   -.0084812
+      1 528  |  -.0320271    .004402    -7.28   0.000    -.0407064   -.0233479
+      1 529  |  -.0169059   .0053547    -3.16   0.002    -.0274635   -.0063483
+      1 530  |  -.0356238   .0046149    -7.72   0.000    -.0447228   -.0265248
+      1 531  |  -.0507085   .0037036   -13.69   0.000    -.0580107   -.0434064
+      1 532  |  -.0206922   .0020873    -9.91   0.000    -.0248077   -.0165767
+      1 533  |  -.0423143   .0032952   -12.84   0.000    -.0488113   -.0358173
+      1 534  |  -.0169981   .0049227    -3.45   0.001    -.0267041   -.0072922
+      1 535  |  -.0444044   .0030419   -14.60   0.000     -.050402   -.0384069
+      1 536  |  -.0766885   .0044441   -17.26   0.000    -.0854508   -.0679262
+      1 537  |  -.0045335   .0022472    -2.02   0.045    -.0089641   -.0001028
+      1 538  |  -.0277554   .0028219    -9.84   0.000    -.0333192   -.0221915
+      1 539  |  -.0356147   .0051293    -6.94   0.000    -.0457278   -.0255015
+      1 540  |  -.0349376   .0029283   -11.93   0.000    -.0407112   -.0291639
+      1 541  |   -.020855    .003822    -5.46   0.000    -.0283908   -.0133193
+      1 542  |  -.0348053   .0038516    -9.04   0.000    -.0423994   -.0272112
+      1 543  |  -.0048524   .0026949    -1.80   0.073    -.0101659    .0004611
+      1 544  |  -.0183217   .0038096    -4.81   0.000     -.025833   -.0108104
+      1 545  |  -.0049463    .003897    -1.27   0.206    -.0126298    .0027373
+      1 546  |  -.0241646   .0047239    -5.12   0.000    -.0334786   -.0148506
+      1 547  |      -.051    .003872   -13.17   0.000    -.0586342   -.0433658
+      1 548  |  -.0230542   .0052685    -4.38   0.000    -.0334419   -.0126665
+      1 549  |  -.0051262   .0026452    -1.94   0.054    -.0103416    .0000893
+      1 550  |  -.0307261   .0039447    -7.79   0.000    -.0385037   -.0229484
+      1 551  |  -.0293912   .0045962    -6.39   0.000    -.0384535    -.020329
+      1 552  |  -.0141452   .0124338    -1.14   0.257    -.0386606    .0103701
+      1 553  |   .0132454   .0038411     3.45   0.001     .0056721    .0208186
+      1 554  |  -.0390827   .0043849    -8.91   0.000    -.0477282   -.0304373
+      1 555  |  -.0251876   .0029403    -8.57   0.000    -.0309849   -.0193903
+      1 556  |   -.010948   .0033619    -3.26   0.001    -.0175766   -.0043194
+      1 557  |  -.0371184   .0040578    -9.15   0.000    -.0451191   -.0291177
+      1 558  |  -.0316941    .003063   -10.35   0.000    -.0377334   -.0256548
+      1 559  |  -.0589471     .00303   -19.45   0.000    -.0649212    -.052973
+      1 560  |  -.0205267   .0038007    -5.40   0.000    -.0280205    -.013033
+      1 561  |   -.025389   .0036378    -6.98   0.000    -.0325615   -.0182165
+      1 563  |   .0080157   .0044752     1.79   0.075    -.0008078    .0168393
+      1 564  |   -.035702   .0035397   -10.09   0.000    -.0426811   -.0287229
+      1 565  |   .0256763   .0047056     5.46   0.000     .0163983    .0349542
+      1 566  |   -.031616   .0025424   -12.44   0.000    -.0366287   -.0266033
+      1 567  |  -.0727522   .0041486   -17.54   0.000    -.0809318   -.0645726
+      1 569  |  -.0349212    .004354    -8.02   0.000    -.0435058   -.0263367
+      1 570  |  -.0428497   .0041977   -10.21   0.000    -.0511262   -.0345732
+      1 571  |  -.0326249   .0051108    -6.38   0.000    -.0427017   -.0225481
+      1 573  |  -.0372536   .0040533    -9.19   0.000    -.0452454   -.0292618
+      1 574  |  -.0582563    .004175   -13.95   0.000     -.066488   -.0500246
+      1 575  |  -.0395677   .0046623    -8.49   0.000    -.0487602   -.0303753
+      1 576  |  -.0400318   .0027878   -14.36   0.000    -.0455283   -.0345353
+      1 577  |  -.0391906   .0025957   -15.10   0.000    -.0443084   -.0340728
+      1 581  |  -.0171155   .0037306    -4.59   0.000     -.024471     -.00976
+      1 582  |  -.0154111    .003524    -4.37   0.000    -.0223592   -.0084631
+      1 583  |  -.0727103   .0034819   -20.88   0.000    -.0795755   -.0658451
+      1 584  |  -.0225218   .0033242    -6.78   0.000    -.0290759   -.0159676
+      1 588  |  -.0092342   .0042818    -2.16   0.032    -.0176764    -.000792
+      1 592  |  -.0392667   .0053899    -7.29   0.000    -.0498938   -.0286397
+      1 596  |  -.0347174   .0028173   -12.32   0.000    -.0402722   -.0291627
+      1 597  |  -.0441009   .0035678   -12.36   0.000    -.0511354   -.0370665
+      1 598  |  -.0307207   .0042772    -7.18   0.000    -.0391539   -.0222874
+      1 600  |  -.0533317   .0042818   -12.46   0.000    -.0617739   -.0448895
+      1 602  |  -.0107097   .0035978    -2.98   0.003    -.0178034   -.0036161
+      1 603  |  -.0320425   .0044616    -7.18   0.000    -.0408393   -.0232458
+      1 604  |  -.0227905   .0039923    -5.71   0.000    -.0306619   -.0149191
+      1 605  |   .0019592   .0036317     0.54   0.590    -.0052014    .0091197
+      1 606  |  -.0538405   .0046367   -11.61   0.000    -.0629824   -.0446985
+      1 609  |   -.046134   .0038346   -12.03   0.000    -.0536945   -.0385735
+      1 610  |  -.0078957   .0053518    -1.48   0.142    -.0184475    .0026562
+      1 611  |  -.0035303   .0054246    -0.65   0.516    -.0142257    .0071652
+      1 612  |   .0087243   .0049079     1.78   0.077    -.0009524    .0184011
+      1 613  |   .0170311    .005773     2.95   0.004     .0056487    .0284134
+      1 616  |  -.0305998   .0050481    -6.06   0.000    -.0405529   -.0206467
+      1 617  |  -.0257593   .0038332    -6.72   0.000    -.0333172   -.0182015
+      1 618  |   .0214118   .0047035     4.55   0.000      .012138    .0306856
+      1 619  |  -.0552225   .0051203   -10.79   0.000    -.0653179   -.0451271
+      1 622  |  -.0630997   .0046067   -13.70   0.000    -.0721825   -.0540168
+      1 623  |   .0157669   .0047771     3.30   0.001      .006348    .0251858
+      1 624  |  -.0201556   .0045561    -4.42   0.000    -.0291386   -.0111725
+      1 625  |   .0059302   .0049923     1.19   0.236    -.0039129    .0157734
+      1 626  |  -.0328029   .0040374    -8.12   0.000    -.0407633   -.0248424
+      1 627  |  -.0395677   .0048782    -8.11   0.000    -.0491858   -.0299495
+      1 628  |   -.062294   .0054896   -11.35   0.000    -.0731176   -.0514704
+      1 630  |  -.0479828   .0060075    -7.99   0.000    -.0598276    -.036138
+      1 631  |  -.0461387   .0045433   -10.16   0.000    -.0550966   -.0371808
+      1 632  |  -.0238404   .0046525    -5.12   0.000    -.0330134   -.0146673
+      1 633  |  -.0705618   .0049132   -14.36   0.000    -.0802489   -.0608746
+      1 634  |  -.0535362   .0049294   -10.86   0.000    -.0632552   -.0438171
+      1 635  |  -.0435488   .0040734   -10.69   0.000    -.0515802   -.0355174
+      1 636  |  -.0446866   .0047089    -9.49   0.000    -.0539711   -.0354022
+      1 637  |  -.0211719   .0052698    -4.02   0.000    -.0315622   -.0107816
+      1 638  |   -.077029   .0039348   -19.58   0.000    -.0847872   -.0692709
+      1 639  |  -.0338604   .0031548   -10.73   0.000    -.0400807   -.0276402
+      1 640  |  -.0331185   .0036032    -9.19   0.000    -.0402227   -.0260142
+      1 641  |  -.0235361   .0044564    -5.28   0.000    -.0323225   -.0147496
+      1 642  |  -.0554806   .0063921    -8.68   0.000    -.0680836   -.0428775
+      1 643  |   .0394813    .003996     9.88   0.000     .0316025    .0473601
+      1 644  |   .0157482   .0046183     3.41   0.001     .0066425    .0248539
+      1 647  |  -.0155446   .0036805    -4.22   0.000    -.0228013   -.0082879
+      1 648  |  -.0028369   .0041769    -0.68   0.498    -.0110724    .0053985
+      1 649  |  -.0026147   .0043792    -0.60   0.551     -.011249    .0060195
+      1 650  |  -.0229437   .0041554    -5.52   0.000    -.0311368   -.0147505
+      1 651  |  -.0035308   .0040856    -0.86   0.388    -.0115861    .0045246
+      1 652  |  -.0272106    .004899    -5.55   0.000    -.0368698   -.0175513
+      1 656  |  -.0472148   .0047349    -9.97   0.000    -.0565504   -.0378791
+      1 657  |   .0274562   .0044512     6.17   0.000       .01868    .0362324
+      1 658  |   .0011833    .004441     0.27   0.790    -.0075728    .0099395
+      1 659  |    .008663   .0047246     1.83   0.068    -.0006524    .0179784
+      1 661  |  -.1177428   .0038164   -30.85   0.000    -.1252675   -.1102181
+      1 662  |  -.0188338   .0048402    -3.89   0.000     -.028377   -.0092906
+      1 669  |  -.0006993   .0050981    -0.14   0.891     -.010751    .0093524
+      1 670  |  -.0710295   .0046738   -15.20   0.000    -.0802446   -.0618144
+      1 671  |  -.0310733   .0047821    -6.50   0.000     -.040502   -.0216445
+      1 673  |  -.0087023   .0035411    -2.46   0.015    -.0156841   -.0017205
+      1 675  |  -.0109269   .0046488    -2.35   0.020    -.0200928   -.0017611
+      1 676  |   .0028825   .0057342     0.50   0.616    -.0084234    .0141884
+      1 678  |  -.0117837   .0038372    -3.07   0.002    -.0193493   -.0042182
+      1 679  |   -.032366   .0057482    -5.63   0.000    -.0436994   -.0210325
+      1 682  |  -.0035857   .0042451    -0.84   0.399    -.0119557    .0047842
+      1 686  |  -.0443832   .0063028    -7.04   0.000    -.0568101   -.0319563
+      1 687  |  -.0384215   .0083985    -4.57   0.000    -.0549805   -.0218624
+      1 691  |  -.0294127   .0048139    -6.11   0.000    -.0389041   -.0199213
+      1 692  |   .0451825   .0041608    10.86   0.000     .0369788    .0533861
+      1 693  |  -.0286542   .0047672    -6.01   0.000    -.0380535    -.019255
+      1 698  |  -.0487894   .0052456    -9.30   0.000    -.0591319   -.0384468
+      1 702  |   .0003562   .0040247     0.09   0.930    -.0075791    .0082914
+      1 705  |  -.0266868   .0032139    -8.30   0.000    -.0330235   -.0203501
+      1 709  |  -.0048937    .005043    -0.97   0.333    -.0148367    .0050494
+      1 710  |   -.050418   .0036346   -13.87   0.000    -.0575841   -.0432518
+      1 711  |  -.0577738   .0048512   -11.91   0.000    -.0673388   -.0482088
+      1 716  |  -.0547156   .0047415   -11.54   0.000    -.0640643   -.0453669
+      1 717  |  -.0602412   .0046101   -13.07   0.000    -.0693307   -.0511517
+      1 718  |  -.0316225    .002686   -11.77   0.000    -.0369183   -.0263267
+      1 722  |  -.0317378   .0052646    -6.03   0.000    -.0421177   -.0213579
+      1 724  |  -.0113953   .0044159    -2.58   0.011     -.020102   -.0026886
+      1 725  |  -.0102107    .005125    -1.99   0.048    -.0203154    -.000106
+      1 734  |  -.0226166   .0049988    -4.52   0.000    -.0324725   -.0127606
+      1 736  |  -.0173774   .0050834    -3.42   0.001    -.0274003   -.0073546
+      1 737  |  -.0231921   .0054782    -4.23   0.000    -.0339932    -.012391
+      1 740  |   .0653829    .006009    10.88   0.000     .0535352    .0772305
+      1 746  |  -.0652999   .0043098   -15.15   0.000    -.0737974   -.0568025
+      1 749  |   -.089729   .0043199   -20.77   0.000    -.0982464   -.0812116
+      1 751  |  -.0313923   .0031928    -9.83   0.000    -.0376875   -.0250972
+      1 752  |   .0010288   .0031662     0.32   0.746    -.0052139    .0072714
+      1 753  |  -.0202552   .0033281    -6.09   0.000    -.0268171   -.0136933
+      1 754  |  -.0344717   .0040177    -8.58   0.000    -.0423932   -.0265502
+      1 755  |  -.0660145   .0042678   -15.47   0.000    -.0744291   -.0575998
+      1 756  |  -.0781737   .0066546   -11.75   0.000    -.0912943   -.0650531
+      1 757  |  -.0692788   .0045576   -15.20   0.000    -.0782649   -.0602927
+      1 758  |  -.0537019   .0039854   -13.47   0.000    -.0615598    -.045844
+      1 759  |  -.0308347   .0037042    -8.32   0.000    -.0381381   -.0235314
+      1 760  |  -.0556343   .0036703   -15.16   0.000    -.0628709   -.0483976
+      1 762  |  -.0285714   .0035142    -8.13   0.000    -.0355001   -.0216426
+      1 764  |  -.0791217   .0052848   -14.97   0.000    -.0895416   -.0687019
+      1 765  |  -.0317047   .0045553    -6.96   0.000    -.0406862   -.0227232
+      1 766  |  -.0234086   .0051219    -4.57   0.000    -.0335072     -.01331
+      1 767  |  -.0592849   .0038627   -15.35   0.000    -.0669009    -.051669
+      1 770  |  -.0350104   .0034254   -10.22   0.000    -.0417641   -.0282568
+      1 771  |   -.039038   .0042524    -9.18   0.000    -.0474223   -.0306538
+      1 773  |   .0090721   .0034112     2.66   0.008     .0023464    .0157977
+      1 789  |  -.0133401   .0034889    -3.82   0.000    -.0202189   -.0064612
+      1 790  |  -.0171057    .003483    -4.91   0.000     -.023973   -.0102383
+      1 798  |  -.1647716    .013435   -12.26   0.000    -.1912609   -.1382823
+      1 800  |  -.0520385   .0043088   -12.08   0.000     -.060534   -.0435431
+      1 801  |  -.0488915   .0040177   -12.17   0.000     -.056813   -.0409699
+      1 802  |  -.1085458   .0051373   -21.13   0.000    -.1186748   -.0984167
+      1 803  |  -.0282305   .0045023    -6.27   0.000    -.0371076   -.0193534
+      1 807  |  -.0661459   .0043609   -15.17   0.000    -.0747441   -.0575478
+      1 810  |  -.0362255   .0045469    -7.97   0.000    -.0451904   -.0272606
+      1 811  |  -.0586191    .003942   -14.87   0.000    -.0663915   -.0508467
+      1 813  |  -.0385531   .0040078    -9.62   0.000     -.046455   -.0306511
+      1 819  |  -.0197456   .0038665    -5.11   0.000     -.027369   -.0121222
+      1 820  |  -.0521348   .0036988   -14.09   0.000    -.0594277   -.0448419
+      1 821  |  -.0532209   .0043161   -12.33   0.000    -.0617307    -.044711
+      1 825  |  -.0251011   .0045384    -5.53   0.000    -.0340494   -.0161528
+      1 828  |  -.0828843    .004516   -18.35   0.000    -.0917884   -.0739802
+      1 839  |  -.0235985   .0038376    -6.15   0.000    -.0311648   -.0160321
+      1 855  |  -.0414029   .0043974    -9.42   0.000     -.050073   -.0327328
+      1 862  |  -.0876286   .0040995   -21.38   0.000    -.0957114   -.0795459
+      1 866  |  -.0513844   .0043387   -11.84   0.000    -.0599388     -.04283
+      1 868  |   -.088599   .0045111   -19.64   0.000    -.0974933   -.0797047
+      1 881  |   -.027409   .0040157    -6.83   0.000    -.0353265   -.0194915
+             |
+post_merge~g#|
+    dma_code |
+      1 501  |  -.0129042   .0065283    -1.98   0.049    -.0257759   -.0000325
+      1 502  |  -.0198663   .0061858    -3.21   0.002    -.0320626   -.0076699
+      1 503  |   .0682192   .0055984    12.19   0.000     .0571812    .0792573
+      1 504  |   .0580478   .0070559     8.23   0.000      .044136    .0719597
+      1 505  |   .0463164   .0061124     7.58   0.000     .0342649    .0583679
+      1 506  |   .0600423   .0018245    32.91   0.000     .0564449    .0636397
+      1 507  |   .0903485   .0052973    17.06   0.000      .079904    .1007929
+      1 508  |   .0974934   .0055677    17.51   0.000     .0865159     .108471
+      1 509  |   .0247324   .0061687     4.01   0.000     .0125699    .0368949
+      1 510  |   .0511313    .005152     9.92   0.000     .0409733    .0612893
+      1 511  |   .0826554   .0049831    16.59   0.000     .0728305    .0924803
+      1 512  |   .0615203   .0058243    10.56   0.000     .0500368    .0730039
+      1 513  |   .0302684   .0055813     5.42   0.000      .019264    .0412728
+      1 514  |   .0381995   .0061009     6.26   0.000     .0261706    .0502285
+      1 515  |   .0506869   .0058338     8.69   0.000     .0391846    .0621893
+      1 516  |   .0730904   .0083582     8.74   0.000      .056611    .0895699
+      1 517  |   .0618724    .005088    12.16   0.000     .0518406    .0719041
+      1 518  |   .0324298   .0047636     6.81   0.000     .0230376    .0418221
+      1 519  |   .0327375   .0055642     5.88   0.000     .0217669    .0437082
+      1 520  |   .0655999   .0062468    10.50   0.000     .0532833    .0779165
+      1 521  |   .0248144   .0025269     9.82   0.000     .0198323    .0297965
+      1 522  |   .0491403    .006363     7.72   0.000     .0365946    .0616859
+      1 523  |   .0339769   .0012782    26.58   0.000     .0314566    .0364971
+      1 524  |   .1027449   .0065128    15.78   0.000      .089904    .1155859
+      1 525  |   .0321747   .0048872     6.58   0.000     .0225389    .0418105
+      1 526  |   .0927396   .0027418    33.82   0.000     .0873338    .0981454
+      1 527  |    .038586   .0067301     5.73   0.000     .0253165    .0518555
+      1 528  |   .0767118   .0061764    12.42   0.000     .0645339    .0888896
+      1 529  |   .0411498   .0066398     6.20   0.000     .0280584    .0542412
+      1 530  |   .0068855   .0060879     1.13   0.259    -.0051178    .0188889
+      1 531  |   .0449421   .0057566     7.81   0.000      .033592    .0562921
+      1 532  |   .0761924   .0033102    23.02   0.000     .0696657    .0827191
+      1 533  |   .0489276   .0038708    12.64   0.000     .0412956    .0565595
+      1 534  |   .0194435   .0056055     3.47   0.001     .0083913    .0304957
+      1 535  |   .0737697   .0057957    12.73   0.000     .0623425    .0851969
+      1 536  |   .1007623   .0081206    12.41   0.000     .0847512    .1167733
+      1 537  |    .012248   .0017506     7.00   0.000     .0087964    .0156997
+      1 538  |   .0464263   .0065128     7.13   0.000     .0335852    .0592674
+      1 539  |   .0182926    .006428     2.85   0.005     .0056187    .0309664
+      1 540  |  -.0161692   .0060955    -2.65   0.009    -.0281875   -.0041508
+      1 541  |   .0739622   .0056857    13.01   0.000      .062752    .0851724
+      1 542  |   .0564129    .005412    10.42   0.000     .0457422    .0670835
+      1 543  |  -.0117891   .0035439    -3.33   0.001    -.0187764   -.0048018
+      1 544  |  -.0089734   .0065388    -1.37   0.171    -.0218658    .0039189
+      1 545  |    .042287   .0051883     8.15   0.000     .0320573    .0525166
+      1 546  |   .0823991   .0065027    12.67   0.000     .0695779    .0952203
+      1 547  |   .0632542   .0058183    10.87   0.000     .0517825    .0747259
+      1 548  |   .0429782   .0064413     6.67   0.000      .030278    .0556783
+      1 549  |   .0610015   .0028534    21.38   0.000     .0553757    .0666274
+      1 550  |   .0386006   .0055197     6.99   0.000     .0277176    .0494835
+      1 551  |   .0104903   .0054441     1.93   0.055    -.0002436    .0212242
+      1 552  |  -.2512366   .0178286   -14.09   0.000    -.2863886   -.2160846
+      1 553  |   .0100691   .0070465     1.43   0.155    -.0038242    .0239623
+      1 554  |   .0394986    .004923     8.02   0.000     .0297921    .0492052
+      1 555  |   .0440629   .0062398     7.06   0.000     .0317601    .0563657
+      1 556  |  -.0038116   .0062077    -0.61   0.540     -.016051    .0084278
+      1 557  |   .0804835   .0061327    13.12   0.000     .0683919    .0925751
+      1 558  |  -.0322602   .0062978    -5.12   0.000    -.0446773    -.019843
+      1 559  |   .0832207   .0053029    15.69   0.000     .0727653    .0936761
+      1 560  |    .054413   .0049954    10.89   0.000     .0445637    .0642623
+      1 561  |   .0389627   .0051428     7.58   0.000     .0288228    .0491027
+      1 563  |  -.0370339   .0051355    -7.21   0.000    -.0471594   -.0269084
+      1 564  |    .069009   .0050648    13.63   0.000     .0590229     .078995
+      1 565  |  -.0224132   .0059315    -3.78   0.000    -.0341081   -.0107183
+      1 566  |   .0892022   .0052404    17.02   0.000       .07887    .0995344
+      1 567  |   .0630279    .005557    11.34   0.000     .0520714    .0739843
+      1 569  |    .088996   .0052078    17.09   0.000      .078728    .0992639
+      1 570  |   .0834796   .0054771    15.24   0.000     .0726805    .0942786
+      1 571  |   .0291811   .0061627     4.74   0.000     .0170304    .0413318
+      1 573  |   .0531637   .0047839    11.11   0.000     .0437314     .062596
+      1 574  |   .1320193   .0052922    24.95   0.000     .1215848    .1424538
+      1 575  |   .0930324   .0068821    13.52   0.000     .0794631    .1066016
+      1 576  |   .0823096   .0059678    13.79   0.000     .0705431     .094076
+      1 577  |   .0943055   .0041173    22.90   0.000     .0861876    .1024234
+      1 581  |   .0225113    .005333     4.22   0.000     .0119964    .0330262
+      1 582  |    .029678   .0049658     5.98   0.000     .0198871    .0394689
+      1 583  |          0  (empty)
+      1 584  |   .0668633   .0047878    13.97   0.000     .0574234    .0763033
+      1 588  |   .0006426   .0058367     0.11   0.912    -.0108654    .0121505
+      1 592  |  -.0267435   .0068608    -3.90   0.000    -.0402706   -.0132164
+      1 596  |   .0231356    .004369     5.30   0.000     .0145214    .0317497
+      1 597  |   .0074625   .0062929     1.19   0.237    -.0049449    .0198699
+      1 598  |  -.0343637   .0068832    -4.99   0.000    -.0479351   -.0207924
+      1 600  |  -.0034046   .0077037    -0.44   0.659    -.0185936    .0117844
+      1 602  |    .014197   .0064629     2.20   0.029     .0014543    .0269397
+      1 603  |   .0109724   .0067206     1.63   0.104    -.0022783    .0242232
+      1 604  |   .0903761   .0062475    14.47   0.000     .0780582    .1026941
+      1 605  |   .1070246   .0072499    14.76   0.000     .0927304    .1213189
+      1 606  |   .0274926   .0046572     5.90   0.000     .0183101     .036675
+      1 609  |   .0758603   .0059785    12.69   0.000     .0640727    .0876479
+      1 610  |   .0390545   .0064634     6.04   0.000     .0263108    .0517982
+      1 611  |   .0659978   .0087573     7.54   0.000     .0487314    .0832642
+      1 612  |   .0416608   .0083326     5.00   0.000     .0252318    .0580897
+      1 613  |   .0537392   .0088224     6.09   0.000     .0363444     .071134
+      1 616  |   .1113408   .0080777    13.78   0.000     .0954144    .1272673
+      1 617  |    .078029   .0071811    10.87   0.000     .0638703    .0921878
+      1 618  |   .0107038   .0061892     1.73   0.085    -.0014992    .0229068
+      1 619  |   .0908772   .0065088    13.96   0.000     .0780442    .1037103
+      1 622  |   .0723678   .0072381    10.00   0.000     .0580966     .086639
+      1 623  |   .0344706   .0070473     4.89   0.000     .0205757    .0483654
+      1 624  |   .1573893   .0090259    17.44   0.000     .1395933    .1751854
+      1 625  |   .0172242   .0082673     2.08   0.038     .0009239    .0335245
+      1 626  |  -.0059585   .0092291    -0.65   0.519    -.0241552    .0122381
+      1 627  |   .0148978   .0100783     1.48   0.141    -.0049731    .0347688
+      1 628  |   .1391623   .0106115    13.11   0.000     .1182401    .1600845
+      1 630  |   .0543222   .0072947     7.45   0.000     .0399396    .0687048
+      1 631  |   .1767473   .0078014    22.66   0.000     .1613656    .1921289
+      1 632  |   .0504763   .0066701     7.57   0.000     .0373252    .0636274
+      1 633  |   .0973098   .0052426    18.56   0.000     .0869731    .1076465
+      1 634  |    .061479   .0067614     9.09   0.000     .0481477    .0748103
+      1 635  |   .0703619   .0061958    11.36   0.000      .058146    .0825779
+      1 636  |   .0163294    .006145     2.66   0.008     .0042135    .0284452
+      1 637  |   .1047529   .0087024    12.04   0.000     .0875947    .1219112
+      1 638  |   .2158895   .0105844    20.40   0.000     .1950206    .2367584
+      1 639  |   .0720296     .00614    11.73   0.000     .0599237    .0841356
+      1 640  |   .0375346   .0053995     6.95   0.000     .0268886    .0481805
+      1 641  |  -.0226186   .0068118    -3.32   0.001    -.0360491   -.0091881
+      1 642  |   .0950841   .0090563    10.50   0.000     .0772281    .1129402
+      1 643  |  -.0406178   .0068263    -5.95   0.000     -.054077   -.0271585
+      1 644  |   .0336939   .0086417     3.90   0.000     .0166553    .0507325
+      1 647  |   .0599328   .0051269    11.69   0.000     .0498243    .0700413
+      1 648  |   .0032819   .0054527     0.60   0.548     -.007469    .0140328
+      1 649  |   .0140704   .0057786     2.43   0.016     .0026769    .0254639
+      1 650  |   -.075853    .007679    -9.88   0.000    -.0909934   -.0607126
+      1 651  |  -.0272333   .0075005    -3.63   0.000    -.0420218   -.0124447
+      1 652  |   .1202686   .0074329    16.18   0.000     .1056134    .1349237
+      1 656  |    .055043   .0059469     9.26   0.000     .0433177    .0667683
+      1 657  |  -.0093868   .0075782    -1.24   0.217    -.0243285    .0055549
+      1 658  |   .0371663   .0069527     5.35   0.000      .023458    .0508746
+      1 659  |    .013959   .0061584     2.27   0.024     .0018166    .0261013
+      1 661  |   .0539847   .0066311     8.14   0.000     .0409104     .067059
+      1 662  |   .0912692   .0081706    11.17   0.000     .0751596    .1073788
+      1 669  |    .074428   .0069925    10.64   0.000     .0606412    .0882148
+      1 670  |   .0953422   .0074485    12.80   0.000     .0806562    .1100281
+      1 671  |  -.0012177    .007611    -0.16   0.873    -.0162241    .0137887
+      1 673  |    .035632   .0061207     5.82   0.000     .0235641    .0476999
+      1 675  |   .0436193   .0062698     6.96   0.000     .0312574    .0559812
+      1 676  |   .0523854   .0084882     6.17   0.000     .0356495    .0691213
+      1 678  |  -.0043604   .0052687    -0.83   0.409    -.0147485    .0060277
+      1 679  |   .1345764   .0088115    15.27   0.000     .1172032    .1519496
+      1 682  |   .1157832   .0052661    21.99   0.000     .1054002    .1261662
+      1 686  |   .0727279   .0069001    10.54   0.000     .0591232    .0863325
+      1 687  |   .0562988   .0096042     5.86   0.000     .0373627     .075235
+      1 691  |    .036985   .0062219     5.94   0.000     .0247176    .0492524
+      1 692  |   .0162025   .0068459     2.37   0.019     .0027047    .0297003
+      1 693  |   .0656889   .0090317     7.27   0.000     .0478813    .0834964
+      1 698  |   .1097751   .0055092    19.93   0.000     .0989129    .1206374
+      1 702  |   .0416585   .0049469     8.42   0.000     .0319048    .0514121
+      1 705  |   .0311003   .0064625     4.81   0.000     .0183584    .0438422
+      1 709  |   .0837439   .0083546    10.02   0.000     .0672715    .1002164
+      1 710  |   .1054761   .0046017    22.92   0.000     .0964031    .1145491
+      1 711  |   .1516804   .0045046    33.67   0.000     .1427988    .1605619
+      1 716  |   .0672725   .0071141     9.46   0.000     .0532459    .0812992
+      1 717  |   .2090331   .0066893    31.25   0.000     .1958441    .2222221
+      1 718  |   .0370504   .0056168     6.60   0.000     .0259759    .0481248
+      1 722  |   .1619634   .0073438    22.05   0.000      .147484    .1764428
+      1 724  |   .0390111   .0071802     5.43   0.000     .0248542    .0531679
+      1 725  |   .1216406   .0088293    13.78   0.000     .1042322    .1390491
+      1 734  |   .0397193   .0071283     5.57   0.000     .0256647    .0537739
+      1 736  |   .0295074   .0066109     4.46   0.000     .0164729    .0425418
+      1 737  |   .1174843   .0090494    12.98   0.000      .099642    .1353267
+      1 740  |   .1258025   .0078037    16.12   0.000     .1104162    .1411888
+      1 746  |   .0846339   .0053102    15.94   0.000      .074164    .0951038
+      1 749  |   .0830098   .0082376    10.08   0.000      .066768    .0992516
+      1 751  |   .0451327   .0051496     8.76   0.000     .0349795     .055286
+      1 752  |   .0015896   .0070703     0.22   0.822    -.0123506    .0155298
+      1 753  |   .0001165   .0062434     0.02   0.985    -.0121934    .0124263
+      1 754  |   .0051896   .0113344     0.46   0.648    -.0171579    .0275372
+      1 755  |   .0001807    .008599     0.02   0.983    -.0167736     .017135
+      1 756  |  -.0169833   .0085755    -1.98   0.049    -.0338913   -.0000754
+      1 757  |  -.0047895   .0070422    -0.68   0.497    -.0186743    .0090953
+      1 758  |    .044461   .0077274     5.75   0.000     .0292251    .0596968
+      1 759  |   .0306005   .0070158     4.36   0.000     .0167678    .0444333
+      1 760  |   .0526847   .0064271     8.20   0.000     .0400126    .0653568
+      1 762  |  -.0284309   .0101828    -2.79   0.006     -.048508   -.0083538
+      1 764  |    .137688   .0070061    19.65   0.000     .1238742    .1515017
+      1 765  |  -.0285469   .0068838    -4.15   0.000    -.0421195   -.0149744
+      1 766  |   -.012091    .012931    -0.94   0.351    -.0375865    .0134044
+      1 767  |   .0909073   .0063741    14.26   0.000     .0783397    .1034749
+      1 770  |   .0523358   .0051647    10.13   0.000     .0421528    .0625188
+      1 771  |   .0829305   .0093673     8.85   0.000     .0644615    .1013996
+      1 773  |   .0277008   .0078874     3.51   0.001     .0121496     .043252
+      1 789  |  -.0033819   .0072273    -0.47   0.640    -.0176316    .0108678
+      1 790  |   .0101771   .0061431     1.66   0.099    -.0019351    .0222893
+      1 798  |    .023936     .01199     2.00   0.047     .0002958    .0475762
+      1 800  |   .1136896   .0062681    18.14   0.000      .101331    .1260482
+      1 801  |   .0611083   .0077283     7.91   0.000     .0458708    .0763458
+      1 802  |   .0836497   .0079221    10.56   0.000     .0680299    .0992694
+      1 803  |   .0777942   .0066858    11.64   0.000      .064612    .0909763
+      1 807  |    .104123   .0073082    14.25   0.000     .0897137    .1185322
+      1 810  |   .0587069   .0060323     9.73   0.000     .0468134    .0706005
+      1 811  |   .0805261   .0068775    11.71   0.000     .0669659    .0940862
+      1 813  |   .0381795   .0083424     4.58   0.000     .0217311    .0546278
+      1 819  |    .048215   .0056238     8.57   0.000     .0371268    .0593031
+      1 820  |   .0527675   .0055321     9.54   0.000       .04186     .063675
+      1 821  |    .059122   .0091633     6.45   0.000     .0410552    .0771889
+      1 825  |   .0691332   .0061362    11.27   0.000     .0570346    .0812318
+      1 828  |   .1211068   .0070262    17.24   0.000     .1072536    .1349601
+      1 839  |   .0481474   .0059536     8.09   0.000      .036409    .0598858
+      1 855  |   .0890597   .0063035    14.13   0.000     .0766313     .101488
+      1 862  |   .1009639   .0070957    14.23   0.000     .0869737    .1149541
+      1 866  |   .1088505   .0074877    14.54   0.000     .0940873    .1236137
+      1 868  |   .0844762   .0061752    13.68   0.000     .0723008    .0966516
+      1 881  |   .0190851   .0072623     2.63   0.009     .0047663     .033404
+             |
+ post_merger#|
+post_merge~g#|
+    dma_code |
+    0 1 500  |          0  (empty)
+    0 1 501  |          0  (empty)
+    0 1 502  |          0  (empty)
+    0 1 503  |          0  (empty)
+    0 1 504  |          0  (empty)
+    0 1 505  |          0  (empty)
+    0 1 506  |          0  (empty)
+    0 1 507  |          0  (empty)
+    0 1 508  |          0  (empty)
+    0 1 509  |          0  (empty)
+    0 1 510  |          0  (empty)
+    0 1 511  |          0  (empty)
+    0 1 512  |          0  (empty)
+    0 1 513  |          0  (empty)
+    0 1 514  |          0  (empty)
+    0 1 515  |          0  (empty)
+    0 1 516  |          0  (empty)
+    0 1 517  |          0  (empty)
+    0 1 518  |          0  (empty)
+    0 1 519  |          0  (empty)
+    0 1 520  |          0  (empty)
+    0 1 521  |          0  (empty)
+    0 1 522  |          0  (empty)
+    0 1 523  |          0  (empty)
+    0 1 524  |          0  (empty)
+    0 1 525  |          0  (empty)
+    0 1 526  |          0  (empty)
+    0 1 527  |          0  (empty)
+    0 1 528  |          0  (empty)
+    0 1 529  |          0  (empty)
+    0 1 530  |          0  (empty)
+    0 1 531  |          0  (empty)
+    0 1 532  |          0  (empty)
+    0 1 533  |          0  (empty)
+    0 1 534  |          0  (empty)
+    0 1 535  |          0  (empty)
+    0 1 536  |          0  (empty)
+    0 1 537  |          0  (empty)
+    0 1 538  |          0  (empty)
+    0 1 539  |          0  (empty)
+    0 1 540  |          0  (empty)
+    0 1 541  |          0  (empty)
+    0 1 542  |          0  (empty)
+    0 1 543  |          0  (empty)
+    0 1 544  |          0  (empty)
+    0 1 545  |          0  (empty)
+    0 1 546  |          0  (empty)
+    0 1 547  |          0  (empty)
+    0 1 548  |          0  (empty)
+    0 1 549  |          0  (empty)
+    0 1 550  |          0  (empty)
+    0 1 551  |          0  (empty)
+    0 1 552  |          0  (empty)
+    0 1 553  |          0  (empty)
+    0 1 554  |          0  (empty)
+    0 1 555  |          0  (empty)
+    0 1 556  |          0  (empty)
+    0 1 557  |          0  (empty)
+    0 1 558  |          0  (empty)
+    0 1 559  |          0  (empty)
+    0 1 560  |          0  (empty)
+    0 1 561  |          0  (empty)
+    0 1 563  |          0  (empty)
+    0 1 564  |          0  (empty)
+    0 1 565  |          0  (empty)
+    0 1 566  |          0  (empty)
+    0 1 567  |          0  (empty)
+    0 1 569  |          0  (empty)
+    0 1 570  |          0  (empty)
+    0 1 571  |          0  (empty)
+    0 1 573  |          0  (empty)
+    0 1 574  |          0  (empty)
+    0 1 575  |          0  (empty)
+    0 1 576  |          0  (empty)
+    0 1 577  |          0  (empty)
+    0 1 581  |          0  (empty)
+    0 1 582  |          0  (empty)
+    0 1 583  |          0  (empty)
+    0 1 584  |          0  (empty)
+    0 1 588  |          0  (empty)
+    0 1 592  |          0  (empty)
+    0 1 596  |          0  (empty)
+    0 1 597  |          0  (empty)
+    0 1 598  |          0  (empty)
+    0 1 600  |          0  (empty)
+    0 1 602  |          0  (empty)
+    0 1 603  |          0  (empty)
+    0 1 604  |          0  (empty)
+    0 1 605  |          0  (empty)
+    0 1 606  |          0  (empty)
+    0 1 609  |          0  (empty)
+    0 1 610  |          0  (empty)
+    0 1 611  |          0  (empty)
+    0 1 612  |          0  (empty)
+    0 1 613  |          0  (empty)
+    0 1 616  |          0  (empty)
+    0 1 617  |          0  (empty)
+    0 1 618  |          0  (empty)
+    0 1 619  |          0  (empty)
+    0 1 622  |          0  (empty)
+    0 1 623  |          0  (empty)
+    0 1 624  |          0  (empty)
+    0 1 625  |          0  (empty)
+    0 1 626  |          0  (empty)
+    0 1 627  |          0  (empty)
+    0 1 628  |          0  (empty)
+    0 1 630  |          0  (empty)
+    0 1 631  |          0  (empty)
+    0 1 632  |          0  (empty)
+    0 1 633  |          0  (empty)
+    0 1 634  |          0  (empty)
+    0 1 635  |          0  (empty)
+    0 1 636  |          0  (empty)
+    0 1 637  |          0  (empty)
+    0 1 638  |          0  (empty)
+    0 1 639  |          0  (empty)
+    0 1 640  |          0  (empty)
+    0 1 641  |          0  (empty)
+    0 1 642  |          0  (empty)
+    0 1 643  |          0  (empty)
+    0 1 644  |          0  (empty)
+    0 1 647  |          0  (empty)
+    0 1 648  |          0  (empty)
+    0 1 649  |          0  (empty)
+    0 1 650  |          0  (empty)
+    0 1 651  |          0  (empty)
+    0 1 652  |          0  (empty)
+    0 1 656  |          0  (empty)
+    0 1 657  |          0  (empty)
+    0 1 658  |          0  (empty)
+    0 1 659  |          0  (empty)
+    0 1 661  |          0  (empty)
+    0 1 662  |          0  (empty)
+    0 1 669  |          0  (empty)
+    0 1 670  |          0  (empty)
+    0 1 671  |          0  (empty)
+    0 1 673  |          0  (empty)
+    0 1 675  |          0  (empty)
+    0 1 676  |          0  (empty)
+    0 1 678  |          0  (empty)
+    0 1 679  |          0  (empty)
+    0 1 682  |          0  (empty)
+    0 1 686  |          0  (empty)
+    0 1 687  |          0  (empty)
+    0 1 691  |          0  (empty)
+    0 1 692  |          0  (empty)
+    0 1 693  |          0  (empty)
+    0 1 698  |          0  (empty)
+    0 1 702  |          0  (empty)
+    0 1 705  |          0  (empty)
+    0 1 709  |          0  (empty)
+    0 1 710  |          0  (empty)
+    0 1 711  |          0  (empty)
+    0 1 716  |          0  (empty)
+    0 1 717  |          0  (empty)
+    0 1 718  |          0  (empty)
+    0 1 722  |          0  (empty)
+    0 1 724  |          0  (empty)
+    0 1 725  |          0  (empty)
+    0 1 734  |          0  (empty)
+    0 1 736  |          0  (empty)
+    0 1 737  |          0  (empty)
+    0 1 740  |          0  (empty)
+    0 1 746  |          0  (empty)
+    0 1 749  |          0  (empty)
+    0 1 751  |          0  (empty)
+    0 1 752  |          0  (empty)
+    0 1 753  |          0  (empty)
+    0 1 754  |          0  (empty)
+    0 1 755  |          0  (empty)
+    0 1 756  |          0  (empty)
+    0 1 757  |          0  (empty)
+    0 1 758  |          0  (empty)
+    0 1 759  |          0  (empty)
+    0 1 760  |          0  (empty)
+    0 1 762  |          0  (empty)
+    0 1 764  |          0  (empty)
+    0 1 765  |          0  (empty)
+    0 1 766  |          0  (empty)
+    0 1 767  |          0  (empty)
+    0 1 770  |          0  (empty)
+    0 1 771  |          0  (empty)
+    0 1 773  |          0  (empty)
+    0 1 789  |          0  (empty)
+    0 1 790  |          0  (empty)
+    0 1 798  |          0  (empty)
+    0 1 800  |          0  (empty)
+    0 1 801  |          0  (empty)
+    0 1 802  |          0  (empty)
+    0 1 803  |          0  (empty)
+    0 1 807  |          0  (empty)
+    0 1 810  |          0  (empty)
+    0 1 811  |          0  (empty)
+    0 1 813  |          0  (empty)
+    0 1 819  |          0  (empty)
+    0 1 820  |          0  (empty)
+    0 1 821  |          0  (empty)
+    0 1 825  |          0  (empty)
+    0 1 828  |          0  (empty)
+    0 1 839  |          0  (empty)
+    0 1 855  |          0  (empty)
+    0 1 862  |          0  (empty)
+    0 1 866  |          0  (empty)
+    0 1 868  |          0  (empty)
+    0 1 881  |          0  (empty)
+    1 1 501  |          0  (omitted)
+    1 1 502  |          0  (omitted)
+    1 1 503  |          0  (omitted)
+    1 1 504  |          0  (omitted)
+    1 1 505  |          0  (omitted)
+    1 1 506  |          0  (omitted)
+    1 1 507  |          0  (omitted)
+    1 1 508  |          0  (omitted)
+    1 1 509  |          0  (omitted)
+    1 1 510  |          0  (omitted)
+    1 1 511  |          0  (omitted)
+    1 1 512  |          0  (omitted)
+    1 1 513  |          0  (omitted)
+    1 1 514  |          0  (omitted)
+    1 1 515  |          0  (omitted)
+    1 1 516  |          0  (omitted)
+    1 1 517  |          0  (omitted)
+    1 1 518  |          0  (omitted)
+    1 1 519  |          0  (omitted)
+    1 1 520  |          0  (omitted)
+    1 1 521  |          0  (omitted)
+    1 1 522  |          0  (omitted)
+    1 1 523  |          0  (omitted)
+    1 1 524  |          0  (omitted)
+    1 1 525  |          0  (omitted)
+    1 1 526  |          0  (omitted)
+    1 1 527  |          0  (omitted)
+    1 1 528  |          0  (omitted)
+    1 1 529  |          0  (omitted)
+    1 1 530  |          0  (omitted)
+    1 1 531  |          0  (omitted)
+    1 1 532  |          0  (omitted)
+    1 1 533  |          0  (omitted)
+    1 1 534  |          0  (omitted)
+    1 1 535  |          0  (omitted)
+    1 1 536  |          0  (omitted)
+    1 1 537  |          0  (omitted)
+    1 1 538  |          0  (omitted)
+    1 1 539  |          0  (omitted)
+    1 1 540  |          0  (omitted)
+    1 1 541  |          0  (omitted)
+    1 1 542  |          0  (omitted)
+    1 1 543  |          0  (omitted)
+    1 1 544  |          0  (omitted)
+    1 1 545  |          0  (omitted)
+    1 1 546  |          0  (omitted)
+    1 1 547  |          0  (omitted)
+    1 1 548  |          0  (omitted)
+    1 1 549  |          0  (omitted)
+    1 1 550  |          0  (omitted)
+    1 1 551  |          0  (omitted)
+    1 1 552  |          0  (omitted)
+    1 1 553  |          0  (omitted)
+    1 1 554  |          0  (omitted)
+    1 1 555  |          0  (omitted)
+    1 1 556  |          0  (omitted)
+    1 1 557  |          0  (omitted)
+    1 1 558  |          0  (omitted)
+    1 1 559  |          0  (omitted)
+    1 1 560  |          0  (omitted)
+    1 1 561  |          0  (omitted)
+    1 1 563  |          0  (omitted)
+    1 1 564  |          0  (omitted)
+    1 1 565  |          0  (omitted)
+    1 1 566  |          0  (omitted)
+    1 1 567  |          0  (omitted)
+    1 1 569  |          0  (omitted)
+    1 1 570  |          0  (omitted)
+    1 1 571  |          0  (omitted)
+    1 1 573  |          0  (omitted)
+    1 1 574  |          0  (omitted)
+    1 1 575  |          0  (omitted)
+    1 1 576  |          0  (omitted)
+    1 1 577  |          0  (omitted)
+    1 1 581  |          0  (omitted)
+    1 1 582  |          0  (omitted)
+    1 1 583  |          0  (empty)
+    1 1 584  |          0  (omitted)
+    1 1 588  |          0  (omitted)
+    1 1 592  |          0  (omitted)
+    1 1 596  |          0  (omitted)
+    1 1 597  |          0  (omitted)
+    1 1 598  |          0  (omitted)
+    1 1 600  |          0  (omitted)
+    1 1 602  |          0  (omitted)
+    1 1 603  |          0  (omitted)
+    1 1 604  |          0  (omitted)
+    1 1 605  |          0  (omitted)
+    1 1 606  |          0  (omitted)
+    1 1 609  |          0  (omitted)
+    1 1 610  |          0  (omitted)
+    1 1 611  |          0  (omitted)
+    1 1 612  |          0  (omitted)
+    1 1 613  |          0  (omitted)
+    1 1 616  |          0  (omitted)
+    1 1 617  |          0  (omitted)
+    1 1 618  |          0  (omitted)
+    1 1 619  |          0  (omitted)
+    1 1 622  |          0  (omitted)
+    1 1 623  |          0  (omitted)
+    1 1 624  |          0  (omitted)
+    1 1 625  |          0  (omitted)
+    1 1 626  |          0  (omitted)
+    1 1 627  |          0  (omitted)
+    1 1 628  |          0  (omitted)
+    1 1 630  |          0  (omitted)
+    1 1 631  |          0  (omitted)
+    1 1 632  |          0  (omitted)
+    1 1 633  |          0  (omitted)
+    1 1 634  |          0  (omitted)
+    1 1 635  |          0  (omitted)
+    1 1 636  |          0  (omitted)
+    1 1 637  |          0  (omitted)
+    1 1 638  |          0  (omitted)
+    1 1 639  |          0  (omitted)
+    1 1 640  |          0  (omitted)
+    1 1 641  |          0  (omitted)
+    1 1 642  |          0  (omitted)
+    1 1 643  |          0  (omitted)
+    1 1 644  |          0  (omitted)
+    1 1 647  |          0  (omitted)
+    1 1 648  |          0  (omitted)
+    1 1 649  |          0  (omitted)
+    1 1 650  |          0  (omitted)
+    1 1 651  |          0  (omitted)
+    1 1 652  |          0  (omitted)
+    1 1 656  |          0  (omitted)
+    1 1 657  |          0  (omitted)
+    1 1 658  |          0  (omitted)
+    1 1 659  |          0  (omitted)
+    1 1 661  |          0  (omitted)
+    1 1 662  |          0  (omitted)
+    1 1 669  |          0  (omitted)
+    1 1 670  |          0  (omitted)
+    1 1 671  |          0  (omitted)
+    1 1 673  |          0  (omitted)
+    1 1 675  |          0  (omitted)
+    1 1 676  |          0  (omitted)
+    1 1 678  |          0  (omitted)
+    1 1 679  |          0  (omitted)
+    1 1 682  |          0  (omitted)
+    1 1 686  |          0  (omitted)
+    1 1 687  |          0  (omitted)
+    1 1 691  |          0  (omitted)
+    1 1 692  |          0  (omitted)
+    1 1 693  |          0  (omitted)
+    1 1 698  |          0  (omitted)
+    1 1 702  |          0  (omitted)
+    1 1 705  |          0  (omitted)
+    1 1 709  |          0  (omitted)
+    1 1 710  |          0  (omitted)
+    1 1 711  |          0  (omitted)
+    1 1 716  |          0  (omitted)
+    1 1 717  |          0  (omitted)
+    1 1 718  |          0  (omitted)
+    1 1 722  |          0  (omitted)
+    1 1 724  |          0  (omitted)
+    1 1 725  |          0  (omitted)
+    1 1 734  |          0  (omitted)
+    1 1 736  |          0  (omitted)
+    1 1 737  |          0  (omitted)
+    1 1 740  |          0  (omitted)
+    1 1 746  |          0  (omitted)
+    1 1 749  |          0  (omitted)
+    1 1 751  |          0  (omitted)
+    1 1 752  |          0  (omitted)
+    1 1 753  |          0  (omitted)
+    1 1 754  |          0  (omitted)
+    1 1 755  |          0  (omitted)
+    1 1 756  |          0  (omitted)
+    1 1 757  |          0  (omitted)
+    1 1 758  |          0  (omitted)
+    1 1 759  |          0  (omitted)
+    1 1 760  |          0  (omitted)
+    1 1 762  |          0  (omitted)
+    1 1 764  |          0  (omitted)
+    1 1 765  |          0  (omitted)
+    1 1 766  |          0  (omitted)
+    1 1 767  |          0  (omitted)
+    1 1 770  |          0  (omitted)
+    1 1 771  |          0  (omitted)
+    1 1 773  |          0  (omitted)
+    1 1 789  |          0  (omitted)
+    1 1 790  |          0  (omitted)
+    1 1 798  |          0  (omitted)
+    1 1 800  |          0  (omitted)
+    1 1 801  |          0  (omitted)
+    1 1 802  |          0  (omitted)
+    1 1 803  |          0  (omitted)
+    1 1 807  |          0  (omitted)
+    1 1 810  |          0  (omitted)
+    1 1 811  |          0  (omitted)
+    1 1 813  |          0  (omitted)
+    1 1 819  |          0  (omitted)
+    1 1 820  |          0  (omitted)
+    1 1 821  |          0  (omitted)
+    1 1 825  |          0  (omitted)
+    1 1 828  |          0  (omitted)
+    1 1 839  |          0  (omitted)
+    1 1 855  |          0  (omitted)
+    1 1 862  |          0  (omitted)
+    1 1 866  |          0  (omitted)
+    1 1 868  |          0  (omitted)
+    1 1 881  |          0  (omitted)
+             |
+       trend |  -.0044227   .0004189   -10.56   0.000    -.0052485   -.0035968
+       _cons |   2.090394   .0037204   561.88   0.000     2.083059    2.097729
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+         upc |       158           0         158     |
+-----------------------------------------------------+
+
+. 
+. levelsof dma_code, local(levels)
+500 501 502 503 504 505 506 507 508 509 510 511 512 513 514 515 516 517 518 519
+>  520 521 522 523 524 525 526 527 528 529 530 531 532 533 534 535 536 537 538 
+> 539 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557 5
+> 58 559 560 561 563 564 565 566 567 569 570 571 573 574 575 576 577 581 582 58
+> 3 584 588 592 596 597 598 600 602 603 604 605 606 609 610 611 612 613 616 617
+>  618 619 622 623 624 625 626 627 628 630 631 632 633 634 635 636 637 638 639 
+> 640 641 642 643 644 647 648 649 650 651 652 656 657 658 659 661 662 669 670 6
+> 71 673 675 676 678 679 682 686 687 691 692 693 698 702 705 709 710 711 716 71
+> 7 718 722 724 725 734 736 737 740 746 749 751 752 753 754 755 756 757 758 759
+>  760 762 764 765 766 767 770 771 773 789 790 798 800 801 802 803 807 810 811 
+> 813 819 820 821 825 828 839 855 862 866 868 881
+
+. foreach l of local levels{
+  2. 
+.         replace tot_dma_2 = _b[1.post_merger] + _b[1.post_merger_merging] + /
+> //
+>                                                   _b[1.post_merger#`l'.dma_co
+> de] + ///
+>                                                   _b[1.post_merger_merging#`l
+> '.dma_code] if dma_code == `l'
+  3. }
+(1,159 real changes made)
+(1,523 real changes made)
+(445 real changes made)
+(1,005 real changes made)
+(1,466 real changes made)
+(1,150 real changes made)
+(1,354 real changes made)
+(1,113 real changes made)
+(1,291 real changes made)
+(1,056 real changes made)
+(1,260 real changes made)
+(1,349 real changes made)
+(1,314 real changes made)
+(987 real changes made)
+(757 real changes made)
+(1,108 real changes made)
+(738 real changes made)
+(1,150 real changes made)
+(1,058 real changes made)
+(938 real changes made)
+(1,071 real changes made)
+(1,272 real changes made)
+(934 real changes made)
+(1,270 real changes made)
+(1,286 real changes made)
+(672 real changes made)
+(978 real changes made)
+(1,193 real changes made)
+(989 real changes made)
+(1,104 real changes made)
+(784 real changes made)
+(1,056 real changes made)
+(1,144 real changes made)
+(1,134 real changes made)
+(1,027 real changes made)
+(1,142 real changes made)
+(882 real changes made)
+(1,046 real changes made)
+(755 real changes made)
+(1,027 real changes made)
+(520 real changes made)
+(1,129 real changes made)
+(1,049 real changes made)
+(751 real changes made)
+(1,231 real changes made)
+(884 real changes made)
+(1,081 real changes made)
+(1,078 real changes made)
+(965 real changes made)
+(955 real changes made)
+(839 real changes made)
+(984 real changes made)
+(109 real changes made)
+(448 real changes made)
+(824 real changes made)
+(802 real changes made)
+(1,250 real changes made)
+(1,187 real changes made)
+(375 real changes made)
+(959 real changes made)
+(1,278 real changes made)
+(1,207 real changes made)
+(909 real changes made)
+(1,106 real changes made)
+(494 real changes made)
+(1,124 real changes made)
+(1,042 real changes made)
+(922 real changes made)
+(1,149 real changes made)
+(1,011 real changes made)
+(1,107 real changes made)
+(937 real changes made)
+(1,121 real changes made)
+(1,152 real changes made)
+(1,015 real changes made)
+(909 real changes made)
+(833 real changes made)
+(217 real changes made)
+(1,094 real changes made)
+(1,017 real changes made)
+(727 real changes made)
+(749 real changes made)
+(842 real changes made)
+(853 real changes made)
+(414 real changes made)
+(1,602 real changes made)
+(807 real changes made)
+(1,094 real changes made)
+(1,134 real changes made)
+(598 real changes made)
+(1,102 real changes made)
+(1,039 real changes made)
+(1,142 real changes made)
+(1,237 real changes made)
+(1,301 real changes made)
+(1,298 real changes made)
+(1,222 real changes made)
+(1,243 real changes made)
+(1,123 real changes made)
+(908 real changes made)
+(1,278 real changes made)
+(798 real changes made)
+(1,095 real changes made)
+(317 real changes made)
+(707 real changes made)
+(820 real changes made)
+(905 real changes made)
+(845 real changes made)
+(1,054 real changes made)
+(686 real changes made)
+(671 real changes made)
+(970 real changes made)
+(594 real changes made)
+(980 real changes made)
+(817 real changes made)
+(783 real changes made)
+(1,086 real changes made)
+(840 real changes made)
+(979 real changes made)
+(948 real changes made)
+(1,010 real changes made)
+(569 real changes made)
+(971 real changes made)
+(981 real changes made)
+(807 real changes made)
+(483 real changes made)
+(1,300 real changes made)
+(741 real changes made)
+(989 real changes made)
+(1,052 real changes made)
+(1,182 real changes made)
+(498 real changes made)
+(1,011 real changes made)
+(1,245 real changes made)
+(963 real changes made)
+(892 real changes made)
+(809 real changes made)
+(1,201 real changes made)
+(766 real changes made)
+(1,002 real changes made)
+(1,034 real changes made)
+(1,251 real changes made)
+(851 real changes made)
+(536 real changes made)
+(900 real changes made)
+(991 real changes made)
+(1,085 real changes made)
+(655 real changes made)
+(1,012 real changes made)
+(933 real changes made)
+(1,160 real changes made)
+(690 real changes made)
+(479 real changes made)
+(852 real changes made)
+(972 real changes made)
+(813 real changes made)
+(1,042 real changes made)
+(918 real changes made)
+(948 real changes made)
+(870 real changes made)
+(869 real changes made)
+(1,016 real changes made)
+(288 real changes made)
+(662 real changes made)
+(430 real changes made)
+(1,555 real changes made)
+(1,040 real changes made)
+(1,363 real changes made)
+(884 real changes made)
+(847 real changes made)
+(673 real changes made)
+(873 real changes made)
+(1,047 real changes made)
+(1,115 real changes made)
+(1,074 real changes made)
+(1,069 real changes made)
+(843 real changes made)
+(787 real changes made)
+(715 real changes made)
+(1,192 real changes made)
+(1,416 real changes made)
+(1,111 real changes made)
+(954 real changes made)
+(1,198 real changes made)
+(1,408 real changes made)
+(258 real changes made)
+(1,407 real changes made)
+(1,035 real changes made)
+(627 real changes made)
+(1,511 real changes made)
+(1,314 real changes made)
+(1,109 real changes made)
+(1,341 real changes made)
+(994 real changes made)
+(1,277 real changes made)
+(1,295 real changes made)
+(872 real changes made)
+(1,443 real changes made)
+(1,236 real changes made)
+(1,484 real changes made)
+(1,391 real changes made)
+(1,335 real changes made)
+(1,297 real changes made)
+(979 real changes made)
+(1,078 real changes made)
+
+. 
+. collapse (mean) tot_dma_2 dhhi, by(dma_code)
+
+. 
+. graph twoway (lfit tot_dma_2 dhhi) (scatter tot_dma_2 dhhi, mcolor(gs4))
+
+. graph export `2'/tot_dma_2_`4'.eps, replace
+(note: file ../output//tot_dma_2_m_2203820020_4.eps not found)
+(file ../output//tot_dma_2_m_2203820020_4.eps written in EPS format)
+
+. 
+. est clear
+
+. 
+. 
+. 
+. exit, STATA clear
