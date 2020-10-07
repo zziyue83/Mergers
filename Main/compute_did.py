@@ -255,9 +255,9 @@ def did(df, merging_date, merging_parties, major_competitor = None, month_or_qua
 
 		for est_type in estimate_type:
 
-			read_file = pd.read_csv(path_input + "/"+ path_output + "did_stata_" + timetype + '_' + est_type + ".txt", sep = "\t")
+			read_file = pd.read_csv(path_input + "/"+ path_output + "did_stata_" + month_or_quarter + '_' + est_type + ".txt", sep = "\t")
 			read_file = read_file.replace(np.nan, '', regex=True)
-			read_file.to_csv(path_input + "/" + path_output + "did_stata_" + timetype + '_' + est_type + ".csv", index=None)
+			read_file.to_csv(path_input + "/" + path_output + "did_stata_" + month_or_quarter + '_' + est_type + ".csv", index=None)
 
 
 
