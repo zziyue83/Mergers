@@ -53,7 +53,7 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 
 		# Then get diesel prices to multiply
 		df['demand_instruments0'] = df['distance'] * df['diesel']
-		df = df.drop(['distance', 'diesel'], axis=1)
+		df = df.drop(['diesel'], axis=1)
 
 		instrument_names.remove('distance-diesel')
 		i = 1
@@ -90,10 +90,9 @@ def gather_product_data(code, month_or_quarter = 'month'):
 	instrument_ls = aux.get_insts_or_chars_or_nests(info_dict["Instruments"])
 
 	to_append = characteristics_ls
-	if (nest is not None) and (nest not in characteristics_ls) and (nest != 'inside'):
+	if (nest is not None) and (nest not in characteristics_ls) and ('inside' not in nest):
 		# to_append.append(nest)
 		to_append = to_append + nest
-
 	# Get the characteristics map
 	char_df = pd.read_csv('../../../All/m_' + code + '/properties/characteristics.csv', delimiter = ',', index_col = 'upc')
 	char_map = char_df.to_dict()
