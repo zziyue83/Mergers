@@ -255,9 +255,9 @@ def did_brandlevel(df, merging_date, merging_parties, major_competitor = None, m
 
 		for est_type in estimate_type:
 
-			read_file = pd.read_csv(path_input + "/"+ path_output + "brandlevel_did_stata_" + timetype + '_' + est_type + ".txt", sep = "\t")
+			read_file = pd.read_csv(path_input + "/"+ path_output + "brandlevel_did_stata_" + month_or_quarter + '_' + est_type + ".txt", sep = "\t")
 			read_file = read_file.replace(np.nan, '', regex=True)
-			read_file.to_csv(path_input + "/" + path_output + "brandlevel_did_stata_" + timetype + '_' + est_type + ".csv", index=None)
+			read_file.to_csv(path_input + "/" + path_output + "brandlevel_did_stata_" + month_or_quarter + '_' + est_type + ".csv", index=None)
 
 
 
@@ -481,32 +481,32 @@ def did_brandlevel(df, merging_date, merging_parties, major_competitor = None, m
 			print(compare({'NoFE' : reg_nofe_demog, 'P-D' : reg_dma_product_fe_demog, 'P-D, T' : reg_time_fe_demog, 'NoFE, HHI' : reg_nofe_dhhi_demog, 'P-D, HHI' : reg_dma_product_fe_dhhi_demog, 'P-D, T, HHI' : reg_time_fe_dhhi_demog}))
 			print(compare({'NoFE' : reg_nofe_major, 'P-D' : reg_dma_product_fe_major, 'P-D, T' : reg_time_fe_major, 'NoFE, Demo' : reg_nofe_demog_major, 'P-D, Demo' : reg_dma_product_fe_demog_major, 'P-D, T, Demo' : reg_time_fe_demog_major}))
 
+if __name__ == "__main__": 
+	code = sys.argv[1]
+	log_out = open('../../../All/m_' + code + '/output/compute_did_brandlevel.log', 'w')
+	log_err = open('../../../All/m_' + code + '/output/compute_did_brandlevel.err', 'w')
+	sys.stdout = log_out
+	sys.stderr = log_err
 
-code = sys.argv[1]
-log_out = open('../../../All/m_' + code + '/output/compute_did_brandlevel.log', 'w')
-log_err = open('../../../All/m_' + code + '/output/compute_did_brandlevel.err', 'w')
-sys.stdout = log_out
-sys.stderr = log_err
+	info_dict = aux.parse_info(code)
+	merging_parties = aux.get_parties(info_dict["MergingParties"])
 
-info_dict = aux.parse_info(code)
-merging_parties = aux.get_parties(info_dict["MergingParties"])
+	for timetype in ['month', 'quarter']:
+		df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '_brandlevel'+'.csv', delimiter = ',')
+		df = aux.append_owners_brandlevel(code, df, timetype)
+		if timetype == 'month':
+			overlap_df = write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
+			if "MajorCompetitor" in info_dict:
+				major_competitor = aux.get_parties(info_dict["MajorCompetitor"])
+				print("Getting major competitor from info.txt")
+			else:
+				major_competitor = get_major_competitor(overlap_df)
+				print("Getting major competitor from shares")
+			print(major_competitor)
 
-for timetype in ['month', 'quarter']:
-	df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '_brandlevel'+'.csv', delimiter = ',')
-	df = aux.append_owners_brandlevel(code, df, timetype)
-	if timetype == 'month':
-		overlap_df = write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
-		if "MajorCompetitor" in info_dict:
-			major_competitor = aux.get_parties(info_dict["MajorCompetitor"])
-			print("Getting major competitor from info.txt")
-		else:
-			major_competitor = get_major_competitor(overlap_df)
-			print("Getting major competitor from shares")
-		print(major_competitor)
+		dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
+		did_brandlevel(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype)
 
-	dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
-	did_brandlevel(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype)
-
-print("compute_did successfully terminated")
-log_out.close()
-log_err.close()
+	print("compute_did successfully terminated")
+	log_out.close()
+	log_err.close()
