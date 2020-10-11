@@ -53,7 +53,7 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 
 		# Then get diesel prices to multiply
 		df['demand_instruments0'] = df['distance'] * df['diesel']
-		df = df.drop(['distance', 'diesel'], axis=1)
+		df = df.drop(['diesel'], axis=1)
 
 		instrument_names.remove('distance-diesel')
 		i = 1
