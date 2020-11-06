@@ -4,8 +4,7 @@ def NL(base_folder, month_or_quarter='month'):
     for folder in os.listdir(base_folder):
         merger_folder = base_folder + folder + '/output'
         if os.path.exists(merger_folder + '/did_' + month_or_quarter + '.csv') or os.path.exists(merger_folder + "did_stata_" + month_or_quarter + '_' + est_type + ".csv"):
-            print(folder)
-            code = folder[2:]
+
             # df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
             # print(df.shape)
             # estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
@@ -14,6 +13,10 @@ def NL(base_folder, month_or_quarter='month'):
 			log_err = open('../../../All/m_' + code + '/output/compute_did_brandlevel.err', 'w')
 			sys.stdout = log_out
 			sys.stderr = log_err
+			print(folder)
+            code = folder[2:]
+            print(code)
+            break
 
 			info_dict = aux.parse_info(code)
 			merging_parties = aux.get_parties(info_dict["MergingParties"])
