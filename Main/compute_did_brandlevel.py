@@ -191,7 +191,7 @@ def get_major_competitor(df, ownership_groups = None):
 	print(major_competitor)
 	return major_competitor
 
-def did_brandlevel(df, merging_date, merging_parties, major_competitor = None, month_or_quarter = 'month', code):
+def did_brandlevel(df, merging_date, merging_parties, code, major_competitor = None, month_or_quarter = 'month'):
 
 	# Pull merger year and merger month (or quarter)
 	if month_or_quarter == 'month':
