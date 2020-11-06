@@ -201,7 +201,7 @@ def did_brandlevel(df, merging_date, merging_parties, major_competitor = None, m
 	merger_year = merging_date.year
 
 	# Add DHHI, add DMA/UPC indicator, log price and post-merger indicator
-	df = add_dhhi_brandlevel(df, merging_date, month_or_quarter)
+	df = add_dhhi_brandlevel(df, merging_date, month_or_quarter, code = code)
 	df['dma_brand'] = df['dma_code'].astype(str) + "_" + df['brand_code_uc'].astype(str)
 	df['lprice'] = np.log(df['prices'])
 	df['post_merger'] = 0
