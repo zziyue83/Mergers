@@ -1,22 +1,22 @@
 import compute_did_brandlevel
 
 def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
-    for folder in os.listdir(base_folder):
-        merger_folder = base_folder + folder + '/output'
-        if os.path.exists(merger_folder + '/did_' + month_or_quarter + '.csv') or os.path.exists(merger_folder + "did_stata_" + month_or_quarter + '_' + est_type + ".csv"):
+	for folder in os.listdir(base_folder):
+		merger_folder = base_folder + folder + '/output'
+		if os.path.exists(merger_folder + '/did_' + month_or_quarter + '.csv') or os.path.exists(merger_folder + "did_stata_" + month_or_quarter + '_' + est_type + ".csv"):
 
-            # df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
-            # print(df.shape)
-            # estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
-            #     num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = linear_fe)
+			# df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
+			# print(df.shape)
+			# estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
+			#     num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = linear_fe)
 			log_out = open('../../../All/m_' + code + '/output/compute_did_brandlevel.log', 'w')
 			log_err = open('../../../All/m_' + code + '/output/compute_did_brandlevel.err', 'w')
 			sys.stdout = log_out
 			sys.stderr = log_err
 			print(folder)
-            code = folder[2:]
-            print(code)
-            continue
+			code = folder[2:]
+			print(code)
+			continue
 
 			info_dict = aux.parse_info(code)
 			merging_parties = aux.get_parties(info_dict["MergingParties"])
