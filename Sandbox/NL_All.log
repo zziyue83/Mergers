@@ -1,0 +1,1440 @@
+
+  ___  ____  ____  ____  ____ (R)
+ /__    /   ____/   /   ____/
+___/   /   /___/   /   /___/   14.2   Copyright 1985-2015 StataCorp LP
+  Statistics/Data Analysis            StataCorp
+                                      4905 Lakeway Drive
+     MP - Parallel Edition            College Station, Texas 77845 USA
+                                      800-STATA-PC        http://www.stata.com
+                                      979-696-4600        stata@stata.com
+                                      979-696-4601 (fax)
+
+25-user 4-core Stata network perpetual license:
+       Serial number:  501406210780
+         Licensed to:  NUIT ART - Research Computing
+                       Anton Verlygo (anton@northwestern.edu)
+
+Notes:
+      1.  Stata is running in batch mode.
+      2.  Unicode is supported; see help unicode_advice.
+      3.  More than 2 billion observations are allowed; see help obs_advice.
+      4.  Maximum number of variables is set to 5000; see help set_maxvar.
+
+. do /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/NL_All.do ../../../
+> All/m_2203820020_4/intermediate ../output/ month Nested_Logit Linear_FE 
+
+. 
+. clear all
+
+. 
+. set more off
+
+. 
+. est clear
+
+. 
+. /* *args: input_path       = `1' */
+. /* *args: output_path      = `2' */
+. /* *args: month_or_quarter = `3' */
+. /* *args: routine          = `4' */
+. /* *args: spec             = `5' */
+. 
+. di "`3'"
+month
+
+. cd `1'
+/projects/b1048/gillanes/Mergers/All/m_2203820020_4/intermediate
+
+. log using `2'/compute_demand_`3', text replace
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /projects/b1048/gillanes/Mergers/All/m_2203820020_4/intermediate/.
+> ./output//compute_demand_month.log
+  log type:  text
+ opened on:   4 Oct 2020, 14:03:05
+
+. 
+. import delimited "demand_`3'.csv", encoding(ISO-8859-1)
+(29 vars, 561,687 obs)
+
+. 
+. /*Install Packages*/
+. 
+. ssc install outreg2, replace
+checking outreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ranktest, replace
+checking ranktest consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ivreg2, replace
+checking ivreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ftools, replace
+checking ftools consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install reghdfe, replace
+checking reghdfe consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install estout, replace
+checking estout consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ivreghdfe, replace
+checking ivreghdfe consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install unique, replace
+checking unique consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install lassopack, replace
+checking lassopack consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install pdslasso, replace
+checking pdslasso consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. di "`4'"
+Nested_Logit
+
+. di "`5'"
+Linear_FE
+
+. 
+. qui unique upc, by(dma_code year month nesting_ids) gen(N_upc)
+
+. bysort dma_code year month nesting_ids: egen N_UPC = mean(N_upc)
+
+. bys dma_code year month: egen tot_dist = total(distance)
+
+. rename log_within_nest_shares lwns
+
+. egen period = group(year month)
+
+. egen calendar = group(month)
+
+. 
+. sort dma_code upc year month
+
+. foreach inst of varlist demand* {
+  2.         forval x=1/12{
+  3.                 gen lag_`x'_`inst' = `inst'[_n-`x'] if (upc[_n] == upc[_n-
+> `x'] & dma_code[_n] == dma_code[_n-`x'])
+  4.         }
+  5. }
+(15,182 missing values generated)
+(30,091 missing values generated)
+(44,762 missing values generated)
+(59,115 missing values generated)
+(73,199 missing values generated)
+(86,984 missing values generated)
+(100,545 missing values generated)
+(113,910 missing values generated)
+(127,082 missing values generated)
+(140,101 missing values generated)
+(152,951 missing values generated)
+(165,655 missing values generated)
+(15,182 missing values generated)
+(30,091 missing values generated)
+(44,762 missing values generated)
+(59,115 missing values generated)
+(73,199 missing values generated)
+(86,984 missing values generated)
+(100,545 missing values generated)
+(113,910 missing values generated)
+(127,082 missing values generated)
+(140,101 missing values generated)
+(152,951 missing values generated)
+(165,655 missing values generated)
+(15,182 missing values generated)
+(30,091 missing values generated)
+(44,762 missing values generated)
+(59,115 missing values generated)
+(73,199 missing values generated)
+(86,984 missing values generated)
+(100,545 missing values generated)
+(113,910 missing values generated)
+(127,082 missing values generated)
+(140,101 missing values generated)
+(152,951 missing values generated)
+(165,655 missing values generated)
+
+. *
+. egen UPC = group(upc)
+
+. 
+. xtset dma_code
+       panel variable:  dma_code (unbalanced)
+
+. 
+. /*NO TIME RELATED FE*/
+. eststo clear
+
+. *REGHDFE OLS
+. reghdfe logsj_logs0 prices lwns, abs(dma_code upc) cluster(dma_code)
+(MWFE estimator converged in 8 iterations)
+
+HDFE Linear regression                            Number of obs   =    561,687
+Absorbing 2 HDFE groups                           F(   2,    204) =   81660.68
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.9725
+                                                  Adj R-squared   =     0.9724
+                                                  Within R-sq.    =     0.9499
+Number of clusters (dma_code) =        205        Root MSE        =     0.3144
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |  -.0184442   .0021576    -8.55   0.000    -.0226983   -.0141902
+        lwns |    .986405   .0025161   392.04   0.000     .9814441    .9913658
+       _cons |  -.4126544   .0196111   -21.04   0.000    -.4513207    -.373988
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    dma_code |       205         205           0    *|
+         upc |       158           0         158     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. outreg2 using `2'/NL_All_`3'.txt, stats(coef se) ctitle("OLS") replace
+dir : seeout
+
+. *IVHDFE distance_diesel tot_dist N_UPC
+. eststo: ivreghdfe logsj_logs0 (prices lwns = dem* tot_dist N_UPC), abs(dma_co
+> de upc) cluster(dma_code)
+(MWFE estimator converged in 8 iterations)
+
+IV (2SLS) estimation
+--------------------
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on dma_code
+
+Number of clusters (dma_code) =    205                Number of obs =   561687
+                                                      F(  2,   204) =    38.03
+                                                      Prob > F      =   0.0000
+Total (centered) SS     =  1108411.334                Centered R2   =   0.8429
+Total (uncentered) SS   =  1108411.334                Uncentered R2 =   0.8429
+Residual SS             =  174165.0368                Root MSE      =    .5569
+
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |  -.0676879   .1167195    -0.58   0.563    -.2978192    .1624433
+        lwns |   .6510762   .1179095     5.52   0.000     .4185986    .8835537
+------------------------------------------------------------------------------
+Underidentification test (Kleibergen-Paap rk LM statistic):             54.528
+                                                   Chi-sq(4) P-val =    0.0000
+------------------------------------------------------------------------------
+Weak identification test (Cragg-Donald Wald F statistic):              340.834
+                         (Kleibergen-Paap rk Wald F statistic):         17.780
+Stock-Yogo weak ID test critical values:  5% maximal IV relative bias    13.97
+                                         10% maximal IV relative bias     8.78
+                                         20% maximal IV relative bias     5.91
+                                         30% maximal IV relative bias     4.79
+                                         10% maximal IV size             19.45
+                                         15% maximal IV size             11.22
+                                         20% maximal IV size              8.38
+                                         25% maximal IV size              6.89
+Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+------------------------------------------------------------------------------
+Hansen J statistic (overidentification test of all instruments):       114.950
+                                                   Chi-sq(3) P-val =    0.0000
+------------------------------------------------------------------------------
+Instrumented:         prices lwns
+Excluded instruments: demand_instruments0 demand_instruments1
+                      demand_instruments2 tot_dist N_UPC
+Partialled-out:       _cons
+                      nb: total SS, model F and R2s are after partialling-out;
+                          any small-sample adjustments include partialled-out
+                          variables in regressor count K
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    dma_code |       205         205           0    *|
+         upc |       158           0         158     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(est1 stored)
+
+. outreg2 using `2'/NL_All_`3'.txt, ctitle("IV") append
+dir : seeout
+
+. *IVLASSO distance_diesel tot_dist N_UPC
+. eststo: ivlasso logsj_logs0 (i.UPC) (prices lwns = dem* lag* N_UPC tot_dist),
+>  fe cluster(dma_code) partial(i.UPC)
+Fixed effects transformation...
+5.  (PDS/CHS) Selecting HD controls/IVs for endog regressor prices...
+Selected: lag_3_demand_instruments1 lag_5_demand_instruments1
+          lag_11_demand_instruments2
+5.  (PDS/CHS) Selecting HD controls/IVs for endog regressor lwns...
+Selected: demand_instruments1 lag_12_demand_instruments1
+          lag_2_demand_instruments2 lag_3_demand_instruments2 N_UPC
+7.  (CHS) Creating orthogonalized endogenous regressor prices...
+7.  (CHS) Creating orthogonalized endogenous regressor lwns...
+
+
+Estimation results:
+
+Specification:
+Regularization method:                 lasso
+Penalty loadings:                      cluster-lasso
+Number of observations:                396,032
+Number of clusters:                        205
+Number of fixed effects:                   205
+Endogenous (2):                        prices lwns
+Partialled-out controls (148):         1b.UPC 2.UPC 3.UPC 4.UPC 5.UPC 6.UPC
+                                       7.UPC 8.UPC 10.UPC 11.UPC 12.UPC 13.UPC
+                                       14.UPC 17.UPC 18.UPC 19.UPC 21.UPC
+                                       22.UPC 23.UPC 24.UPC 25.UPC 26.UPC
+                                       27.UPC 28.UPC 29.UPC 30.UPC 31.UPC
+                                       32.UPC 33.UPC 34.UPC 35.UPC 36.UPC
+                                       37.UPC 38.UPC 39.UPC 40.UPC 41.UPC
+                                       42.UPC 43.UPC 45.UPC 46.UPC 48.UPC
+                                       49.UPC 52.UPC 53.UPC 54.UPC 55.UPC
+                                       56.UPC 57.UPC 58.UPC 59.UPC 60.UPC
+                                       61.UPC 62.UPC 63.UPC 64.UPC 66.UPC
+                                       67.UPC 68.UPC 69.UPC 70.UPC 71.UPC
+                                       72.UPC 73.UPC 74.UPC 75.UPC 76.UPC
+                                       77.UPC 79.UPC 80.UPC 81.UPC 82.UPC
+                                       83.UPC 84.UPC 85.UPC 86.UPC 87.UPC
+                                       88.UPC 89.UPC 90.UPC 91.UPC 92.UPC
+                                       93.UPC 94.UPC 95.UPC 96.UPC 97.UPC
+                                       98.UPC 99.UPC 100.UPC 101.UPC 102.UPC
+                                       103.UPC 104.UPC 105.UPC 106.UPC 107.UPC
+                                       108.UPC 109.UPC 110.UPC 111.UPC 112.UPC
+                                       113.UPC 114.UPC 115.UPC 116.UPC 117.UPC
+                                       118.UPC 119.UPC 120.UPC 121.UPC 122.UPC
+                                       123.UPC 124.UPC 125.UPC 126.UPC 127.UPC
+                                       128.UPC 129.UPC 130.UPC 131.UPC 132.UPC
+                                       133.UPC 134.UPC 135.UPC 136.UPC 137.UPC
+                                       138.UPC 139.UPC 140.UPC 141.UPC 142.UPC
+                                       143.UPC 144.UPC 145.UPC 146.UPC 147.UPC
+                                       148.UPC 149.UPC 150.UPC 151.UPC 152.UPC
+                                       153.UPC 154.UPC 155.UPC 156.UPC 157.UPC
+                                       158.UPC
+High-dim instruments (41):             demand_instruments0 demand_instruments1
+                                       demand_instruments2
+                                       lag_1_demand_instruments0
+                                       lag_2_demand_instruments0
+                                       lag_3_demand_instruments0
+                                       lag_4_demand_instruments0
+                                       lag_5_demand_instruments0
+                                       lag_6_demand_instruments0
+                                       lag_7_demand_instruments0
+                                       lag_8_demand_instruments0
+                                       lag_9_demand_instruments0
+                                       lag_10_demand_instruments0
+                                       lag_11_demand_instruments0
+                                       lag_12_demand_instruments0
+                                       lag_1_demand_instruments1
+                                       lag_2_demand_instruments1
+                                       lag_3_demand_instruments1
+                                       lag_4_demand_instruments1
+                                       lag_5_demand_instruments1
+                                       lag_6_demand_instruments1
+                                       lag_7_demand_instruments1
+                                       lag_8_demand_instruments1
+                                       lag_9_demand_instruments1
+                                       lag_10_demand_instruments1
+                                       lag_11_demand_instruments1
+                                       lag_12_demand_instruments1
+                                       lag_1_demand_instruments2
+                                       lag_2_demand_instruments2
+                                       lag_3_demand_instruments2
+                                       lag_4_demand_instruments2
+                                       lag_5_demand_instruments2
+                                       lag_6_demand_instruments2
+                                       lag_7_demand_instruments2
+                                       lag_8_demand_instruments2
+                                       lag_9_demand_instruments2
+                                       lag_10_demand_instruments2
+                                       lag_11_demand_instruments2
+                                       lag_12_demand_instruments2 N_UPC
+                                       tot_dist
+Selected instruments (8):              demand_instruments1
+                                       lag_3_demand_instruments1
+                                       lag_5_demand_instruments1
+                                       lag_12_demand_instruments1
+                                       lag_2_demand_instruments2
+                                       lag_3_demand_instruments2
+                                       lag_11_demand_instruments2 N_UPC
+
+Structural equation (fixed effects, #groups=205):
+
+IV using CHS lasso-orthogonalized vars
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |   -.569001   .0568803   -10.00   0.000    -.6804843   -.4575177
+        lwns |   .8225954   .0593179    13.87   0.000     .7063345    .9388564
+------------------------------------------------------------------------------
+
+IV using CHS post-lasso-orthogonalized vars
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |   -.395026   .0535011    -7.38   0.000    -.4998863   -.2901657
+        lwns |   .8135338   .0603892    13.47   0.000     .6951732    .9318944
+------------------------------------------------------------------------------
+
+IV with PDS-selected variables and full regressor set
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |     -.2023   .0443002    -4.57   0.000    -.2891267   -.1154733
+        lwns |   .8126745   .0526259    15.44   0.000     .7095296    .9158194
+             |
+         UPC |
+          2  |  -.5419747   .1897614    -2.86   0.004    -.9139003   -.1700492
+          3  |  -.1028178   .1007209    -1.02   0.307    -.3002272    .0945916
+          4  |  -.0310187   .1165439    -0.27   0.790    -.2594405    .1974032
+          5  |  -.1362185   .0956275    -1.42   0.154     -.323645    .0512081
+          6  |  -.3982952   .0692221    -5.75   0.000     -.533968   -.2626223
+          7  |  -.5014559   .0776724    -6.46   0.000    -.6536911   -.3492208
+          8  |  -.4799885   .0724456    -6.63   0.000    -.6219794   -.3379977
+         10  |   .5283255   .0795482     6.64   0.000     .3724138    .6842371
+         11  |   .5043176   .0749382     6.73   0.000     .3574413    .6511939
+         12  |  -.4010584   .1102584    -3.64   0.000    -.6171609   -.1849559
+         13  |    .078951   .0417811     1.89   0.059    -.0029385    .1608405
+         14  |   .0685018   .0432627     1.58   0.113    -.0162914    .1532951
+         17  |   .1624175   .0775633     2.09   0.036     .0103963    .3144388
+         18  |   .2823597   .1007579     2.80   0.005     .0848778    .4798415
+         19  |  -.4880987   .2214041    -2.20   0.027    -.9220427   -.0541547
+         21  |   1.752954   .3588221     4.89   0.000     1.049676    2.456232
+         22  |  -.4892512   .1112238    -4.40   0.000    -.7072458   -.2712565
+         23  |    .922618   .1780115     5.18   0.000     .5737218    1.271514
+         24  |   1.093566   .1726443     6.33   0.000     .7551891    1.431942
+         25  |    1.12371   .1742395     6.45   0.000     .7822068    1.465213
+         26  |   .5261818   .1709109     3.08   0.002     .1912026     .861161
+         27  |   .5642146   .1757978     3.21   0.001     .2196572    .9087719
+         28  |   1.083904   .2052352     5.28   0.000     .6816507    1.486158
+         29  |   .3296543   .2366174     1.39   0.164    -.1341072    .7934159
+         30  |  -.3236258   .1762829    -1.84   0.066    -.6691339    .0218823
+         31  |    .287377   .1832417     1.57   0.117    -.0717702    .6465241
+         32  |   .2252838   .1281086     1.76   0.079    -.0258044     .476372
+         33  |  -.3258596   .3008461    -1.08   0.279    -.9155073     .263788
+         34  |   .1085762   .0900916     1.21   0.228        -.068    .2851524
+         35  |   -.048614   .0854283    -0.57   0.569    -.2160504    .1188224
+         36  |    .185268   .1625234     1.14   0.254     -.133272     .503808
+         37  |  -.5069395   .2076336    -2.44   0.015    -.9138938   -.0999852
+         38  |  -.9434128   .2870184    -3.29   0.001    -1.505959   -.3808671
+         39  |  -.0087037   .1396269    -0.06   0.950    -.2823674      .26496
+         40  |  -.4913148   .2171191    -2.26   0.024    -.9168604   -.0657692
+         41  |   .2882279   .0800052     3.60   0.000     .1314206    .4450351
+         42  |   .5089839   .1103421     4.61   0.000     .2927174    .7252504
+         43  |   .1942598   .0923767     2.10   0.035     .0132047    .3753148
+         45  |   .2316961   .0886465     2.61   0.009     .0579522      .40544
+         46  |    .361575   .1584827     2.28   0.023     .0509545    .6721955
+         48  |   -.345984   .2141272    -1.62   0.106    -.7656655    .0736976
+         49  |  -.4548162    .222545    -2.04   0.041    -.8909964    -.018636
+         52  |  -.8501558   .3135858    -2.71   0.007    -1.464773   -.2355388
+         53  |  -.8563709   .1461961    -5.86   0.000     -1.14291   -.5698319
+         54  |  -.0555745   .1659779    -0.33   0.738    -.3808852    .2697361
+         55  |   .0609954   .1279018     0.48   0.633    -.1896876    .3116784
+         56  |  -.4105032   .0711846    -5.77   0.000    -.5500225   -.2709839
+         57  |  -.2124416   .0812574    -2.61   0.009    -.3717032     -.05318
+         58  |  -.2079094   .0845782    -2.46   0.014    -.3736795   -.0421392
+         59  |   .8898493   .1335352     6.66   0.000     .6281252    1.151573
+         60  |   .8673887   .1226677     7.07   0.000     .6269645    1.107813
+         61  |   .5277974   .1141762     4.62   0.000     .3040162    .7515787
+         62  |   .6054614   .1385768     4.37   0.000     .3338557     .877067
+         63  |   .4215276   .0864354     4.88   0.000     .2521173    .5909378
+         64  |   .7931536   .1407455     5.64   0.000     .5172975     1.06901
+         66  |   -.166779   .2583025    -0.65   0.518    -.6730425    .3394845
+         67  |  -.1801362   .2409556    -0.75   0.455    -.6524004    .2921281
+         68  |  -.1691555   .1087205    -1.56   0.120    -.3822437    .0439327
+         69  |  -.3157459    .135948    -2.32   0.020     -.582199   -.0492928
+         70  |  -.4086336   .1231201    -3.32   0.001    -.6499447   -.1673225
+         71  |  -.4373794   .1223432    -3.58   0.000    -.6771676   -.1975912
+         72  |   .2280612    .152921     1.49   0.136    -.0716584    .5277807
+         73  |    .110303   .1320698     0.84   0.404    -.1485491    .3691551
+         74  |   .1361879   .1121896     1.21   0.225    -.0836996    .3560754
+         75  |   .2669947   .1419438     1.88   0.060    -.0112101    .5451995
+         76  |  -.0974789   .1855166    -0.53   0.599    -.4610846    .2661269
+         77  |  -.1171559   .1193545    -0.98   0.326    -.3510864    .1167746
+         79  |   .1687286   .0361161     4.67   0.000     .0979424    .2395148
+         80  |  -.6299627   .1839313    -3.42   0.001    -.9904614   -.2694641
+         81  |   .1036494   .0976337     1.06   0.288    -.0877092     .295008
+         82  |   .2622152   .0924798     2.84   0.005     .0809581    .4434724
+         83  |  -1.024365   .2707651    -3.78   0.000    -1.555055   -.4936751
+         84  |  -1.038405   .2981999    -3.48   0.000    -1.622866   -.4539434
+         85  |  -.3686434   .0714721    -5.16   0.000     -.508726   -.2285607
+         86  |   .5711539   .1065417     5.36   0.000     .3623361    .7799717
+         87  |  -.1190312   .0553454    -2.15   0.032    -.2275062   -.0105562
+         88  |  -.1683421   .0532844    -3.16   0.002    -.2727776   -.0639067
+         89  |  -.1360667   .0539117    -2.52   0.012    -.2417317   -.0304016
+         90  |  -.6142994   .3580458    -1.72   0.086    -1.316056    .0874573
+         91  |   .2079289   .1075899     1.93   0.053    -.0029434    .4188012
+         92  |   .6990181   .1456229     4.80   0.000     .4136024    .9844337
+         93  |  -.9731998   .1417454    -6.87   0.000    -1.251016   -.6953839
+         94  |   .4700247   .1421784     3.31   0.001     .1913603    .7486892
+         95  |  -1.206826   .2132723    -5.66   0.000    -1.624832   -.7888197
+         96  |    1.10239   .2716935     4.06   0.000     .5698805      1.6349
+         97  |  -.7536602   .3553467    -2.12   0.034    -1.450127   -.0571934
+         98  |  -.5334441   .3261249    -1.64   0.102    -1.172637    .1057489
+         99  |  -.2160821   .2343955    -0.92   0.357    -.6754888    .2433246
+        100  |  -.2079041   .0602108    -3.45   0.001    -.3259152   -.0898931
+        101  |  -.2527139   .0619666    -4.08   0.000    -.3741662   -.1312617
+        102  |   -.240144   .0520062    -4.62   0.000    -.3420742   -.1382137
+        103  |  -.0608028   .0339856    -1.79   0.074    -.1274132    .0058077
+        104  |  -.1245889   .1654929    -0.75   0.452    -.4489489    .1997712
+        105  |   .7185294   .2475822     2.90   0.004     .2332773    1.203782
+        106  |  -.9424199   .2095334    -4.50   0.000    -1.353098   -.5317421
+        107  |  -.1863452   .0708014    -2.63   0.008    -.3251133   -.0475771
+        108  |  -.7214727   .2470555    -2.92   0.003    -1.205693   -.2372528
+        109  |  -.3829375    .235511    -1.63   0.104    -.8445306    .0786555
+        110  |  -.6040972   .2880906    -2.10   0.036    -1.168744   -.0394501
+        111  |  -.4183184   .0701202    -5.97   0.000    -.5557514   -.2808854
+        112  |  -.4331917    .072792    -5.95   0.000    -.5758614   -.2905219
+        113  |  -.4857244   .0823381    -5.90   0.000    -.6471042   -.3243447
+        114  |  -.1569156   .1205355    -1.30   0.193    -.3931607    .0793295
+        115  |  -.1754155   .1055728    -1.66   0.097    -.3823345    .0315034
+        116  |  -.3820663   .2388171    -1.60   0.110    -.8501392    .0860065
+        117  |  -.3186252   .2655642    -1.20   0.230    -.8391216    .2018711
+        118  |  -.3431551   .2547759    -1.35   0.178    -.8425068    .1561966
+        119  |  -.2055608   .2764911    -0.74   0.457    -.7474733    .3363517
+        120  |  -.3783116   .1605199    -2.36   0.018    -.6929248   -.0636984
+        121  |  -.7992657   .3395965    -2.35   0.019    -1.464863   -.1336689
+        122  |   .5445788   .0937895     5.81   0.000     .3607548    .7284027
+        123  |  -.2083586   .1388456    -1.50   0.133    -.4804911    .0637738
+        124  |  -.4870617   .1383077    -3.52   0.000    -.7581397   -.2159836
+        125  |  -.0947195   .1625509    -0.58   0.560    -.4133135    .2238745
+        126  |   .0323793   .2328617     0.14   0.889    -.4240213    .4887799
+        127  |   .0173944   .1819462     0.10   0.924    -.3392136    .3740023
+        128  |  -.7047656   .2285933    -3.08   0.002      -1.1528   -.2567308
+        129  |   .5554141   .0944977     5.88   0.000      .370202    .7406261
+        130  |  -.0441634   .1697739    -0.26   0.795     -.376914    .2885873
+        131  |  -1.959884   .2898772    -6.76   0.000    -2.528033   -1.391735
+        132  |   1.263256   .1986192     6.36   0.000     .8739693    1.652542
+        133  |   -.880993     .33686    -2.62   0.009    -1.541226   -.2207597
+        134  |  -.1968998   .1457187    -1.35   0.177    -.4825032    .0887036
+        135  |  -.5122041   .3619621    -1.42   0.157    -1.221637    .1972286
+        136  |  -.6407816   .3459419    -1.85   0.064    -1.318815    .0372521
+        137  |  -.5633027   .2287422    -2.46   0.014    -1.011629   -.1149762
+        138  |  -.4150464   .0701918    -5.91   0.000    -.5526199   -.2774729
+        139  |  -.6382621    .214975    -2.97   0.003    -1.059605   -.2169189
+        140  |  -.6512915   .2485467    -2.62   0.009    -1.138434   -.1641489
+        141  |  -.4826509   .3605872    -1.34   0.181    -1.189389     .224087
+        142  |  -.6651277   .3365284    -1.98   0.048    -1.324711   -.0055442
+        143  |  -.6933447   .3616812    -1.92   0.055    -1.402227    .0155375
+        144  |  -.7465704   .2467848    -3.03   0.002     -1.23026   -.2628811
+        145  |   .0273966   .1698509     0.16   0.872    -.3055052    .3602983
+        146  |  -.5473722   .3127535    -1.75   0.080    -1.160358    .0656135
+        147  |  -.6114992   .3239119    -1.89   0.059    -1.246355    .0233564
+        148  |  -.6808858   .3699792    -1.84   0.066    -1.406032      .04426
+        149  |  -.8407931   .3135347    -2.68   0.007     -1.45531   -.2262764
+        150  |  -.7865863   .2463125    -3.19   0.001     -1.26935   -.3038227
+        151  |  -.5899317   .3408196    -1.73   0.083    -1.257926    .0780625
+        152  |  -.6856082   .2752139    -2.49   0.013    -1.225018   -.1461988
+        153  |   -.608827    .252929    -2.41   0.016    -1.104559   -.1130951
+        154  |  -.8685964   .3139387    -2.77   0.006    -1.483905   -.2532878
+        155  |  -.6061118   .3061789    -1.98   0.048    -1.206212   -.0060121
+        156  |  -.5997674   .4028528    -1.49   0.137    -1.389344    .1898097
+        157  |  -.2236964   .1316978    -1.70   0.089    -.4818193    .0344266
+        158  |  -.3116882   .0967491    -3.22   0.001    -.5013129   -.1220635
+------------------------------------------------------------------------------
+Standard errors and test statistics valid for the following variables only:
+    prices lwns
+------------------------------------------------------------------------------
+(est2 stored)
+
+. outreg2 using `2'/NL_All_`3'.txt, keep(prices lwns) stat(coef se) ctitle("IV-
+> Lasso") append
+dir : seeout
+
+. 
+. /*CALENDAR FE*/
+. *REGHDFE OLS
+. reghdfe logsj_logs0 prices lwns, abs(dma_code upc calendar) cluster(dma_code)
+(MWFE estimator converged in 8 iterations)
+
+HDFE Linear regression                            Number of obs   =    561,687
+Absorbing 3 HDFE groups                           F(   2,    204) =   81270.31
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.9746
+                                                  Adj R-squared   =     0.9746
+                                                  Within R-sq.    =     0.9537
+Number of clusters (dma_code) =        205        Root MSE        =     0.3019
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |  -.0134724   .0018904    -7.13   0.000    -.0171997   -.0097451
+        lwns |   .9875234   .0025059   394.08   0.000     .9825826    .9924641
+       _cons |  -.4486729    .018213   -24.63   0.000    -.4845828    -.412763
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    dma_code |       205         205           0    *|
+         upc |       158           0         158     |
+    calendar |        12           1          11     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. outreg2 using `2'/NL_All_`3'.txt, stats(coef se) ctitle("OLS Calendar") appen
+> d
+dir : seeout
+
+. *IVHDFE distance_diesel tot_dist N_UPC
+. eststo: ivreghdfe logsj_logs0 (prices lwns = demand_instruments0 tot_dist N_U
+> PC), abs(dma_code upc calendar) cluster(dma_code)
+(MWFE estimator converged in 8 iterations)
+
+IV (2SLS) estimation
+--------------------
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on dma_code
+
+Number of clusters (dma_code) =    205                Number of obs =   561687
+                                                      F(  2,   204) =    35.93
+                                                      Prob > F      =   0.0000
+Total (centered) SS     =  1104604.996                Centered R2   =   0.5485
+Total (uncentered) SS   =  1104604.996                Uncentered R2 =   0.5485
+Residual SS             =  498697.7724                Root MSE      =    .9424
+
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |   .2171175   .1309108     1.66   0.099    -.0409941    .4752291
+        lwns |   .4030254   .1176679     3.43   0.001     .1710241    .6350267
+------------------------------------------------------------------------------
+Underidentification test (Kleibergen-Paap rk LM statistic):             40.752
+                                                   Chi-sq(2) P-val =    0.0000
+------------------------------------------------------------------------------
+Weak identification test (Cragg-Donald Wald F statistic):              425.797
+                         (Kleibergen-Paap rk Wald F statistic):         20.450
+Stock-Yogo weak ID test critical values: 10% maximal IV size             13.43
+                                         15% maximal IV size              8.18
+                                         20% maximal IV size              6.40
+                                         25% maximal IV size              5.45
+Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+------------------------------------------------------------------------------
+Hansen J statistic (overidentification test of all instruments):         8.167
+                                                   Chi-sq(1) P-val =    0.0043
+------------------------------------------------------------------------------
+Instrumented:         prices lwns
+Excluded instruments: demand_instruments0 tot_dist N_UPC
+Partialled-out:       _cons
+                      nb: total SS, model F and R2s are after partialling-out;
+                          any small-sample adjustments include partialled-out
+                          variables in regressor count K
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    dma_code |       205         205           0    *|
+         upc |       158           0         158     |
+    calendar |        12           1          11     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(est3 stored)
+
+. outreg2 using `2'/NL_All_`3'.txt, ctitle("IV Calendar") append
+dir : seeout
+
+. *IVLASSO distance_diesel tot_dist N_UPC
+. eststo: ivlasso logsj_logs0 (i.UPC i.calendar) (prices lwns = dem* lag* N_UPC
+>  tot_dist), fe cluster(dma_code) partial(i.UPC i.calendar)
+Fixed effects transformation...
+5.  (PDS/CHS) Selecting HD controls/IVs for endog regressor prices...
+Selected: lag_3_demand_instruments1 lag_4_demand_instruments1
+          lag_5_demand_instruments1 lag_12_demand_instruments2
+5.  (PDS/CHS) Selecting HD controls/IVs for endog regressor lwns...
+Selected: demand_instruments1 lag_12_demand_instruments1
+          lag_2_demand_instruments2 lag_3_demand_instruments2 N_UPC
+7.  (CHS) Creating orthogonalized endogenous regressor prices...
+7.  (CHS) Creating orthogonalized endogenous regressor lwns...
+
+
+Estimation results:
+
+Specification:
+Regularization method:                 lasso
+Penalty loadings:                      cluster-lasso
+Number of observations:                396,032
+Number of clusters:                        205
+Number of fixed effects:                   205
+Endogenous (2):                        prices lwns
+Partialled-out controls (160):         1b.UPC 2.UPC 3.UPC 4.UPC 5.UPC 6.UPC
+                                       7.UPC 8.UPC 10.UPC 11.UPC 12.UPC 13.UPC
+                                       14.UPC 17.UPC 18.UPC 19.UPC 21.UPC
+                                       22.UPC 23.UPC 24.UPC 25.UPC 26.UPC
+                                       27.UPC 28.UPC 29.UPC 30.UPC 31.UPC
+                                       32.UPC 33.UPC 34.UPC 35.UPC 36.UPC
+                                       37.UPC 38.UPC 39.UPC 40.UPC 41.UPC
+                                       42.UPC 43.UPC 45.UPC 46.UPC 48.UPC
+                                       49.UPC 52.UPC 53.UPC 54.UPC 55.UPC
+                                       56.UPC 57.UPC 58.UPC 59.UPC 60.UPC
+                                       61.UPC 62.UPC 63.UPC 64.UPC 66.UPC
+                                       67.UPC 68.UPC 69.UPC 70.UPC 71.UPC
+                                       72.UPC 73.UPC 74.UPC 75.UPC 76.UPC
+                                       77.UPC 79.UPC 80.UPC 81.UPC 82.UPC
+                                       83.UPC 84.UPC 85.UPC 86.UPC 87.UPC
+                                       88.UPC 89.UPC 90.UPC 91.UPC 92.UPC
+                                       93.UPC 94.UPC 95.UPC 96.UPC 97.UPC
+                                       98.UPC 99.UPC 100.UPC 101.UPC 102.UPC
+                                       103.UPC 104.UPC 105.UPC 106.UPC 107.UPC
+                                       108.UPC 109.UPC 110.UPC 111.UPC 112.UPC
+                                       113.UPC 114.UPC 115.UPC 116.UPC 117.UPC
+                                       118.UPC 119.UPC 120.UPC 121.UPC 122.UPC
+                                       123.UPC 124.UPC 125.UPC 126.UPC 127.UPC
+                                       128.UPC 129.UPC 130.UPC 131.UPC 132.UPC
+                                       133.UPC 134.UPC 135.UPC 136.UPC 137.UPC
+                                       138.UPC 139.UPC 140.UPC 141.UPC 142.UPC
+                                       143.UPC 144.UPC 145.UPC 146.UPC 147.UPC
+                                       148.UPC 149.UPC 150.UPC 151.UPC 152.UPC
+                                       153.UPC 154.UPC 155.UPC 156.UPC 157.UPC
+                                       158.UPC 1b.calendar 2.calendar
+                                       3.calendar 4.calendar 5.calendar
+                                       6.calendar 7.calendar 8.calendar
+                                       9.calendar 10.calendar 11.calendar
+                                       12.calendar
+High-dim instruments (41):             demand_instruments0 demand_instruments1
+                                       demand_instruments2
+                                       lag_1_demand_instruments0
+                                       lag_2_demand_instruments0
+                                       lag_3_demand_instruments0
+                                       lag_4_demand_instruments0
+                                       lag_5_demand_instruments0
+                                       lag_6_demand_instruments0
+                                       lag_7_demand_instruments0
+                                       lag_8_demand_instruments0
+                                       lag_9_demand_instruments0
+                                       lag_10_demand_instruments0
+                                       lag_11_demand_instruments0
+                                       lag_12_demand_instruments0
+                                       lag_1_demand_instruments1
+                                       lag_2_demand_instruments1
+                                       lag_3_demand_instruments1
+                                       lag_4_demand_instruments1
+                                       lag_5_demand_instruments1
+                                       lag_6_demand_instruments1
+                                       lag_7_demand_instruments1
+                                       lag_8_demand_instruments1
+                                       lag_9_demand_instruments1
+                                       lag_10_demand_instruments1
+                                       lag_11_demand_instruments1
+                                       lag_12_demand_instruments1
+                                       lag_1_demand_instruments2
+                                       lag_2_demand_instruments2
+                                       lag_3_demand_instruments2
+                                       lag_4_demand_instruments2
+                                       lag_5_demand_instruments2
+                                       lag_6_demand_instruments2
+                                       lag_7_demand_instruments2
+                                       lag_8_demand_instruments2
+                                       lag_9_demand_instruments2
+                                       lag_10_demand_instruments2
+                                       lag_11_demand_instruments2
+                                       lag_12_demand_instruments2 N_UPC
+                                       tot_dist
+Selected instruments (9):              demand_instruments1
+                                       lag_3_demand_instruments1
+                                       lag_4_demand_instruments1
+                                       lag_5_demand_instruments1
+                                       lag_12_demand_instruments1
+                                       lag_2_demand_instruments2
+                                       lag_3_demand_instruments2
+                                       lag_12_demand_instruments2 N_UPC
+
+Structural equation (fixed effects, #groups=205):
+
+IV using CHS lasso-orthogonalized vars
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |  -.5544677    .046336   -11.97   0.000    -.6452845   -.4636508
+        lwns |   .8735752   .0599275    14.58   0.000     .7561194     .991031
+------------------------------------------------------------------------------
+
+IV using CHS post-lasso-orthogonalized vars
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |  -.4148177    .047509    -8.73   0.000    -.5079335   -.3217018
+        lwns |   .8514123   .0621425    13.70   0.000     .7296151    .9732094
+------------------------------------------------------------------------------
+
+IV with PDS-selected variables and full regressor set
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |  -.2078905   .0470309    -4.42   0.000    -.3000694   -.1157116
+        lwns |   .8690983   .0577455    15.05   0.000     .7559192    .9822774
+             |
+         UPC |
+          2  |  -.6172066   .2097146    -2.94   0.003     -1.02824   -.2061736
+          3  |  -.1694031   .1135855    -1.49   0.136    -.3920266    .0532203
+          4  |  -.1201315   .1332605    -0.90   0.367    -.3813173    .1410543
+          5  |  -.1921858   .1067226    -1.80   0.072    -.4013583    .0169867
+          6  |  -.3614018   .0604483    -5.98   0.000    -.4798783   -.2429252
+          7  |  -.4661194   .0689056    -6.76   0.000    -.6011719   -.3310669
+          8  |  -.4256163   .0637792    -6.67   0.000    -.5506211   -.3006114
+         10  |   .4814694   .0709046     6.79   0.000      .342499    .6204398
+         11  |   .4636899   .0664912     6.97   0.000     .3333695    .5940102
+         12  |  -.3178944   .1053749    -3.02   0.003    -.5244255   -.1113634
+         13  |   .0983367   .0433904     2.27   0.023      .013293    .1833803
+         14  |   .0909193   .0454179     2.00   0.045     .0019019    .1799367
+         17  |   .1219078   .0718831     1.70   0.090    -.0189805    .2627962
+         18  |   .2078761   .0991355     2.10   0.036     .0135742    .4021781
+         19  |  -.6037806    .241682    -2.50   0.012    -1.077469   -.1300925
+         21  |   1.785092   .3804001     4.69   0.000     1.039521    2.530663
+         22  |  -.4942537    .114077    -4.33   0.000    -.7178406   -.2706668
+         23  |   .9236123   .1858843     4.97   0.000     .5592858    1.287939
+         24  |   1.046107   .1692555     6.18   0.000     .7143724    1.377842
+         25  |   1.067486   .1687057     6.33   0.000      .736829    1.398143
+         26  |   .5874624   .1877183     3.13   0.002     .2195412    .9553836
+         27  |   .6475409    .192915     3.36   0.001     .2694346    1.025647
+         28  |   1.075252   .2075313     5.18   0.000     .6684982    1.482006
+         29  |   .1110128   .2713885     0.41   0.682    -.4208989    .6429245
+         30  |  -.4162984   .1952687    -2.13   0.033    -.7990181   -.0335787
+         31  |   .1170819    .208921     0.56   0.575    -.2923957    .5265595
+         32  |   .1060713   .1447845     0.73   0.464    -.1777011    .3898437
+         33  |  -.5200918   .3423412    -1.52   0.129    -1.191068    .1508846
+         34  |   .0327462   .0994422     0.33   0.742    -.1621569    .2276493
+         35  |  -.1032661   .0923253    -1.12   0.263    -.2842203    .0776881
+         36  |   .0399273   .1858516     0.21   0.830    -.3243352    .4041898
+         37  |  -.5999476   .2313491    -2.59   0.010    -1.053384   -.1465116
+         38  |   -.630272   .3170374    -1.99   0.047    -1.251654   -.0088901
+         39  |  -.1065907   .1539831    -0.69   0.489    -.4083921    .1952107
+         40  |  -.5848491   .2408047    -2.43   0.015    -1.056818   -.1128805
+         41  |   .2076966   .0847008     2.45   0.014      .041686    .3737072
+         42  |   .4066302   .1028524     3.95   0.000     .2050432    .6082172
+         43  |   .0877202   .0981457     0.89   0.371    -.1046418    .2800822
+         45  |    .169826   .0796462     2.13   0.033     .0137224    .3259297
+         46  |    .206279   .1787201     1.15   0.248     -.144006     .556564
+         48  |  -.4666555   .2418611    -1.93   0.054    -.9406946    .0073836
+         49  |  -.5591762    .249208    -2.24   0.025    -1.047615   -.0707374
+         52  |  -.9814272   .3458997    -2.84   0.005    -1.659378   -.3034763
+         53  |  -.8030582   .1343664    -5.98   0.000    -1.066412   -.5397048
+         54  |  -.0300041   .1230767    -0.24   0.807      -.27123    .2112217
+         55  |   -.042224   .1456638    -0.29   0.772    -.3277198    .2432719
+         56  |  -.3595328   .0624659    -5.76   0.000    -.4819638   -.2371019
+         57  |  -.2215456    .075119    -2.95   0.003    -.3687761   -.0743152
+         58  |  -.2419961   .0915702    -2.64   0.008    -.4214704   -.0625219
+         59  |   .8361542   .1258233     6.65   0.000      .589545    1.082763
+         60  |   .7972449   .1120414     7.12   0.000     .5776479    1.016842
+         61  |   .4176951   .1103498     3.79   0.000     .2014134    .6339768
+         62  |   .6271854   .1482516     4.23   0.000     .3366176    .9177532
+         63  |   .3432638   .0799333     4.29   0.000     .1865974    .4999302
+         64  |   .7785091   .1399801     5.56   0.000     .5041532    1.052865
+         66  |   -.349393   .2961047    -1.18   0.238    -.9297477    .2309616
+         67  |  -.3459743    .274581    -1.26   0.208    -.8841432    .1921946
+         68  |  -.2242444   .1179219    -1.90   0.057     -.455367    .0068782
+         69  |  -.3846192   .1510976    -2.55   0.011     -.680765   -.0884734
+         70  |  -.4479405   .1337682    -3.35   0.001    -.7101215   -.1857596
+         71  |  -.4701709   .1306279    -3.60   0.000    -.7261969   -.2141448
+         72  |    .094332   .1714721     0.55   0.582    -.2417472    .4304112
+         73  |   .0052553   .1469454     0.04   0.971    -.2827524    .2932629
+         74  |   .0412299   .1242522     0.33   0.740    -.2022999    .2847597
+         75  |   .1379921   .1574603     0.88   0.381    -.1706243    .4466086
+         76  |  -.2255623   .2108694    -1.07   0.285    -.6388588    .1877341
+         77  |  -.1832001   .1299901    -1.41   0.159     -.437976    .0715757
+         79  |    .164067   .0317209     5.17   0.000     .1018952    .2262388
+         80  |  -.6754999   .1944929    -3.47   0.001    -1.056699   -.2943008
+         81  |   .1633165   .1072183     1.52   0.128    -.0468274    .3734605
+         82  |   .2990656   .1003626     2.98   0.003     .1023585    .4957726
+         83  |  -1.086214   .2854308    -3.81   0.000    -1.645648   -.5267801
+         84  |  -1.124538    .316049    -3.56   0.000    -1.743983   -.5050938
+         85  |  -.3595419   .0662222    -5.43   0.000    -.4893351   -.2297486
+         86  |   .5091555   .0933846     5.45   0.000     .3261249     .692186
+         87  |  -.1352823   .0544784    -2.48   0.013    -.2420579   -.0285066
+         88  |  -.1724777   .0503718    -3.42   0.001    -.2712045   -.0737508
+         89  |  -.1470696   .0520611    -2.82   0.005    -.2491076   -.0450317
+         90  |  -.8139897   .4029418    -2.02   0.043    -1.603741   -.0242382
+         91  |   .2529295   .1104986     2.29   0.022     .0363561    .4695028
+         92  |    .698997   .1529293     4.57   0.000     .3992612    .9987329
+         93  |  -.8969454   .1273525    -7.04   0.000    -1.146552   -.6473391
+         94  |   .5230863   .1569101     3.33   0.001     .2155482    .8306245
+         95  |  -1.152274   .2032317    -5.67   0.000    -1.550601   -.7539474
+         96  |   1.176396   .2979159     3.95   0.000     .5924919    1.760301
+         97  |  -.9387358   .3982912    -2.36   0.018    -1.719372   -.1580995
+         98  |  -.7220875   .3692356    -1.96   0.051    -1.445776    .0016011
+         99  |  -.3488892   .2665422    -1.31   0.191    -.8713023    .1735238
+        100  |  -.2123803   .0595023    -3.57   0.000    -.3290026    -.095758
+        101  |  -.2485854   .0586675    -4.24   0.000    -.3635716   -.1335993
+        102  |  -.2305014   .0466075    -4.95   0.000    -.3218503   -.1391524
+        103  |  -.0480759   .0281462    -1.71   0.088    -.1032414    .0070897
+        104  |  -.2050946   .1817499    -1.13   0.259    -.5613178    .1511286
+        105  |   .5061793   .2807278     1.80   0.071     -.044037    1.056396
+        106  |  -.9720762   .2191126    -4.44   0.000    -1.401529   -.5426234
+        107  |  -.1799563   .0599577    -3.00   0.003    -.2974712   -.0624414
+        108  |  -.8098276   .2729305    -2.97   0.003    -1.344762   -.2748937
+        109  |  -.4910547   .2627711    -1.87   0.062    -1.006077    .0239673
+        110  |  -.7540142   .3277803    -2.30   0.021    -1.396452   -.1115766
+        111  |  -.3698547   .0614967    -6.01   0.000     -.490386   -.2493234
+        112  |  -.3807204   .0639504    -5.95   0.000    -.5060609     -.25538
+        113  |  -.4147559   .0750925    -5.52   0.000    -.5619344   -.2675774
+        114  |   -.226414   .1330436    -1.70   0.089    -.4871747    .0343467
+        115  |  -.2319479   .1169969    -1.98   0.047    -.4612577   -.0026381
+        116  |  -.4929328   .2672532    -1.84   0.065    -1.016739    .0308739
+        117  |  -.4558458   .3004364    -1.52   0.129     -1.04469    .1329988
+        118  |  -.4673086   .2846822    -1.64   0.101    -1.025275    .0906582
+        119  |  -.3699842   .3138108    -1.18   0.238     -.985042    .2450736
+        120  |  -.4460701   .1763899    -2.53   0.011     -.791788   -.1003522
+        121  |  -.9595211    .381282    -2.52   0.012     -1.70682   -.2122221
+        122  |   .5301963   .0897655     5.91   0.000     .3542592    .7061334
+        123  |  -.2869544   .1556421    -1.84   0.065    -.5920072    .0180984
+        124  |  -.5211428   .1476163    -3.53   0.000    -.8104654   -.2318203
+        125  |  -.1917226   .1681513    -1.14   0.254    -.5212931    .1378478
+        126  |  -.1237775   .2520245    -0.49   0.623    -.6177365    .3701814
+        127  |  -.1132859   .1957291    -0.58   0.563    -.4969079    .2703362
+        128  |  -.7836002   .2443916    -3.21   0.001    -1.262599   -.3046015
+        129  |   .5407039   .0906799     5.96   0.000     .3629745    .7184333
+        130  |  -.1569061    .180325    -0.87   0.384    -.5103365    .1965243
+        131  |  -1.814126   .2668022    -6.80   0.000    -2.337049   -1.291203
+        132  |   1.188179   .1773756     6.70   0.000      .840529    1.535829
+        133  |  -1.016489    .364491    -2.79   0.005    -1.730878   -.3020998
+        134  |  -.2829164   .1639407    -1.73   0.084    -.6042343    .0384014
+        135  |  -.7361828   .4143634    -1.78   0.076     -1.54832    .0759545
+        136  |  -.8327838   .3940306    -2.11   0.035     -1.60507   -.0604979
+        137  |  -.6424722   .2376619    -2.70   0.007    -1.108281   -.1766634
+        138  |  -.3659505   .0616077    -5.94   0.000    -.4866994   -.2452017
+        139  |  -.7032009   .2249091    -3.13   0.002    -1.144015   -.2623872
+        140  |  -.7615915   .2785978    -2.73   0.006    -1.307633   -.2155498
+        141  |  -.6910545   .3979818    -1.74   0.082    -1.471085    .0889755
+        142  |  -.8018522   .3461951    -2.32   0.021    -1.480382   -.1233222
+        143  |  -.8892393   .4103491    -2.17   0.030    -1.693509   -.0849699
+        144  |  -.8296043   .2702703    -3.07   0.002    -1.359324   -.2998842
+        145  |  -.1049965   .1938508    -0.54   0.588     -.484937    .2749441
+        146  |  -.7260324   .3557129    -2.04   0.041    -1.423217    -.028848
+        147  |  -.7691488   .3672739    -2.09   0.036    -1.488992   -.0493052
+        148  |  -.8822918   .4143754    -2.13   0.033    -1.694453    -.070131
+        149  |  -.9677215   .3443565    -2.81   0.005    -1.642648   -.2927951
+        150  |  -.8685569   .2689571    -3.23   0.001    -1.395703   -.3414106
+        151  |  -.7926197    .386943    -2.05   0.041    -1.551014   -.0342254
+        152  |  -.8061962   .3082184    -2.62   0.009    -1.410293   -.2020991
+        153  |  -.7275557   .2839767    -2.56   0.010     -1.28414   -.1709716
+        154  |  -.9959064   .3488168    -2.86   0.004    -1.679575    -.312238
+        155  |  -.7699413   .3469973    -2.22   0.026    -1.450043   -.0898392
+        156  |  -.8433777   .4589007    -1.84   0.066    -1.742807    .0560512
+        157  |  -.2833942   .1394648    -2.03   0.042    -.5567401   -.0100482
+        158  |  -.3274514    .097006    -3.38   0.001    -.5175797   -.1373232
+             |
+    calendar |
+          2  |  -.1986928   .0087973   -22.59   0.000    -.2159351   -.1814505
+          3  |   .0039873   .0066478     0.60   0.549    -.0090422    .0170168
+          4  |  -.1749218   .0105586   -16.57   0.000    -.1956163   -.1542272
+          5  |  -.1702039   .0125834   -13.53   0.000    -.1948669   -.1455408
+          6  |  -.1079461   .0145091    -7.44   0.000    -.1363833   -.0795088
+          7  |  -.1475601   .0177817    -8.30   0.000    -.1824116   -.1127085
+          8  |  -.1819757   .0157679   -11.54   0.000    -.2128802   -.1510712
+          9  |  -.1384009   .0145132    -9.54   0.000    -.1668462   -.1099556
+         10  |  -.0166857   .0126594    -1.32   0.187    -.0414977    .0081262
+         11  |  -.1858483   .0129781   -14.32   0.000    -.2112848   -.1604117
+         12  |  -.1216654    .014476    -8.40   0.000    -.1500379   -.0932928
+------------------------------------------------------------------------------
+Standard errors and test statistics valid for the following variables only:
+    prices lwns
+------------------------------------------------------------------------------
+(est4 stored)
+
+. outreg2 using `2'/NL_All_`3'.txt, keep(prices lwns) stat(coef se) ctitle("IV-
+> Lasso Calendar") append
+dir : seeout
+
+. 
+. /*CALENDAR FE*/
+. *REGHDFE OLS
+. reghdfe logsj_logs0 prices lwns, abs(dma_code upc period) cluster(dma_code)
+(MWFE estimator converged in 8 iterations)
+
+HDFE Linear regression                            Number of obs   =    561,687
+Absorbing 3 HDFE groups                           F(   2,    204) =   78111.17
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.9825
+                                                  Adj R-squared   =     0.9825
+                                                  Within R-sq.    =     0.9674
+Number of clusters (dma_code) =        205        Root MSE        =     0.2506
+
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |  -.0096443   .0013903    -6.94   0.000    -.0123855   -.0069032
+        lwns |   .9880722   .0025157   392.77   0.000     .9831122    .9930323
+       _cons |  -.4779726   .0163493   -29.23   0.000    -.5102079   -.4457372
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    dma_code |       205         205           0    *|
+         upc |       158           0         158     |
+      period |        61           1          60     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. outreg2 using `2'/NL_All_`3'.txt, stats(coef se) ctitle("OLS Period") append
+dir : seeout
+
+. *IVHDFE distance_diesel tot_dist N_UPC
+. eststo: ivreghdfe logsj_logs0 (prices lwns = demand_instruments0 tot_dist N_U
+> PC), abs(dma_code upc period) cluster(dma_code)
+(MWFE estimator converged in 8 iterations)
+
+IV (2SLS) estimation
+--------------------
+
+Estimates efficient for homoskedasticity only
+Statistics robust to heteroskedasticity and clustering on dma_code
+
+Number of clusters (dma_code) =    205                Number of obs =   561687
+                                                      F(  2,   204) =     2.37
+                                                      Prob > F      =   0.0964
+Total (centered) SS     =  1082539.773                Centered R2   =  -7.4332
+Total (uncentered) SS   =  1082539.773                Uncentered R2 =  -7.4332
+Residual SS             =  9129323.236                Root MSE      =    4.032
+
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |  -3.344742   1.835211    -1.82   0.070    -6.963155    .2736713
+        lwns |  -.1455537   .2867963    -0.51   0.612    -.7110188    .4199114
+------------------------------------------------------------------------------
+Underidentification test (Kleibergen-Paap rk LM statistic):              3.136
+                                                   Chi-sq(2) P-val =    0.2085
+------------------------------------------------------------------------------
+Weak identification test (Cragg-Donald Wald F statistic):               20.867
+                         (Kleibergen-Paap rk Wald F statistic):          1.097
+Stock-Yogo weak ID test critical values: 10% maximal IV size             13.43
+                                         15% maximal IV size              8.18
+                                         20% maximal IV size              6.40
+                                         25% maximal IV size              5.45
+Source: Stock-Yogo (2005).  Reproduced by permission.
+NB: Critical values are for Cragg-Donald F statistic and i.i.d. errors.
+------------------------------------------------------------------------------
+Hansen J statistic (overidentification test of all instruments):         0.230
+                                                   Chi-sq(1) P-val =    0.6312
+------------------------------------------------------------------------------
+Instrumented:         prices lwns
+Excluded instruments: demand_instruments0 tot_dist N_UPC
+Partialled-out:       _cons
+                      nb: total SS, model F and R2s are after partialling-out;
+                          any small-sample adjustments include partialled-out
+                          variables in regressor count K
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    dma_code |       205         205           0    *|
+         upc |       158           0         158     |
+      period |        61           1          60     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(est5 stored)
+
+. outreg2 using `2'/NL_All_`3'.txt, ctitle("IV Period") append
+dir : seeout
+
+. *IVLASSO distance_diesel tot_dist N_UPC
+. eststo: ivlasso logsj_logs0 (i.UPC i.period) (prices lwns = dem* lag* N_UPC t
+> ot_dist), fe cluster(dma_code) partial(i.UPC i.period)
+Fixed effects transformation...
+5.  (PDS/CHS) Selecting HD controls/IVs for endog regressor prices...
+Selected: 
+5.  (PDS/CHS) Selecting HD controls/IVs for endog regressor lwns...
+Selected: lag_1_demand_instruments1 lag_2_demand_instruments1
+          lag_3_demand_instruments1 lag_4_demand_instruments1
+          lag_6_demand_instruments1 lag_5_demand_instruments2
+          lag_10_demand_instruments2 lag_11_demand_instruments2
+          lag_12_demand_instruments2 N_UPC
+7.  (CHS) Creating orthogonalized endogenous regressor prices...
+7.  (CHS) Creating orthogonalized endogenous regressor lwns...
+
+
+Estimation results:
+
+Specification:
+Regularization method:                 lasso
+Penalty loadings:                      cluster-lasso
+Number of observations:                396,032
+Number of clusters:                        205
+Number of fixed effects:                   205
+Endogenous (2):                        prices lwns
+Partialled-out controls (197):         1b.UPC 2.UPC 3.UPC 4.UPC 5.UPC 6.UPC
+                                       7.UPC 8.UPC 10.UPC 11.UPC 12.UPC 13.UPC
+                                       14.UPC 17.UPC 18.UPC 19.UPC 21.UPC
+                                       22.UPC 23.UPC 24.UPC 25.UPC 26.UPC
+                                       27.UPC 28.UPC 29.UPC 30.UPC 31.UPC
+                                       32.UPC 33.UPC 34.UPC 35.UPC 36.UPC
+                                       37.UPC 38.UPC 39.UPC 40.UPC 41.UPC
+                                       42.UPC 43.UPC 45.UPC 46.UPC 48.UPC
+                                       49.UPC 52.UPC 53.UPC 54.UPC 55.UPC
+                                       56.UPC 57.UPC 58.UPC 59.UPC 60.UPC
+                                       61.UPC 62.UPC 63.UPC 64.UPC 66.UPC
+                                       67.UPC 68.UPC 69.UPC 70.UPC 71.UPC
+                                       72.UPC 73.UPC 74.UPC 75.UPC 76.UPC
+                                       77.UPC 79.UPC 80.UPC 81.UPC 82.UPC
+                                       83.UPC 84.UPC 85.UPC 86.UPC 87.UPC
+                                       88.UPC 89.UPC 90.UPC 91.UPC 92.UPC
+                                       93.UPC 94.UPC 95.UPC 96.UPC 97.UPC
+                                       98.UPC 99.UPC 100.UPC 101.UPC 102.UPC
+                                       103.UPC 104.UPC 105.UPC 106.UPC 107.UPC
+                                       108.UPC 109.UPC 110.UPC 111.UPC 112.UPC
+                                       113.UPC 114.UPC 115.UPC 116.UPC 117.UPC
+                                       118.UPC 119.UPC 120.UPC 121.UPC 122.UPC
+                                       123.UPC 124.UPC 125.UPC 126.UPC 127.UPC
+                                       128.UPC 129.UPC 130.UPC 131.UPC 132.UPC
+                                       133.UPC 134.UPC 135.UPC 136.UPC 137.UPC
+                                       138.UPC 139.UPC 140.UPC 141.UPC 142.UPC
+                                       143.UPC 144.UPC 145.UPC 146.UPC 147.UPC
+                                       148.UPC 149.UPC 150.UPC 151.UPC 152.UPC
+                                       153.UPC 154.UPC 155.UPC 156.UPC 157.UPC
+                                       158.UPC 13b.period 14.period 15.period
+                                       16.period 17.period 18.period 19.period
+                                       20.period 21.period 22.period 23.period
+                                       24.period 25.period 26.period 27.period
+                                       28.period 29.period 30.period 31.period
+                                       32.period 33.period 34.period 35.period
+                                       36.period 37.period 38.period 39.period
+                                       40.period 41.period 42.period 43.period
+                                       44.period 45.period 46.period 47.period
+                                       48.period 49.period 50.period 51.period
+                                       52.period 53.period 54.period 55.period
+                                       56.period 57.period 58.period 59.period
+                                       60.period 61.period
+High-dim instruments (41):             demand_instruments0 demand_instruments1
+                                       demand_instruments2
+                                       lag_1_demand_instruments0
+                                       lag_2_demand_instruments0
+                                       lag_3_demand_instruments0
+                                       lag_4_demand_instruments0
+                                       lag_5_demand_instruments0
+                                       lag_6_demand_instruments0
+                                       lag_7_demand_instruments0
+                                       lag_8_demand_instruments0
+                                       lag_9_demand_instruments0
+                                       lag_10_demand_instruments0
+                                       lag_11_demand_instruments0
+                                       lag_12_demand_instruments0
+                                       lag_1_demand_instruments1
+                                       lag_2_demand_instruments1
+                                       lag_3_demand_instruments1
+                                       lag_4_demand_instruments1
+                                       lag_5_demand_instruments1
+                                       lag_6_demand_instruments1
+                                       lag_7_demand_instruments1
+                                       lag_8_demand_instruments1
+                                       lag_9_demand_instruments1
+                                       lag_10_demand_instruments1
+                                       lag_11_demand_instruments1
+                                       lag_12_demand_instruments1
+                                       lag_1_demand_instruments2
+                                       lag_2_demand_instruments2
+                                       lag_3_demand_instruments2
+                                       lag_4_demand_instruments2
+                                       lag_5_demand_instruments2
+                                       lag_6_demand_instruments2
+                                       lag_7_demand_instruments2
+                                       lag_8_demand_instruments2
+                                       lag_9_demand_instruments2
+                                       lag_10_demand_instruments2
+                                       lag_11_demand_instruments2
+                                       lag_12_demand_instruments2 N_UPC
+                                       tot_dist
+Selected instruments (10):             lag_1_demand_instruments1
+                                       lag_2_demand_instruments1
+                                       lag_3_demand_instruments1
+                                       lag_4_demand_instruments1
+                                       lag_6_demand_instruments1
+                                       lag_5_demand_instruments2
+                                       lag_10_demand_instruments2
+                                       lag_11_demand_instruments2
+                                       lag_12_demand_instruments2 N_UPC
+
+Structural equation (fixed effects, #groups=205):
+
+IV using CHS lasso-orthogonalized vars
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |          0  (omitted)
+        lwns |   .9070461   .0225868    40.16   0.000     .8627768    .9513154
+------------------------------------------------------------------------------
+Warning: some coefficients unidentified.
+
+IV using CHS post-lasso-orthogonalized vars
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |          0  (omitted)
+        lwns |   .8694716   .0308684    28.17   0.000     .8089707    .9299726
+------------------------------------------------------------------------------
+Warning: some coefficients unidentified.
+
+IV with PDS-selected variables and full regressor set
+                             (Std. Err. adjusted for 205 clusters in dma_code)
+------------------------------------------------------------------------------
+             |               Robust
+ logsj_logs0 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      prices |   .9483049   .3004353     3.16   0.002     .3594626    1.537147
+        lwns |   .8445822     .04087    20.67   0.000     .7644785    .9246858
+             |
+         UPC |
+          2  |   3.498351   1.092421     3.20   0.001     1.357246    5.639457
+          3  |    1.52222   .4626932     3.29   0.001     .6153581    2.429082
+          4  |   1.585666   .4752063     3.34   0.001     .6542791    2.517054
+          5  |   1.511731    .461216     3.28   0.001     .6077645    2.415698
+          6  |   1.105799   .3691502     3.00   0.003     .3822779     1.82932
+          7  |   1.441113   .4819816     2.99   0.003     .4964468     2.38578
+          8  |   1.182989   .4006655     2.95   0.003     .3976993    1.968279
+         10  |  -1.131391   .3908818    -2.89   0.004    -1.897505   -.3652768
+         11  |  -1.143551   .3922773    -2.92   0.004      -1.9124   -.3747017
+         12  |    .350671   .4277456     0.82   0.412     -.487695    1.189037
+         13  |  -.6732476   .2135605    -3.15   0.002    -1.091819   -.2546766
+         14  |  -.6802609   .2149296    -3.17   0.002    -1.101515   -.2590067
+         17  |    .146384   .1573254     0.93   0.352     -.161968    .4547361
+         18  |   .1957316   .1540832     1.27   0.204     -.106266    .4977292
+         19  |    3.09025   .9944766     3.11   0.002     1.141112    5.039389
+         21  |  -7.928764   2.509571    -3.16   0.002    -12.84743   -3.010095
+         22  |     2.1253    .701605     3.03   0.002     .7501797    3.500421
+         23  |  -3.986977   1.263767    -3.15   0.002    -6.463915   -1.510038
+         24  |  -3.899525   1.258629    -3.10   0.002    -6.366393   -1.432656
+         25  |  -3.897007   1.258731    -3.10   0.002    -6.364076   -1.429939
+         26  |  -3.290453   1.027176    -3.20   0.001     -5.30368   -1.277226
+         27  |   -3.40009   1.060144    -3.21   0.001    -5.477934   -1.322247
+         28  |   -4.44022   1.423944    -3.12   0.002    -7.231098   -1.649341
+         29  |   2.292701   .6519967     3.52   0.000     1.014811    3.570591
+         30  |    2.94904   .9052356     3.26   0.001      1.17481    4.723269
+         31  |   1.654481    .484088     3.42   0.001     .7056856    2.603276
+         32  |   1.072917   .3004798     3.57   0.000     .4839872    1.661846
+         33  |   4.581867   1.387738     3.30   0.001     1.861951    7.301784
+         34  |   .7952431   .2339539     3.40   0.001      .336702    1.253784
+         35  |   1.044284   .3170375     3.29   0.001     .4229015    1.665666
+         36  |   1.656431   .4803065     3.45   0.001     .7150476    2.597815
+         37  |   3.625644   1.161707     3.12   0.002      1.34874    5.902548
+         38  |  -1.130948   .3115675    -3.63   0.000    -1.741609   -.5202872
+         39  |   1.757959   .5144212     3.42   0.001     .7497116    2.766206
+         40  |   3.770425   1.159662     3.25   0.001      1.49753    6.043321
+         41  |   .1321597   .0661559     2.00   0.046     .0024966    .2618229
+         42  |  -.4496493   .2102992    -2.14   0.033    -.8618281   -.0374705
+         43  |   .7236328   .2482343     2.92   0.004     .2371025    1.210163
+         45  |    .057021   .1333081     0.43   0.669     -.204258    .3182999
+         46  |   1.112889   .3081246     3.61   0.000     .5089756    1.716802
+         48  |   3.425484   1.084549     3.16   0.002     1.299808     5.55116
+         49  |   3.802321   1.166857     3.26   0.001     1.515323    6.089318
+         52  |    5.76114   1.795976     3.21   0.001     2.241092    9.281188
+         53  |   2.588012   .8691716     2.98   0.003     .8844671    4.291557
+         54  |  -.1615814   .1234988    -1.31   0.191    -.4036346    .0804718
+         55  |   1.478235   .4398308     3.36   0.001     .6161827    2.340288
+         56  |   .7869185   .2805995     2.80   0.005     .2369537    1.336883
+         57  |    1.06721   .3738316     2.85   0.004      .334514    1.799907
+         58  |   1.435127   .4529396     3.17   0.002     .5473823    2.322873
+         59  |  -2.873739   .9395001    -3.06   0.002    -4.715125   -1.032353
+         60  |  -2.499466   .8279585    -3.02   0.003    -4.122235    -.876697
+         61  |  -.4377485   .1955652    -2.24   0.025    -.8210492   -.0544477
+         62  |  -2.946654   .9331357    -3.16   0.002    -4.775567   -1.117742
+         63  |  -.5233598   .2036749    -2.57   0.010    -.9225553   -.1241644
+         64  |  -3.000244   .9702597    -3.09   0.002    -4.901918    -1.09857
+         66  |   3.766546    1.13338     3.32   0.001     1.545162    5.987931
+         67  |   3.515541   1.066259     3.30   0.001     1.425712     5.60537
+         68  |   1.681894   .5203609     3.23   0.001     .6620057    2.701783
+         69  |   2.464276   .7617024     3.24   0.001     .9713664    3.957185
+         70  |   2.362646   .7416355     3.19   0.001     .9090671    3.816225
+         71  |   2.367752   .7464227     3.17   0.002     .9047902    3.830713
+         72  |   1.407538   .4012502     3.51   0.000     .6211023    2.193974
+         73  |   1.425741   .4160962     3.43   0.001     .6102073    2.241274
+         74  |   1.048277   .3147629     3.33   0.001     .4313534    1.665201
+         75  |   1.113341   .3185227     3.50   0.000     .4890476    1.737634
+         76  |   2.648575   .7956494     3.33   0.001     1.089131    4.208019
+         77  |   1.715532   .5296628     3.24   0.001     .6774119    2.753652
+         79  |  -.6391928    .217744    -2.94   0.003    -1.065963   -.2124225
+         80  |   3.491878   1.100141     3.17   0.002     1.335641    5.648116
+         81  |  -1.480787   .4529356    -3.27   0.001    -2.368525   -.5930498
+         82  |   -1.72817   .5470391    -3.16   0.002    -2.800347   -.6559928
+         83  |   5.243363   1.653431     3.17   0.002     2.002698    8.484029
+         84  |   5.703309   1.781697     3.20   0.001     2.211247    9.195372
+         85  |   1.372744   .4491412     3.06   0.002     .4924435    2.253045
+         86  |  -1.439701   .5104136    -2.82   0.005    -2.440093   -.4393084
+         87  |    .774133   .2698922     2.87   0.004     .2451541    1.303112
+         88  |   .7740377   .2773088     2.79   0.005     .2305224    1.317553
+         89  |   .7572515   .2660264     2.85   0.004     .2358493    1.278654
+         90  |   5.966391   1.833545     3.25   0.001     2.372709    9.560073
+         91  |  -1.715535    .557634    -3.08   0.002    -2.808477   -.6225922
+         92  |  -2.920848   .9527291    -3.07   0.002    -4.788163   -1.053533
+         93  |   2.690401   .8965467     3.00   0.003     .9332014      4.4476
+         94  |  -2.848048   .8832058    -3.22   0.001      -4.5791   -1.116997
+         95  |   4.343424   1.426263     3.05   0.002     1.548001    7.138848
+         96  |  -5.846805   1.841311    -3.18   0.001    -9.455708   -2.237901
+         97  |   6.234395   1.915427     3.25   0.001     2.480227    9.988564
+         98  |   5.475926    1.68381     3.25   0.001      2.17572    8.776132
+         99  |    3.78899   1.137606     3.33   0.001     1.559324    6.018656
+        100  |   1.096496   .3485105     3.15   0.002     .4134278    1.779564
+        101  |   1.147338   .3675155     3.12   0.002     .4270205    1.867655
+        102  |   .8960566    .294117     3.05   0.002     .3195978    1.472515
+        103  |   .1834926    .072038     2.55   0.011     .0423006    .3246846
+        104  |   2.581473   .7714135     3.35   0.001     1.069531    4.093416
+        105  |   2.573882   .6357118     4.05   0.000      1.32791    3.819854
+        106  |   4.459932   1.415294     3.15   0.002     1.686006    7.233858
+        107  |   .9248273   .3073856     3.01   0.003     .3223626    1.527292
+        108  |   4.561652   1.464286     3.12   0.002     1.691705    7.431599
+        109  |   4.059494   1.233876     3.29   0.001     1.641141    6.477847
+        110  |   5.073112   1.575047     3.22   0.001     1.986076    8.160148
+        111  |   .8679004   .3042996     2.85   0.004     .2714841    1.464317
+        112  |   .8637638   .3036635     2.84   0.004     .2685943    1.458933
+        113  |   .7916453   .2894553     2.73   0.006     .2243233    1.358967
+        114  |   1.752373    .542693     3.23   0.001     .6887143    2.816032
+        115  |   1.646495    .509769     3.23   0.001     .6473667    2.645624
+        116  |   4.131098   1.249788     3.31   0.001     1.681559    6.580637
+        117  |   4.455375   1.332159     3.34   0.001     1.844391    7.066359
+        118  |   4.322298   1.304969     3.31   0.001     1.764607     6.87999
+        119  |   4.279821   1.278849     3.35   0.001     1.773323    6.786319
+        120  |   2.773341   .8748762     3.17   0.002     1.058616    4.488067
+        121  |   6.105016   1.889071     3.23   0.001     2.402505    9.807527
+        122  |  -2.019472   .6797881    -2.97   0.003    -3.351832   -.6871115
+        123  |   2.174508   .6687116     3.25   0.001     .8638573    3.485159
+        124  |     2.6018   .8226208     3.16   0.002     .9894933    4.214108
+        125  |   2.033882   .6231951     3.26   0.001     .8124426    3.255322
+        126  |   2.499594    .804042     3.11   0.002     .9237004    4.075487
+        127  |   2.125349   .6389382     3.33   0.001     .8730535    3.377645
+        128  |   4.300238   1.314255     3.27   0.001     1.724345     6.87613
+        129  |  -2.063197   .6872205    -3.00   0.003    -3.410124   -.7162691
+        130  |   2.084414   .6327616     3.29   0.001     .8442237    3.324603
+        131  |   5.722356   1.920128     2.98   0.003     1.958973    9.485738
+        132  |  -3.606535   1.202107    -3.00   0.003    -5.962621   -1.250449
+        133  |   5.985076   1.865933     3.21   0.001     2.327915    9.642237
+        134  |   2.264804   .6940006     3.26   0.001     .9045878     3.62502
+        135  |   5.928865     1.8294     3.24   0.001     2.343307    9.514424
+        136  |   5.936505   1.843945     3.22   0.001      2.32244     9.55057
+        137  |   3.706165   1.143728     3.24   0.001     1.464498    5.947831
+        138  |   .8330219   .2935614     2.84   0.005     .2576521    1.408392
+        139  |    3.79766   1.226486     3.10   0.002     1.393793    6.201528
+        140  |   4.588474   1.418539     3.23   0.001     1.808188     7.36876
+        141  |   5.525731   1.689979     3.27   0.001     2.213433    8.838029
+        142  |   5.093879   1.576513     3.23   0.001      2.00397    8.183788
+        143  |   6.217734   1.917284     3.24   0.001     2.459925    9.975543
+        144  |   4.549037   1.466773     3.10   0.002     1.674214     7.42386
+        145  |   2.095741   .6237512     3.36   0.001     .8732111    3.318271
+        146  |   5.267086   1.617225     3.26   0.001     2.097383    8.436789
+        147  |   5.675368    1.73544     3.27   0.001     2.273967    9.076769
+        148  |   6.264644   1.924659     3.25   0.001     2.492381    10.03691
+        149  |   5.683255   1.744189     3.26   0.001     2.264708    9.101802
+        150  |    4.70932   1.473048     3.20   0.001     1.822199     7.59644
+        151  |   5.597023   1.728095     3.24   0.001     2.210019    8.984026
+        152  |   5.035525   1.557027     3.23   0.001     1.983807    8.087242
+        153  |   4.560583   1.433308     3.18   0.001     1.751351    7.369815
+        154  |   5.818928   1.812385     3.21   0.001     2.266718    9.371139
+        155  |   5.261087   1.624707     3.24   0.001      2.07672    8.445454
+        156  |   6.661518   2.025428     3.29   0.001     2.691752    10.63128
+        157  |   2.001881   .6264955     3.20   0.001     .7739721    3.229789
+        158  |   1.626456   .5206688     3.12   0.002     .6059635    2.646948
+             |
+      period |
+         14  |   .0362342   .0261062     1.39   0.165     -.014933    .0874014
+         15  |   .7921188   .0956281     8.28   0.000     .6046912    .9795465
+         16  |   .3048391   .0796583     3.83   0.000     .1487118    .4609664
+         17  |   .0659452   .0308348     2.14   0.032     .0055102    .1263802
+         18  |   .2976765   .0977585     3.05   0.002     .1060733    .4892796
+         19  |   .5142204   .0577099     8.91   0.000     .4011111    .6273297
+         20  |   .0781728   .0497745     1.57   0.116    -.0193834    .1757291
+         21  |   .5851269   .1041472     5.62   0.000     .3810021    .7892517
+         22  |   .2555213   .1007536     2.54   0.011     .0580479    .4529947
+         23  |   .4912866   .1448361     3.39   0.001     .2074131    .7751602
+         24  |   .8405499   .1325237     6.34   0.000     .5808081    1.100292
+         25  |   -.087853   .0337796    -2.60   0.009    -.1540599   -.0216462
+         26  |  -.1644466   .0342436    -4.80   0.000    -.2315629   -.0973303
+         27  |   .6283743   .0965913     6.51   0.000      .439059    .8176897
+         28  |   -.038507   .0356119    -1.08   0.280     -.108305    .0312909
+         29  |    .317286   .1019317     3.11   0.002     .1175035    .5170686
+         30  |   .2929741   .0439948     6.66   0.000     .2067459    .3792023
+         31  |   .1853205   .0947881     1.96   0.051    -.0004608    .3711018
+         32  |   .0669296   .0552082     1.21   0.225    -.0412764    .1751357
+         33  |   .1766386   .0400604     4.41   0.000     .0981217    .2551554
+         34  |  -.0836015   .0360643    -2.32   0.020    -.1542863   -.0129166
+         35  |    .084999   .0573616     1.48   0.138    -.0274276    .1974257
+         36  |   .5494564   .0643807     8.53   0.000     .4232725    .6756403
+         37  |  -.1818304   .0444163    -4.09   0.000    -.2688848   -.0947761
+         38  |   .0476942   .0502283     0.95   0.342    -.0507514    .1461399
+         39  |   .3355537   .1030614     3.26   0.001     .1335571    .5375504
+         40  |  -.0582358   .0331824    -1.76   0.079    -.1232721    .0068004
+         41  |    .786548    .122968     6.40   0.000     .5455352    1.027561
+         42  |   .2032523    .097429     2.09   0.037      .012295    .3942096
+         43  |   .2671457   .1065881     2.51   0.012     .0582369    .4760545
+         44  |   .4738471    .081443     5.82   0.000     .3142217    .6334725
+         45  |   .0948326   .0840774     1.13   0.259     -.069956    .2596212
+         46  |   .3932595   .1356937     2.90   0.004     .1273047    .6592144
+         47  |     .74766   .1235243     6.05   0.000     .5055567    .9897632
+         48  |   .3115591    .110972     2.81   0.005      .094058    .5290602
+         49  |  -.0896233   .0371283    -2.41   0.016    -.1623934   -.0168532
+         50  |   .1638506   .0390744     4.19   0.000     .0872662    .2404351
+         51  |   .0336316   .0388208     0.87   0.386    -.0424558     .109719
+         52  |   .0772582   .0423752     1.82   0.068    -.0057958    .1603121
+         53  |   .5106987   .0543175     9.40   0.000     .4042384     .617159
+         54  |   .1561055   .0636586     2.45   0.014     .0313369    .2808741
+         55  |   .0999729   .0601064     1.66   0.096    -.0178335    .2177793
+         56  |   .4190415   .0689662     6.08   0.000     .2838703    .5542128
+         57  |    .284863    .111278     2.56   0.010     .0667621    .5029639
+         58  |   .6049243   .1055959     5.73   0.000     .3979602    .8118884
+         59  |    .278668   .0971721     2.87   0.004     .0882143    .4691218
+         60  |   .3989447   .1232564     3.24   0.001     .1573667    .6405228
+         61  |   .2891257   .0404495     7.15   0.000     .2098462    .3684053
+------------------------------------------------------------------------------
+Standard errors and test statistics valid for the following variables only:
+    prices lwns
+------------------------------------------------------------------------------
+(est6 stored)
+
+. outreg2 using `2'/NL_All_`3'.txt, keep(prices lwns) stat(coef se) ctitle("IV-
+> Lasso Period") append
+dir : seeout
+
+. 
+. 
+. eststo clear
+
+. 
+. 
+. .
+
+. exit, STATA clear

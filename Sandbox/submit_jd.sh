@@ -12,4 +12,4 @@
 module load python/anaconda3.6
 
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox
-python NL_agg.py
+python NL_All_agg.py

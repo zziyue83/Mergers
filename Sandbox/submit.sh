@@ -16,4 +16,4 @@ python -m pip install pyblp --user
 python -m pip install linearmodels --user
 python -m pip install pyhdfe --user
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox
-python Parties_Count.py
+python NL_All.py month logit True

@@ -34,85 +34,62 @@ di "`4'"
 di "`5'"
 
 qui unique upc, by(dma_code year month nesting_ids) gen(N_upc)
+bysort dma_code year month nesting_ids: egen N_UPC = mean(N_upc)
 bys dma_code year month: egen tot_dist = total(distance)
 rename log_within_nest_shares lwns
 egen period = group(year month)
+egen calendar = group(month)
 
-
-if "`4'" == "Nested_Logit" {
-
-	if "`5'" == "Linear_FE" {
-
-		eststo clear
-		*IVHDFE WITH FIRST STAGE
-		eststo: ivreghdfe logsj_logs0 (prices lwns = demand_instruments0 tot_dist N_upc), abs(dma_code upc period) cluster(dma_code) first savefirst savefprefix(st1)
-		mat first=e(first)
-		estadd scalar APF1=first[4,1]
-		estadd scalar APF2=first[4,2]
-		esttab est1 st1* using `2'/demand_results_`3'.tex, stats(N r2 F APF1 APF2, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest")) replace
-		outreg2 est1 st1* using `2'/demand_results_`3'.txt, replace
-		*REGHDFE OLS
-		reghdfe logsj_logs0 prices lwns, abs(dma_code upc period) cluster(dma_code)
-		outreg2 using `2'/demand_results_`3'.txt, stats(coef se) append
-
-
-	}
-
-	else if "`5'" == "Chars" {
-
-		eststo clear
-		*IVHDFE WITH FIRST STAGE
-		eststo: ivreghdfe logsj_logs0 chars* (prices lwns = demand_instruments0 tot_dist N_upc), abs(dma_code period) cluster(dma_code) first savefirst savefprefix(st1)
-		mat first=e(first)
-		estadd scalar APF1=first[4,1]
-		estadd scalar APF2=first[4,2]
-		esttab est1 st1* using `2'/demand_results_`3'.tex, stats(N r2 F APF1 APF2, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest")) replace
-		outreg2 est1 st1* using `2'/demand_results_`3'.txt, replace
-		*REGHDFE OLS
-		reghdfe logsj_logs0 prices lwns chars*, abs(dma_code period) cluster(dma_code)
-		outreg2 using `2'/demand_results_`3'.txt, stats(coef se) append
-
+sort dma_code upc year month
+foreach inst of varlist demand* {
+	forval x=1/12{
+		gen lag_`x'_`inst' = `inst'[_n-`x'] if (upc[_n] == upc[_n-`x'] & dma_code[_n] == dma_code[_n-`x'])
 	}
 }
+*
+egen UPC = group(upc)
+
+xtset dma_code
+
+/*NO TIME RELATED FE*/
+eststo clear
+*REGHDFE OLS
+reghdfe logsj_logs0 prices lwns, abs(dma_code upc) cluster(dma_code)
+outreg2 using `2'/NL_All_`3'.txt, stats(coef se) ctitle("OLS") replace
+*IVHDFE distance_diesel tot_dist N_UPC
+eststo: ivreghdfe logsj_logs0 (prices lwns = dem* tot_dist N_UPC), abs(dma_code upc) cluster(dma_code)
+outreg2 using `2'/NL_All_`3'.txt, ctitle("IV") append
+*IVLASSO distance_diesel tot_dist N_UPC
+eststo: ivlasso logsj_logs0 (i.UPC) (prices lwns = dem* lag* N_UPC tot_dist), fe cluster(dma_code) partial(i.UPC)
+outreg2 using `2'/NL_All_`3'.txt, keep(prices lwns) stat(coef se) ctitle("IV-Lasso") append
+
+/*CALENDAR FE*/
+*REGHDFE OLS
+reghdfe logsj_logs0 prices lwns, abs(dma_code upc calendar) cluster(dma_code)
+outreg2 using `2'/NL_All_`3'.txt, stats(coef se) ctitle("OLS Calendar") append
+*IVHDFE distance_diesel tot_dist N_UPC
+eststo: ivreghdfe logsj_logs0 (prices lwns = demand_instruments0 tot_dist N_UPC), abs(dma_code upc calendar) cluster(dma_code)
+outreg2 using `2'/NL_All_`3'.txt, ctitle("IV Calendar") append
+*IVLASSO distance_diesel tot_dist N_UPC
+eststo: ivlasso logsj_logs0 (i.UPC i.calendar) (prices lwns = dem* lag* N_UPC tot_dist), fe cluster(dma_code) partial(i.UPC i.calendar)
+outreg2 using `2'/NL_All_`3'.txt, keep(prices lwns) stat(coef se) ctitle("IV-Lasso Calendar") append
+
+/*CALENDAR FE*/
+*REGHDFE OLS
+reghdfe logsj_logs0 prices lwns, abs(dma_code upc period) cluster(dma_code)
+outreg2 using `2'/NL_All_`3'.txt, stats(coef se) ctitle("OLS Period") append
+*IVHDFE distance_diesel tot_dist N_UPC
+eststo: ivreghdfe logsj_logs0 (prices lwns = demand_instruments0 tot_dist N_UPC), abs(dma_code upc period) cluster(dma_code)
+outreg2 using `2'/NL_All_`3'.txt, ctitle("IV Period") append
+*IVLASSO distance_diesel tot_dist N_UPC
+eststo: ivlasso logsj_logs0 (i.UPC i.period) (prices lwns = dem* lag* N_UPC tot_dist), fe cluster(dma_code) partial(i.UPC i.period)
+outreg2 using `2'/NL_All_`3'.txt, keep(prices lwns) stat(coef se) ctitle("IV-Lasso Period") append
 
 
-else if "`4'" == "Logit" {
-
-	if "`5'" == "Linear_FE" {
-
-		eststo clear
-		*IVHDFE WITH FIRST STAGE
-		eststo: ivreghdfe logsj_logs0 (prices = demand_instruments0 tot_dist N_upc), abs(dma_code upc period) cluster(dma_code) first savefirst savefprefix(st1)
-		mat first=e(first)
-		estadd scalar APF1=first[4,1]
-		esttab est1 st1* using `2'/demand_results_`3'.tex, stats(N r2 F APF1 APF2, labels("Observations" "R-squared" "F-statistic" "F-prices")) replace
-		outreg2 est1 st1* using `2'/demand_results_`3'.txt, replace
-		*REGHDFE OLS
-		reghdfe logsj_logs0 prices, abs(dma_code upc period) cluster(dma_code)
-		outreg2 using `2'/demand_results_`3'.txt, stats(coef se) append
-
-	}
-
-	else if "`5'" == "Chars" {
-
-		eststo clear
-		*IVHDFE WITH FIRST STAGE
-		eststo: ivreghdfe logsj_logs0 chars* (prices = demand_instruments0 tot_dist N_upc), abs(dma_code period) cluster(dma_code) first savefirst savefprefix(st1)
-		mat first=e(first)
-		estadd scalar APF1=first[4,1]
-		esttab est1 st1* using `2'/demand_results_`3'.tex, stats(N r2 F APF1 APF2, labels("Observations" "R-squared" "F-statistic" "F-prices")) replace
-		outreg2 est1 st1* using `2'/demand_results_`3'.txt, replace
-		*REGHDFE OLS
-		reghdfe logsj_logs0 prices chars*, abs(dma_code period) cluster(dma_code)
-		outreg2 using `2'/demand_results_`3'.txt, stats(coef se) append
+eststo clear
 
 
-	}
-}
-
-
-
-
+.
 exit, STATA clear
 
 

@@ -5,6 +5,8 @@ from math import radians
 import numpy as np
 import sys
 import auxiliary as aux
+from datetime import datetime
+import re
 
 def geocoding_dmas():
     major_cities = [
@@ -267,7 +269,7 @@ def geocoding_locations(code, locations, netid):
     locations['lon'] = locations['location'].map(geocoded_locations['lon'])
     return locations
 
-def compute_distances(code, netid, month_or_quarter = 'month', port_cutoff = 10):
+def compute_distances(code, netid, merging_parties, merging_year, merging_month, month_or_quarter = 'month', port_cutoff = 10):
     locations = pd.read_csv('../../../All/m_' + code + '/properties/locations.csv')
     locations = geocoding_locations(code, locations, netid)
     # locations['location'] = locations['location'].map(lambda x: x if ('USA' in x) or (x == 0) or (x == '0') else 'foreign')
@@ -305,18 +307,47 @@ def compute_distances(code, netid, month_or_quarter = 'month', port_cutoff = 10)
     df['distance'] = np.where(df['location'] == 0, df['mean_distance'], df['distance'])
     df['distance'] = np.where(df['location'] == '0', df['mean_distance'], df['distance'])
     df['distance'].replace(np.nan, np.mean(df['distance']), inplace = True)
+    print(df.iloc[0])
 
-    distance = df.groupby(['brand_code_uc','owner','dma_code'], as_index=False).agg({'distance': 'min'})
-    distance.to_csv('../../../All/m_' + code + '/intermediate/distances.csv', sep = ',', encoding = 'utf-8', index = False)
+    distance = df.groupby(['brand_code_uc','owner','dma_code'], as_index=False).agg({'distance': 'min','year':'first',month_or_quarter:'first'})
+    distance['brand_dma'] = distance['brand_code_uc'].astype(str) + ' ' + distance['dma_code'].astype(str)
+    distance['distance_change'] = 0
+
+    if month_or_quarter == 'quarter':
+        merging_month_or_quarter = np.ceil(merging_month/3)
+    else:
+        merging_month_or_quarter = merging_month
+
+    distance_merging = distance[distance['owner'].isin(merging_parties)]
+    for i in list(set(distance_merging['brand_dma'])):
+        distance_merging_i = distance_merging[distance_merging['brand_dma'] == i]
+        print(distance_merging_i[['year',month_or_quarter]])
+        print(merging_year)
+        print(merging_month_or_quarter)
+        if len(distance_merging_i[(distance_merging_i['year']==merging_year)&(distance_merging_i[month_or_quarter]==merging_month_or_quarter)]) == 1:
+            distance.loc[distance['brand_dma'] == i,'distance_change'] = distance_merging_i[(distance_merging_i['year']==merging_year)&(distance_merging_i[month_or_quarter]==merging_month_or_quarter)]['distance'] - distance_merging_i[(distance_merging_i['year']<merging_year)|((distance_merging_i['year']==merging_year)&(distance_merging_i[month_or_quarter]<merging_month_or_quarter))]['distance']
+            print(distance_merging_i[(distance_merging_i['year']==merging_year)&(distance_merging_i[month_or_quarter]==merging_month_or_quarter)])
+            
+    print(distance[distance['distance_change']!=0])
+
+    distance.to_csv('../../../All/m_' + code + '/intermediate/distances_1.csv', sep = ',', encoding = 'utf-8', index = False)
 
 code = sys.argv[1]
 netid = sys.argv[2]
+info_dict = aux.parse_info(code)
+merging_parties = aux.get_parties(info_dict["MergingParties"])
+match = re.search(r'\d{4}-\d{2}-\d{2}', info_dict["DateCompleted"])
+date = datetime.strptime(match.group(), '%Y-%m-%d').date()
+merging_year = date.year
+merging_month = date.month
+
+
 log_out = open('../../../All/m_' + code + '/output/compute_distances.log', 'w')
 log_err = open('../../../All/m_' + code + '/output/compute_distances.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
-compute_distances(code, netid)
+compute_distances(code, netid, merging_parties, merging_year, merging_month)
 
 log_out.close()
 log_err.close()
