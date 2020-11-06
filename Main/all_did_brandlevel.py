@@ -40,7 +40,7 @@ def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
 					print(major_competitor)
 
 				dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
-				did_brandlevel(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype)
+				did_brandlevel(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype, code = code)
 
 			print("compute_did successfully terminated")
 			log_out.close()

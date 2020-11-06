@@ -48,7 +48,7 @@ def compute_hhi_map(df, owner_col = 'owner'):
 	hhi_map = df.to_dict()
 	return hhi_map
 
-def add_dhhi_brandlevel(df, merging_date, month_or_quarter):
+def add_dhhi_brandlevel(df, merging_date, month_or_quarter, code):
 
 	# Pull merger year and merger month (or quarter)
 	if month_or_quarter == 'month':
@@ -191,7 +191,7 @@ def get_major_competitor(df, ownership_groups = None):
 	print(major_competitor)
 	return major_competitor
 
-def did_brandlevel(df, merging_date, merging_parties, major_competitor = None, month_or_quarter = 'month'):
+def did_brandlevel(df, merging_date, merging_parties, major_competitor = None, month_or_quarter = 'month', code):
 
 	# Pull merger year and merger month (or quarter)
 	if month_or_quarter == 'month':
@@ -505,7 +505,7 @@ if __name__ == "__main__":
 			print(major_competitor)
 
 		dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
-		did_brandlevel(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype)
+		did_brandlevel(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype, code = code)
 
 	print("compute_did successfully terminated")
 	log_out.close()
