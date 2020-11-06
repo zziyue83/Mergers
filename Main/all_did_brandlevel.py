@@ -1,6 +1,6 @@
 import compute_did_brandlevel
 
-def NL(base_folder, month_or_quarter='month'):
+def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
     for folder in os.listdir(base_folder):
         merger_folder = base_folder + folder + '/output'
         if os.path.exists(merger_folder + '/did_' + month_or_quarter + '.csv') or os.path.exists(merger_folder + "did_stata_" + month_or_quarter + '_' + est_type + ".csv"):
@@ -16,7 +16,7 @@ def NL(base_folder, month_or_quarter='month'):
 			print(folder)
             code = folder[2:]
             print(code)
-            break
+            continue
 
 			info_dict = aux.parse_info(code)
 			merging_parties = aux.get_parties(info_dict["MergingParties"])
@@ -40,3 +40,6 @@ def NL(base_folder, month_or_quarter='month'):
 			print("compute_did successfully terminated")
 			log_out.close()
 			log_err.close()
+
+base_folder = '/projects/b1048/gillanes/Mergers/All'
+run_all_did_brandlevel(base_folder)
