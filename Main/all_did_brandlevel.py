@@ -3,6 +3,7 @@ import os
 import sys
 import pandas as pd
 import auxiliary as aux
+from datetime import datetime
 
 def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
 	# for folder in os.listdir(base_folder):
