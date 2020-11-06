@@ -14,8 +14,8 @@ def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
 			# print(df.shape)
 			# estimate_demand(code, df, chars = characteristics_ls, nests = nest, month_or_quarter = month_or_quarter, estimate_type = estimate_type,
 			#     num_instruments = num_instruments, add_differentiation = add_differentiation, add_blp = add_blp, linear_fe = linear_fe)
-			log_out = open('../../../All/m_' + code + '/output/compute_did_brandlevel.log', 'w')
-			log_err = open('../../../All/m_' + code + '/output/compute_did_brandlevel.err', 'w')
+			log_out = open(merger_folder + '/compute_did_brandlevel.log', 'w')
+			log_err = open(merger_folder + '/compute_did_brandlevel.err', 'w')
 			sys.stdout = log_out
 			sys.stderr = log_err
 			print(folder)
@@ -27,7 +27,7 @@ def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
 			merging_parties = aux.get_parties(info_dict["MergingParties"])
 
 			for timetype in ['month', 'quarter']:
-				df = pd.read_csv('../../../All/m_' + code + '/intermediate/data_' + timetype + '_brandlevel'+'.csv', delimiter = ',')
+				df = pd.read_csv(base_folder + '/' + folder + '/intermediate/data_' + timetype + '_brandlevel'+'.csv', delimiter = ',')
 				df = aux.append_owners_brandlevel(code, df, timetype)
 				if timetype == 'month':
 					overlap_df = write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
