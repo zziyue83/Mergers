@@ -6,8 +6,8 @@ import auxiliary as aux
 
 def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
 	for folder in os.listdir(base_folder):
-		merger_folder = base_folder + folder + '/output'
-		print(merger_folder)
+		merger_folder = base_folder + '/' folder + '/output'
+		# print(merger_folder)
 		if os.path.exists(merger_folder + '/did_' + month_or_quarter + '.csv') or os.path.exists(merger_folder + "did_stata_" + month_or_quarter + '_' + '0' + ".csv"):
 
 			# df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
