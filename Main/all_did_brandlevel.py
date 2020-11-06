@@ -20,8 +20,6 @@ def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
 			sys.stderr = log_err
 			print(folder)
 			code = folder[2:]
-			print(code)
-			continue
 
 			info_dict = aux.parse_info(code)
 			merging_parties = aux.get_parties(info_dict["MergingParties"])
