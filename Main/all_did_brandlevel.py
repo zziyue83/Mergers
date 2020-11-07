@@ -4,6 +4,7 @@ import sys
 import pandas as pd
 import auxiliary as aux
 from datetime import datetime
+import select_products_brandlevel
 
 def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
 	for folder in os.listdir(base_folder):
@@ -25,6 +26,42 @@ def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
 			code = folder[2:]
 
 			info_dict = aux.parse_info(code)
+
+			# brand-level select product
+			groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
+			years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
+
+			conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
+			area_month_brand = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
+			area_quarter_brand = aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
+
+			if 'InitialShareCutoff' not in info_dict:
+				info_dict['InitialShareCutoff'] = 1e-3
+			if 'MaxUPC' not in info_dict:
+				info_dict['MaxUPC'] = 100
+			if 'RegionalShareCutoff' not in info_dict:
+				info_dict['RegionalShareCutoff'] = 0.05
+
+			acceptable_brands = get_acceptable_brands(area_month_brand[['brand_code_uc', 'shares', 'volume']],
+				share_cutoff = float(info_dict["InitialShareCutoff"]),
+				number_cutoff = int(info_dict["MaxUPC"]),
+				regional_share_cutoff = float(info_dict["RegionalShareCutoff"]))
+
+			largest_brand_left_out = get_largest_brand_left_out(area_month_brand, acceptable_brands)
+
+			# Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
+			# Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
+			write_brands_upc(code, area_month_brand, acceptable_brands)
+
+			# Now filter area_month_upc and area_quarter_upc so that only acceptable_upcs survive
+			# Print out data_month.csv and data_quarter.csv
+			write_base_dataset(code, area_month_brand, acceptable_brands, 'month')
+			write_base_dataset(code, area_quarter_brand, acceptable_brands, 'quarter')
+
+			# Aggregate data_month (sum shares) by dma-month to get total market shares and spit that out as market_coverage.csv
+			write_market_coverage(code, area_month_brand, acceptable_brands, largest_brand_left_out)
+			## ---------------
+
 			merging_parties = aux.get_parties(info_dict["MergingParties"])
 
 			for timetype in ['month', 'quarter']:

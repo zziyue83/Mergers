@@ -290,46 +290,47 @@ def write_market_coverage(code, agg, brand_set, largest_brand_left_out, month_or
 	agg = agg.join(largest_brand_left_out, how = 'left', on = ['dma_code', 'year', month_or_quarter])
 	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage_brandlevel.csv', index = False, sep = ',', encoding = 'utf-8')
 
-code = sys.argv[1]
-log_out = open('../../../All/m_' + code + '/output/select_products_brandlevel.log', 'w')
-log_err = open('../../../All/m_' + code + '/output/select_products_brandlevel.err', 'w')
-sys.stdout = log_out
-sys.stderr = log_err
+if __name__ == "__main__": 
+	code = sys.argv[1]
+	log_out = open('../../../All/m_' + code + '/output/select_products_brandlevel.log', 'w')
+	log_err = open('../../../All/m_' + code + '/output/select_products_brandlevel.err', 'w')
+	sys.stdout = log_out
+	sys.stderr = log_err
 
-info_dict = aux.parse_info(code)
+	info_dict = aux.parse_info(code)
 
-groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
-years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
+	groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
+	years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
-conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
-area_month_brand = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
-area_quarter_brand = aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
+	conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
+	area_month_brand = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
+	area_quarter_brand = aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
-if 'InitialShareCutoff' not in info_dict:
-	info_dict['InitialShareCutoff'] = 1e-3
-if 'MaxUPC' not in info_dict:
-	info_dict['MaxUPC'] = 100
-if 'RegionalShareCutoff' not in info_dict:
-	info_dict['RegionalShareCutoff'] = 0.05
+	if 'InitialShareCutoff' not in info_dict:
+		info_dict['InitialShareCutoff'] = 1e-3
+	if 'MaxUPC' not in info_dict:
+		info_dict['MaxUPC'] = 100
+	if 'RegionalShareCutoff' not in info_dict:
+		info_dict['RegionalShareCutoff'] = 0.05
 
-acceptable_brands = get_acceptable_brands(area_month_brand[['brand_code_uc', 'shares', 'volume']],
-	share_cutoff = float(info_dict["InitialShareCutoff"]),
-	number_cutoff = int(info_dict["MaxUPC"]),
-	regional_share_cutoff = float(info_dict["RegionalShareCutoff"]))
+	acceptable_brands = get_acceptable_brands(area_month_brand[['brand_code_uc', 'shares', 'volume']],
+		share_cutoff = float(info_dict["InitialShareCutoff"]),
+		number_cutoff = int(info_dict["MaxUPC"]),
+		regional_share_cutoff = float(info_dict["RegionalShareCutoff"]))
 
-largest_brand_left_out = get_largest_brand_left_out(area_month_brand, acceptable_brands)
+	largest_brand_left_out = get_largest_brand_left_out(area_month_brand, acceptable_brands)
 
-# Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
-# Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
-write_brands_upc(code, area_month_brand, acceptable_brands)
+	# Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
+	# Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
+	write_brands_upc(code, area_month_brand, acceptable_brands)
 
-# Now filter area_month_upc and area_quarter_upc so that only acceptable_upcs survive
-# Print out data_month.csv and data_quarter.csv
-write_base_dataset(code, area_month_brand, acceptable_brands, 'month')
-write_base_dataset(code, area_quarter_brand, acceptable_brands, 'quarter')
+	# Now filter area_month_upc and area_quarter_upc so that only acceptable_upcs survive
+	# Print out data_month.csv and data_quarter.csv
+	write_base_dataset(code, area_month_brand, acceptable_brands, 'month')
+	write_base_dataset(code, area_quarter_brand, acceptable_brands, 'quarter')
 
-# Aggregate data_month (sum shares) by dma-month to get total market shares and spit that out as market_coverage.csv
-write_market_coverage(code, area_month_brand, acceptable_brands, largest_brand_left_out)
+	# Aggregate data_month (sum shares) by dma-month to get total market shares and spit that out as market_coverage.csv
+	write_market_coverage(code, area_month_brand, acceptable_brands, largest_brand_left_out)
 
-log_out.close()
-log_err.close()
+	log_out.close()
+	log_err.close()
