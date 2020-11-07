@@ -7,8 +7,8 @@ from datetime import datetime
 import select_products_brandlevel
 
 def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
-	for folder in os.listdir(base_folder):
-	# for folder in ['m_1912896020_1']:
+	# for folder in os.listdir(base_folder):
+	for folder in ['m_1912896020_1']:
 		merger_folder = base_folder + '/' + folder + '/output'
 		print(merger_folder)
 		# print(merger_folder)
