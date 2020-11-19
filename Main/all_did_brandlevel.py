@@ -88,10 +88,14 @@ def run_all_did_brandlevel(base_folder, month_or_quarter='month'):
 				log_out.close()
 				log_err.close()
 
-			except:
-				print('brand-level did did not finish successfully')
+			except Exception as e:
 				log_out.close()
 				log_err.close()
+				log_out = open('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/brandlevel_did.log', 'a')
+				sys.stdout = log_out
+				print('brand-level did did not finish successfully for' + folder)
+				print(e)
+				log_out.close()
 				continue
 
 base_folder = '/projects/b1048/gillanes/Mergers/All'
