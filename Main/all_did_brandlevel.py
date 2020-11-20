@@ -85,7 +85,7 @@ def run_all_did_brandlevel(base_folder, folders, month_or_quarter='month'):
 				dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
 				did_brandlevel(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype, code = code)
 
-			print("compute_did successfully terminated " folder)
+			print("compute_did successfully terminated " + folder)
 				# log_out.close()
 				# log_err.close() 
 
