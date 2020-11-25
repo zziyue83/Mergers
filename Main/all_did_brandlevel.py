@@ -10,11 +10,13 @@ def run_all_did_brandlevel(base_folder, folders, month_or_quarter='month'):
 	# for folder in os.listdir(base_folder):
 	# for folder in ['m_1912896020_1']:
 	# for folder in ['m_2203820020_11']:
+	errors = []
+	failed_folders = []
 	for folder in folders:
 		merger_folder = base_folder + '/' + folder + '/output'
 		print(merger_folder)
 		# print(merger_folder)
-		if os.path.exists(merger_folder + '/did_' + month_or_quarter + '.csv') or os.path.exists(merger_folder + "/did_stata_" + month_or_quarter + '_' + '0' + ".csv"):
+		if (os.path.exists(merger_folder + '/did_' + month_or_quarter + '.csv') or os.path.exists(merger_folder + "/did_stata_" + month_or_quarter + '_' + '0' + ".csv")) and not os.path.exists(merger_folder + "/brandlevel_did_stata_" + month_or_quarter + '_' + '0' + ".csv"):
 
 			# df, characteristics_ls, nest, num_instruments, add_differentiation, add_blp = gather_product_data(code, month_or_quarter)
 			# print(df.shape)
@@ -25,83 +27,91 @@ def run_all_did_brandlevel(base_folder, folders, month_or_quarter='month'):
 			# sys.stdout = log_out
 			# sys.stderr = log_err
 
-			# try:
+			try:
 
-			print(folder)
-			code = folder[2:]
+				print(folder)
+				code = folder[2:]
 
-			info_dict = aux.parse_info(code)
+				info_dict = aux.parse_info(code)
 
-			# brand-level select product
-			groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
-			years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
+				# brand-level select product
+				groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
+				years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
-			conversion_map = select_products_brandlevel.get_conversion_map(code, info_dict["FinalUnits"])
-			area_month_brand = select_products_brandlevel.aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
-			area_quarter_brand = select_products_brandlevel.aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
+				conversion_map = select_products_brandlevel.get_conversion_map(code, info_dict["FinalUnits"])
+				area_month_brand = select_products_brandlevel.aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
+				area_quarter_brand = select_products_brandlevel.aggregate_movement(code, years, groups, modules, "quarter", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
-			if 'InitialShareCutoff' not in info_dict:
-				info_dict['InitialShareCutoff'] = 1e-3
-			if 'MaxUPC' not in info_dict:
-				info_dict['MaxUPC'] = 100
-			if 'RegionalShareCutoff' not in info_dict:
-				info_dict['RegionalShareCutoff'] = 0.05
+				if 'InitialShareCutoff' not in info_dict:
+					info_dict['InitialShareCutoff'] = 1e-3
+				if 'MaxUPC' not in info_dict:
+					info_dict['MaxUPC'] = 100
+				if 'RegionalShareCutoff' not in info_dict:
+					info_dict['RegionalShareCutoff'] = 0.05
 
-			acceptable_brands = select_products_brandlevel.get_acceptable_brands(area_month_brand[['brand_code_uc', 'shares', 'volume']],
-				share_cutoff = float(info_dict["InitialShareCutoff"]),
-				number_cutoff = int(info_dict["MaxUPC"]),
-				regional_share_cutoff = float(info_dict["RegionalShareCutoff"]))
+				acceptable_brands = select_products_brandlevel.get_acceptable_brands(area_month_brand[['brand_code_uc', 'shares', 'volume']],
+					share_cutoff = float(info_dict["InitialShareCutoff"]),
+					number_cutoff = int(info_dict["MaxUPC"]),
+					regional_share_cutoff = float(info_dict["RegionalShareCutoff"]))
 
-			largest_brand_left_out = select_products_brandlevel.get_largest_brand_left_out(area_month_brand, acceptable_brands)
+				largest_brand_left_out = select_products_brandlevel.get_largest_brand_left_out(area_month_brand, acceptable_brands)
 
-			# Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
-			# Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
-			select_products_brandlevel.write_brands_upc(code, area_month_brand, acceptable_brands)
+				# Find the unique brands associated with the acceptable_upcs and spit that out into brands.csv
+				# Get the UPC information you have for acceptable_upcs and spit that out into upc_dictionary.csv
+				select_products_brandlevel.write_brands_upc(code, area_month_brand, acceptable_brands)
 
-			# Now filter area_month_upc and area_quarter_upc so that only acceptable_upcs survive
-			# Print out data_month.csv and data_quarter.csv
-			select_products_brandlevel.write_base_dataset(code, area_month_brand, acceptable_brands, 'month')
-			select_products_brandlevel.write_base_dataset(code, area_quarter_brand, acceptable_brands, 'quarter')
+				# Now filter area_month_upc and area_quarter_upc so that only acceptable_upcs survive
+				# Print out data_month.csv and data_quarter.csv
+				select_products_brandlevel.write_base_dataset(code, area_month_brand, acceptable_brands, 'month')
+				select_products_brandlevel.write_base_dataset(code, area_quarter_brand, acceptable_brands, 'quarter')
 
-			# Aggregate data_month (sum shares) by dma-month to get total market shares and spit that out as market_coverage.csv
-			select_products_brandlevel.write_market_coverage(code, area_month_brand, acceptable_brands, largest_brand_left_out)
-			## ---------------
+				# Aggregate data_month (sum shares) by dma-month to get total market shares and spit that out as market_coverage.csv
+				select_products_brandlevel.write_market_coverage(code, area_month_brand, acceptable_brands, largest_brand_left_out)
+				## ---------------
 
-			merging_parties = aux.get_parties(info_dict["MergingParties"])
+				merging_parties = aux.get_parties(info_dict["MergingParties"])
 
-			for timetype in ['month', 'quarter']:
-				df = pd.read_csv(base_folder + '/' + folder + '/intermediate/data_' + timetype + '_brandlevel'+'.csv', delimiter = ',')
-				df = aux.append_owners_brandlevel(code, df, timetype)
-				if timetype == 'month':
-					overlap_df = write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
-					if "MajorCompetitor" in info_dict:
-						major_competitor = aux.get_parties(info_dict["MajorCompetitor"])
-						print("Getting major competitor from info.txt")
-					else:
-						major_competitor = get_major_competitor(overlap_df)
-						print("Getting major competitor from shares")
-					print(major_competitor)
+				for timetype in ['month', 'quarter']:
+					df = pd.read_csv(base_folder + '/' + folder + '/intermediate/data_' + timetype + '_brandlevel'+'.csv', delimiter = ',')
+					df = aux.append_owners_brandlevel(code, df, timetype)
+					if timetype == 'month':
+						overlap_df = write_overlap(code, df, info_dict["DateCompleted"], merging_parties)
+						if "MajorCompetitor" in info_dict:
+							major_competitor = aux.get_parties(info_dict["MajorCompetitor"])
+							print("Getting major competitor from info.txt")
+						else:
+							major_competitor = get_major_competitor(overlap_df)
+							print("Getting major competitor from shares")
+						print(major_competitor)
 
-				dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
-				did_brandlevel(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype, code = code)
+					dt = datetime.strptime(info_dict["DateCompleted"], '%Y-%m-%d')
+					did_brandlevel(df, dt, merging_parties, major_competitor = major_competitor, month_or_quarter = timetype, code = code)
 
-			print("compute_did successfully terminated " + folder)
+				print("compute_did successfully terminated " + folder)
 				# log_out.close()
 				# log_err.close() 
 
-			# except Exception as e:
-			# 	log_out.close()
-			# 	log_err.close()
-			# 	log_out = open('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/brandlevel_did.log', 'a')
-			# 	sys.stdout = log_out
-			# 	print('brand-level did did not finish successfully for' + folder)
-			# 	print(e)
-			# 	log_out.close()
+			except Exception as e:
+				# log_out.close()
+				# log_err.close()
+				# log_out = open('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/brandlevel_did.log', 'a')
+				# sys.stdout = log_out
+				# print('brand-level did did not finish successfully for' + folder)
+				# print(e)
+				# log_out.close()
+				errors.append(e)
+				failed_folders.append(folder)
+	
+	print('these folders failed')
+	for i in range(len(failed_folders)):
+		print(failed_folders[i])
+		print(errors[i])
 
 base_folder = '/projects/b1048/gillanes/Mergers/All'
 folders = os.listdir(base_folder)
 for folder in folders:
 	print(folder)
-for folder in folders:
-	if folder not in  ['m_1912896020_1','m_2203820020_11','m_2724494020_11','m_2672223020_17']:
-		run_all_did_brandlevel(base_folder, [folder])
+# for folder in folders:
+# 	if folder not in  ['m_1912896020_1','m_2203820020_11','m_2724494020_11','m_2672223020_17']:
+# 		run_all_did_brandlevel(base_folder, [folder])
+run_all_did_brandlevel(base_folder, folders)
