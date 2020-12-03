@@ -15,7 +15,7 @@ est clear
 cd `1'
 log using `2'/cross_valid_`3', text replace
 
-import delimited "demand_`3'.csv", encoding(ISO-8859-1)
+import delimited "demand_month.csv", encoding(ISO-8859-1)
 
 /*
 
