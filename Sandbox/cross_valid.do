@@ -13,7 +13,7 @@ est clear
 
 
 cd `1'
-log using `2'/cross_valid_`3', text replace
+log using `2'/cross_valid, text replace
 
 import delimited "demand_month.csv", encoding(ISO-8859-1)
 
@@ -37,6 +37,9 @@ ssc install estout, replace
 ssc install ivreghdfe, replace
 
 *Sample Selection
+di `3'
+di `4'
+
 drop if year>`3'
 drop if year==`3' & month>=`4'
 drop if shares < 0.001
@@ -489,7 +492,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-17)]
-		esttab est1 st1* using tables/r_1_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_1_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc dma
@@ -498,7 +501,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-16)]
-		esttab est1 st1* using tables/r_2_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_2_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc dma calendar
@@ -507,7 +510,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-15)]
-		esttab est1 st1* using tables/r_3_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_3_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc dma period
@@ -516,7 +519,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-14)]
-		esttab est1 st1* using tables/r_4_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_4_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc calendar
@@ -525,7 +528,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-13)]
-		esttab est1 st1* using tables/r_5_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_5_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc period
@@ -534,7 +537,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-12)]
-		esttab est1 st1* using tables/r_6_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_6_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		/*INST: dist_diesel_tot cost_shifters*/
@@ -544,7 +547,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-11)]
-		esttab est1 st1* using tables/r_7_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_7_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc dma
@@ -553,7 +556,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-10)]
-		esttab est1 st1* using tables/r_8_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_8_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc dma calendar
@@ -562,7 +565,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-9)]
-		esttab est1 st1* using tables/r_9_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_9_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc dma period
@@ -571,7 +574,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-8)]
-		esttab est1 st1* using tables/r_10_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_10_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc calendar
@@ -580,7 +583,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-7)]
-		esttab est1 st1* using tables/r_11_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_11_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc period
@@ -589,7 +592,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-6)]
-		esttab est1 st1* using tables/r_12_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_12_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		/*INST: dist_diesel_tot cost_shifters N_UPC_`z'*/
@@ -599,7 +602,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-5)]
-		esttab est1 st1* using tables/r_13_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_13_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc dma
@@ -608,7 +611,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-4)]
-		esttab est1 st1* using tables/r_14_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_14_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc dma calendar
@@ -617,7 +620,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-3)]
-		esttab est1 st1* using tables/r_15_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_15_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc dma period
@@ -626,7 +629,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-2)]
-		esttab est1 st1* using tables/r_16_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_16_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc calendar
@@ -635,7 +638,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z'-1)]
-		esttab est1 st1* using tables/r_17_`z'.csv, stats(N r2 F APF1 APF2 MSE1,  labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_17_`z'.csv, stats(N r2 F APF1 APF2 MSE1,  labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 		*upc period
@@ -644,7 +647,7 @@ forval z=1/3{
 		estadd scalar APF1=first[4,1]
 		estadd scalar APF2=first[4,2]
 		estadd scalar MSE1=MSE[1,(18*`z')]
-		esttab est1 st1* using tables/r_18_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
+		esttab est1 st1* using `2'/tables/r_18_`z'.csv, stats(N r2 F APF1 APF2 MSE1, labels("Observations" "R-squared" "F-statistic" "F-prices" "F-nest" "MSE")) replace
 
 		est clear
 	}
