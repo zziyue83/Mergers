@@ -37,6 +37,8 @@ ssc install estout, replace
 ssc install ivreghdfe, replace
 
 *Sample Selection
+drop if year>`3'
+drop if year==`3' & month>=`4'
 drop if shares < 0.001
 
 *Time FE schemes

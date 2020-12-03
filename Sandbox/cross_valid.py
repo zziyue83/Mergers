@@ -8,7 +8,7 @@ import auxiliary as aux
 from datetime import datetime
 
 
-def NL(base_folder, month_or_quarter='month'):
+def CV(base_folder, month_or_quarter='month'):
 
     for folder in os.listdir(base_folder):
 
@@ -32,14 +32,9 @@ def NL(base_folder, month_or_quarter='month'):
             subprocess.call(cmd)
 
 
-# code = sys.argv[1]
-month_or_quarter = sys.argv[1]
-estimate_type = sys.argv[2]
-linear_fe = sys.argv[3]
-
 log_out = open('output/CV_All.log', 'w')
 log_err = open('output/CV_All.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 base_folder = '../../../All/'
-NL(base_folder)
+CV(base_folder)
