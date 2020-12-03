@@ -22,7 +22,7 @@ def CV(base_folder, month_or_quarter='month'):
             year = info_dict['DateCompleted'][0:4]
             month = str(int(info_dict['DateCompleted'][5:7]))
             if not os.path.isdir('../../../All/m_' + code + '/output/tables'):
-				os.makedirs('../../../All/m_' + code + '/output/tables')
+                os.makedirs('../../../All/m_' + code + '/output/tables')
 
             dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/cross_valid.do"
             DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
