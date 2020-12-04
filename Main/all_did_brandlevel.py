@@ -118,4 +118,4 @@ for folder in folders:
 # for folder in folders:
 # 	if folder not in  ['m_1912896020_1','m_2203820020_11','m_2724494020_11','m_2672223020_17']:
 # 		run_all_did_brandlevel(base_folder, [folder])
-run_all_did_brandlevel(base_folder, folders)git 
+run_all_did_brandlevel(base_folder, folders)
