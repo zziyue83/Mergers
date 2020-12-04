@@ -109,9 +109,13 @@ def run_all_did_brandlevel(base_folder, folders, month_or_quarter='month'):
 
 base_folder = '/projects/b1048/gillanes/Mergers/All'
 folders = os.listdir(base_folder)
+log_out = open('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/brandlevel_did.log', 'w')
+log_err = open('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/brandlevel_did.err', 'w')
+sys.stdout = log_out
+sys.stderr = log_err
 for folder in folders:
 	print(folder)
 # for folder in folders:
 # 	if folder not in  ['m_1912896020_1','m_2203820020_11','m_2724494020_11','m_2672223020_17']:
 # 		run_all_did_brandlevel(base_folder, [folder])
-run_all_did_brandlevel(base_folder, folders)
+run_all_did_brandlevel(base_folder, folders)git 
