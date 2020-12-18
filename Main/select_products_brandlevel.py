@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from clean_data import clean_data
 
+# good morning
 def load_store_table(year):
 	store_path = "../../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
 	store_table = pd.read_csv(store_path, delimiter = "\t", index_col = "store_code_uc")
