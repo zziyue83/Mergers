@@ -48,7 +48,7 @@ def check_overlap(merger_folder):
             return (True, c4)
 
 
-def get_betas(base_folder, level):
+def get_betas(folders, base_folder, level):
 
     '''
     At the base_folder, it loops through all m_code folders,
@@ -68,7 +68,6 @@ def get_betas(base_folder, level):
     print(level2)
 
     # Dictionary with the descriptive variables
-    base_folder = '../../../All/'
     aggregated = {}
     aggregated['merger'] = []
     aggregated['pre_hhi'] = []
@@ -109,7 +108,9 @@ def get_betas(base_folder, level):
         aggregated['pv_npdhhi_'+str(j)] = []
 
     # loop through folders in "All"
-    for folder in os.listdir(base_folder):
+    #folders = [folder for folder in os.listdir(base_folder) if folder not in codes]
+    #print(folders)
+    for folder in folders:
 
         merger_folder = base_folder + folder + '/output'
         print(merger_folder + '/'+level+'did_stata_month_2.csv')
@@ -208,9 +209,18 @@ level = sys.argv[1] + '_'
 
 base_folder = '../../../All/'
 
+#problematic codes
+codes = (['m_1785984020_11', 'm_2664559020_1', 'm_2735179020_1', 'm_2735179020_4',
+        'm_2736521020_10', 'm_2033113020_1_OLD', 'm_2033113020_2',
+        'm_2675324040_1', 'm_2033113020_3', 'm_2838188020_1',
+        'm_2033113020_3_OLD', 'm_2033113020_2_OLD', 'm_m_2203820020_6',
+        'm_2813860020_1'])
+
 log_out = open('output/aggregation'+level+'.log', 'w')
 log_err = open('output/aggregation'+level+'.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
-get_betas(base_folder, level)
+folders = [folder for folder in os.listdir(base_folder) if folder not in codes]
+
+get_betas(folders, base_folder, level)
