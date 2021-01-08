@@ -78,6 +78,12 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		min_month = 1
 		years = years[1:]
 
+		#manual fix for Headache Pills
+	if ((code=='2373087020_1') & (int(years[0]) < 2010)):
+		min_year = 2010
+		min_month = 1
+		years = years[1:]
+
 	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['size1_units', 'size1_amount', 'multi']
 
