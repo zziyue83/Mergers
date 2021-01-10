@@ -25,4 +25,4 @@ info_needed = ['upc','dma_code', 'year', 'month', 'sales', 'volume']
 short_data_month = (pd.read_csv('../../../All/m_' + code + '/intermediate/data_month.csv')[info_needed]
 
 # saving as new file
-short_data_month.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy', index = False, sep = ',', encoding = 'utf-8')
+short_data_month.to_csv('short_data_month.csv', index = False, sep = ',', encoding = 'utf-8')
