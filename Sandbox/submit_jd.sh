@@ -4,12 +4,12 @@
 #SBATCH -p buyin
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -c 1
-#SBATCH -t 4:00:00
+#SBATCH -t 400:00:00
 #SBATCH --mail-user=jdsalas@u.northwestern.edu
-#SBATCH --mem=20G
+#SBATCH --mem=45G
 #SBATCH --nodes=1
 
 module load python/anaconda3.6
 
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox
-python NL_All_agg.py
+python cross_valid.py

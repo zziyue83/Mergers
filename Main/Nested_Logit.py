@@ -33,8 +33,9 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 
 	if 'distance-diesel' in instrument_names:
 		# First get the distances and merge with df
-		distances = pd.read_csv('../../../All/m_' + code + '/intermediate/distances.csv', delimiter = ',', index_col = ['brand_code_uc', 'owner', 'dma_code'])
-		df = df.join(distances, on = ['brand_code_uc', 'owner', 'dma_code'], how = 'left')
+		distances = pd.read_csv('../../../All/m_' + code + '/intermediate/distances.csv', delimiter = ',', index_col = ['brand_code_uc', 'owner', 'dma_code','year',month_or_quarter])
+		df = df.join(distances, on = ['brand_code_uc', 'owner', 'dma_code','year',month_or_quarter], how = 'left')
+		print(df)
 
 		# Next, get the diesel prices and merge with df
 		diesel_data = pd.read_csv('../../../All/instruments/diesel.csv', delimiter = ',')
@@ -138,7 +139,7 @@ def create_formulation(code, df, chars, nests = None, month_or_quarter = 'month'
 
 	# Add the nests
 	if nests is not None:
-		if nests == 'inside':
+		if nests == ['inside']:
 			df['nesting_ids'] = 1
 		else:
 			df['nesting_ids'] = df[nests]

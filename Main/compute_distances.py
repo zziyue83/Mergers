@@ -330,7 +330,7 @@ def compute_distances(code, netid, merging_parties, merging_year, merging_month,
             
     print(distance[distance['distance_change']!=0])
 
-    distance.to_csv('../../../All/m_' + code + '/intermediate/distances_1.csv', sep = ',', encoding = 'utf-8', index = False)
+    distance.to_csv('../../../All/m_' + code + '/intermediate/distances.csv', sep = ',', encoding = 'utf-8', index = False)
 
 code = sys.argv[1]
 netid = sys.argv[2]

@@ -14,7 +14,7 @@ est clear
 
 
 cd `1'
-log using `2'/did_stata_`3', text replace
+log using `2'/did_stata_int_`3', text replace
 
 import delimited "stata_did_`3'.csv", encoding(ISO-8859-1)
 
@@ -103,35 +103,41 @@ replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>25
 forval x = 0/3 {
 
 * 1y After
-reghdfe lprice post_merger_merging post_merger post_merger_1y post_merger_merging_1y trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)est sto PM_FE_`x'
+reghdfe lprice post_merger_merging post_merger post_merger_1y post_merger_merging_1y trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+est sto after_`x'
 outreg2 using `2'/did_stata_int_`3'_`x'.txt, stats(coef se pval) ctitle("1y After") replace
 
 * HHI Coarse
-reghdfe lprice post_merger_merging#i.HHI_bins post_merger#i.HHI_bins i.HHI_bins trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)est sto PM_FE_`x'
+reghdfe lprice post_merger_merging#i.HHI_bins post_merger#i.HHI_bins i.HHI_bins trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+est sto HHIc_`x'
 outreg2 using `2'/did_stata_int_`3'_`x'.txt, stats(coef se pval) ctitle("HHI bins") append
-est clear
 
 * DHHI Coarse
 reghdfe lprice post_merger_merging#i.DHHI_bins post_merger#i.DHHI_bins i.DHHI_bins trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+est sto DHHIc_`x'
 outreg2 using `2'/did_stata_int_`3'_`x'.txt, stats(coef se pval) ctitle("DHHI bins") append
 
 * HHI Fine
-reghdfe lprice post_merger_merging#i.HHI_binsf post_merger#i.HHI_binsf i.HHI_binsf trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)est sto PM_FE_`x'
+reghdfe lprice post_merger_merging#i.HHI_binsf post_merger#i.HHI_binsf i.HHI_binsf trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+est sto HHIf_`x'
 outreg2 using `2'/did_stata_int_`3'_`x'.txt, stats(coef se pval) ctitle("HHI bins") append
-est clear
 
 * DHHI Fine
 reghdfe lprice post_merger_merging#i.DHHI_binsf post_merger#i.DHHI_binsf i.DHHI_binsf trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+est sto DHHIf_`x'
 outreg2 using `2'/did_stata_int_`3'_`x'.txt, stats(coef se pval) ctitle("DHHI bins") append
 
 * DHHI & HHI Bins
 reghdfe lprice post_merger_merging#i.DHHI_HHI post_merger#i.DHHI_HHI i.DHHI_HHI trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+est sto DHHI_HHI_`x'
 outreg2 using `2'/did_stata_int_`3'_`x'.txt, stats(coef se pval) ctitle("DHHI & HHI bins") append
 
 * Nocke & Whinston Regions
 reghdfe lprice post_merger_merging#i.DHHI_HHI_NW post_merger#i.DHHI_HHI_NW i.DHHI_HHI_NW trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+est sto DHHI_HHI_NW_`x'
 outreg2 using `2'/did_stata_int_`3'_`x'.txt, stats(coef se pval) ctitle("NW bins") append
 
+est clear
 
 }
 

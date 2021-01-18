@@ -1,18 +1,16 @@
-try_1.py
-
 import pandas as pd
 import sys
 # check if I need to organize directory/path for auxiliary function imports
 import auxiliary as aux
 
-code = 2823116020
+code = '2823116020_9'
 ## testing info
 #df_pre = 
 #month_or_quarter
 
 # using parse_info to check information
 def parse_info(code):
-	file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
+	file = open('../../../../All/m_' + code + '/info.txt', mode = 'r')
 	info_file = file.read()
 	file.close()
 
@@ -28,15 +26,14 @@ def parse_info(code):
 info_needed = ['upc','dma_code', 'year', 'month', 'sales', 'volume']
 
 # opening the dataframe and using only info needed
-short_data_month = (pd.read_csv('../../../All/m_' + code + '/intermediate/data_month.csv')[info_needed]
-
-short_data_month
+short_data_month1 = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
+short_data_month=short_data_month1[info_needed]
 
 # saving as new file
 short_data_month.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/short_data_month.csv', index = False, sep = ',', encoding = 'utf-8')
 
-log_out = open('projects/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/try1.log', 'w')
-log_err = open('projects/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/try1.log', 'w')
+log_out = open('try_1.log', 'w')
+log_err = open('try_1.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 

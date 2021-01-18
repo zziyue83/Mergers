@@ -17,8 +17,15 @@ sns.set(style='ticks')
 colors = ['#838487', '#1b1c1c']
 sns.set_palette(sns.color_palette(colors))
 
-
 def check_overlap(merger_folder):
+
+    '''
+    For a given merger_folder, it opens the overlap.csv file
+    checks how many merger parties are there. If there are two,
+    the only case where there's doubt left, it checks the structure
+    of the pre - post share matrix for the merging parties and
+    concludes. It returns True or False, and the C4 measure.
+    '''
 
     overlap_file = pd.read_csv(merger_folder + '/overlap.csv', sep=',')
     merging_sum = overlap_file['merging_party'].sum()
@@ -43,7 +50,14 @@ def check_overlap(merger_folder):
 
 def get_betas(base_folder):
 
-    # basic specs
+    '''
+    At the base_folder, it loops through all m_code folders,
+    checks whether the brand_level routine is done, and retrieves
+    the coefficients, standard erros, and p-values of that routine.
+    It generates the "output/aggregated_brand.csv" file.
+    '''
+
+    # Dictionary with the descriptive variables
     base_folder = '../../../All/'
     aggregated = {}
     aggregated['merger'] = []
@@ -51,18 +65,38 @@ def get_betas(base_folder):
     aggregated['post_hhi'] = []
     aggregated['dhhi'] = []
     aggregated['c4'] = []
-    #coefficient = str(coefficient)
 
+    # Adding all the specs-vars to the Dictionary
     for i in range(45):
 
         j = i+1
         aggregated['post_merger'+'_'+str(j)] = []
         aggregated['se_pm_'+str(j)] = []
-        aggregated['pval_pm_'+str(j)] = []
+        aggregated['pv_pm_'+str(j)] = []
+
+        aggregated['post_merger_merging_'+str(j)] = []
+        aggregated['se_pmm_'+str(j)] = []
+        aggregated['pv_pmm_'+str(j)] = []
+
+        aggregated['post_merger_major_'+str(j)] = []
+        aggregated['se_pmmaj_'+str(j)] = []
+        aggregated['pv_pmmaj_'+str(j)] = []
 
         aggregated['post_merger_dhhi_'+str(j)] = []
-        aggregated['se_pmmd_'+str(j)] = []
-        aggregated['pval_pmmd_'+str(j)] = []
+        aggregated['se_pmdhhi_'+str(j)] = []
+        aggregated['pv_pmdhhi_'+str(j)] = []
+
+        aggregated['post_hhi_'+str(j)] = []
+        aggregated['se_phhi_'+str(j)] = []
+        aggregated['pv_phhi_'+str(j)] = []
+
+        aggregated['np_hhi_'+str(j)] = []
+        aggregated['se_nphhi_'+str(j)] = []
+        aggregated['pv_nphhi_'+str(j)] = []
+
+        aggregated['np_dhhi_'+str(j)] = []
+        aggregated['se_npdhhi_'+str(j)] = []
+        aggregated['pv_npdhhi_'+str(j)] = []
 
     # loop through folders in "All"
     for folder in os.listdir(base_folder):
@@ -77,6 +111,7 @@ def get_betas(base_folder):
 
             descr_data = pd.read_csv(
                 merger_folder + '/../intermediate/stata_did_month_brandlevel.csv', sep=',')
+
             # recover only betas for which post_merger_merging exists
             if 'post_merger_dhhi' in did_merger.index:
 
@@ -105,34 +140,57 @@ def get_betas(base_folder):
                     # loop through specs recovering betas
                 for i in did_merger.columns[1:46]:
 
-                    aggregated['post_merger_dhhi'+'_'+i].append(did_merger[i]['post_merger_dhhi'])
-                    aggregated['se_pmmd_'+i].append(did_merger[i][(did_merger.index.get_loc('post_merger_dhhi')+1)])
-                    aggregated['pval_pmmd_'+i].append(did_merger[i][(did_merger.index.get_loc('post_merger_dhhi')+2)])
-
-                    aggregated['post_merger'+'_' +
-                               i].append(did_merger[i]['post_merger'])
-                    aggregated['se_pm_'+i].append(did_merger[i]
+                    aggregated['post_merger_' + i].append(did_merger[i]['post_merger'])
+                    aggregated['se_pm_' + i].append(did_merger[i]
                                                   [(did_merger.index.get_loc('post_merger')+1)])
-                    aggregated['pval_pm_'+i].append(did_merger[i]
+                    aggregated['pv_pm_' + i].append(did_merger[i]
                                                     [(did_merger.index.get_loc('post_merger')+2)])
 
-            # else:
-            #	assert coefficient, "Coefficient does not exist: %r" % coefficient
+                    aggregated['post_merger_merging_' + i].append(did_merger[i]['post_merger_merging'])
+                    aggregated['se_pmm_' + i].append(did_merger[i]
+                                                  [(did_merger.index.get_loc('post_merger_merging')+1)])
+                    aggregated['pv_pmm_' + i].append(did_merger[i]
+                                                    [(did_merger.index.get_loc('post_merger_merging')+2)])
 
-    print(len(aggregated['merger']), len(aggregated['pre_hhi']), len(
-        aggregated['post_hhi']), len(aggregated['dhhi']))
+                    aggregated['post_merger_major_' + i].append(did_merger[i]['post_merger_major'])
+                    aggregated['se_pmmaj_' + i].append(did_merger[i]
+                                                  [(did_merger.index.get_loc('post_merger_major')+1)])
+                    aggregated['pv_pmmaj_' + i].append(did_merger[i]
+                                                    [(did_merger.index.get_loc('post_merger_major')+2)])
+
+                    aggregated['post_merger_dhhi_' + i].append(did_merger[i]['post_merger_dhhi'])
+                    aggregated['se_pmdhhi_'+ i ].append(did_merger[i]
+                                                    [(did_merger.index.get_loc('post_merger_dhhi')+1)])
+                    aggregated['pv_pmdhhi_'+ i ].append(did_merger[i]
+                                                    [(did_merger.index.get_loc('post_merger_dhhi')+2)])
+
+                    aggregated['post_hhi_' + i].append(did_merger[i]['post_hhi'])
+                    aggregated['se_phhi_'+ i ].append(did_merger[i]
+                                                    [(did_merger.index.get_loc('post_hhi')+1)])
+                    aggregated['pv_phhi_'+ i ].append(did_merger[i]
+                                                    [(did_merger.index.get_loc('post_hhi')+2)])
+
+                    aggregated['np_hhi_' + i].append(did_merger[i]['np_HHI'])
+                    aggregated['se_nphhi_'+ i ].append(did_merger[i]
+                                                    [(did_merger.index.get_loc('np_HHI')+1)])
+                    aggregated['pv_nphhi_'+ i ].append(did_merger[i]
+                                                    [(did_merger.index.get_loc('np_HHI')+2)])
+
+                    aggregated['np_dhhi_' + i].append(did_merger[i]['np_dhhi'])
+                    aggregated['se_npdhhi_'+ i ].append(did_merger[i]
+                                                    [(did_merger.index.get_loc('np_dhhi')+1)])
+                    aggregated['pv_npdhhi_'+ i ].append(did_merger[i]
+                                                    [(did_merger.index.get_loc('np_dhhi')+2)])
+
+    print(folder)
 
     df = pd.DataFrame.from_dict(aggregated)
     df = df.sort_values(by='merger').reset_index().drop('index', axis=1)
-#    df = aux.clean_betas(df)
+    df = aux.clean_betas(df)
 
     df.to_csv('output/aggregated_brand.csv', sep=',')
 
 
-
-
-# coef = sys.argv[1]
-# spec = sys.argv[2]
 base_folder = '../../../All/'
 
 log_out = open('output/aggregation_brand.log', 'w')
@@ -141,5 +199,3 @@ sys.stdout = log_out
 sys.stderr = log_err
 
 get_betas(base_folder)
-
-

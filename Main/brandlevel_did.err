@@ -1,0 +1,406 @@
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:48: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
+/home/yza4307/.local/lib/python3.6/site-packages/numpy/lib/arraysetops.py:580: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  mask |= (ar1 == a)
+0it [00:00, ?it/s]/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:159: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:160: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:161: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['module'] = int(module)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:162: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
+1it [00:06,  6.26s/it]2it [00:07,  4.81s/it]2it [00:07,  3.85s/it]
+0it [00:00, ?it/s]1it [00:08,  8.24s/it]2it [00:09,  6.24s/it]2it [00:09,  4.90s/it]
+0it [00:00, ?it/s]1it [00:08,  8.35s/it]2it [00:10,  6.35s/it]2it [00:10,  5.02s/it]
+0it [00:00, ?it/s]1it [00:08,  8.19s/it]2it [00:10,  6.33s/it]2it [00:10,  5.09s/it]
+0it [00:00, ?it/s]1it [00:06,  6.25s/it]1it [00:06,  6.25s/it]
+0it [00:00, ?it/s]1it [00:05,  5.78s/it]2it [00:09,  5.03s/it]2it [00:09,  4.54s/it]
+0it [00:00, ?it/s]1it [00:06,  6.14s/it]2it [00:07,  4.71s/it]2it [00:07,  3.75s/it]
+0it [00:00, ?it/s]1it [00:08,  8.03s/it]2it [00:09,  6.05s/it]2it [00:09,  4.73s/it]
+0it [00:00, ?it/s]1it [00:07,  7.79s/it]2it [00:09,  5.92s/it]2it [00:09,  4.67s/it]
+0it [00:00, ?it/s]1it [00:07,  7.91s/it]2it [00:09,  6.04s/it]2it [00:09,  4.79s/it]
+0it [00:00, ?it/s]1it [00:05,  6.00s/it]1it [00:05,  6.00s/it]
+0it [00:00, ?it/s]1it [00:06,  6.35s/it]2it [00:09,  5.42s/it]2it [00:09,  4.81s/it]
+sys:1: DtypeWarning: Columns (32) have mixed types. Specify dtype option on import or set low_memory=False.
+sys:1: DtypeWarning: Columns (34) have mixed types. Specify dtype option on import or set low_memory=False.
+0it [00:00, ?it/s]1it [00:07,  7.25s/it]2it [00:14,  7.21s/it]3it [00:21,  7.15s/it]4it [00:28,  7.13s/it]5it [00:35,  7.09s/it]6it [00:42,  7.04s/it]7it [00:44,  5.51s/it]7it [00:44,  6.33s/it]
+0it [00:00, ?it/s]1it [00:08,  8.19s/it]2it [00:16,  8.16s/it]3it [00:24,  8.09s/it]4it [00:32,  8.09s/it]5it [00:40,  8.10s/it]6it [00:47,  7.92s/it]6it [00:47,  7.99s/it]
+0it [00:00, ?it/s]1it [00:08,  8.12s/it]2it [00:16,  8.06s/it]3it [00:23,  8.00s/it]4it [00:31,  7.92s/it]5it [00:39,  8.00s/it]6it [00:45,  7.18s/it]6it [00:45,  7.52s/it]
+0it [00:00, ?it/s]1it [00:07,  7.74s/it]2it [00:15,  7.75s/it]3it [00:23,  7.79s/it]4it [00:31,  7.86s/it]5it [00:39,  7.92s/it]6it [00:43,  6.76s/it]6it [00:43,  7.26s/it]
+0it [00:00, ?it/s]1it [00:08,  8.32s/it]2it [00:16,  8.22s/it]3it [00:24,  8.16s/it]4it [00:32,  8.21s/it]5it [00:35,  6.58s/it]5it [00:35,  7.08s/it]
+0it [00:00, ?it/s]1it [00:08,  8.97s/it]2it [00:17,  8.87s/it]3it [00:26,  8.80s/it]4it [00:34,  8.74s/it]5it [00:43,  8.70s/it]6it [00:44,  6.50s/it]6it [00:44,  7.47s/it]
+0it [00:00, ?it/s]1it [00:06,  6.14s/it]2it [00:12,  6.11s/it]3it [00:18,  6.07s/it]4it [00:24,  6.06s/it]5it [00:30,  6.04s/it]6it [00:36,  6.02s/it]7it [00:37,  4.72s/it]7it [00:37,  5.41s/it]
+0it [00:00, ?it/s]1it [00:06,  6.66s/it]2it [00:13,  6.63s/it]3it [00:19,  6.60s/it]4it [00:26,  6.59s/it]5it [00:32,  6.57s/it]6it [00:39,  6.47s/it]6it [00:39,  6.51s/it]
+0it [00:00, ?it/s]1it [00:06,  6.81s/it]2it [00:13,  6.74s/it]3it [00:19,  6.67s/it]4it [00:26,  6.66s/it]5it [00:33,  6.65s/it]6it [00:37,  5.95s/it]6it [00:37,  6.25s/it]
+0it [00:00, ?it/s]1it [00:06,  6.64s/it]2it [00:13,  6.63s/it]3it [00:19,  6.63s/it]4it [00:26,  6.67s/it]5it [00:33,  6.74s/it]6it [00:36,  5.69s/it]6it [00:36,  6.13s/it]
+0it [00:00, ?it/s]1it [00:07,  7.05s/it]2it [00:13,  6.95s/it]3it [00:20,  6.86s/it]4it [00:27,  6.84s/it]5it [00:29,  5.50s/it]5it [00:29,  5.91s/it]
+0it [00:00, ?it/s]1it [00:08,  8.41s/it]2it [00:16,  8.35s/it]3it [00:24,  8.27s/it]4it [00:32,  8.22s/it]5it [00:41,  8.24s/it]6it [00:42,  6.14s/it]6it [00:42,  7.06s/it]
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:48: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
+/home/yza4307/.local/lib/python3.6/site-packages/numpy/lib/arraysetops.py:580: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  mask |= (ar1 == a)
+0it [00:00, ?it/s]1it [00:06,  6.74s/it]2it [00:10,  5.92s/it]2it [00:10,  5.38s/it]
+0it [00:00, ?it/s]1it [00:06,  6.83s/it]2it [00:11,  6.25s/it]2it [00:11,  5.86s/it]
+0it [00:00, ?it/s]1it [00:06,  6.84s/it]2it [00:12,  6.35s/it]2it [00:12,  6.02s/it]
+0it [00:00, ?it/s]/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:159: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:160: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:161: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['module'] = int(module)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:162: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
+1it [00:07,  7.21s/it]2it [00:13,  6.82s/it]2it [00:13,  6.56s/it]
+0it [00:00, ?it/s]1it [00:06,  6.37s/it]2it [00:10,  5.64s/it]2it [00:10,  5.15s/it]
+0it [00:00, ?it/s]1it [00:06,  6.49s/it]2it [00:11,  5.99s/it]2it [00:11,  5.66s/it]
+0it [00:00, ?it/s]1it [00:06,  6.55s/it]2it [00:11,  6.09s/it]2it [00:11,  5.79s/it]
+0it [00:00, ?it/s]1it [00:07,  7.47s/it]2it [00:13,  7.07s/it]2it [00:13,  6.80s/it]
+sys:1: DtypeWarning: Columns (26,28,30,41) have mixed types. Specify dtype option on import or set low_memory=False.
+sys:1: DtypeWarning: Columns (12,26,28,30,32,34,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
+sys:1: DtypeWarning: Columns (4,12,20,22,24,26,28,30,32,34,36,38) have mixed types. Specify dtype option on import or set low_memory=False.
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:48: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
+/home/yza4307/.local/lib/python3.6/site-packages/numpy/lib/arraysetops.py:580: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  mask |= (ar1 == a)
+0it [00:00, ?it/s]/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:159: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:160: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:161: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['module'] = int(module)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:162: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
+1it [00:05,  5.96s/it]2it [00:11,  5.96s/it]3it [00:15,  5.20s/it]3it [00:15,  5.11s/it]
+0it [00:00, ?it/s]1it [00:01,  1.65s/it]1it [00:01,  1.65s/it]
+0it [00:00, ?it/s]1it [00:06,  6.34s/it]2it [00:12,  6.38s/it]3it [00:13,  4.76s/it]3it [00:13,  4.60s/it]
+0it [00:00, ?it/s]1it [00:07,  7.19s/it]2it [00:14,  7.17s/it]3it [00:17,  6.12s/it]3it [00:17,  6.00s/it]
+0it [00:00, ?it/s]1it [00:01,  1.70s/it]1it [00:01,  1.70s/it]
+0it [00:00, ?it/s]1it [00:07,  7.23s/it]2it [00:14,  7.18s/it]2it [00:14,  7.15s/it]
+0it [00:00, ?it/s]1it [00:07,  7.43s/it]2it [00:14,  7.40s/it]3it [00:18,  6.29s/it]3it [00:18,  6.16s/it]
+0it [00:00, ?it/s]1it [00:01,  1.76s/it]1it [00:01,  1.76s/it]
+0it [00:00, ?it/s]1it [00:07,  7.46s/it]2it [00:14,  7.43s/it]3it [00:15,  5.53s/it]3it [00:15,  5.31s/it]
+0it [00:00, ?it/s]1it [00:06,  6.94s/it]2it [00:13,  6.68s/it]2it [00:13,  6.51s/it]
+0it [00:00, ?it/s]1it [00:01,  1.45s/it]1it [00:01,  1.46s/it]
+0it [00:00, ?it/s]1it [00:06,  6.91s/it]2it [00:10,  5.87s/it]2it [00:10,  5.18s/it]
+0it [00:00, ?it/s]1it [00:07,  7.44s/it]2it [00:14,  7.44s/it]3it [00:20,  6.86s/it]3it [00:20,  6.80s/it]
+0it [00:00, ?it/s]1it [00:01,  1.90s/it]1it [00:01,  1.90s/it]
+0it [00:00, ?it/s]1it [00:07,  7.46s/it]2it [00:14,  7.41s/it]3it [00:16,  5.73s/it]3it [00:16,  5.53s/it]
+0it [00:00, ?it/s]1it [00:06,  6.66s/it]2it [00:13,  6.61s/it]3it [00:16,  5.75s/it]3it [00:16,  5.64s/it]
+0it [00:00, ?it/s]1it [00:01,  1.65s/it]1it [00:01,  1.65s/it]
+0it [00:00, ?it/s]1it [00:07,  7.09s/it]2it [00:14,  7.12s/it]3it [00:15,  5.29s/it]3it [00:15,  5.10s/it]
+0it [00:00, ?it/s]1it [00:07,  7.07s/it]2it [00:14,  7.07s/it]3it [00:17,  6.02s/it]3it [00:17,  5.90s/it]
+0it [00:00, ?it/s]1it [00:01,  1.82s/it]1it [00:01,  1.82s/it]
+0it [00:00, ?it/s]1it [00:07,  7.24s/it]2it [00:14,  7.14s/it]2it [00:14,  7.07s/it]
+0it [00:00, ?it/s]1it [00:07,  7.18s/it]2it [00:14,  7.22s/it]3it [00:18,  6.14s/it]3it [00:18,  6.04s/it]
+0it [00:00, ?it/s]1it [00:01,  1.71s/it]1it [00:01,  1.71s/it]
+0it [00:00, ?it/s]1it [00:07,  7.29s/it]2it [00:14,  7.23s/it]3it [00:15,  5.41s/it]3it [00:15,  5.18s/it]
+0it [00:00, ?it/s]1it [00:06,  6.55s/it]2it [00:12,  6.32s/it]2it [00:12,  6.18s/it]
+0it [00:00, ?it/s]1it [00:01,  1.43s/it]1it [00:01,  1.43s/it]
+0it [00:00, ?it/s]1it [00:06,  6.66s/it]2it [00:09,  5.66s/it]2it [00:09,  5.00s/it]
+0it [00:00, ?it/s]1it [00:07,  7.14s/it]2it [00:14,  7.10s/it]3it [00:19,  6.54s/it]3it [00:19,  6.46s/it]
+0it [00:00, ?it/s]1it [00:01,  1.80s/it]1it [00:01,  1.80s/it]
+0it [00:00, ?it/s]1it [00:07,  7.13s/it]2it [00:14,  7.11s/it]3it [00:15,  5.48s/it]3it [00:15,  5.29s/it]
+sys:1: DtypeWarning: Columns (32) have mixed types. Specify dtype option on import or set low_memory=False.
+sys:1: DtypeWarning: Columns (34) have mixed types. Specify dtype option on import or set low_memory=False.
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:48: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
+/home/yza4307/.local/lib/python3.6/site-packages/numpy/lib/arraysetops.py:580: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  mask |= (ar1 == a)
+0it [00:00, ?it/s]/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:159: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:160: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:161: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['module'] = int(module)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:162: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
+1it [00:05,  5.27s/it]2it [00:10,  5.28s/it]3it [00:15,  5.25s/it]4it [00:20,  5.25s/it]5it [00:26,  5.23s/it]6it [00:31,  5.22s/it]7it [00:36,  5.21s/it]8it [00:41,  5.21s/it]9it [00:46,  4.94s/it]9it [00:46,  5.12s/it]
+0it [00:00, ?it/s]1it [00:07,  7.59s/it]2it [00:15,  7.62s/it]3it [00:22,  7.62s/it]4it [00:30,  7.59s/it]5it [00:37,  7.56s/it]6it [00:45,  7.60s/it]7it [00:53,  7.69s/it]8it [01:01,  7.72s/it]9it [01:05,  6.68s/it]9it [01:05,  7.28s/it]
+0it [00:00, ?it/s]1it [00:08,  8.30s/it]2it [00:16,  8.42s/it]3it [00:25,  8.50s/it]4it [00:34,  8.49s/it]5it [00:42,  8.47s/it]6it [00:51,  8.49s/it]7it [00:59,  8.49s/it]8it [01:07,  8.44s/it]9it [01:11,  7.02s/it]9it [01:11,  7.96s/it]
+0it [00:00, ?it/s]1it [00:08,  8.59s/it]2it [00:17,  8.61s/it]3it [00:25,  8.64s/it]4it [00:34,  8.59s/it]5it [00:42,  8.57s/it]6it [00:51,  8.58s/it]7it [00:59,  8.28s/it]7it [00:59,  8.45s/it]
+0it [00:00, ?it/s]1it [00:09,  9.99s/it]2it [00:19,  9.93s/it]3it [00:29,  9.93s/it]4it [00:39,  9.89s/it]5it [00:49,  9.78s/it]6it [00:58,  9.72s/it]7it [01:08,  9.74s/it]8it [01:17,  9.59s/it]8it [01:17,  9.71s/it]
+0it [00:00, ?it/s]1it [00:05,  5.39s/it]2it [00:10,  5.37s/it]3it [00:15,  5.34s/it]4it [00:21,  5.34s/it]5it [00:26,  5.33s/it]6it [00:31,  5.31s/it]7it [00:37,  5.30s/it]8it [00:42,  5.28s/it]9it [00:46,  4.99s/it]9it [00:46,  5.19s/it]
+0it [00:00, ?it/s]1it [00:07,  7.04s/it]2it [00:14,  7.05s/it]3it [00:21,  7.03s/it]4it [00:27,  6.99s/it]5it [00:34,  7.00s/it]6it [00:41,  6.94s/it]7it [00:48,  6.90s/it]8it [00:55,  6.84s/it]9it [00:59,  5.98s/it]9it [00:59,  6.59s/it]
+0it [00:00, ?it/s]1it [00:07,  7.10s/it]2it [00:14,  7.06s/it]3it [00:21,  7.09s/it]4it [00:28,  7.11s/it]5it [00:35,  7.05s/it]6it [00:42,  7.05s/it]7it [00:49,  7.06s/it]8it [00:56,  7.00s/it]9it [00:59,  5.85s/it]9it [00:59,  6.61s/it]
+0it [00:00, ?it/s]1it [00:07,  7.12s/it]2it [00:14,  7.15s/it]3it [00:21,  7.13s/it]4it [00:28,  7.08s/it]5it [00:35,  7.06s/it]6it [00:42,  7.09s/it]7it [00:48,  6.85s/it]7it [00:48,  6.98s/it]
+0it [00:00, ?it/s]1it [00:08,  8.60s/it]2it [00:17,  8.66s/it]3it [00:26,  8.69s/it]4it [00:34,  8.71s/it]5it [00:43,  8.66s/it]6it [00:52,  8.65s/it]7it [01:00,  8.68s/it]8it [01:09,  8.60s/it]8it [01:09,  8.66s/it]
+sys:1: DtypeWarning: Columns (32) have mixed types. Specify dtype option on import or set low_memory=False.
+sys:1: DtypeWarning: Columns (34) have mixed types. Specify dtype option on import or set low_memory=False.
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:48: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
+/home/yza4307/.local/lib/python3.6/site-packages/numpy/lib/arraysetops.py:580: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  mask |= (ar1 == a)
+0it [00:00, ?it/s]/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:159: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:160: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:161: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['module'] = int(module)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:162: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
+1it [00:06,  6.55s/it]2it [00:13,  6.56s/it]3it [00:19,  6.54s/it]4it [00:26,  6.53s/it]5it [00:32,  6.52s/it]6it [00:39,  6.53s/it]7it [00:45,  6.51s/it]8it [00:50,  5.90s/it]8it [00:50,  6.27s/it]
+0it [00:00, ?it/s]1it [00:07,  7.47s/it]2it [00:14,  7.40s/it]3it [00:22,  7.37s/it]4it [00:29,  7.26s/it]5it [00:36,  7.21s/it]6it [00:43,  7.13s/it]7it [00:50,  7.10s/it]8it [00:54,  6.38s/it]8it [00:54,  6.85s/it]
+0it [00:00, ?it/s]1it [00:07,  7.62s/it]2it [00:15,  7.60s/it]3it [00:22,  7.52s/it]4it [00:29,  7.43s/it]5it [00:37,  7.42s/it]6it [00:44,  7.39s/it]7it [00:51,  7.43s/it]8it [00:59,  7.39s/it]8it [00:59,  7.41s/it]
+0it [00:00, ?it/s]1it [00:07,  7.83s/it]2it [00:15,  7.83s/it]3it [00:23,  7.85s/it]4it [00:31,  7.86s/it]5it [00:39,  7.92s/it]6it [00:47,  7.99s/it]7it [00:49,  6.25s/it]7it [00:49,  7.12s/it]
+0it [00:00, ?it/s]1it [00:07,  7.85s/it]2it [00:15,  7.87s/it]3it [00:23,  7.88s/it]4it [00:31,  7.85s/it]5it [00:39,  7.80s/it]6it [00:46,  7.77s/it]7it [00:54,  7.78s/it]8it [01:02,  7.74s/it]9it [01:04,  6.07s/it]9it [01:04,  7.16s/it]
+0it [00:00, ?it/s]1it [00:07,  7.32s/it]2it [00:13,  7.10s/it]3it [00:20,  6.91s/it]4it [00:26,  6.78s/it]5it [00:33,  6.76s/it]6it [00:40,  6.67s/it]7it [00:46,  6.61s/it]8it [00:51,  6.02s/it]8it [00:51,  6.39s/it]
+0it [00:00, ?it/s]1it [00:07,  7.04s/it]2it [00:14,  7.07s/it]3it [00:20,  6.96s/it]4it [00:27,  6.88s/it]5it [00:34,  6.79s/it]6it [00:40,  6.76s/it]7it [00:47,  6.69s/it]8it [00:51,  5.92s/it]8it [00:51,  6.44s/it]
+0it [00:00, ?it/s]1it [00:07,  7.11s/it]2it [00:14,  7.08s/it]3it [00:21,  7.05s/it]4it [00:27,  6.96s/it]5it [00:34,  6.91s/it]6it [00:41,  6.83s/it]7it [00:48,  6.82s/it]8it [00:54,  6.72s/it]8it [00:54,  6.82s/it]
+0it [00:00, ?it/s]1it [00:06,  6.82s/it]2it [00:13,  6.78s/it]3it [00:20,  6.75s/it]4it [00:26,  6.72s/it]5it [00:33,  6.66s/it]6it [00:39,  6.59s/it]7it [00:41,  5.21s/it]7it [00:41,  5.97s/it]
+0it [00:00, ?it/s]1it [00:07,  7.15s/it]2it [00:14,  7.15s/it]3it [00:21,  7.11s/it]4it [00:28,  7.06s/it]5it [00:35,  7.03s/it]6it [00:42,  7.02s/it]7it [00:49,  7.01s/it]8it [00:56,  6.99s/it]9it [00:58,  5.52s/it]9it [00:58,  6.47s/it]
+sys:1: DtypeWarning: Columns (32) have mixed types. Specify dtype option on import or set low_memory=False.
+sys:1: DtypeWarning: Columns (34) have mixed types. Specify dtype option on import or set low_memory=False.
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:48: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
+/home/yza4307/.local/lib/python3.6/site-packages/numpy/lib/arraysetops.py:580: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  mask |= (ar1 == a)
+0it [00:00, ?it/s]/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:159: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:160: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:161: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['module'] = int(module)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:162: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
+1it [00:06,  6.21s/it]2it [00:12,  6.10s/it]3it [00:17,  6.06s/it]4it [00:21,  5.17s/it]4it [00:21,  5.28s/it]
+0it [00:00, ?it/s]1it [00:07,  7.14s/it]2it [00:14,  7.14s/it]3it [00:21,  7.08s/it]4it [00:24,  5.97s/it]4it [00:24,  6.15s/it]
+0it [00:00, ?it/s]1it [00:07,  7.27s/it]2it [00:14,  7.28s/it]3it [00:21,  7.21s/it]4it [00:25,  6.08s/it]4it [00:25,  6.26s/it]
+0it [00:00, ?it/s]1it [00:07,  7.20s/it]2it [00:14,  7.20s/it]3it [00:21,  7.20s/it]4it [00:25,  6.09s/it]4it [00:25,  6.27s/it]
+0it [00:00, ?it/s]1it [00:07,  7.28s/it]2it [00:14,  7.22s/it]3it [00:20,  6.82s/it]3it [00:20,  6.74s/it]
+0it [00:00, ?it/s]1it [00:07,  7.95s/it]2it [00:15,  7.95s/it]3it [00:23,  7.92s/it]4it [00:25,  6.15s/it]4it [00:25,  6.44s/it]
+0it [00:00, ?it/s]1it [00:06,  6.03s/it]2it [00:11,  5.92s/it]3it [00:17,  5.93s/it]4it [00:20,  5.12s/it]4it [00:20,  5.22s/it]
+0it [00:00, ?it/s]1it [00:06,  6.76s/it]2it [00:13,  6.76s/it]3it [00:20,  6.75s/it]4it [00:23,  5.70s/it]4it [00:23,  5.87s/it]
+0it [00:00, ?it/s]1it [00:07,  7.09s/it]2it [00:13,  7.04s/it]3it [00:20,  6.99s/it]4it [00:24,  5.86s/it]4it [00:24,  6.03s/it]
+0it [00:00, ?it/s]1it [00:07,  7.01s/it]2it [00:13,  6.99s/it]3it [00:20,  6.96s/it]4it [00:24,  5.86s/it]4it [00:24,  6.04s/it]
+0it [00:00, ?it/s]1it [00:07,  7.02s/it]2it [00:14,  7.02s/it]3it [00:19,  6.58s/it]3it [00:19,  6.53s/it]
+0it [00:00, ?it/s]1it [00:07,  7.96s/it]2it [00:15,  7.91s/it]3it [00:23,  7.88s/it]4it [00:25,  6.13s/it]4it [00:25,  6.40s/it]
+sys:1: DtypeWarning: Columns (32) have mixed types. Specify dtype option on import or set low_memory=False.
+sys:1: DtypeWarning: Columns (34) have mixed types. Specify dtype option on import or set low_memory=False.
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/compute_did_brandlevel.py:62: FutureWarning: using a dict on a Series for aggregation
+is deprecated and will be removed in a future version. Use                 named aggregation instead.
+
+    >>> grouper.agg(name_1=func_1, name_2=func_2)
+
+  df_pre = df_pre.groupby(['brand_code_uc','dma_code'])['shares'].agg({'shares':'sum'}).reset_index()
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:48: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
+/home/yza4307/.local/lib/python3.6/site-packages/numpy/lib/arraysetops.py:580: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  mask |= (ar1 == a)
+0it [00:00, ?it/s]/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:159: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['dma_code'] = data_chunk['store_code_uc'].map(dma_map)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:160: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['sales'] = data_chunk['price'] * data_chunk['units'] / data_chunk['prmult']
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:161: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['module'] = int(module)
+/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/select_products_brandlevel.py:162: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  data_chunk['upc_ver_uc'] = data_chunk['upc'].map(upc_ver_map)
+1it [00:06,  6.68s/it]2it [00:13,  6.60s/it]3it [00:19,  6.46s/it]3it [00:19,  6.41s/it]
+0it [00:00, ?it/s]1it [00:06,  6.35s/it]2it [00:12,  6.35s/it]3it [00:19,  6.36s/it]4it [00:20,  4.82s/it]4it [00:20,  5.08s/it]
+0it [00:00, ?it/s]1it [00:07,  7.07s/it]2it [00:13,  6.94s/it]3it [00:20,  6.88s/it]4it [00:22,  5.52s/it]4it [00:22,  5.70s/it]
+0it [00:00, ?it/s]1it [00:06,  6.91s/it]2it [00:13,  6.91s/it]3it [00:20,  6.84s/it]4it [00:25,  6.14s/it]4it [00:25,  6.25s/it]
+0it [00:00, ?it/s]1it [00:06,  6.43s/it]2it [00:12,  6.38s/it]3it [00:18,  6.28s/it]4it [00:20,  5.01s/it]4it [00:20,  5.20s/it]
+0it [00:00, ?it/s]1it [00:06,  6.61s/it]2it [00:13,  6.56s/it]3it [00:18,  6.37s/it]3it [00:18,  6.32s/it]
+0it [00:00, ?it/s]1it [00:06,  6.37s/it]2it [00:12,  6.37s/it]3it [00:19,  6.37s/it]4it [00:20,  4.84s/it]4it [00:20,  5.10s/it]
+0it [00:00, ?it/s]1it [00:06,  6.82s/it]2it [00:13,  6.75s/it]3it [00:19,  6.70s/it]4it [00:22,  5.38s/it]4it [00:22,  5.57s/it]
+0it [00:00, ?it/s]1it [00:06,  6.70s/it]2it [00:13,  6.65s/it]3it [00:19,  6.58s/it]4it [00:24,  5.95s/it]4it [00:24,  6.03s/it]
+0it [00:00, ?it/s]1it [00:06,  6.63s/it]2it [00:13,  6.62s/it]3it [00:19,  6.57s/it]4it [00:21,  5.22s/it]4it [00:21,  5.44s/it]

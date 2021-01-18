@@ -14,7 +14,7 @@ def CV(base_folder, month_or_quarter='month'):
 
         merger_folder = base_folder + folder + '/output'
 
-        if os.path.exists(merger_folder + '/demand_results_month.txt'):
+        if os.path.exists(merger_folder + '/demand_results_month.txt') and (not (os.path.exists(merger_folder + '/tables/r_18_3.csv'))):
 
             print(folder)
             code = folder[2:]
