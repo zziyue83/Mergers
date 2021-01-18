@@ -1,0 +1,75 @@
+start
+
+import re
+import sys
+from datetime import datetime
+import pyblp
+import pickle
+import pandas as pd
+import numpy as np
+import pandasql as ps
+import os
+import tqdm 
+import auxiliary as aux
+
+df['post_merger'] = 0
+	df.loc[(df['year']>merger_year) | ((df['year']==merger_year) & (df[month_or_quarter]>=merger_month_or_quarter)),'post_merger'] = 1
+	df['merging'] = df['owner'].isin(merging_parties)
+
+# parse the info.txt file into a dictionary
+def parse_info(code):
+	file = open('../../../../All/m_' + code + '/info.txt', mode = 'r')
+	info_file = file.read()
+	file.close()
+
+	all_info_elements = re.finditer('\[(.*?):(.*?)\]', info_file, re.DOTALL)
+	info_dict = {}
+	for info in all_info_elements:
+		info_name = info.group(1).strip()
+		info_content = info.group(2).strip()
+		info_dict[info_name] = info_content
+	return info_dict
+
+# get groups and modules
+def get_groups_and_modules(full_string):
+	all_group_module = re.finditer('{(.*?),(.*?)}', full_string, re.DOTALL)
+	groups = []
+	modules = []
+	for pair in all_group_module:
+		groups.append(pair.group(1).strip())
+		modules.append(pair.group(2).strip())
+	return groups, modules
+
+# get year, month of merger
+def int_to_month(value):
+	year = np.floor((value - 1) / 12)
+	month = value - 12 * year
+	return year, month
+
+# get 2 years back and 2 years forward from the merger date
+def get_years(initial_year_string, final_year_string, pre_months = 24, post_months = 24):
+	initial_dt = datetime.strptime(initial_year_string, '%Y-%m-%d')
+	final_dt = datetime.strptime(final_year_string, '%Y-%m-%d')
+	initial_month_int = initial_dt.year * 12 + initial_dt.month
+	final_month_int = final_dt.year * 12 + final_dt.month
+	min_year, min_month = int_to_month(initial_month_int - pre_months)
+	max_year, max_month = int_to_month(final_month_int + post_months)
+
+	years = []
+	for i in range(int(min_year), int(max_year) + 1, 1):
+		this_year = i
+		if this_year >= 2006 and this_year <= 2018:
+			years.append(str(this_year))
+	return years
+
+with open('m_' + code + 'try.csv', "wb") as csvfile:
+		header = ["upc", "year", "month", "owner", "sold_in_US", "merger", "pre-merger", "post-merger", "sales_volume", "dollar_volume", "midwest", "northeast", "south", "west", "store_coverage"]
+		writer = csv.writer(csvfile, delimiter = ',', encoding = 'utf-8')
+		writer.writerow(header)
+
+		# Step 1: get the first & last yearmo needed -> aux code get_years
+		# Step 2: open Nielsen tsv & find all unique UPCS
+		# Step 3: For a UPC, loop over all yearmo's and sum the # of units
+		# 
+
+		# problem - need to aggregate at a monthly level, there will be around 3-4 entries that have the same UPC & month
