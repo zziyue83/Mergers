@@ -71,16 +71,13 @@ pivoted.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy
 
 # opening the dataframe and using only info needed
 
-
 short_data_month1 = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
 short_data_month=short_data_month1[info_needed]
-
 
 short_data_month1 = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
 short_data_month=short_data_month1[info_needed]
 
 short_data_month = (pd.read_csv('../../../All/m_' + code + '/intermediate/data_month.csv')[info_needed]
->>>>>>> 5550b0308ccf965739b2579447eafec2aea8f410
 
 # saving as new file
 short_data_month.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/pivoted_datacsv', index = False, sep = ',', encoding = 'utf-8')
