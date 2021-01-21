@@ -1,0 +1,755 @@
+
+  ___  ____  ____  ____  ____ (R)
+ /__    /   ____/   /   ____/
+___/   /   /___/   /   /___/   14.2   Copyright 1985-2015 StataCorp LP
+  Statistics/Data Analysis            StataCorp
+                                      4905 Lakeway Drive
+     MP - Parallel Edition            College Station, Texas 77845 USA
+                                      800-STATA-PC        http://www.stata.com
+                                      979-696-4600        stata@stata.com
+                                      979-696-4601 (fax)
+
+25-user 4-core Stata network perpetual license:
+       Serial number:  501406210780
+         Licensed to:  NUIT ART - Research Computing
+                       Anton Verlygo (anton@northwestern.edu)
+
+Notes:
+      1.  Stata is running in batch mode.
+      2.  Unicode is supported; see help unicode_advice.
+      3.  More than 2 billion observations are allowed; see help obs_advice.
+      4.  Maximum number of variables is set to 5000; see help set_maxvar.
+
+. do /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/cross_valid.do ../.
+> ./../All/m_2724494020_12/intermediate ../output 2015 7 
+
+. 
+. clear all
+
+. 
+. set more off
+
+. 
+. est clear
+
+. 
+. /* *args: input_path       = `1' */
+. /* *args: output_path      = `2' */
+. /* *args: year             = `3' */
+. /* *args: month            = `4' */
+. 
+. 
+. 
+. cd `1'
+/projects/b1048/gillanes/Mergers/All/m_2724494020_12/intermediate
+
+. log using `2'/cross_valid, text replace
+(note: file /projects/b1048/gillanes/Mergers/All/m_2724494020_12/intermediate/.
+> ./output/cross_valid.log not found)
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /projects/b1048/gillanes/Mergers/All/m_2724494020_12/intermediate/
+> ../output/cross_valid.log
+  log type:  text
+ opened on:  17 Jan 2021, 17:05:50
+
+. 
+. import delimited "demand_month.csv", encoding(ISO-8859-1)
+(34 vars, 742,863 obs)
+
+. 
+. /*
+> 
+> This Routine calculates predicted share for observations "out of sample"
+> and gets the mean squared error of the prediction. Repeats this through "i"
+> and delivers an excel called MSE that has the MSE of each "i" for every model
+> .
+> After that it prints tables for each model calculated on the whole sample.
+> 
+> */
+. 
+. /*Install Packages*/
+. 
+. ssc install outreg2, replace
+checking outreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ranktest, replace
+checking ranktest consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ivreg2, replace
+checking ivreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ftools, replace
+checking ftools consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install reghdfe, replace
+checking reghdfe consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install estout, replace
+checking estout consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ivreghdfe, replace
+checking ivreghdfe consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. *Sample Selection
+. di `3'
+2015
+
+. di `4'
+7
+
+. 
+. drop if year>`3'
+(254,884 observations deleted)
+
+. drop if year==`3' & month>=`4'
+(93,581 observations deleted)
+
+. drop if shares < 0.001
+(121,357 observations deleted)
+
+. 
+. *Time FE schemes
+. egen period = group(year month)
+
+. egen calendar = group(month)
+
+. 
+. *generate nesting schemes
+. gen nesting_ids_1 = 1
+
+. egen nesting_ids_2 = group(brand_code)
+
+. * mean per-unit price by brand and take the brands in the 75th percentile and
+>  above
+. bys brand_code_uc: egen mean_price = mean(prices)
+
+. egen p75 = pctile(prices), p(75)
+
+. gen nesting_ids_3 = cond(mean_price >= p75, 1, 0)
+
+. 
+. *generate rhs variables
+. forval z=1/3{
+  2.         bys market_ids nesting_ids_`z': egen tns_`z' = sum(shares)
+  3.         gen wns_`z' = shares/tns_`z'
+  4.         gen lwns_`z' = log(wns_`z')
+  5.         * rename log_within_nest_share_`z' lwns_`z'
+.         qui unique upc, by(dma_code year month nesting_ids_`z') gen(N_upc_`z'
+> )
+  6.         bysort dma_code year month nesting_ids_`z': egen N_UPC_`z' = mean(
+> N_upc_`z')
+  7. }
+
+. *
+. drop wns_* N_upc*
+
+. bys dma_code year month: egen tot_dist = total(distance)
+
+. gen dist_diesel_tot = tot_dist * demand_instruments0
+(261,762 missing values generated)
+
+. 
+. *generate a matrix to store the MSE values
+. matrix P = J(50,54,.)
+
+. 
+. *main loop across nesting schemes and random samples
+. forval z=1/3{
+  2. 
+.         forval i=1/50{
+  3. 
+.                 quietly{
+  4. 
+.                         * this divides the sample into two groups based on th
+> eir dma
+.                         generate rand_dma = .
+  5.                         bysort dma_code: replace rand_dma = cond(_n==1,rno
+> rmal(),rand_dma[1])
+  6.                         egen groups_dma = cut(rand_dma), group(2)
+  7. 
+.                         * this divides the sample into two groups based on th
+> eir period
+.                         generate rand_per = .
+  8.                         bysort year month: replace rand_per = cond(_n==1,r
+> normal(),rand_per[1])
+  9.                         egen groups_per = cut(rand_per), group(2)
+ 10. 
+.                         gen e_sample = cond(((groups_per==1 & groups_dma==1) 
+> | (groups_per==0 & groups_dma==0)), 1, 0)
+ 11. 
+.                         /*Estimate all models in the random sample*/
+.                         /*INST: demand* N_UPC_`z' */
+.                         *upc
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* N_UPC
+> _`z') if e_sample==1, abs(fe1=upc, res(err_hat)) cluster(dma_code)
+ 12.                         bys upc (fe1): replace fe1 = fe1[1]
+ 13.                         predict xb1, xb
+ 14.                         predict errores, res
+ 15.                         bys upc dma_code: egen mean_xi = mean(errores)
+ 16.                         gen delta_j = xb1 + fe1 + mean_xi - _b[lwns_`z']*l
+> wns_`z' if e_sample==0
+ 17.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+ 18.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+ 19.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+ 20.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+ 21.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+ 22.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+ 23.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+ 24.                         egen MSE_1 = mean(err_hat2)
+ 25.                         local MSE_1 = MSE_1
+ 26.                         matrix P[`i',(18*`z'-17)] = `MSE_1'
+ 27.                         drop MSE_1 xb1 fe1 num delta_j unique_nest market_
+> inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nest erro
+> res mean_xi
+ 28. 
+.                         *upc dma
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* N_UPC
+> _`z') if e_sample==1, abs(fe1=upc fe2=dma_code, res(err_hat)) cluster(dma_cod
+> e)
+ 29.                         bys upc (fe1): replace fe1 = fe1[1]
+ 30.                         bys dma_code (fe2): replace fe2 = fe2[1]
+ 31.                         predict xb2, xb //works out of sample
+ 32.                         predict errores, res
+ 33.                         bys upc dma_code: egen mean_xi = mean(errores)
+ 34.                         gen delta_j = xb2 + fe1 + fe2 + mean_xi- _b[lwns_`
+> z']*lwns_`z' if e_sample==0 // works out of sample
+ 35.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+ 36.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+ 37.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+ 38.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+ 39.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+ 40.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+ 41.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+ 42.                         egen MSE_2 = mean(err_hat2)
+ 43.                         local MSE_2 = MSE_2
+ 44.                         matrix P[`i',(18*`z'-16)] = `MSE_2'
+ 45.                         drop MSE_2 xb2 fe1 fe2 num delta_j unique_nest mar
+> ket_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nest 
+> errores mean_xi
+ 46. 
+.                         *upc dma calendar
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* N_UPC
+> _`z') if e_sample==1, abs(fe1=upc fe2=dma_code fe3=calendar, res(err_hat)) cl
+> uster(dma_code)
+ 47.                         bys upc (fe1): replace fe1 = fe1[1]
+ 48.                         bys dma_code (fe2): replace fe2 = fe2[1]
+ 49.                         bys calendar (fe3): replace fe3 = fe3[1]
+ 50.                         predict xb3, xb //works out of sample
+ 51.                         predict errores, res
+ 52.                         bys upc dma_code: egen mean_xi = mean(errores)
+ 53.                         gen delta_j = xb3 + fe1 + fe2 + fe3 + mean_xi - _b
+> [lwns_`z']*lwns_`z' if e_sample==0 // works out of sample
+ 54.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+ 55.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+ 56.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+ 57.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+ 58.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+ 59.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+ 60.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+ 61.                         egen MSE_3 = mean(err_hat2)
+ 62.                         local MSE_3 = MSE_3
+ 63.                         matrix P[`i',(18*`z'-15)] = `MSE_3'
+ 64.                         drop MSE_3 xb3 fe1 fe2 fe3 num delta_j unique_nest
+>  market_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_n
+> est errores mean_xi
+ 65. 
+.                         *upc dma period
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand_instru
+> ments0 N_UPC_`z') if e_sample==1, abs(fe1=upc fe2=dma_code fe3=period, res(er
+> r_hat)) cluster(dma_code)
+ 66.                         bys upc (fe1): replace fe1 = fe1[1]
+ 67.                         bys dma_code (fe2): replace fe2 = fe2[1]
+ 68.                         bys period (fe3): replace fe3 = fe3[1]
+ 69.                         predict xb4, xb //works out of sample
+ 70.                         predict errores, res
+ 71.                         bys upc dma_code: egen mean_xi = mean(errores)
+ 72.                         gen delta_j = xb4 + fe1 + fe2 + fe3 + mean_xi - _b
+> [lwns_`z']*lwns_`z' if e_sample==0 // works out of sample
+ 73.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+ 74.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+ 75.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+ 76.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+ 77.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+ 78.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+ 79.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+ 80.                         egen MSE_4 = mean(err_hat2)
+ 81.                         local MSE_4 = MSE_4
+ 82.                         matrix P[`i',(18*`z'-14)] = `MSE_4'
+ 83.                         drop MSE_4 xb4 fe1 fe2 fe3 num delta_j unique_nest
+>  market_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_n
+> est errores mean_xi
+ 84. 
+.                         *upc calendar
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* N_UPC
+> _`z') if e_sample==1, abs(fe1=upc fe2=calendar, res(err_hat)) cluster(dma_cod
+> e)
+ 85.                         bys upc (fe1): replace fe1 = fe1[1]
+ 86.                         bys calendar (fe2): replace fe2 = fe2[1]
+ 87.                         predict xb5, xb //works out of sample
+ 88.                         predict errores, res
+ 89.                         bys upc dma_code: egen mean_xi = mean(errores)
+ 90.                         gen delta_j = xb5 + fe1 + fe2 + mean_xi - _b[lwns_
+> `z']*lwns_`z' if e_sample==0 // works out of sample
+ 91.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+ 92.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+ 93.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+ 94.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+ 95.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+ 96.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+ 97.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+ 98.                         egen MSE_5 = mean(err_hat2)
+ 99.                         local MSE_5 = MSE_5
+100.                         matrix P[`i',(18*`z'-13)] = `MSE_5'
+101.                         drop MSE_5 xb5 fe1 fe2 num delta_j unique_nest mar
+> ket_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nest 
+> errores mean_xi
+102. 
+.                         *upc period
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand_instru
+> ments0 N_UPC_`z') if e_sample==1, abs(fe1=upc fe2=period, res(err_hat)) clust
+> er(dma_code)
+103.                         bys upc (fe1): replace fe1 = fe1[1]
+104.                         bys period (fe2): replace fe2 = fe2[1]
+105.                         predict xb6, xb //works out of sample
+106.                         predict errores, res
+107.                         bys upc dma_code: egen mean_xi = mean(errores)
+108.                         gen delta_j = xb6 + fe1 + fe2 + mean_xi - _b[lwns_
+> `z']*lwns_`z' if e_sample==0 // works out of sample
+109.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+110.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+111.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+112.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+113.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+114.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+115.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+116.                         egen MSE_6 = mean(err_hat2)
+117.                         local MSE_6 = MSE_6
+118.                         matrix P[`i',(18*`z'-12)] = `MSE_6'
+119.                         drop MSE_6 xb6 fe1 fe2 num delta_j unique_nest mar
+> ket_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nest 
+> errores mean_xi
+120. 
+.                         /*INST: dist_diesel_tot cost_shifters*/
+.                         *upc
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* dist_
+> diesel_tot) if e_sample==1, abs(fe1=upc, res(err_hat)) cluster(dma_code)
+121.                         bys upc (fe1): replace fe1 = fe1[1]
+122.                         predict xb7, xb //works out of sample
+123.                         predict errores, res
+124.                         bys upc dma_code: egen mean_xi = mean(errores)
+125.                         gen delta_j = xb7 + fe1 + mean_xi - _b[lwns_`z']*l
+> wns_`z' if e_sample==0 // works out of sample
+126.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+127.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+128.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+129.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+130.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+131.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+132.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+133.                         egen MSE_7 = mean(err_hat2)
+134.                         local MSE_7 = MSE_7
+135.                         matrix P[`i',(18*`z'-11)] = `MSE_7'
+136.                         drop MSE_7 xb7 fe1 num delta_j unique_nest market_
+> inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nest erro
+> res mean_xi
+137. 
+.                         *upc dma
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* dist_
+> diesel_tot) if e_sample==1, abs(fe1=upc fe2=dma_code, res(err_hat)) cluster(d
+> ma_code)
+138.                         bys upc (fe1): replace fe1 = fe1[1]
+139.                         bys dma_code (fe2): replace fe2 = fe2[1]
+140.                         predict xb8, xb //works out of sample
+141.                         predict errores, res
+142.                         bys upc dma_code: egen mean_xi = mean(errores)
+143.                         gen delta_j = xb8 + fe1 + fe2 + mean_xi - _b[lwns_
+> `z']*lwns_`z' if e_sample==0 // works out of sample
+144.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+145.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+146.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+147.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+148.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+149.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+150.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+151.                         egen MSE_8 = mean(err_hat2)
+152.                         local MSE_8 = MSE_8
+153.                         matrix P[`i',(18*`z'-10)] = `MSE_8'
+154.                         drop MSE_8 xb8 fe1 fe2 num delta_j unique_nest mar
+> ket_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nest 
+> mean_xi errores
+155. 
+.                         *upc dma calendar
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* dist_
+> diesel_tot) if e_sample==1, abs(fe1=upc fe2=dma_code fe3=calendar, res(err_ha
+> t)) cluster(dma_code)
+156.                         bys upc (fe1): replace fe1 = fe1[1]
+157.                         bys dma_code (fe2): replace fe2 = fe2[1]
+158.                         bys calendar (fe3): replace fe3 = fe3[1]
+159.                         predict xb9, xb //works out of sample
+160.                         predict errores, res
+161.                         bys upc dma_code: egen mean_xi = mean(errores)
+162.                         gen delta_j = xb9 + fe1 + fe2 + fe3 + mean_xi - _b
+> [lwns_`z']*lwns_`z' if e_sample==0 // works out of sample
+163.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+164.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+165.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+166.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+167.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+168.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+169.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+170.                         egen MSE_9 = mean(err_hat2)
+171.                         local MSE_9 = MSE_9
+172.                         matrix P[`i',(18*`z'-9)] = `MSE_9'
+173.                         drop MSE_9 xb9 fe1 fe2 fe3  num delta_j unique_nes
+> t market_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_
+> nest errores mean_xi
+174. 
+.                         *upc dma period
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand_instru
+> ments0 dist_diesel_tot) if e_sample==1, abs(fe1=upc fe2=dma_code fe3=period, 
+> res(err_hat)) cluster(dma_code)
+175.                         bys upc (fe1): replace fe1 = fe1[1]
+176.                         bys dma_code (fe2): replace fe2 = fe2[1]
+177.                         bys period (fe3): replace fe3 = fe3[1]
+178.                         predict xb10, xb //works out of sample
+179.                         predict errores, res
+180.                         bys upc dma_code: egen mean_xi = mean(errores)
+181.                         gen delta_j = xb10 + fe1 + fe2 + fe3 + mean_xi - _
+> b[lwns_`z']*lwns_`z' if e_sample==0 // works out of sample
+182.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+183.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+184.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+185.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+186.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+187.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+188.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+189.                         egen MSE_10 = mean(err_hat2)
+190.                         local MSE_10 = MSE_10
+191.                         matrix P[`i',(18*`z'-8)] = `MSE_10'
+192.                         drop MSE_10 xb10 fe1 fe2 fe3 num delta_j unique_ne
+> st market_inclusive_value nest_inclusive_value share_predicted err_ha* num_in
+> _nest errores mean_xi
+193. 
+.                         *upc calendar
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* dist_
+> diesel_tot) if e_sample==1, abs(fe1=upc fe2=calendar, res(err_hat)) cluster(d
+> ma_code)
+194.                         bys upc (fe1): replace fe1 = fe1[1]
+195.                         bys calendar (fe2): replace fe2 = fe2[1]
+196.                         predict xb11, xb //works out of sample
+197.                         predict errores, res
+198.                         bys upc dma_code: egen mean_xi = mean(errores)
+199.                         gen delta_j = xb11 + fe1 + fe2 + mean_xi - _b[lwns
+> _`z']*lwns_`z' if e_sample==0 // works out of sample
+200.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+201.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+202.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+203.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+204.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+205.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+206.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+207.                         egen MSE_11 = mean(err_hat2)
+208.                         local MSE_11 = MSE_11
+209.                         matrix P[`i',(18*`z'-7)] = `MSE_11'
+210.                         drop MSE_11 xb11 fe1 fe2 num delta_j unique_nest m
+> arket_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nes
+> t errores mean_xi
+211. 
+.                         *upc period
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand_instru
+> ments0 dist_diesel_tot) if e_sample==1, abs(fe1=upc fe2=period, res(err_hat))
+>  cluster(dma_code)
+212.                         bys upc (fe1): replace fe1 = fe1[1]
+213.                         bys period (fe2): replace fe2 = fe2[1]
+214.                         predict xb12, xb //works out of sample
+215.                         predict errores, res
+216.                         bys upc dma_code: egen mean_xi = mean(errores)
+217.                         gen delta_j = xb12 + fe1 + fe2 + mean_xi - _b[lwns
+> _`z']*lwns_`z' if e_sample==0 // works out of sample
+218.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+219.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+220.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+221.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+222.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+223.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+224.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+225.                         egen MSE_12 = mean(err_hat2)
+226.                         local MSE_12 = MSE_12
+227.                         matrix P[`i',(18*`z'-6)] = `MSE_12'
+228.                         drop MSE_12 xb12 fe1 fe2 num delta_j unique_nest m
+> arket_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nes
+> t errores mean_xi
+229. 
+.                         /*INST: dist_diesel_tot cost_shifters N_UPC_`z'*/
+.                         *upc
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* dist_
+> diesel_tot N_UPC_`z') if e_sample==1, abs(fe1=upc, res(err_hat)) cluster(dma_
+> code)
+230.                         bys upc (fe1): replace fe1 = fe1[1]
+231.                         predict xb13, xb //works out of sample
+232.                         predict errores, res
+233.                         bys upc dma_code: egen mean_xi = mean(errores)
+234.                         gen delta_j = xb13 + fe1 + mean_xi - _b[lwns_`z']*
+> lwns_`z' if e_sample==0 // works out of sample
+235.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+236.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+237.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+238.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+239.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+240.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+241.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+242.                         egen MSE_13 = mean(err_hat2)
+243.                         local MSE_13 = MSE_13
+244.                         matrix P[`i',(18*`z'-5)] = `MSE_13'
+245.                         drop MSE_13 xb13 fe1 num delta_j unique_nest marke
+> t_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nest er
+> rores mean_xi
+246. 
+.                         *upc dma
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* dist_
+> diesel_tot N_UPC_`z') if e_sample==1, abs(fe1=upc fe2=dma_code, res(err_hat))
+>  cluster(dma_code)
+247.                         bys upc (fe1): replace fe1 = fe1[1]
+248.                         bys dma_code (fe2): replace fe2 = fe2[1]
+249.                         predict xb14, xb //works out of sample
+250.                         predict errores, res
+251.                         bys upc dma_code: egen mean_xi = mean(errores)
+252.                         gen delta_j = xb14 + fe1 + fe2 + mean_xi - _b[lwns
+> _`z']*lwns_`z' if e_sample==0 // works out of sample
+253.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+254.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+255.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+256.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+257.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+258.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+259.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+260.                         egen MSE_14 = mean(err_hat2)
+261.                         local MSE_14 = MSE_14
+262.                         matrix P[`i',(18*`z'-4)] = `MSE_14'
+263.                         drop MSE_14 xb14 fe1 fe2 num delta_j unique_nest m
+> arket_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nes
+> t errores mean_xi
+264. 
+.                         *upc dma calendar
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* dist_
+> diesel_tot N_UPC_`z') if e_sample==1, abs(fe1=upc fe2=dma_code fe3=calendar, 
+> res(err_hat)) cluster(dma_code)
+265.                         bys upc (fe1): replace fe1 = fe1[1]
+266.                         bys dma_code (fe2): replace fe2 = fe2[1]
+267.                         bys calendar (fe3): replace fe3 = fe3[1]
+268.                         predict xb15, xb //works out of sample
+269.                         predict errores, res
+270.                         bys upc dma_code: egen mean_xi = mean(errores)
+271.                         gen delta_j = xb15 + fe1 + fe2 + fe3 + mean_xi - _
+> b[lwns_`z']*lwns_`z' if e_sample==0 // works out of sample
+272.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+273.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+274.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+275.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+276.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+277.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+278.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+279.                         egen MSE_15 = mean(err_hat2)
+280.                         local MSE_15 = MSE_15
+281.                         matrix P[`i',(18*`z'-3)] = `MSE_15'
+282.                         drop MSE_15 xb15 fe1 fe2 fe3 num delta_j unique_ne
+> st market_inclusive_value nest_inclusive_value share_predicted err_ha* num_in
+> _nest errores mean_xi
+283. 
+.                         *upc dma period
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand_instru
+> ments0 dist_diesel_tot N_UPC_`z') if e_sample==1, abs(fe1=upc fe2=dma_code fe
+> 3=period, res(err_hat)) cluster(dma_code)
+284.                         bys upc (fe1): replace fe1 = fe1[1]
+285.                         bys dma_code (fe2): replace fe2 = fe2[1]
+286.                         bys period (fe3): replace fe3 = fe3[1]
+287.                         predict xb16, xb //works out of sample
+288.                         predict errores, res
+289.                         bys upc dma_code: egen mean_xi = mean(errores)
+290.                         gen delta_j = xb16 + fe1 + fe2 + fe3 + mean_xi - _
+> b[lwns_`z']*lwns_`z' if e_sample==0 // works out of sample
+291.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+292.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+293.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+294.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+295.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+296.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+297.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+298.                         egen MSE_16 = mean(err_hat2)
+299.                         local MSE_16 = MSE_16
+300.                         matrix P[`i',(18*`z'-2)] = `MSE_16'
+301.                         drop MSE_16 xb16 fe1 fe2 fe3 num delta_j unique_ne
+> st market_inclusive_value nest_inclusive_value share_predicted err_ha* num_in
+> _nest errores mean_xi
+302. 
+.                         *upc calendar
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand* dist_
+> diesel_tot N_UPC_`z') if e_sample==1, abs(fe1=upc fe2=calendar, res(err_hat))
+>  cluster(dma_code)
+303.                         bys upc (fe1): replace fe1 = fe1[1]
+304.                         bys calendar (fe2): replace fe2 = fe2[1]
+305.                         predict xb17, xb //works out of sample
+306.                         predict errores, res
+307.                         bys upc dma_code: egen mean_xi = mean(errores)
+308.                         gen delta_j = xb17 + fe1 + fe2 + mean_xi - _b[lwns
+> _`z']*lwns_`z' if e_sample==0 // works out of sample
+309.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+310.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+311.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+312.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+313.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+314.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+315.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+316.                         egen MSE_17 = mean(err_hat2)
+317.                         local MSE_17 = MSE_17
+318.                         matrix P[`i',(18*`z'-1)] = `MSE_17'
+319.                         drop MSE_17 xb17 fe1 fe2 num delta_j unique_nest m
+> arket_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nes
+> t errores mean_xi
+320. 
+.                         *upc period
+.                         ivreghdfe logsj_logs0 (price lwns_`z' = demand_instru
+> ments0 dist_diesel_tot N_UPC_`z') if e_sample==1, abs(fe1=upc fe2=period, res
+> (err_hat)) cluster(dma_code)
+321.                         bys upc (fe1): replace fe1 = fe1[1]
+322.                         bys period (fe2): replace fe2 = fe2[1]
+323.                         predict xb18, xb //works out of sample
+324.                         predict errores, res
+325.                         bys upc dma_code: egen mean_xi = mean(errores)
+326.                         gen delta_j = xb18 + fe1 + fe2 + mean_xi - _b[lwns
+> _`z']*lwns_`z' if e_sample==0 // works out of sample
+327.                         gen num = exp(delta_j/(1-_b[lwns_`z'])) if e_sampl
+> e==0
+328.                         bysort market_ids nesting_ids_`z': egen nest_inclu
+> sive_value = total(num) if e_sample==0
+329.                         bysort market_ids nesting_ids_`z': gen num_in_nest
+>  = _n if e_sample==0
+330.                         gen unique_nest = (num_in_nest==1) if e_sample==0
+331.                         bysort market_ids: egen market_inclusive_value = s
+> um((unique_nest*nest_inclusive_value)^(1-_b[lwns_`z'])) if e_sample==0
+332.                         gen share_predicted = num / ((nest_inclusive_value
+> ^_b[lwns_`z'])*(1+market_inclusive_value)) if e_sample==0
+333.                         gen err_hat2 = (share_predicted - shares)*(share_p
+> redicted - shares)
+334.                         egen MSE_18 = mean(err_hat2)
+335.                         local MSE_18 = MSE_18
+336.                         matrix P[`i',(18*`z')] = `MSE_18'
+337.                         drop MSE_18 xb18 fe1 fe2 num delta_j unique_nest m
+> arket_inclusive_value nest_inclusive_value share_predicted err_ha* num_in_nes
+> t errores mean_xi
+338. 
+.                         *clean out for next iter
+.                         drop e_sample rand_dma rand_per groups_per groups_dma
+339.                 }
+340.         }

@@ -1,0 +1,650 @@
+
+  ___  ____  ____  ____  ____ (R)
+ /__    /   ____/   /   ____/
+___/   /   /___/   /   /___/   14.2   Copyright 1985-2015 StataCorp LP
+  Statistics/Data Analysis            StataCorp
+                                      4905 Lakeway Drive
+     MP - Parallel Edition            College Station, Texas 77845 USA
+                                      800-STATA-PC        http://www.stata.com
+                                      979-696-4600        stata@stata.com
+                                      979-696-4601 (fax)
+
+25-user 4-core Stata network perpetual license:
+       Serial number:  501406210780
+         Licensed to:  NUIT ART - Research Computing
+                       Anton Verlygo (anton@northwestern.edu)
+
+Notes:
+      1.  Stata is running in batch mode.
+      2.  Unicode is supported; see help unicode_advice.
+      3.  More than 2 billion observations are allowed; see help obs_advice.
+      4.  Maximum number of variables is set to 5000; see help set_maxvar.
+
+. do /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/DiD_interactions2.d
+> o ../../../All/m_2388515020_1/intermediate ../output/ month 2012 5 2012 2 
+
+. 
+. clear all
+
+. 
+. set more off
+
+. 
+. est clear
+
+. 
+. /* *args coming from the python script*/
+. /* *args: input_path       = `1' */
+. /* *args: output_path      = `2' */
+. /* *args: month_or_quarter = `3' */
+. /* *args: year_completed   = `4' */
+. /* *args: month_completed  = `5' */
+. /* *args: year_announced   = `6' */
+. /* *args: month_announced  = `7' */
+. 
+. 
+. cd `1'
+/projects/b1048/gillanes/Mergers/All/m_2388515020_1/intermediate
+
+. log using `2'/did_stata_int_`3', text replace
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /projects/b1048/gillanes/Mergers/All/m_2388515020_1/intermediate/.
+> ./output//did_stata_int_month.log
+  log type:  text
+ opened on:  17 Jan 2021, 17:10:52
+
+. 
+. import delimited "stata_did_int_`3'.csv", encoding(ISO-8859-1)
+(26 vars, 1,327,282 obs)
+
+. 
+. /*Install Packages*/
+. ssc install outreg2
+checking outreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ftools
+checking ftools consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install reghdfe
+checking reghdfe consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install estout
+checking estout consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. /* Fixed Effects */
+. egen entity_effects = group(upc dma_code)
+
+. egen time_effects = group(year `3')
+
+. egen time_calendar = group(`3')
+
+. 
+. /* WEIGHTING SCHEMES */
+. gen pre_vol = volume * (1 - post_merger)
+
+. gen weights_0 = 1 /*to add weights that won't change things*/
+
+. egen weights_1 = total(pre_vol), by(upc)
+
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+. egen weights_3 = total(pre_vol), by(upc dma_code)
+
+. replace weights_1 = round(weights_1)
+(660,415 real changes made)
+
+. replace weights_2 = round(weights_2)
+(1,011,086 real changes made)
+
+. replace weights_3 = round(weights_3)
+(1,258,799 real changes made)
+
+. 
+. /*Post Merger Non Merging*/
+. gen Merging = .
+(1,327,282 missing values generated)
+
+. replace Merging = 1 if merging == "True"
+(239,164 real changes made)
+
+. replace Merging = 0 if merging == "False"
+(1,088,118 real changes made)
+
+. gen Non_Merging = (1 - Merging)
+
+. gen Post_Non_Merging = post_merger * (1 - Merging)
+
+. 
+. /*Controls*/
+. replace demand_instruments0 = demand_instruments0/distance
+(1,327,258 real changes made, 3,806 to missing)
+
+. 
+. /*Quantity*/
+. gen lquant = log(volume)
+
+. 
+. rename post_merger_merging Post_Merging
+
+. 
+. /*One Year Post*/
+. gen month_date = ym(year, month)
+
+. tabstat month_date if (month==`5' & year==`4'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       628
+------------------------
+
+. matrix cutoff_c=r(StatTotal)
+
+. local cutoff_c=cutoff_c[1,1]
+
+. gen after = 0
+
+. replace after = 1 if month_date >= `cutoff_c' + 12
+(311,822 real changes made)
+
+. gen Post_Merger_1y = post_merger * after
+
+. gen Post_Merging_1y = Post_Merging * after
+
+. gen Post_Non_Merging_1y = Post_Non_Merging * after
+
+. 
+. /*Announced vs Completed*/
+. tabstat month_date if (month==`7' & year==`6'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       625
+------------------------
+
+. matrix cutoff_a=r(StatTotal)
+
+. local cutoff_a=cutoff_a[1,1]
+
+. gen between = 0
+
+. replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
+(108,263 real changes made)
+
+. gen Merging_btw = Merging * between
+
+. gen Non_Merging_btw = Non_Merging * between
+
+. 
+. /*Untreated*/
+. bys dma_code year month: gen mp_shares = sum(shares) if Merging==1
+(1,088,118 missing values generated)
+
+. bys dma_code year month: egen mp_share = max(mp_share)
+
+. drop mp_shares
+
+. gen Untreated = 1
+
+. replace Untreated = 0 if mp_share >= 0.05
+(704,546 real changes made)
+
+. gen Post_Merging_Treat = (1 - Untreated) * Merging * post_merger
+
+. gen Post_Non_Merging_Treat = (1 - Untreated) * Non_Merging * post_merger
+
+. 
+. /*Minor post*/
+. gen Major = .
+(1,327,282 missing values generated)
+
+. replace Major = 1 if major_competitor == "True"
+(343,981 real changes made)
+
+. replace Major = 0 if major_competitor == "False"
+(983,301 real changes made)
+
+. gen Post_Minor = (1 - Major) * Non_Merging * post_merger
+
+. gen Post_Major = Major * Non_Merging * post_merger
+
+. 
+. /*Coarse HHI Bins*/
+. gen HHI_bins = 0
+
+. replace HHI_bins = 1 if (post_hhi*10000>1500 & post_hhi*10000<2500)
+(266,499 real changes made)
+
+. replace HHI_bins = 2 if (post_hhi*10000>2500 & !missing(post_hhi))
+(1,060,331 real changes made)
+
+. 
+. /*Coarse DHHI Bins*/
+. gen DHHI_bins = 0
+
+. replace DHHI_bins = 1 if (dhhi*10000>100 & dhhi*10000<200)
+(738,625 real changes made)
+
+. replace DHHI_bins = 2 if (dhhi*10000>200 & !missing(dhhi))
+(69,468 real changes made)
+
+. 
+. /*Finer HHI Bins*/
+. gen HHI_binsf = 0
+
+. replace HHI_binsf = 1 if (post_hhi*10000>=375 & post_hhi*10000<750)
+(0 real changes made)
+
+. replace HHI_binsf = 2 if (post_hhi*10000>=750 & post_hhi*10000<1125)
+(0 real changes made)
+
+. replace HHI_binsf = 3 if (post_hhi*10000>=1125 & post_hhi*10000<1500)
+(0 real changes made)
+
+. replace HHI_binsf = 4 if (post_hhi*10000>=1500 & post_hhi*10000<1750)
+(0 real changes made)
+
+. replace HHI_binsf = 5 if (post_hhi*10000>=1750 & post_hhi*10000<2000)
+(34,081 real changes made)
+
+. replace HHI_binsf = 6 if (post_hhi*10000>=2000 & post_hhi*10000<2250)
+(95,246 real changes made)
+
+. replace HHI_binsf = 7 if (post_hhi*10000>=2250 & post_hhi*10000<2500)
+(137,172 real changes made)
+
+. replace HHI_binsf = 8 if (post_hhi*10000>=2500 & !missing(post_hhi))
+(1,060,331 real changes made)
+
+. 
+. /*Finer DHHI Bins*/
+. gen DHHI_binsf = 0
+
+. replace DHHI_binsf = 1 if (dhhi*10000>=25 & dhhi*10000<50)
+(32,471 real changes made)
+
+. replace DHHI_binsf = 2 if (dhhi*10000>=50 & dhhi*10000<75)
+(216,525 real changes made)
+
+. replace DHHI_binsf = 3 if (dhhi*10000>=75 & dhhi*10000<100)
+(269,741 real changes made)
+
+. replace DHHI_binsf = 4 if (dhhi*10000>=100 & dhhi*10000<125)
+(398,672 real changes made)
+
+. replace DHHI_binsf = 5 if (dhhi*10000>=125 & dhhi*10000<150)
+(168,102 real changes made)
+
+. replace DHHI_binsf = 6 if (dhhi*10000>=150 & dhhi*10000<175)
+(113,428 real changes made)
+
+. replace DHHI_binsf = 7 if (dhhi*10000>175 & dhhi*10000<200)
+(58,423 real changes made)
+
+. replace DHHI_binsf = 8 if (dhhi*10000>=200 & !missing(dhhi))
+(69,468 real changes made)
+
+. 
+. /*HHI and DHHI Bins*/
+. gen DHHI_HHI = 0
+
+. replace DHHI_HHI = 1 if (dhhi*10000>=25 & dhhi*10000<50 & post_hhi*10000>=375
+>  & post_hhi*10000<750)
+(0 real changes made)
+
+. replace DHHI_HHI = 2 if (dhhi*10000>=50 & dhhi*10000<75 & post_hhi*10000>=750
+>  & post_hhi*10000<1125)
+(0 real changes made)
+
+. replace DHHI_HHI = 3 if (dhhi*10000>=75 & dhhi*10000<100 & post_hhi*10000>=11
+> 25 & post_hhi*10000<1500)
+(0 real changes made)
+
+. replace DHHI_HHI = 4 if (dhhi*10000>=100 & dhhi*10000<125 & post_hhi*10000>=1
+> 500 & post_hhi*10000<1750)
+(0 real changes made)
+
+. replace DHHI_HHI = 5 if (dhhi*10000>=125 & dhhi*10000<150 & post_hhi*10000>=1
+> 750 & post_hhi*10000<2000)
+(0 real changes made)
+
+. replace DHHI_HHI = 6 if (dhhi*10000>=150 & dhhi*10000<175 & post_hhi*10000>=2
+> 000 & post_hhi*10000<2250)
+(13,418 real changes made)
+
+. replace DHHI_HHI = 7 if (dhhi*10000>=175 & dhhi*10000<200 & post_hhi*10000>=2
+> 250 & post_hhi*10000<2500)
+(0 real changes made)
+
+. replace DHHI_HHI = 8 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>=2
+> 500 & !missing(post_hhi))
+(40,085 real changes made)
+
+. 
+. /*Nocke & Whinston Bins*/
+. gen DHHI_HHI_NW = 0
+
+. replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & dhhi*10000<200 & post_hhi*10000
+> >=1500 & post_hhi*10000<2500)
+(169,982 real changes made)
+
+. replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000
+> >2500 & !missing(post_hhi))
+(40,085 real changes made)
+
+. 
+. /*Months After and Pre Dummies*/
+. gen Months_post = 0
+
+. forv i=1/24{
+  2.         replace Months_post = `i' if month_date >= `cutoff_c' + `i'
+  3. }
+(608,327 real changes made)
+(580,619 real changes made)
+(553,248 real changes made)
+(526,150 real changes made)
+(499,398 real changes made)
+(473,202 real changes made)
+(447,319 real changes made)
+(421,358 real changes made)
+(395,534 real changes made)
+(368,885 real changes made)
+(340,239 real changes made)
+(311,822 real changes made)
+(284,554 real changes made)
+(258,132 real changes made)
+(232,199 real changes made)
+(206,523 real changes made)
+(181,338 real changes made)
+(156,463 real changes made)
+(132,129 real changes made)
+(108,823 real changes made)
+(86,453 real changes made)
+(64,471 real changes made)
+(42,681 real changes made)
+(21,276 real changes made)
+
+. 
+. gen Months_pre = 0
+
+. forv i=1/24{
+  2.         replace Months_pre = `i' if month_date <= `cutoff_c' - `i'
+  3. }
+(691,313 real changes made)
+(663,719 real changes made)
+(637,038 real changes made)
+(610,692 real changes made)
+(584,168 real changes made)
+(556,899 real changes made)
+(529,425 real changes made)
+(501,771 real changes made)
+(474,181 real changes made)
+(447,353 real changes made)
+(420,716 real changes made)
+(394,054 real changes made)
+(366,819 real changes made)
+(338,767 real changes made)
+(311,811 real changes made)
+(286,106 real changes made)
+(262,185 real changes made)
+(238,282 real changes made)
+(214,370 real changes made)
+(190,466 real changes made)
+(166,641 real changes made)
+(142,795 real changes made)
+(118,926 real changes made)
+(95,084 real changes made)
+
+. 
+. 
+. 
+. /*Main Routine*/
+. foreach var of varlist lprice lquant {
+  2. forval x = 0/3 {
+  3. quietly{
+  4. /*Overall Price Effects*/
+. 
+. /*Overall Effects*/
+. reghdfe `var' Merging Post_Merging Post_Non_Merging trend [aw = weights_`x'],
+>  abs(entity_effects) vce(cluster dma_code)
+  5. est sto OA_`x'_`var'
+  6. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Overall") replace
+  7. 
+. reghdfe `var' Merging Post_Merging Post_Non_Merging trend [aw = weights_`x'],
+>  abs(entity_effects time_calendar) vce(cluster dma_code)
+  8. est sto OA_FE_`x'_`var'
+  9. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Overall FE") append
+ 10. 
+. /*Overall Effects Controls*/
+. reghdfe `var' Merging Post_Merging Post_Non_Merging log_hhinc_per_person_adj 
+> demand* trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 11. est sto OA_C_`x'_`var'
+ 12. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Overall C") append
+ 13. 
+. reghdfe `var' Merging Post_Merging Post_Non_Merging log_hhinc_per_person_adj 
+> demand* trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(clust
+> er dma_code)
+ 14. est sto OA_FE_C_`x'_`var'
+ 15. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Overall FE C") append
+ 16. 
+. /*Overall Effects Untreated*/
+. reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat tre
+> nd [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 17. est sto UT_`x'_`var'
+ 18. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Untreated") append
+ 19. 
+. reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat tre
+> nd [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code
+> )
+ 20. est sto UT_FE_`x'_`var'
+ 21. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Untreated FE") append
+ 22. 
+. reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat tre
+> nd [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vc
+> e(cluster dma_code)
+ 23. est sto UT_T_`x'_`var'
+ 24. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Untreated T") append
+ 25. 
+. /*Overall Effects Untreated Controls*/
+. reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat log
+> _hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects) v
+> ce(cluster dma_code)
+ 26. est sto UT_C_`x'_`var'
+ 27. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Untreated C") append
+ 28. 
+. reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat log
+> _hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects ti
+> me_calendar) vce(cluster dma_code)
+ 29. est sto UT_FE_C_`x'_`var'
+ 30. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Untreated FE C") append
+ 31. 
+. reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat log
+> _hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(dma_code##c.trend
+>  entity_effects time_calendar) vce(cluster dma_code)
+ 32. est sto UT_T_C_`x'_`var'
+ 33. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Untreated T C") append
+ 34. 
+. /*Overall Effects Major*/
+. reghdfe `var' Major Merging Post_Major Post_Merging Post_Minor trend [aw = we
+> ights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 35. est sto Maj_`x'_`var'
+ 36. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : MAjor") append
+ 37. 
+. reghdfe `var' Major Merging Post_Major Post_Merging Post_Minor trend [aw = we
+> ights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code)
+ 38. est sto Maj_FE_`x'_`var'
+ 39. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Major FE") append
+ 40. 
+. /*Overall Effects Major Controls*/
+. reghdfe `var' Major Merging Post_Major Post_Merging Post_Minor log_hhinc_per_
+> person_adj demand* trend [aw = weights_`x'], abs(entity_effects) vce(cluster 
+> dma_code)
+ 41. est sto Maj_C_`x'_`var'
+ 42. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : MAjor C") append
+ 43. 
+. reghdfe `var' Major Merging Post_Major Post_Merging Post_Minor log_hhinc_per_
+> person_adj demand* trend [aw = weights_`x'], abs(entity_effects time_calendar
+> ) vce(cluster dma_code)
+ 44. est sto Maj_FE_C_`x'_`var'
+ 45. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Major FE C") append
+ 46. 
+. 
+. /*Timing of the Effects on Prices*/
+. /*One Year After*/
+. reghdfe `var' Merging Post_Merging Post_Non_Merging Post_Non_Merging_1y Post_
+> Merging_1y trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code
+> )
+ 47. est sto After_`x'_`var'
+ 48. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : 1y") append
+ 49. 
+. reghdfe `var' Merging Post_Merging Post_Non_Merging Post_Non_Merging_1y Post_
+> Merging_1y trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cl
+> uster dma_code)
+ 50. est sto After_FE_`x'_`var'
+ 51. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : 1y FE") append
+ 52. 
+. /*Granular Timing for Post Only*/
+. reghdfe `var' Merging Post_Merging#i.Months_post Post_Non_Merging#i.Months_po
+> st i.Months_post trend [aw = weights_`x'], abs(entity_effects) vce(cluster dm
+> a_code)
+ 53. est sto Tim_`x'_`var'
+ 54. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Timing") append
+ 55. 
+. reghdfe `var' Merging Post_Merging#i.Months_post Post_Non_Merging#i.Months_po
+> st i.Months_post trend [aw = weights_`x'], abs(entity_effects time_calendar) 
+> vce(cluster dma_code)
+ 56. est sto Tim_FE_`x'_`var'
+ 57. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Timing FE") append
+ 58. 
+. /*Granular Timing Pre and Post*/
+. reghdfe `var' Merging Merging#i.Months_pre Non_Merging#i.Months_pre Post_Merg
+> ing#i.Months_post Post_Non_Merging#i.Months_post i.Months_pre i.Months_post t
+> rend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 59. est sto Timing_`x'_`var'
+ 60. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Timing Pre Post") append
+ 61. 
+. reghdfe `var' Merging Merging#i.Months_pre Non_Merging#i.Months_pre Post_Merg
+> ing#i.Months_post Post_Non_Merging#i.Months_post i.Months_pre i.Months_post t
+> rend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_co
+> de)
+ 62. est sto Timing_FE_`x'_`var'
+ 63. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Timing Pre Post FE") append
+ 64. 
+. /*Between Period*/
+. reghdfe `var' Merging Merging_btw Non_Merging_btw Post_Merging Post_Non_Mergi
+> ng trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 65. est sto Btw_`x'_`var'
+ 66. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Between") append
+ 67. 
+. reghdfe `var' Merging Merging_btw Non_Merging_btw Post_Merging Post_Non_Mergi
+> ng trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dm
+> a_code)
+ 68. est sto Btw_FE_`x'_`var'
+ 69. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : Between FE") append
+ 70. 
+. /*Interactions of Concentration Measures on Prices*/
+. 
+. /* HHI Coarse */
+. reghdfe `var' Post_Merging#i.HHI_bins Post_Non_Merging#i.HHI_bins i.HHI_bins 
+> trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 71. est sto HHI_`x'_`var'
+ 72. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : HHI") append
+ 73. 
+. * DHHI Coarse
+. reghdfe `var' Post_Merging#i.DHHI_bins Post_Non_Merging#i.DHHI_bins i.DHHI_bi
+> ns trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 74. est sto DHHI_`x'_`var'
+ 75. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : DHHI") append
+ 76. 
+. * HHI Fine
+. reghdfe `var' Post_Merging#i.HHI_binsf Post_Non_Merging#i.HHI_binsf i.HHI_bin
+> sf trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 77. est sto HHIf_`x'_`var'
+ 78. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : HHIf") append
+ 79. 
+. * DHHI Fine
+. reghdfe `var' Post_Merging#i.DHHI_binsf Post_Non_Merging#i.DHHI_binsf i.DHHI_
+> binsf trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 80. est sto DHHIf_`x'_`var'
+ 81. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : DHHIf") append
+ 82. 
+. * DHHI & HHI Bins
+. reghdfe `var' Post_Merging#i.DHHI_HHI Post_Non_Merging#i.DHHI_HHI i.DHHI_HHI 
+> trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 83. est sto DHHI_HHI_`x'_`var'
+ 84. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : DHHI_HHI") append
+ 85. 
+. * Nocke & Whinston Regions
+. reghdfe `var' Post_Merging#i.DHHI_HHI_NW Post_Non_Merging#i.DHHI_HHI_NW i.DHH
+> I_HHI_NW trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+ 86. est sto DHHI_HHI_NW_`x'_`var'
+ 87. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : NW") append
+ 88. 
+. /*Classic Diff in Diffs*/
+. /*Price Effects*/
+. reghdfe `var' Post_Merging post_merger trend [aw = weights_`x'], abs(entity_e
+> ffects) vce(cluster dma_code)
+ 89. est sto Did_`x'_`var'
+ 90. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : did") append
+ 91. 
+. reghdfe `var' Post_Merging post_merger trend [aw = weights_`x'], abs(entity_e
+> ffects time_calendar) vce(cluster dma_code)
+ 92. est sto Did_calendar_`x'_`var'
+ 93. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : did calendar") append
+ 94. 
+. reghdfe `var' Post_Merging post_merger trend [aw = weights_`x'], abs(entity_e
+> ffects time_effects) vce(cluster dma_code)
+ 95. est sto Did_period_`x'_`var'
+ 96. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : did period") append
+ 97. 
+. reghdfe `var' Post_Merging post_merger trend [aw = weights_`x'], abs(dma_code
+> ##c.trend entity_effects time_calendar) vce(cluster dma_code)
+ 98. est sto Did_t_`x'_`var'
+ 99. outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var'
+> : did trends") append
+100. 
+. est clear
+101. }
+102. }
+103. }
+ :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  
+> :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  : 
+>  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :
+>   :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  
+> :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  : 

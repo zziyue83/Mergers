@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "try_1.py", line 163, in <module>
+    df_own = append_owners(code, df_pre, month_or_quarter, add_dhhi = True)
+NameError: name 'df_pre' is not defined
