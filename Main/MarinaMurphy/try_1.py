@@ -67,7 +67,7 @@ pivoted = df.pivot_table(index = ['upc','year','month'], columns = 'dma_code', v
 # filling in for 0
 pivoted.fillna(0)
 
-pivoted.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/short_data_month.csv', index = False, sep = ',', encoding = 'utf-8')
+pivoted.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/pivoted_data.csv', index = False, sep = ',', encoding = 'utf-8')
 
 # opening the dataframe and using only info needed
 
