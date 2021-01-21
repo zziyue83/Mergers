@@ -1,18 +1,20 @@
-try_1.py
-
 import pandas as pd
 import sys
+import csv
+from datetime import datetime, timedelta
+from collections import OrderedDict
+import numpy as np
+import time
+
 # check if I need to organize directory/path for auxiliary function imports
 import auxiliary as aux
 
-code = 2823116020
-## testing info
-#df_pre = 
-#month_or_quarter
+# using test case code
+code = '2823116020_9'
 
 # using parse_info to check information
 def parse_info(code):
-	file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
+	file = open('../../../../All/m_' + code + '/info.txt', mode = 'r')
 	info_file = file.read()
 	file.close()
 
@@ -24,17 +26,57 @@ def parse_info(code):
 		info_dict[info_name] = info_content
 	return info_dict
 
+def int_to_month(value):
+    year = np.floor((value - 1) / 12)
+    month = value - 12 * year
+    return year, month
+
+# function that creates same date range as found in data_months, need to give DateAnnounced and DateCompleted
+
+def get_date_range(initial_year_string, final_year_string, pre_months = 24, post_months = 24):
+    initial_dt = datetime.strptime(initial_year_string, '%Y-%m-%d')
+    final_dt = datetime.strptime(final_year_string, '%Y-%m-%d')
+    initial_month_int = initial_dt.year * 12 + initial_dt.month
+    final_month_int = final_dt.year * 12 + final_dt.month
+    min_year, min_month = int_to_month(initial_month_int - pre_months)
+    max_year, max_month = int_to_month(final_month_int + post_months)
+    
+    string_init = str(int(min_year)) + "-" + str(int(min_month))
+    string_final = str(int(max_year)) + "-" + str(int(max_month))
+    years_range = pd.date_range(string_init, string_final, freq='MS').strftime("%Y").tolist()
+    months_range = pd.date_range(string_init, string_final, freq='MS').strftime("%m").tolist()
+    
+    date_range = pd.DataFrame(zip(years_range, months_range))
+
+    return date_range
+
+
 # headers from data_month that will be used
 info_needed = ['upc','dma_code', 'year', 'month', 'sales', 'volume']
 
+# must have 4 ../../../.. because i'm inside a folder inside Main
+df = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
+
+# pivoting the dmas and salving sales and volume for each upc year month
+pivoted = df.pivot_table(index = ['upc','year','month'], columns = 'dma_code', values = ['volume','sales']).reset_index()
+
+# filling in for 0
+pivoted.fillna(0)
+
+pivoted.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/short_data_month.csv', index = False, sep = ',', encoding = 'utf-8')
+
 # opening the dataframe and using only info needed
+
+short_data_month1 = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
+short_data_month=short_data_month1[info_needed]
+
 short_data_month = (pd.read_csv('../../../All/m_' + code + '/intermediate/data_month.csv')[info_needed]
 
 # saving as new file
 short_data_month.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/short_data_month.csv', index = False, sep = ',', encoding = 'utf-8')
 
-log_out = open('projects/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/try1.log', 'w')
-log_err = open('projects/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/try1.log', 'w')
+log_out = open('try_1.log', 'w')
+log_err = open('try_1.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
