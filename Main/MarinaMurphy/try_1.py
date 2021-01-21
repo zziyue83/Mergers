@@ -83,7 +83,7 @@ short_data_month = (pd.read_csv('../../../All/m_' + code + '/intermediate/data_m
 >>>>>>> 5550b0308ccf965739b2579447eafec2aea8f410
 
 # saving as new file
-short_data_month.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/short_data_month.csv', index = False, sep = ',', encoding = 'utf-8')
+short_data_month.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/pivoted_datacsv', index = False, sep = ',', encoding = 'utf-8')
 
 log_out = open('try_1.log', 'w')
 log_err = open('try_1.err', 'w')
