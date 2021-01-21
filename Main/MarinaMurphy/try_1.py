@@ -67,7 +67,7 @@ pivoted = df.pivot_table(index = ['upc','year','month'], columns = 'dma_code', v
 # filling in for 0
 pivoted.fillna(0)
 
-pivoted.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/pivoted_data.csv', index = False, sep = ',', encoding = 'utf-8')
+pivoted.to_csv('pivoted_data.csv', index = False, sep = ',', encoding = 'utf-8')
 
 # opening the dataframe and using only info needed
 
@@ -80,7 +80,7 @@ short_data_month=short_data_month1[info_needed]
 short_data_month = (pd.read_csv('../../../All/m_' + code + '/intermediate/data_month.csv')[info_needed]
 
 # saving as new file
-short_data_month.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/pivoted_datacsv', index = False, sep = ',', encoding = 'utf-8')
+short_data_month.to_csv('short_data_month.csv', index = False, sep = ',', encoding = 'utf-8')
 
 log_out = open('try_1.log', 'w')
 log_err = open('try_1.err', 'w')
