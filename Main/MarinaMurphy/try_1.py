@@ -77,7 +77,7 @@ short_data_month=short_data_month1[info_needed]
 short_data_month1 = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
 short_data_month=short_data_month1[info_needed]
 
-short_data_month = (pd.read_csv('../../../All/m_' + code + '/intermediate/data_month.csv')[info_needed]
+short_data_month = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv')[info_needed]
 
 # saving as new file
 short_data_month.to_csv('short_data_month.csv', index = False, sep = ',', encoding = 'utf-8')
