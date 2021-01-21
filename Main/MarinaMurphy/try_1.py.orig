@@ -9,12 +9,15 @@ import time
 # check if I need to organize directory/path for auxiliary function imports
 import auxiliary as aux
 
+<<<<<<< HEAD
 # using test case code
 code = '2823116020_9'
-
+=======
+code = '2823116020_9'
 ## testing info
 #df_pre = 
 #month_or_quarter
+>>>>>>> da0f4e87655e0c2eb2428671b56605c672af265b
 
 # using parse_info to check information
 def parse_info(code):
@@ -70,15 +73,17 @@ pivoted.fillna(0)
 pivoted.to_csv('/projects/b1048/gillanes/Mergers/Codes/Mergers/Main/MarinaMurphy/short_data_month.csv', index = False, sep = ',', encoding = 'utf-8')
 
 # opening the dataframe and using only info needed
-
-
-short_data_month1 = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
-short_data_month=short_data_month1[info_needed]
-
+<<<<<<< HEAD
 
 short_data_month1 = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
 short_data_month=short_data_month1[info_needed]
 
+=======
+<<<<<<< HEAD
+short_data_month1 = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
+short_data_month=short_data_month1[info_needed]
+=======
+>>>>>>> da0f4e87655e0c2eb2428671b56605c672af265b
 short_data_month = (pd.read_csv('../../../All/m_' + code + '/intermediate/data_month.csv')[info_needed]
 >>>>>>> 5550b0308ccf965739b2579447eafec2aea8f410
 
