@@ -69,7 +69,7 @@ pivoted.fillna(0)
 
 pivoted.to_csv('pivoted_data.csv', index = False, sep = ',', encoding = 'utf-8')
 
-owners = append_owners(code, df, 'month')
+owners = aux.append_owners(code, df, 'month')
 owners.to_csv('owners_try.csv', index = False, sep = ',', encoding = 'utf-8')
 
 # opening the dataframe and using only info needed
