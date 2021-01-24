@@ -1,0 +1,2823 @@
+
+  ___  ____  ____  ____  ____ (R)
+ /__    /   ____/   /   ____/
+___/   /   /___/   /   /___/   14.2   Copyright 1985-2015 StataCorp LP
+  Statistics/Data Analysis            StataCorp
+                                      4905 Lakeway Drive
+     MP - Parallel Edition            College Station, Texas 77845 USA
+                                      800-STATA-PC        http://www.stata.com
+                                      979-696-4600        stata@stata.com
+                                      979-696-4601 (fax)
+
+25-user 4-core Stata network perpetual license:
+       Serial number:  501406210780
+         Licensed to:  NUIT ART - Research Computing
+                       Anton Verlygo (anton@northwestern.edu)
+
+Notes:
+      1.  Stata is running in batch mode.
+      2.  Unicode is supported; see help unicode_advice.
+      3.  More than 2 billion observations are allowed; see help obs_advice.
+      4.  Maximum number of variables is set to 5000; see help set_maxvar.
+
+. do /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/stata_parallel.do .
+> ./../../All/m_2962238020_1/intermediate ../output/ month 2016 7 2016 6 
+
+. 
+. clear all
+
+. 
+. set more off
+
+. 
+. est clear
+
+. 
+. /* *args coming from the python script*/
+. /* *args: input_path       = `1' */
+. /* *args: output_path      = `2' */
+. /* *args: month_or_quarter = `3' */
+. /* *args: year_completed   = `4' */
+. /* *args: month_completed  = `5' */
+. /* *args: year_announced   = `6' */
+. /* *args: month_announced  = `7' */
+. 
+. 
+. cd `1'
+/projects/b1048/gillanes/Mergers/All/m_2962238020_1/intermediate
+
+. log using `2'/did_stata_int_`3', text replace
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /projects/b1048/gillanes/Mergers/All/m_2962238020_1/intermediate/.
+> ./output//did_stata_int_month.log
+  log type:  text
+ opened on:  21 Jan 2021, 10:31:56
+
+. 
+. import delimited "stata_did_int_`3'.csv", encoding(ISO-8859-1)
+(26 vars, 1,975,473 obs)
+
+. 
+. /*Install Packages*/
+. ssc install outreg2
+checking outreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ftools
+checking ftools consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install reghdfe
+checking reghdfe consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install estout
+checking estout consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. /* Fixed Effects */
+. egen entity_effects = group(upc dma_code)
+
+. egen time_effects = group(year `3')
+
+. egen time_calendar = group(`3')
+
+. 
+. /* WEIGHTING SCHEMES */
+. gen pre_vol = volume * (1 - post_merger)
+
+. gen weights_0 = 1 /*to add weights that won't change things*/
+
+. egen weights_1 = total(pre_vol), by(upc)
+
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+. egen weights_3 = total(pre_vol), by(upc dma_code)
+
+. replace weights_1 = round(weights_1)
+(83,993 real changes made)
+
+. replace weights_2 = round(weights_2)
+(566,056 real changes made)
+
+. replace weights_3 = round(weights_3)
+(1,906,115 real changes made)
+
+. 
+. /*Post Merger Non Merging*/
+. gen Merging = .
+(1,975,473 missing values generated)
+
+. replace Merging = 1 if merging == "True"
+(785,590 real changes made)
+
+. replace Merging = 0 if merging == "False"
+(1,189,883 real changes made)
+
+. gen Non_Merging = (1 - Merging)
+
+. gen Post_Non_Merging = post_merger * (1 - Merging)
+
+. 
+. /*Controls*/
+. replace demand_instruments0 = demand_instruments0/distance
+(1,975,473 real changes made)
+
+. 
+. /*Quantity*/
+. gen lquant = log(volume)
+
+. 
+. rename post_merger_merging Post_Merging
+
+. 
+. /*One Year Post*/
+. gen month_date = ym(year, month)
+
+. tabstat month_date if (month==`5' & year==`4'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       681
+------------------------
+(27 vars, 2,277,522 obs)
+
+. 
+. /*Install Packages*/
+. ssc install outreg2
+
+. matrix cutoff_c=r(StatTotal)
+
+. local cutoff_c=cutoff_c[1,1]
+
+. gen after = 0
+
+. replace after = 1 if month_date >= `cutoff_c' + 12
+(452,248 real changes made)
+
+. gen Post_Merger_1y = post_merger * after
+
+checking outreg2 consistency and verifying not already installed...
+. gen Post_Merging_1y = Post_Merging * after
+
+. gen Post_Non_Merging_1y = Post_Non_Merging * after
+
+. 
+. /*Announced vs Completed*/
+. tabstat month_date if (month==`7' & year==`6'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       670
+------------------------
+
+. matrix cutoff_a=r(StatTotal)
+
+. local cutoff_a=cutoff_a[1,1]
+
+. gen between = 0
+
+all files already exist and are up to date.
+
+. ssc install ftools
+. replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
+(396,388 real changes made)
+
+. gen Merging_btw = Merging * between
+
+checking ftools consistency and verifying not already installed...
+. gen Non_Merging_btw = Non_Merging * between
+
+. 
+. /*Untreated*/
+. bys dma_code: gen mp_shares = sum(shares) if Merging==1
+(1,189,883 missing values generated)
+
+all files already exist and are up to date.
+
+. ssc install reghdfe
+checking reghdfe consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install estout
+checking estout consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. /* Fixed Effects */
+. bys dma_code: egen mp_share = max(mp_share)
+
+. drop mp_shares
+
+. foreach x in 2 5 10 {
+  2. gen Untreated_`x' = 1
+  3. replace Untreated_`x' = 0 if mp_share >= `x'/100
+  4. gen Post_Merging_Treat_`x' = (1 - Untreated_`x') * Merging * post_merger
+  5. gen Post_Non_Merging_Treat_`x' = (1 - Untreated_`x') * Non_Merging * post_
+> merger
+  6. }
+(1,975,473 real changes made)
+(1,975,473 real changes made)
+(1,975,473 real changes made)
+
+. 
+. /*Minor post*/
+. gen Major = .
+(1,975,473 missing values generated)
+
+. replace Major = 1 if major_competitor == "True"
+(697,892 real changes made)
+
+. replace Major = 0 if major_competitor == "False"
+(1,277,581 real changes made)
+
+. gen Post_Minor = (1 - Major) * Non_Merging * post_merger
+
+. gen Post_Major = Major * Non_Merging * post_merger
+
+. 
+. /*Coarse HHI Bins*/
+. gen HHI_bins = 0
+
+. replace HHI_bins = 1 if (post_hhi*10000>1500 & post_hhi*10000<2500)
+(34,639 real changes made)
+
+. replace HHI_bins = 2 if (post_hhi*10000>2500 & !missing(post_hhi))
+(1,939,586 real changes made)
+
+. 
+. /*Coarse DHHI Bins*/
+. gen DHHI_bins = 0
+
+. replace DHHI_bins = 1 if (dhhi*10000>100 & dhhi*10000<200)
+(94,425 real changes made)
+
+. replace DHHI_bins = 2 if (dhhi*10000>200 & !missing(dhhi))
+(1,879,800 real changes made)
+
+. 
+. /*Finer HHI Bins*/
+. gen HHI_binsf = 0
+
+. replace HHI_binsf = 1 if (post_hhi*10000>=375 & post_hhi*10000<750)
+(0 real changes made)
+
+. replace HHI_binsf = 2 if (post_hhi*10000>=750 & post_hhi*10000<1125)
+(0 real changes made)
+
+. replace HHI_binsf = 3 if (post_hhi*10000>=1125 & post_hhi*10000<1500)
+(0 real changes made)
+
+. replace HHI_binsf = 4 if (post_hhi*10000>=1500 & post_hhi*10000<1750)
+(0 real changes made)
+
+. replace HHI_binsf = 5 if (post_hhi*10000>=1750 & post_hhi*10000<2000)
+(0 real changes made)
+
+. replace HHI_binsf = 6 if (post_hhi*10000>=2000 & post_hhi*10000<2250)
+(4,836 real changes made)
+
+. replace HHI_binsf = 7 if (post_hhi*10000>=2250 & post_hhi*10000<2500)
+(29,803 real changes made)
+
+. replace HHI_binsf = 8 if (post_hhi*10000>=2500 & !missing(post_hhi))
+(1,939,586 real changes made)
+
+. 
+. /*Finer DHHI Bins*/
+. egen entity_effects = group(upc dma_code)
+
+. gen DHHI_binsf = 0
+
+. replace DHHI_binsf = 1 if (dhhi*10000>=25 & dhhi*10000<50)
+(0 real changes made)
+
+. replace DHHI_binsf = 2 if (dhhi*10000>=50 & dhhi*10000<75)
+(0 real changes made)
+
+. replace DHHI_binsf = 3 if (dhhi*10000>=75 & dhhi*10000<100)
+(0 real changes made)
+
+. replace DHHI_binsf = 4 if (dhhi*10000>=100 & dhhi*10000<125)
+(0 real changes made)
+
+. replace DHHI_binsf = 5 if (dhhi*10000>=125 & dhhi*10000<150)
+(43,258 real changes made)
+
+. replace DHHI_binsf = 6 if (dhhi*10000>=150 & dhhi*10000<175)
+(6,437 real changes made)
+
+. replace DHHI_binsf = 7 if (dhhi*10000>175 & dhhi*10000<200)
+(44,730 real changes made)
+
+. replace DHHI_binsf = 8 if (dhhi*10000>=200 & !missing(dhhi))
+(1,879,800 real changes made)
+
+. 
+. /*HHI and DHHI Bins*/
+. gen DHHI_HHI = 0
+
+. replace DHHI_HHI = 1 if (dhhi*10000>=25 & post_hhi*10000>=375)
+(1,975,473 real changes made)
+
+. replace DHHI_HHI = 2 if (dhhi*10000>=50 & post_hhi*10000>=750)
+(1,975,473 real changes made)
+
+. replace DHHI_HHI = 3 if (dhhi*10000>=75 & post_hhi*10000>=1125)
+(1,975,473 real changes made)
+
+. replace DHHI_HHI = 4 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(1,975,473 real changes made)
+
+. replace DHHI_HHI = 5 if (dhhi*10000>=125 & post_hhi*10000>=1750)
+(1,975,473 real changes made)
+
+. replace DHHI_HHI = 6 if (dhhi*10000>=150 & post_hhi*10000>=2000)
+(1,932,215 real changes made)
+
+. replace DHHI_HHI = 7 if (dhhi*10000>=175 & post_hhi*10000>=2250)
+(1,920,942 real changes made)
+
+. replace DHHI_HHI = 8 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>=2
+> 500 & !missing(post_hhi))
+(1,845,161 real changes made)
+
+. 
+. /*Nocke & Whinston Bins*/
+. gen DHHI_HHI_NW = 0
+
+. replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(1,975,473 real changes made)
+
+. replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000
+> >2500 & !missing(post_hhi))
+(1,845,161 real changes made)
+
+. 
+. /*Months After and Pre Dummies*/
+. gen Months_post = 0
+
+. forv i=1/24{
+  2.         replace Months_post = `i' if month_date >= `cutoff_c' + `i'
+. egen time_effects = group(year `3')
+
+  3. }
+(803,146 real changes made)
+(770,030 real changes made)
+(736,840 real changes made)
+(705,756 real changes made)
+(674,533 real changes made)
+(643,192 real changes made)
+(611,424 real changes made)
+(579,690 real changes made)
+(547,883 real changes made)
+(515,903 real changes made)
+(484,145 real changes made)
+(452,248 real changes made)
+(420,527 real changes made)
+(388,782 real changes made)
+(356,753 real changes made)
+(321,147 real changes made)
+(285,453 real changes made)
+(249,552 real changes made)
+(213,787 real changes made)
+(177,955 real changes made)
+(141,989 real changes made)
+(106,277 real changes made)
+(70,767 real changes made)
+(35,250 real changes made)
+
+. 
+. gen Months_pre = 0
+
+. forv i=1/24{
+  2.         replace Months_pre = `i' if month_date <= `cutoff_c' - `i'
+. egen time_calendar = group(`3')
+
+. 
+. /* WEIGHTING SCHEMES */
+  3. }
+(1,139,135 real changes made)
+(1,106,081 real changes made)
+(1,073,024 real changes made)
+(1,039,854 real changes made)
+(1,006,788 real changes made)
+(973,807 real changes made)
+(940,798 real changes made)
+(907,973 real changes made)
+(875,164 real changes made)
+(842,214 real changes made)
+(809,066 real changes made)
+(775,939 real changes made)
+(742,668 real changes made)
+(709,762 real changes made)
+(676,826 real changes made)
+(643,958 real changes made)
+(611,155 real changes made)
+. gen pre_vol = volume * (1 - post_merger)
+
+. gen weights_0 = 1 /*to add weights that won't change things*/
+
+(578,316 real changes made)
+(545,675 real changes made)
+(513,152 real changes made)
+(480,752 real changes made)
+(448,288 real changes made)
+(416,107 real changes made)
+(383,800 real changes made)
+
+. 
+. 
+. 
+. 
+. 
+. 
+. exit, STATA clear
+. egen weights_1 = total(pre_vol), by(upc)
+
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+. egen weights_3 = total(pre_vol), by(upc dma_code)
+
+. replace weights_1 = round(weights_1)
+(1,651,967 real changes made)
+
+. replace weights_2 = round(weights_2)
+(1,664,810 real changes made)
+
+. replace weights_3 = round(weights_3)
+(2,184,424 real changes made)
+
+. 
+. /*Post Merger Non Merging*/
+. gen Merging = .
+(2,277,522 missing values generated)
+
+(25 vars, 2,188,084 obs)
+
+. 
+. /*Install Packages*/
+. ssc install outreg2
+. replace Merging = 1 if merging == "True"
+(235,675 real changes made)
+
+. replace Merging = 0 if merging == "False"
+(2,041,847 real changes made)
+
+checking outreg2 consistency and verifying not already installed...
+. gen Non_Merging = (1 - Merging)
+
+. gen Post_Non_Merging = post_merger * (1 - Merging)
+
+. 
+. /*Controls*/
+. replace demand_instruments0 = demand_instruments0/distance
+(2,277,371 real changes made, 940 to missing)
+
+. 
+. /*Quantity*/
+. gen lquant = log(volume)
+
+. 
+. rename post_merger_merging Post_Merging
+
+. 
+. /*One Year Post*/
+. gen month_date = ym(year, month)
+
+all files already exist and are up to date.
+
+. ssc install ftools
+. tabstat month_date if (month==`5' & year==`4'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       673
+------------------------
+
+. matrix cutoff_c=r(StatTotal)
+
+. local cutoff_c=cutoff_c[1,1]
+
+. gen after = 0
+
+checking ftools consistency and verifying not already installed...
+. replace after = 1 if month_date >= `cutoff_c' + 12
+(549,282 real changes made)
+
+. gen Post_Merger_1y = post_merger * after
+
+. gen Post_Merging_1y = Post_Merging * after
+
+. gen Post_Non_Merging_1y = Post_Non_Merging * after
+
+. 
+. /*Announced vs Completed*/
+. tabstat month_date if (month==`7' & year==`6'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       669
+------------------------
+
+. matrix cutoff_a=r(StatTotal)
+
+. local cutoff_a=cutoff_a[1,1]
+
+. gen between = 0
+
+. replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
+(222,631 real changes made)
+
+. gen Merging_btw = Merging * between
+
+. gen Non_Merging_btw = Non_Merging * between
+
+. 
+. /*Untreated*/
+(25 vars, 2,029,110 obs)
+
+. 
+. /*Install Packages*/
+. ssc install outreg2
+all files already exist and are up to date.
+
+. ssc install reghdfe
+checking outreg2 consistency and verifying not already installed...
+checking reghdfe consistency and verifying not already installed...
+. bys dma_code: gen mp_shares = sum(shares) if Merging==1
+(2,041,847 missing values generated)
+
+all files already exist and are up to date.
+
+. ssc install ftools
+checking ftools consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install estout
+checking estout consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. /* Fixed Effects */
+all files already exist and are up to date.
+
+. ssc install reghdfe
+checking reghdfe consistency and verifying not already installed...
+. bys dma_code: egen mp_share = max(mp_share)
+(116 missing values generated)
+all files already exist and are up to date.
+
+. ssc install estout
+. egen entity_effects = group(upc dma_code)
+
+checking estout consistency and verifying not already installed...
+
+. drop mp_shares
+
+. foreach x in 2 5 10 {
+  2. gen Untreated_`x' = 1
+  3. replace Untreated_`x' = 0 if mp_share >= `x'/100
+  4. gen Post_Merging_Treat_`x' = (1 - Untreated_`x') * Merging * post_merger
+  5. gen Post_Non_Merging_Treat_`x' = (1 - Untreated_`x') * Non_Merging * post_
+> merger
+all files already exist and are up to date.
+
+. 
+. /* Fixed Effects */
+  6. }
+(2,277,454 real changes made)
+(2,277,454 real changes made)
+(2,244,974 real changes made)
+
+. 
+. /*Minor post*/
+. gen Major = .
+(2,277,522 missing values generated)
+
+. replace Major = 1 if major_competitor == "True"
+(698,796 real changes made)
+
+. replace Major = 0 if major_competitor == "False"
+(1,578,726 real changes made)
+
+. gen Post_Minor = (1 - Major) * Non_Merging * post_merger
+
+. gen Post_Major = Major * Non_Merging * post_merger
+
+. 
+. /*Coarse HHI Bins*/
+. gen HHI_bins = 0
+
+. replace HHI_bins = 1 if (post_hhi*10000>1500 & post_hhi*10000<2500)
+(587,684 real changes made)
+
+. egen time_effects = group(year `3')
+
+. replace HHI_bins = 2 if (post_hhi*10000>2500 & !missing(post_hhi))
+(1,689,654 real changes made)
+
+. 
+. /*Coarse DHHI Bins*/
+. gen DHHI_bins = 0
+
+. replace DHHI_bins = 1 if (dhhi*10000>100 & dhhi*10000<200)
+(0 real changes made)
+
+. replace DHHI_bins = 2 if (dhhi*10000>200 & !missing(dhhi))
+(0 real changes made)
+
+. 
+. /*Finer HHI Bins*/
+. gen HHI_binsf = 0
+
+. replace HHI_binsf = 1 if (post_hhi*10000>=375 & post_hhi*10000<750)
+(0 real changes made)
+
+. replace HHI_binsf = 2 if (post_hhi*10000>=750 & post_hhi*10000<1125)
+(0 real changes made)
+
+. replace HHI_binsf = 3 if (post_hhi*10000>=1125 & post_hhi*10000<1500)
+(0 real changes made)
+
+. replace HHI_binsf = 4 if (post_hhi*10000>=1500 & post_hhi*10000<1750)
+(0 real changes made)
+
+. replace HHI_binsf = 5 if (post_hhi*10000>=1750 & post_hhi*10000<2000)
+(120,566 real changes made)
+
+. replace HHI_binsf = 6 if (post_hhi*10000>=2000 & post_hhi*10000<2250)
+(237,649 real changes made)
+
+. replace HHI_binsf = 7 if (post_hhi*10000>=2250 & post_hhi*10000<2500)
+(229,469 real changes made)
+
+. replace HHI_binsf = 8 if (post_hhi*10000>=2500 & !missing(post_hhi))
+(1,689,654 real changes made)
+
+. 
+. /*Finer DHHI Bins*/
+. egen entity_effects = group(upc dma_code)
+
+. gen DHHI_binsf = 0
+
+. replace DHHI_binsf = 1 if (dhhi*10000>=25 & dhhi*10000<50)
+(0 real changes made)
+
+. replace DHHI_binsf = 2 if (dhhi*10000>=50 & dhhi*10000<75)
+(0 real changes made)
+
+. replace DHHI_binsf = 3 if (dhhi*10000>=75 & dhhi*10000<100)
+(0 real changes made)
+
+. replace DHHI_binsf = 4 if (dhhi*10000>=100 & dhhi*10000<125)
+(0 real changes made)
+
+. replace DHHI_binsf = 5 if (dhhi*10000>=125 & dhhi*10000<150)
+(0 real changes made)
+
+. replace DHHI_binsf = 6 if (dhhi*10000>=150 & dhhi*10000<175)
+(0 real changes made)
+
+. replace DHHI_binsf = 7 if (dhhi*10000>175 & dhhi*10000<200)
+(0 real changes made)
+
+. egen time_calendar = group(`3')
+
+. 
+. /* WEIGHTING SCHEMES */
+. replace DHHI_binsf = 8 if (dhhi*10000>=200 & !missing(dhhi))
+(0 real changes made)
+
+. 
+. /*HHI and DHHI Bins*/
+. gen pre_vol = volume * (1 - post_merger)
+
+. gen weights_0 = 1 /*to add weights that won't change things*/
+
+. gen DHHI_HHI = 0
+
+. replace DHHI_HHI = 1 if (dhhi*10000>=25 & post_hhi*10000>=375)
+(184 real changes made)
+
+. replace DHHI_HHI = 2 if (dhhi*10000>=50 & post_hhi*10000>=750)
+(184 real changes made)
+
+. replace DHHI_HHI = 3 if (dhhi*10000>=75 & post_hhi*10000>=1125)
+(184 real changes made)
+
+. replace DHHI_HHI = 4 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(184 real changes made)
+
+. replace DHHI_HHI = 5 if (dhhi*10000>=125 & post_hhi*10000>=1750)
+(184 real changes made)
+
+. replace DHHI_HHI = 6 if (dhhi*10000>=150 & post_hhi*10000>=2000)
+(184 real changes made)
+
+. replace DHHI_HHI = 7 if (dhhi*10000>=175 & post_hhi*10000>=2250)
+(184 real changes made)
+
+. replace DHHI_HHI = 8 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>=2
+> 500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Nocke & Whinston Bins*/
+. egen time_effects = group(year `3')
+
+. gen DHHI_HHI_NW = 0
+
+. replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(184 real changes made)
+
+. replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000
+> >2500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Months After and Pre Dummies*/
+. gen Months_post = 0
+
+. forv i=1/24{
+  2.         replace Months_post = `i' if month_date >= `cutoff_c' + `i'
+  3. }
+(1,046,765 real changes made)
+(999,580 real changes made)
+(952,662 real changes made)
+(907,172 real changes made)
+(862,112 real changes made)
+(817,221 real changes made)
+(772,412 real changes made)
+(727,653 real changes made)
+(682,663 real changes made)
+(637,546 real changes made)
+(592,077 real changes made)
+(549,282 real changes made)
+(505,643 real changes made)
+(461,741 real changes made)
+(418,107 real changes made)
+(375,662 real changes made)
+(333,592 real changes made)
+(291,437 real changes made). egen weights_1 = total(pre_vol), by(upc)
+
+
+(249,620 real changes made)
+(208,069 real changes made)
+(167,100 real changes made)
+(126,575 real changes made)
+(86,347 real changes made)
+(42,901 real changes made)
+
+. 
+. gen Months_pre = 0
+
+. forv i=1/24{
+  2.         replace Months_pre = `i' if month_date <= `cutoff_c' - `i'
+. egen time_calendar = group(`3')
+
+. 
+. /* WEIGHTING SCHEMES */
+. gen pre_vol = volume * (1 - post_merger)
+
+. gen weights_0 = 1 /*to add weights that won't change things*/
+
+  3. }
+(1,183,715 real changes made)
+(1,138,429 real changes made)
+(1,094,895 real changes made)
+(1,051,471 real changes made)
+(1,008,126 real changes made)
+(965,140 real changes made)
+(922,031 real changes made)
+(878,938 real changes made)
+(835,336 real changes made)
+(790,136 real changes made)
+(743,045 real changes made)
+(695,264 real changes made)
+(648,848 real changes made)
+(606,991 real changes made)
+(565,426 real changes made)
+(523,907 real changes made)
+(482,585 real changes made)
+(441,340 real changes made)
+(399,955 real changes made)
+(358,408 real changes made)
+(316,580 real changes made)
+(275,052 real changes made)
+(234,038 real changes made)
+(193,590 real changes made)
+
+. 
+. 
+. 
+. 
+. 
+. 
+. exit, STATA clear
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+. egen weights_1 = total(pre_vol), by(upc)
+
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+. egen weights_3 = total(pre_vol), by(upc dma_code)
+
+. replace weights_1 = round(weights_1)
+(1,851,500 real changes made)
+
+. replace weights_2 = round(weights_2)
+(1,743,002 real changes made)
+
+. replace weights_3 = round(weights_3)
+(2,121,801 real changes made)
+
+. 
+. /*Post Merger Non Merging*/
+. gen Merging = .
+(2,188,084 missing values generated)
+
+. replace Merging = 1 if merging == "True"
+(254,583 real changes made)
+
+. replace Merging = 0 if merging == "False"
+(1,933,501 real changes made)
+
+. gen Non_Merging = (1 - Merging)
+
+. gen Post_Non_Merging = post_merger * (1 - Merging)
+
+. 
+. /*Controls*/
+. replace demand_instruments0 = demand_instruments0/distance
+(2,188,084 real changes made, 5,702 to missing)
+
+. 
+. /*Quantity*/
+. gen lquant = log(volume)
+
+. 
+. rename post_merger_merging Post_Merging
+
+. 
+. /*One Year Post*/
+. gen month_date = ym(year, month)
+
+. tabstat month_date if (month==`5' & year==`4'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       678
+------------------------
+
+. matrix cutoff_c=r(StatTotal)
+
+. local cutoff_c=cutoff_c[1,1]
+
+. gen after = 0
+
+. replace after = 1 if month_date >= `cutoff_c' + 12
+(555,352 real changes made)
+
+. gen Post_Merger_1y = post_merger * after
+
+. gen Post_Merging_1y = Post_Merging * after
+
+. gen Post_Non_Merging_1y = Post_Non_Merging * after
+
+. 
+. /*Announced vs Completed*/
+. tabstat month_date if (month==`7' & year==`6'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       676
+------------------------
+
+. matrix cutoff_a=r(StatTotal)
+
+. local cutoff_a=cutoff_a[1,1]
+
+. gen between = 0
+
+. replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
+(137,326 real changes made)
+
+. gen Merging_btw = Merging * between
+
+. gen Non_Merging_btw = Non_Merging * between
+
+. 
+. /*Untreated*/
+. egen weights_3 = total(pre_vol), by(upc dma_code)
+
+. replace weights_1 = round(weights_1)
+(728,165 real changes made)
+
+. replace weights_2 = round(weights_2)
+(1,183,261 real changes made)
+
+. replace weights_3 = round(weights_3)
+(1,992,040 real changes made)
+
+. 
+. /*Post Merger Non Merging*/
+. gen Merging = .
+(2,029,110 missing values generated)
+
+. replace Merging = 1 if merging == "True"
+(630,450 real changes made)
+
+. replace Merging = 0 if merging == "False"
+(1,398,660 real changes made)
+
+. gen Non_Merging = (1 - Merging)
+
+. gen Post_Non_Merging = post_merger * (1 - Merging)
+
+. 
+. /*Controls*/
+. replace demand_instruments0 = demand_instruments0/distance
+(2,020,509 real changes made, 9,197 to missing)
+
+. 
+. /*Quantity*/
+. gen lquant = log(volume)
+
+. 
+. rename post_merger_merging Post_Merging
+
+. 
+. /*One Year Post*/
+. gen month_date = ym(year, month)
+
+. tabstat month_date if (month==`5' & year==`4'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       680
+------------------------
+
+. matrix cutoff_c=r(StatTotal)
+
+. local cutoff_c=cutoff_c[1,1]
+
+. gen after = 0
+
+. replace after = 1 if month_date >= `cutoff_c' + 12
+(524,431 real changes made)
+
+. gen Post_Merger_1y = post_merger * after
+
+. gen Post_Merging_1y = Post_Merging * after
+
+. gen Post_Non_Merging_1y = Post_Non_Merging * after
+
+. 
+. /*Announced vs Completed*/
+. bys dma_code: gen mp_shares = sum(shares) if Merging==1
+(1,933,501 missing values generated)
+
+. tabstat month_date if (month==`7' & year==`6'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       677
+------------------------
+
+. matrix cutoff_a=r(StatTotal)
+
+. local cutoff_a=cutoff_a[1,1]
+
+. gen between = 0
+
+. replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
+(165,919 real changes made)
+
+. gen Merging_btw = Merging * between
+
+. gen Non_Merging_btw = Non_Merging * between
+
+. 
+. /*Untreated*/
+. bys dma_code: gen mp_shares = sum(shares) if Merging==1
+(1,398,660 missing values generated)
+
+. bys dma_code: egen mp_share = max(mp_share)
+(352 missing values generated)
+
+. drop mp_shares
+
+. foreach x in 2 5 10 {
+  2. gen Untreated_`x' = 1
+  3. replace Untreated_`x' = 0 if mp_share >= `x'/100
+  4. gen Post_Merging_Treat_`x' = (1 - Untreated_`x') * Merging * post_merger
+  5. gen Post_Non_Merging_Treat_`x' = (1 - Untreated_`x') * Non_Merging * post_
+> merger
+  6. }
+(2,188,084 real changes made)
+(2,188,084 real changes made)
+(2,188,084 real changes made)
+
+. 
+. /*Minor post*/
+. gen Major = .
+(2,188,084 missing values generated)
+
+. replace Major = 1 if major_competitor == "True"
+(753,309 real changes made)
+
+. replace Major = 0 if major_competitor == "False"
+(1,434,775 real changes made)
+
+. gen Post_Minor = (1 - Major) * Non_Merging * post_merger
+
+. bys dma_code: egen mp_share = max(mp_share)
+
+. gen Post_Major = Major * Non_Merging * post_merger
+
+. 
+. /*Coarse HHI Bins*/
+. drop mp_shares
+
+. foreach x in 2 5 10 {
+  2. gen Untreated_`x' = 1
+  3. replace Untreated_`x' = 0 if mp_share >= `x'/100
+  4. gen Post_Merging_Treat_`x' = (1 - Untreated_`x') * Merging * post_merger
+  5. gen Post_Non_Merging_Treat_`x' = (1 - Untreated_`x') * Non_Merging * post_
+> merger
+. gen HHI_bins = 0
+
+. replace HHI_bins = 1 if (post_hhi*10000>1500 & post_hhi*10000<2500)
+(1,552,579 real changes made)
+
+. replace HHI_bins = 2 if (post_hhi*10000>2500 & !missing(post_hhi))
+(611,343 real changes made)
+
+. 
+. /*Coarse DHHI Bins*/
+. gen DHHI_bins = 0
+
+. replace DHHI_bins = 1 if (dhhi*10000>100 & dhhi*10000<200)
+(0 real changes made)
+
+. replace DHHI_bins = 2 if (dhhi*10000>200 & !missing(dhhi))
+(0 real changes made)
+
+. 
+. /*Finer HHI Bins*/
+. gen HHI_binsf = 0
+
+. replace HHI_binsf = 1 if (post_hhi*10000>=375 & post_hhi*10000<750)
+(0 real changes made)
+
+. replace HHI_binsf = 2 if (post_hhi*10000>=750 & post_hhi*10000<1125)
+(0 real changes made)
+
+. replace HHI_binsf = 3 if (post_hhi*10000>=1125 & post_hhi*10000<1500)
+(23,810 real changes made)
+
+. replace HHI_binsf = 4 if (post_hhi*10000>=1500 & post_hhi*10000<1750)
+(338,266 real changes made)
+
+. replace HHI_binsf = 5 if (post_hhi*10000>=1750 & post_hhi*10000<2000)
+(450,842 real changes made)
+
+  6. }
+(2,029,110 real changes made)
+(2,029,110 real changes made)
+(2,029,002 real changes made)
+
+. 
+. /*Minor post*/
+. replace HHI_binsf = 6 if (post_hhi*10000>=2000 & post_hhi*10000<2250)
+(370,268 real changes made)
+
+. replace HHI_binsf = 7 if (post_hhi*10000>=2250 & post_hhi*10000<2500)
+(393,203 real changes made)
+
+. replace HHI_binsf = 8 if (post_hhi*10000>=2500 & !missing(post_hhi))
+(611,343 real changes made)
+
+. 
+. /*Finer DHHI Bins*/
+. gen DHHI_binsf = 0
+
+. gen Major = .
+(2,029,110 missing values generated)
+
+. replace DHHI_binsf = 1 if (dhhi*10000>=25 & dhhi*10000<50)
+(0 real changes made)
+
+. replace DHHI_binsf = 2 if (dhhi*10000>=50 & dhhi*10000<75)
+(0 real changes made)
+
+. replace Major = 1 if major_competitor == "True"
+(833,775 real changes made)
+
+. replace DHHI_binsf = 3 if (dhhi*10000>=75 & dhhi*10000<100)
+(0 real changes made)
+
+. replace DHHI_binsf = 4 if (dhhi*10000>=100 & dhhi*10000<125)
+(0 real changes made)
+
+. replace Major = 0 if major_competitor == "False"
+(1,195,335 real changes made)
+
+. replace DHHI_binsf = 5 if (dhhi*10000>=125 & dhhi*10000<150)
+(0 real changes made)
+
+. gen Post_Minor = (1 - Major) * Non_Merging * post_merger
+
+. gen Post_Major = Major * Non_Merging * post_merger
+
+. 
+. /*Coarse HHI Bins*/
+. replace DHHI_binsf = 6 if (dhhi*10000>=150 & dhhi*10000<175)
+(0 real changes made)
+
+. gen HHI_bins = 0
+
+. replace DHHI_binsf = 7 if (dhhi*10000>175 & dhhi*10000<200)
+(0 real changes made)
+
+. replace HHI_bins = 1 if (post_hhi*10000>1500 & post_hhi*10000<2500)
+(0 real changes made)
+
+. replace DHHI_binsf = 8 if (dhhi*10000>=200 & !missing(dhhi))
+(0 real changes made)
+
+. 
+. /*HHI and DHHI Bins*/
+. replace HHI_bins = 2 if (post_hhi*10000>2500 & !missing(post_hhi))
+(2,028,818 real changes made)
+
+. 
+. /*Coarse DHHI Bins*/
+. gen DHHI_bins = 0
+
+. replace DHHI_bins = 1 if (dhhi*10000>100 & dhhi*10000<200)
+(379,035 real changes made)
+
+. replace DHHI_bins = 2 if (dhhi*10000>200 & !missing(dhhi))
+(1,585,420 real changes made)
+
+. 
+. /*Finer HHI Bins*/
+. gen DHHI_HHI = 0
+
+. gen HHI_binsf = 0
+
+. replace DHHI_HHI = 1 if (dhhi*10000>=25 & post_hhi*10000>=375)
+(352 real changes made)
+
+. replace HHI_binsf = 1 if (post_hhi*10000>=375 & post_hhi*10000<750)
+(0 real changes made)
+
+. replace HHI_binsf = 2 if (post_hhi*10000>=750 & post_hhi*10000<1125)
+(0 real changes made)
+
+. replace DHHI_HHI = 2 if (dhhi*10000>=50 & post_hhi*10000>=750)
+(352 real changes made)
+
+. replace HHI_binsf = 3 if (post_hhi*10000>=1125 & post_hhi*10000<1500)
+(0 real changes made)
+
+. replace DHHI_HHI = 3 if (dhhi*10000>=75 & post_hhi*10000>=1125)
+(352 real changes made)
+
+. replace HHI_binsf = 4 if (post_hhi*10000>=1500 & post_hhi*10000<1750)
+(0 real changes made)
+
+. replace DHHI_HHI = 4 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(352 real changes made)
+
+. replace HHI_binsf = 5 if (post_hhi*10000>=1750 & post_hhi*10000<2000)
+(0 real changes made)
+
+. replace DHHI_HHI = 5 if (dhhi*10000>=125 & post_hhi*10000>=1750)
+(352 real changes made)
+
+. replace HHI_binsf = 6 if (post_hhi*10000>=2000 & post_hhi*10000<2250)
+(0 real changes made)
+
+. replace DHHI_HHI = 6 if (dhhi*10000>=150 & post_hhi*10000>=2000)
+(352 real changes made)
+
+. replace HHI_binsf = 7 if (post_hhi*10000>=2250 & post_hhi*10000<2500)
+(0 real changes made)
+
+. replace DHHI_HHI = 7 if (dhhi*10000>=175 & post_hhi*10000>=2250)
+(352 real changes made)
+
+. replace HHI_binsf = 8 if (post_hhi*10000>=2500 & !missing(post_hhi))
+(2,028,818 real changes made)
+
+. 
+. /*Finer DHHI Bins*/
+. gen DHHI_binsf = 0
+
+. replace DHHI_HHI = 8 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>=2
+> 500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Nocke & Whinston Bins*/
+. replace DHHI_binsf = 1 if (dhhi*10000>=25 & dhhi*10000<50)
+(0 real changes made)
+
+. gen DHHI_HHI_NW = 0
+
+. replace DHHI_binsf = 2 if (dhhi*10000>=50 & dhhi*10000<75)
+(9,960 real changes made)
+
+. replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(352 real changes made)
+
+. replace DHHI_binsf = 3 if (dhhi*10000>=75 & dhhi*10000<100)
+(54,403 real changes made)
+
+. replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000
+> >2500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Months After and Pre Dummies*/
+. replace DHHI_binsf = 4 if (dhhi*10000>=100 & dhhi*10000<125)
+(50,863 real changes made)
+
+. gen Months_post = 0
+
+. forv i=1/24{
+  2.         replace Months_post = `i' if month_date >= `cutoff_c' + `i'
+. replace DHHI_binsf = 5 if (dhhi*10000>=125 & dhhi*10000<150)
+(89,180 real changes made)
+
+. replace DHHI_binsf = 6 if (dhhi*10000>=150 & dhhi*10000<175)
+(124,966 real changes made)
+
+. replace DHHI_binsf = 7 if (dhhi*10000>175 & dhhi*10000<200)
+(114,026 real changes made)
+
+. replace DHHI_binsf = 8 if (dhhi*10000>=200 & !missing(dhhi))
+(1,585,420 real changes made)
+
+. 
+. /*HHI and DHHI Bins*/
+. gen DHHI_HHI = 0
+
+(25 vars, 2,474,900 obs)
+
+. 
+. /*Install Packages*/
+. ssc install outreg2
+. replace DHHI_HHI = 1 if (dhhi*10000>=25 & post_hhi*10000>=375)
+(2,029,110 real changes made)
+
+. replace DHHI_HHI = 2 if (dhhi*10000>=50 & post_hhi*10000>=750)
+(2,029,110 real changes made)
+
+checking outreg2 consistency and verifying not already installed...
+. replace DHHI_HHI = 3 if (dhhi*10000>=75 & post_hhi*10000>=1125)
+(2,019,150 real changes made)
+
+. replace DHHI_HHI = 4 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(1,964,747 real changes made)
+
+. replace DHHI_HHI = 5 if (dhhi*10000>=125 & post_hhi*10000>=1750)
+(1,913,884 real changes made)
+
+. replace DHHI_HHI = 6 if (dhhi*10000>=150 & post_hhi*10000>=2000)
+(1,824,704 real changes made)
+
+. replace DHHI_HHI = 7 if (dhhi*10000>=175 & post_hhi*10000>=2250)
+(1,699,738 real changes made)
+
+. replace DHHI_HHI = 8 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>=2
+> 500 & !missing(post_hhi))
+(1,585,420 real changes made)
+
+. 
+. /*Nocke & Whinston Bins*/
+. gen DHHI_HHI_NW = 0
+
+all files already exist and are up to date.
+
+. ssc install ftools
+. replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(1,964,747 real changes made)
+
+  3. }
+(1,036,534 real changes made)
+(990,945 real changes made)
+(945,505 real changes made)
+(899,764 real changes made)
+(853,789 real changes made)
+(807,655 real changes made)
+(765,778 real changes made)
+(723,593 real changes made)
+(681,545 real changes made)
+(639,128 real changes made)
+(597,016 real changes made)
+(555,352 real changes made)
+(513,548 real changes made)
+(472,362 real changes made)
+(431,298 real changes made)
+(390,865 real changes made)
+(350,616 real changes made)
+(310,192 real changes made). replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000
+> >2500 & !missing(post_hhi))
+(1,585,420 real changes made)
+
+. 
+. /*Months After and Pre Dummies*/
+checking ftools consistency and verifying not already installed...
+. gen Months_post = 0
+
+. forv i=1/24{
+  2.         replace Months_post = `i' if month_date >= `cutoff_c' + `i'
+
+(265,749 real changes made)
+(221,349 real changes made)
+(176,732 real changes made)
+(132,374 real changes made)
+(87,980 real changes made)
+(43,749 real changes made)
+
+. 
+. gen Months_pre = 0
+
+. forv i=1/24{
+  2.         replace Months_pre = `i' if month_date <= `cutoff_c' - `i'
+  3. }
+(968,828 real changes made)
+(927,111 real changes made)
+(885,709 real changes made)
+(844,302 real changes made)
+(804,748 real changes made)
+(764,666 real changes made)
+(724,472 real changes made)
+(684,183 real changes made)
+(644,154 real changes made)
+(604,158 real changes made)
+(564,085 real changes made)
+(524,431 real changes made)
+(484,731 real changes made)
+(445,421 real changes made)
+(406,301 real changes made)
+(367,279 real changes made)
+(326,129 real changes made)
+(285,114 real changes made)
+(243,725 real changes made)
+(202,757 real changes made)
+(161,918 real changes made)
+(120,906 real changes made)
+(80,503 real changes made)
+(40,284 real changes made)
+
+. 
+. gen Months_pre = 0
+
+. forv i=1/24{
+  2.         replace Months_pre = `i' if month_date <= `cutoff_c' - `i'
+  3. }
+(1,105,677 real changes made)
+(1,060,006 real changes made)
+(1,014,224 real changes made)
+(968,195 real changes made)
+(922,310 real changes made)
+(876,570 real changes made)
+(830,861 real changes made)
+(785,657 real changes made)
+(740,200 real changes made)
+(694,499 real changes made)
+(649,092 real changes made)
+(603,637 real changes made)
+(559,399 real changes made)
+(516,738 real changes made)
+(474,004 real changes made)
+(432,117 real changes made)
+(390,136 real changes made)
+(348,253 real changes made)
+(306,758 real changes made)
+(266,872 real changes made)
+(227,604 real changes made)
+(188,669 real changes made)
+(150,056 real changes made)
+(111,870 real changes made)
+
+. 
+. 
+. 
+. 
+. 
+. 
+. exit, STATA clear
+  3. }
+(1,018,728 real changes made)
+(977,318 real changes made)
+(935,793 real changes made)
+(894,363 real changes made)
+(853,019 real changes made)
+(811,432 real changes made)
+(770,833 real changes made)
+(730,371 real changes made)
+(689,806 real changes made)
+(649,345 real changes made)
+(608,877 real changes made)
+(568,248 real changes made)
+(527,705 real changes made)
+(487,477 real changes made)
+(447,558 real changes made)
+(407,501 real changes made)
+(367,413 real changes made)
+(329,206 real changes made)
+(292,398 real changes made)
+(257,138 real changes made)
+(223,791 real changes made)
+(191,295 real changes made)
+(158,882 real changes made)
+(126,547 real changes made)
+
+. 
+. 
+. 
+. 
+. 
+. 
+. exit, STATA clear
+all files already exist and are up to date.
+
+. ssc install reghdfe
+checking reghdfe consistency and verifying not already installed...
+(26 vars, 2,555,429 obs)
+
+. 
+. /*Install Packages*/
+. ssc install outreg2
+checking outreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install estout
+checking estout consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ftools
+checking ftools consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. /* Fixed Effects */
+all files already exist and are up to date.
+
+. ssc install reghdfe
+(25 vars, 2,687,381 obs)
+
+. 
+. /*Install Packages*/
+. ssc install outreg2
+checking reghdfe consistency and verifying not already installed...
+checking outreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ftools
+. egen entity_effects = group(upc dma_code)
+
+checking ftools consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install estout
+checking estout consistency and verifying not already installed...
+. egen time_effects = group(year `3')
+
+all files already exist and are up to date.
+
+. 
+. /* Fixed Effects */
+all files already exist and are up to date.
+
+. ssc install reghdfe
+checking reghdfe consistency and verifying not already installed...
+. egen time_calendar = group(`3')
+
+. 
+. /* WEIGHTING SCHEMES */
+. gen pre_vol = volume * (1 - post_merger)
+
+. gen weights_0 = 1 /*to add weights that won't change things*/
+
+all files already exist and are up to date.
+
+. ssc install estout
+checking estout consistency and verifying not already installed...
+. egen entity_effects = group(upc dma_code)
+
+all files already exist and are up to date.
+
+. 
+. /* Fixed Effects */
+. egen weights_1 = total(pre_vol), by(upc)
+
+(25 vars, 4,347,280 obs)
+
+. 
+. /*Install Packages*/
+. ssc install outreg2
+checking outreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ftools
+checking ftools consistency and verifying not already installed...
+. egen time_effects = group(year `3')
+
+. egen entity_effects = group(upc dma_code)
+
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+all files already exist and are up to date.
+
+. ssc install reghdfe
+. egen time_calendar = group(`3')
+
+. 
+. /* WEIGHTING SCHEMES */
+checking reghdfe consistency and verifying not already installed...
+. gen pre_vol = volume * (1 - post_merger)
+
+. gen weights_0 = 1 /*to add weights that won't change things*/
+
+. egen time_effects = group(year `3')
+
+all files already exist and are up to date.
+
+. ssc install estout
+checking estout consistency and verifying not already installed...
+. egen weights_3 = total(pre_vol), by(upc dma_code)
+
+. replace weights_1 = round(weights_1)
+(2,360,953 real changes made)
+
+. replace weights_2 = round(weights_2)
+(2,422,976 real changes made)
+
+. replace weights_3 = round(weights_3)
+(2,396,665 real changes made)
+
+. 
+. /*Post Merger Non Merging*/
+. gen Merging = .
+(2,474,900 missing values generated)
+
+all files already exist and are up to date.
+
+. 
+. /* Fixed Effects */
+. replace Merging = 1 if merging == "True"
+(365,174 real changes made)
+
+. egen weights_1 = total(pre_vol), by(upc)
+
+. replace Merging = 0 if merging == "False"
+(2,109,726 real changes made)
+
+. gen Non_Merging = (1 - Merging)
+
+. gen Post_Non_Merging = post_merger * (1 - Merging)
+
+. 
+. /*Controls*/
+. replace demand_instruments0 = demand_instruments0/distance
+(2,474,900 real changes made)
+
+. 
+. /*Quantity*/
+. gen lquant = log(volume)
+
+. 
+. rename post_merger_merging Post_Merging
+
+. 
+. /*One Year Post*/
+. gen month_date = ym(year, month)
+
+. tabstat month_date if (month==`5' & year==`4'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       678
+------------------------
+
+. matrix cutoff_c=r(StatTotal)
+
+. local cutoff_c=cutoff_c[1,1]
+
+. gen after = 0
+
+. replace after = 1 if month_date >= `cutoff_c' + 12
+(654,633 real changes made)
+
+. gen Post_Merger_1y = post_merger * after
+
+. gen Post_Merging_1y = Post_Merging * after
+
+. egen time_calendar = group(`3')
+
+. 
+. /* WEIGHTING SCHEMES */
+. gen pre_vol = volume * (1 - post_merger)
+
+. gen weights_0 = 1 /*to add weights that won't change things*/
+
+. gen Post_Non_Merging_1y = Post_Non_Merging * after
+
+. 
+. /*Announced vs Completed*/
+. tabstat month_date if (month==`7' & year==`6'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       677
+------------------------
+
+. matrix cutoff_a=r(StatTotal)
+
+. local cutoff_a=cutoff_a[1,1]
+
+. gen between = 0
+
+. replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
+(100,513 real changes made)
+
+. gen Merging_btw = Merging * between
+
+. gen Non_Merging_btw = Non_Merging * between
+
+. 
+. /*Untreated*/
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+. bys dma_code: gen mp_shares = sum(shares) if Merging==1
+(2,109,726 missing values generated)
+
+. egen weights_1 = total(pre_vol), by(upc)
+
+. egen entity_effects = group(upc dma_code)
+
+. egen weights_3 = total(pre_vol), by(upc dma_code)
+
+. replace weights_1 = round(weights_1)
+(2,341,358 real changes made)
+
+. replace weights_2 = round(weights_2)
+(2,366,298 real changes made)
+
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+. replace weights_3 = round(weights_3)
+(2,441,364 real changes made)
+
+. 
+. /*Post Merger Non Merging*/
+. gen Merging = .
+(2,555,429 missing values generated)
+
+. replace Merging = 1 if merging == "True"
+(463,265 real changes made)
+
+. replace Merging = 0 if merging == "False"
+(2,092,164 real changes made)
+
+. gen Non_Merging = (1 - Merging)
+
+. gen Post_Non_Merging = post_merger * (1 - Merging)
+
+. 
+. /*Controls*/
+. replace demand_instruments0 = demand_instruments0/distance
+(2,555,429 real changes made)
+
+. 
+. /*Quantity*/
+. gen lquant = log(volume)
+
+. 
+. rename post_merger_merging Post_Merging
+
+. 
+. /*One Year Post*/
+. gen month_date = ym(year, month)
+
+. tabstat month_date if (month==`5' & year==`4'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       678
+------------------------
+
+. matrix cutoff_c=r(StatTotal)
+
+. local cutoff_c=cutoff_c[1,1]
+
+. gen after = 0
+
+. replace after = 1 if month_date >= `cutoff_c' + 12
+(657,233 real changes made)
+
+. gen Post_Merger_1y = post_merger * after
+
+. bys dma_code: egen mp_share = max(mp_share)
+
+. drop mp_shares
+
+. foreach x in 2 5 10 {
+  2. gen Untreated_`x' = 1
+  3. replace Untreated_`x' = 0 if mp_share >= `x'/100
+  4. gen Post_Merging_Treat_`x' = (1 - Untreated_`x') * Merging * post_merger
+  5. gen Post_Non_Merging_Treat_`x' = (1 - Untreated_`x') * Non_Merging * post_
+> merger
+. gen Post_Merging_1y = Post_Merging * after
+
+. gen Post_Non_Merging_1y = Post_Non_Merging * after
+
+. 
+. /*Announced vs Completed*/
+. tabstat month_date if (month==`7' & year==`6'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       677
+------------------------
+  6. }
+(2,474,900 real changes made)
+(2,474,900 real changes made)
+(2,474,900 real changes made)
+
+. 
+. /*Minor post*/
+. egen time_effects = group(year `3')
+
+
+. matrix cutoff_a=r(StatTotal)
+
+. local cutoff_a=cutoff_a[1,1]
+
+. gen Major = .
+(2,474,900 missing values generated)
+
+. gen between = 0
+
+. replace Major = 1 if major_competitor == "True"
+(491,988 real changes made)
+
+. replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
+(110,795 real changes made)
+
+. gen Merging_btw = Merging * between
+
+. replace Major = 0 if major_competitor == "False"
+(1,982,912 real changes made)
+
+. gen Non_Merging_btw = Non_Merging * between
+
+. 
+. /*Untreated*/
+. gen Post_Minor = (1 - Major) * Non_Merging * post_merger
+
+. gen Post_Major = Major * Non_Merging * post_merger
+
+. 
+. /*Coarse HHI Bins*/
+. gen HHI_bins = 0
+
+. replace HHI_bins = 1 if (post_hhi*10000>1500 & post_hhi*10000<2500)
+(2,457,171 real changes made)
+
+. replace HHI_bins = 2 if (post_hhi*10000>2500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Coarse DHHI Bins*/
+. gen DHHI_bins = 0
+
+. replace DHHI_bins = 1 if (dhhi*10000>100 & dhhi*10000<200)
+(0 real changes made)
+
+. replace DHHI_bins = 2 if (dhhi*10000>200 & !missing(dhhi))
+(0 real changes made)
+
+. 
+. /*Finer HHI Bins*/
+. gen HHI_binsf = 0
+
+. replace HHI_binsf = 1 if (post_hhi*10000>=375 & post_hhi*10000<750)
+(0 real changes made)
+
+. replace HHI_binsf = 2 if (post_hhi*10000>=750 & post_hhi*10000<1125)
+(0 real changes made)
+
+. replace HHI_binsf = 3 if (post_hhi*10000>=1125 & post_hhi*10000<1500)
+(17,607 real changes made)
+
+. replace HHI_binsf = 4 if (post_hhi*10000>=1500 & post_hhi*10000<1750)
+(1,239,499 real changes made)
+
+. replace HHI_binsf = 5 if (post_hhi*10000>=1750 & post_hhi*10000<2000)
+(1,188,865 real changes made)
+
+. replace HHI_binsf = 6 if (post_hhi*10000>=2000 & post_hhi*10000<2250)
+(28,807 real changes made)
+
+. replace HHI_binsf = 7 if (post_hhi*10000>=2250 & post_hhi*10000<2500)
+(0 real changes made)
+
+. replace HHI_binsf = 8 if (post_hhi*10000>=2500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Finer DHHI Bins*/
+. gen DHHI_binsf = 0
+
+. replace DHHI_binsf = 1 if (dhhi*10000>=25 & dhhi*10000<50)
+(4,204 real changes made)
+
+. replace DHHI_binsf = 2 if (dhhi*10000>=50 & dhhi*10000<75)
+(0 real changes made)
+
+. replace DHHI_binsf = 3 if (dhhi*10000>=75 & dhhi*10000<100)
+(0 real changes made)
+
+. replace DHHI_binsf = 4 if (dhhi*10000>=100 & dhhi*10000<125)
+(0 real changes made)
+
+. replace DHHI_binsf = 5 if (dhhi*10000>=125 & dhhi*10000<150)
+(0 real changes made)
+
+. replace DHHI_binsf = 6 if (dhhi*10000>=150 & dhhi*10000<175)
+(0 real changes made)
+
+. replace DHHI_binsf = 7 if (dhhi*10000>175 & dhhi*10000<200)
+(0 real changes made)
+
+. replace DHHI_binsf = 8 if (dhhi*10000>=200 & !missing(dhhi))
+(0 real changes made)
+
+. 
+. /*HHI and DHHI Bins*/
+. gen DHHI_HHI = 0
+
+. replace DHHI_HHI = 1 if (dhhi*10000>=25 & post_hhi*10000>=375)
+(4,326 real changes made)
+
+. replace DHHI_HHI = 2 if (dhhi*10000>=50 & post_hhi*10000>=750)
+(122 real changes made)
+
+. replace DHHI_HHI = 3 if (dhhi*10000>=75 & post_hhi*10000>=1125)
+(122 real changes made)
+
+. replace DHHI_HHI = 4 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(122 real changes made)
+
+. replace DHHI_HHI = 5 if (dhhi*10000>=125 & post_hhi*10000>=1750)
+(122 real changes made)
+
+. egen weights_3 = total(pre_vol), by(upc dma_code)
+
+. replace DHHI_HHI = 6 if (dhhi*10000>=150 & post_hhi*10000>=2000)
+(122 real changes made)
+
+. replace weights_1 = round(weights_1)
+(2,489,093 real changes made)
+
+. replace DHHI_HHI = 7 if (dhhi*10000>=175 & post_hhi*10000>=2250)
+(122 real changes made)
+
+. replace weights_2 = round(weights_2)
+(2,532,548 real changes made)
+
+. replace DHHI_HHI = 8 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>=2
+> 500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Nocke & Whinston Bins*/
+. replace weights_3 = round(weights_3)
+(2,638,704 real changes made)
+
+. 
+. /*Post Merger Non Merging*/
+. gen Merging = .
+(2,687,381 missing values generated)
+
+. gen DHHI_HHI_NW = 0
+
+. bys dma_code: gen mp_shares = sum(shares) if Merging==1
+(2,092,164 missing values generated)
+
+. replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(122 real changes made)
+
+. replace Merging = 1 if merging == "True"
+(338,529 real changes made)
+
+. replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000
+> >2500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Months After and Pre Dummies*/
+. gen Months_post = 0
+
+. forv i=1/24{
+  2.         replace Months_post = `i' if month_date >= `cutoff_c' + `i'
+. replace Merging = 0 if merging == "False"
+(2,348,852 real changes made)
+
+. gen Non_Merging = (1 - Merging)
+
+. gen Post_Non_Merging = post_merger * (1 - Merging)
+
+. 
+. /*Controls*/
+. replace demand_instruments0 = demand_instruments0/distance
+(2,687,381 real changes made)
+
+. 
+. /*Quantity*/
+. gen lquant = log(volume)
+
+. 
+. rename post_merger_merging Post_Merging
+
+. 
+. /*One Year Post*/
+. gen month_date = ym(year, month)
+
+  3. }
+(1,219,417 real changes made)
+(1,169,859 real changes made)
+(1,119,738 real changes made)
+(1,066,797 real changes made)
+(1,013,921 real changes made)
+(960,515 real changes made)
+(908,366 real changes made)
+(856,387 real changes made)
+(804,829 real changes made)
+(753,793 real changes made)
+(704,018 real changes made)
+(654,633 real changes made)
+(605,283 real changes made)
+(557,102 real changes made)
+(507,616 real changes made)
+(458,043 real changes made)
+(408,445 real changes made)
+. tabstat month_date if (month==`5' & year==`4'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       678
+------------------------
+
+. matrix cutoff_c=r(StatTotal)
+
+. local cutoff_c=cutoff_c[1,1]
+
+. gen after = 0
+
+(357,622 real changes made)
+(305,367 real changes made)
+(253,477 real changes made)
+(201,383 real changes made)
+(150,397 real changes made)
+(99,749 real changes made)
+(49,117 real changes made)
+
+. 
+. replace after = 1 if month_date >= `cutoff_c' + 12
+(663,712 real changes made)
+
+. gen Post_Merger_1y = post_merger * after
+
+. gen Post_Merging_1y = Post_Merging * after
+
+. gen Post_Non_Merging_1y = Post_Non_Merging * after
+
+. 
+. /*Announced vs Completed*/
+. egen time_calendar = group(`3')
+
+. 
+. /* WEIGHTING SCHEMES */
+. gen Months_pre = 0
+
+. forv i=1/24{
+  2.         replace Months_pre = `i' if month_date <= `cutoff_c' - `i'
+. gen pre_vol = volume * (1 - post_merger)
+
+. gen weights_0 = 1 /*to add weights that won't change things*/
+
+. tabstat month_date if (month==`7' & year==`6'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       677
+------------------------
+
+. matrix cutoff_a=r(StatTotal)
+
+. local cutoff_a=cutoff_a[1,1]
+
+. gen between = 0
+
+. replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
+(115,469 real changes made)
+
+. gen Merging_btw = Merging * between
+
+. gen Non_Merging_btw = Non_Merging * between
+
+. 
+. /*Untreated*/
+  3. }
+(1,205,071 real changes made)
+(1,154,970 real changes made)
+(1,104,714 real changes made)
+(1,053,500 real changes made)
+(1,002,231 real changes made)
+(950,455 real changes made)
+(898,720 real changes made)
+(848,719 real changes made)
+(799,234 real changes made)
+(749,983 real changes made)
+(702,370 real changes made)
+(654,454 real changes made)
+(607,133 real changes made)
+(559,452 real changes made)
+(511,253 real changes made)
+(463,172 real changes made)
+(414,665 real changes made)
+(365,899 real changes made)
+(317,312 real changes made)
+(269,549 real changes made)
+(222,575 real changes made)
+(177,256 real changes made)
+(133,141 real changes made)
+(88,571 real changes made)
+
+. 
+. 
+. 
+. 
+. 
+. 
+. exit, STATA clear
+. bys dma_code: egen mp_share = max(mp_share)
+(3 missing values generated)
+. bys dma_code: gen mp_shares = sum(shares) if Merging==1
+(2,348,852 missing values generated)
+
+
+. drop mp_shares
+
+. foreach x in 2 5 10 {
+  2. gen Untreated_`x' = 1
+  3. replace Untreated_`x' = 0 if mp_share >= `x'/100
+  4. gen Post_Merging_Treat_`x' = (1 - Untreated_`x') * Merging * post_merger
+  5. gen Post_Non_Merging_Treat_`x' = (1 - Untreated_`x') * Non_Merging * post_
+> merger
+  6. }
+(2,555,429 real changes made)
+(2,555,429 real changes made)
+(2,555,429 real changes made)
+
+. 
+. /*Minor post*/
+. gen Major = .
+(2,555,429 missing values generated)
+
+. replace Major = 1 if major_competitor == "True"
+(752,504 real changes made)
+
+. egen weights_1 = total(pre_vol), by(upc)
+
+. replace Major = 0 if major_competitor == "False"
+(1,802,925 real changes made)
+
+. gen Post_Minor = (1 - Major) * Non_Merging * post_merger
+
+. gen Post_Major = Major * Non_Merging * post_merger
+
+. 
+. /*Coarse HHI Bins*/
+. gen HHI_bins = 0
+
+. replace HHI_bins = 1 if (post_hhi*10000>1500 & post_hhi*10000<2500)
+(13,795 real changes made)
+
+. replace HHI_bins = 2 if (post_hhi*10000>2500 & !missing(post_hhi))
+(2,541,631 real changes made)
+
+. 
+. /*Coarse DHHI Bins*/
+. gen DHHI_bins = 0
+
+. replace DHHI_bins = 1 if (dhhi*10000>100 & dhhi*10000<200)
+(0 real changes made)
+
+. replace DHHI_bins = 2 if (dhhi*10000>200 & !missing(dhhi))
+(0 real changes made)
+
+. 
+. /*Finer HHI Bins*/
+. gen HHI_binsf = 0
+
+. replace HHI_binsf = 1 if (post_hhi*10000>=375 & post_hhi*10000<750)
+(0 real changes made)
+
+. replace HHI_binsf = 2 if (post_hhi*10000>=750 & post_hhi*10000<1125)
+(0 real changes made)
+
+. replace HHI_binsf = 3 if (post_hhi*10000>=1125 & post_hhi*10000<1500)
+(0 real changes made)
+
+. replace HHI_binsf = 4 if (post_hhi*10000>=1500 & post_hhi*10000<1750)
+(0 real changes made)
+
+. replace HHI_binsf = 5 if (post_hhi*10000>=1750 & post_hhi*10000<2000)
+(0 real changes made)
+
+. replace HHI_binsf = 6 if (post_hhi*10000>=2000 & post_hhi*10000<2250)
+(0 real changes made)
+
+. replace HHI_binsf = 7 if (post_hhi*10000>=2250 & post_hhi*10000<2500)
+(13,795 real changes made)
+
+. replace HHI_binsf = 8 if (post_hhi*10000>=2500 & !missing(post_hhi))
+(2,541,631 real changes made)
+
+. 
+. /*Finer DHHI Bins*/
+. gen DHHI_binsf = 0
+
+. replace DHHI_binsf = 1 if (dhhi*10000>=25 & dhhi*10000<50)
+(11,403 real changes made)
+
+. replace DHHI_binsf = 2 if (dhhi*10000>=50 & dhhi*10000<75)
+(0 real changes made)
+
+. replace DHHI_binsf = 3 if (dhhi*10000>=75 & dhhi*10000<100)
+(0 real changes made)
+
+. replace DHHI_binsf = 4 if (dhhi*10000>=100 & dhhi*10000<125)
+(0 real changes made)
+
+. replace DHHI_binsf = 5 if (dhhi*10000>=125 & dhhi*10000<150)
+(0 real changes made)
+
+. replace DHHI_binsf = 6 if (dhhi*10000>=150 & dhhi*10000<175)
+(0 real changes made)
+
+. replace DHHI_binsf = 7 if (dhhi*10000>175 & dhhi*10000<200)
+(0 real changes made)
+
+. replace DHHI_binsf = 8 if (dhhi*10000>=200 & !missing(dhhi))
+(0 real changes made)
+
+. 
+. /*HHI and DHHI Bins*/
+. gen DHHI_HHI = 0
+
+. replace DHHI_HHI = 1 if (dhhi*10000>=25 & post_hhi*10000>=375)
+(11,406 real changes made)
+
+. replace DHHI_HHI = 2 if (dhhi*10000>=50 & post_hhi*10000>=750)
+(3 real changes made)
+
+. replace DHHI_HHI = 3 if (dhhi*10000>=75 & post_hhi*10000>=1125)
+(3 real changes made)
+
+. replace DHHI_HHI = 4 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(3 real changes made)
+
+. replace DHHI_HHI = 5 if (dhhi*10000>=125 & post_hhi*10000>=1750)
+(3 real changes made)
+
+. replace DHHI_HHI = 6 if (dhhi*10000>=150 & post_hhi*10000>=2000)
+(3 real changes made)
+
+. replace DHHI_HHI = 7 if (dhhi*10000>=175 & post_hhi*10000>=2250)
+(3 real changes made)
+
+. replace DHHI_HHI = 8 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>=2
+> 500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Nocke & Whinston Bins*/
+. gen DHHI_HHI_NW = 0
+
+. replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(3 real changes made)
+
+. bys dma_code: egen mp_share = max(mp_share)
+(113 missing values generated)
+. replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000
+> >2500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Months After and Pre Dummies*/
+. gen Months_post = 0
+
+. forv i=1/24{
+  2.         replace Months_post = `i' if month_date >= `cutoff_c' + `i'
+
+. drop mp_shares
+
+. foreach x in 2 5 10 {
+  2. gen Untreated_`x' = 1
+  3. replace Untreated_`x' = 0 if mp_share >= `x'/100
+  4. gen Post_Merging_Treat_`x' = (1 - Untreated_`x') * Merging * post_merger
+  5. gen Post_Non_Merging_Treat_`x' = (1 - Untreated_`x') * Non_Merging * post_
+> merger
+  3. }
+(1,261,248 real changes made)
+(1,206,169 real changes made)
+(1,151,444 real changes made)
+(1,095,818 real changes made)
+(1,040,889 real changes made)
+(983,071 real changes made)
+(925,904 real changes made)
+(870,241 real changes made)
+(815,740 real changes made)
+(761,922 real changes made)
+(709,419 real changes made)
+(657,233 real changes made)
+(604,604 real changes made)
+(553,251 real changes made)
+(501,850 real changes made)
+(451,421 real changes made)
+(401,421 real changes made)
+  6. }
+(2,687,381 real changes made)
+(2,687,381 real changes made)
+(2,687,381 real changes made)
+
+. 
+. /*Minor post*/
+. gen Major = .
+(2,687,381 missing values generated)
+
+. replace Major = 1 if major_competitor == "True"
+(897,855 real changes made)
+
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+(350,843 real changes made)
+(298,831 real changes made)
+(247,851 real changes made)
+(197,051 real changes made)
+(147,693 real changes made)
+(98,439 real changes made)
+(48,677 real changes made)
+
+. 
+. replace Major = 0 if major_competitor == "False"
+(1,789,526 real changes made)
+
+. gen Post_Minor = (1 - Major) * Non_Merging * post_merger
+
+. gen Months_pre = 0
+
+. forv i=1/24{
+  2.         replace Months_pre = `i' if month_date <= `cutoff_c' - `i'
+. gen Post_Major = Major * Non_Merging * post_merger
+
+. 
+. /*Coarse HHI Bins*/
+. gen HHI_bins = 0
+
+. replace HHI_bins = 1 if (post_hhi*10000>1500 & post_hhi*10000<2500)
+(0 real changes made)
+
+. replace HHI_bins = 2 if (post_hhi*10000>2500 & !missing(post_hhi))
+(2,687,268 real changes made)
+
+. 
+. /*Coarse DHHI Bins*/
+. gen DHHI_bins = 0
+
+. replace DHHI_bins = 1 if (dhhi*10000>100 & dhhi*10000<200)
+(0 real changes made)
+
+. replace DHHI_bins = 2 if (dhhi*10000>200 & !missing(dhhi))
+(0 real changes made)
+
+. 
+. /*Finer HHI Bins*/
+. gen HHI_binsf = 0
+
+. replace HHI_binsf = 1 if (post_hhi*10000>=375 & post_hhi*10000<750)
+(0 real changes made)
+
+. replace HHI_binsf = 2 if (post_hhi*10000>=750 & post_hhi*10000<1125)
+(0 real changes made)
+
+  3. }
+(1,238,645 real changes made)
+(1,183,386 real changes made)
+(1,127,907 real changes made)
+(1,072,001 real changes made)
+(1,016,249 real changes made)
+(961,355 real changes made)
+(907,116 real changes made)
+(855,366 real changes made)
+(804,400 real changes made)
+(752,867 real changes made)
+(701,913 real changes made)
+(650,770 real changes made)
+(599,916 real changes made)
+(549,453 real changes made)
+(498,908 real changes made)
+(449,118 real changes made)
+(399,116 real changes made)
+. replace HHI_binsf = 3 if (post_hhi*10000>=1125 & post_hhi*10000<1500)
+(0 real changes made)
+
+. replace HHI_binsf = 4 if (post_hhi*10000>=1500 & post_hhi*10000<1750)
+(0 real changes made)
+
+(350,882 real changes made)
+(302,832 real changes made)
+(257,986 real changes made)
+(214,927 real changes made)
+(171,873 real changes made)
+(128,864 real changes made)
+(85,789 real changes made)
+
+. 
+. 
+. 
+. 
+. 
+. 
+. exit, STATA clear
+. replace HHI_binsf = 5 if (post_hhi*10000>=1750 & post_hhi*10000<2000)
+(0 real changes made)
+
+. replace HHI_binsf = 6 if (post_hhi*10000>=2000 & post_hhi*10000<2250)
+(0 real changes made)
+
+. replace HHI_binsf = 7 if (post_hhi*10000>=2250 & post_hhi*10000<2500)
+(0 real changes made)
+
+. replace HHI_binsf = 8 if (post_hhi*10000>=2500 & !missing(post_hhi))
+(2,687,268 real changes made)
+
+. 
+. /*Finer DHHI Bins*/
+. gen DHHI_binsf = 0
+
+. replace DHHI_binsf = 1 if (dhhi*10000>=25 & dhhi*10000<50)
+(12,212 real changes made)
+
+. replace DHHI_binsf = 2 if (dhhi*10000>=50 & dhhi*10000<75)
+(0 real changes made)
+
+. replace DHHI_binsf = 3 if (dhhi*10000>=75 & dhhi*10000<100)
+(0 real changes made)
+
+. replace DHHI_binsf = 4 if (dhhi*10000>=100 & dhhi*10000<125)
+(0 real changes made)
+
+. replace DHHI_binsf = 5 if (dhhi*10000>=125 & dhhi*10000<150)
+(0 real changes made)
+
+. replace DHHI_binsf = 6 if (dhhi*10000>=150 & dhhi*10000<175)
+(0 real changes made)
+
+. replace DHHI_binsf = 7 if (dhhi*10000>175 & dhhi*10000<200)
+(0 real changes made)
+
+. replace DHHI_binsf = 8 if (dhhi*10000>=200 & !missing(dhhi))
+(0 real changes made)
+
+. 
+. /*HHI and DHHI Bins*/
+. gen DHHI_HHI = 0
+
+. replace DHHI_HHI = 1 if (dhhi*10000>=25 & post_hhi*10000>=375)
+(12,325 real changes made)
+
+. replace DHHI_HHI = 2 if (dhhi*10000>=50 & post_hhi*10000>=750)
+(113 real changes made)
+
+. replace DHHI_HHI = 3 if (dhhi*10000>=75 & post_hhi*10000>=1125)
+(113 real changes made)
+
+. replace DHHI_HHI = 4 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(113 real changes made)
+
+. replace DHHI_HHI = 5 if (dhhi*10000>=125 & post_hhi*10000>=1750)
+(113 real changes made)
+
+. replace DHHI_HHI = 6 if (dhhi*10000>=150 & post_hhi*10000>=2000)
+(113 real changes made)
+
+. replace DHHI_HHI = 7 if (dhhi*10000>=175 & post_hhi*10000>=2250)
+(113 real changes made)
+
+. replace DHHI_HHI = 8 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>=2
+> 500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Nocke & Whinston Bins*/
+. gen DHHI_HHI_NW = 0
+
+. replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(113 real changes made)
+
+. replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000
+> >2500 & !missing(post_hhi))
+(0 real changes made)
+
+. 
+. /*Months After and Pre Dummies*/
+. gen Months_post = 0
+
+. forv i=1/24{
+  2.         replace Months_post = `i' if month_date >= `cutoff_c' + `i'
+  3. }
+(1,277,389 real changes made)
+(1,219,834 real changes made)
+(1,162,510 real changes made)
+(1,104,869 real changes made)
+(1,047,803 real changes made)
+(989,468 real changes made)
+(932,669 real changes made)
+(877,310 real changes made)
+(822,888 real changes made)
+(769,016 real changes made)
+(716,156 real changes made)
+(663,712 real changes made)
+(610,904 real changes made)
+(559,156 real changes made)
+(507,493 real changes made)
+(456,789 real changes made)
+(406,433 real changes made)
+(355,784 real changes made)
+(303,414 real changes made)
+(251,871 real changes made)
+(200,501 real changes made)
+(150,166 real changes made)
+(100,121 real changes made)
+(49,699 real changes made)
+
+. 
+. gen Months_pre = 0
+
+. forv i=1/24{
+  2.         replace Months_pre = `i' if month_date <= `cutoff_c' - `i'
+. egen weights_3 = total(pre_vol), by(upc dma_code)
+
+. replace weights_1 = round(weights_1)
+(4,327,725 real changes made)
+
+. replace weights_2 = round(weights_2)
+(4,347,255 real changes made)
+
+. replace weights_3 = round(weights_3)
+(4,326,594 real changes made)
+
+. 
+. /*Post Merger Non Merging*/
+. gen Merging = .
+(4,347,280 missing values generated)
+
+. replace Merging = 1 if merging == "True"
+(1,988,566 real changes made)
+
+  3. }
+(1,352,114 real changes made)
+(1,294,523 real changes made)
+(1,236,829 real changes made)
+(1,178,750 real changes made)
+(1,120,744 real changes made)
+(1,062,935 real changes made)
+(1,005,653 real changes made)
+(950,004 real changes made)
+(894,979 real changes made)
+(839,592 real changes made)
+(784,407 real changes made)
+(728,894 real changes made)
+(673,631 real changes made)
+(618,330 real changes made)
+(562,938 real changes made)
+(507,896 real changes made)
+(453,179 real changes made)
+. replace Merging = 0 if merging == "False"
+(2,358,714 real changes made)
+
+. gen Non_Merging = (1 - Merging)
+
+. gen Post_Non_Merging = post_merger * (1 - Merging)
+
+. 
+. /*Controls*/
+(400,509 real changes made)
+(347,930 real changes made)
+(297,008 real changes made)
+(247,340 real changes made)
+(197,792 real changes made)
+(148,240 real changes made)
+(98,743 real changes made)
+
+. 
+. 
+. 
+. 
+. 
+. 
+. exit, STATA clear
+. replace demand_instruments0 = demand_instruments0/distance
+(4,347,280 real changes made)
+
+. 
+. /*Quantity*/
+. gen lquant = log(volume)
+
+. 
+. rename post_merger_merging Post_Merging
+
+. 
+. /*One Year Post*/
+. gen month_date = ym(year, month)
+
+. tabstat month_date if (month==`5' & year==`4'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       681
+------------------------
+
+. matrix cutoff_c=r(StatTotal)
+
+. local cutoff_c=cutoff_c[1,1]
+
+. gen after = 0
+
+. replace after = 1 if month_date >= `cutoff_c' + 12
+(909,413 real changes made)
+
+. gen Post_Merger_1y = post_merger * after
+
+. gen Post_Merging_1y = Post_Merging * after
+
+. gen Post_Non_Merging_1y = Post_Non_Merging * after
+
+. 
+. /*Announced vs Completed*/
+. tabstat month_date if (month==`7' & year==`6'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       666
+------------------------
+
+. matrix cutoff_a=r(StatTotal)
+
+. local cutoff_a=cutoff_a[1,1]
+
+. gen between = 0
+
+. replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
+(1,147,729 real changes made)
+
+. gen Merging_btw = Merging * between
+
+. gen Non_Merging_btw = Non_Merging * between
+
+. 
+. /*Untreated*/
+. bys dma_code: gen mp_shares = sum(shares) if Merging==1
+(2,358,714 missing values generated)
+
+. bys dma_code: egen mp_share = max(mp_share)
+(25 missing values generated)
+
+. drop mp_shares
+
+. foreach x in 2 5 10 {
+  2. gen Untreated_`x' = 1
+  3. replace Untreated_`x' = 0 if mp_share >= `x'/100
+  4. gen Post_Merging_Treat_`x' = (1 - Untreated_`x') * Merging * post_merger
+  5. gen Post_Non_Merging_Treat_`x' = (1 - Untreated_`x') * Non_Merging * post_
+> merger
+  6. }
+(4,347,280 real changes made)
+(4,347,280 real changes made)
+(4,347,280 real changes made)
+
+. 
+. /*Minor post*/
+. gen Major = .
+(4,347,280 missing values generated)
+
+. replace Major = 1 if major_competitor == "True"
+(1,404,562 real changes made)
+
+. replace Major = 0 if major_competitor == "False"
+(2,942,718 real changes made)
+
+. gen Post_Minor = (1 - Major) * Non_Merging * post_merger
+
+. gen Post_Major = Major * Non_Merging * post_merger
+
+. 
+. /*Coarse HHI Bins*/
+. gen HHI_bins = 0
+
+. replace HHI_bins = 1 if (post_hhi*10000>1500 & post_hhi*10000<2500)
+(0 real changes made)
+
+. replace HHI_bins = 2 if (post_hhi*10000>2500 & !missing(post_hhi))
+(4,347,255 real changes made)
+
+. 
+. /*Coarse DHHI Bins*/
+. gen DHHI_bins = 0
+
+. replace DHHI_bins = 1 if (dhhi*10000>100 & dhhi*10000<200)
+(3,678,228 real changes made)
+
+. replace DHHI_bins = 2 if (dhhi*10000>200 & !missing(dhhi))
+(165,130 real changes made)
+
+. 
+. /*Finer HHI Bins*/
+. gen HHI_binsf = 0
+
+. replace HHI_binsf = 1 if (post_hhi*10000>=375 & post_hhi*10000<750)
+(0 real changes made)
+
+. replace HHI_binsf = 2 if (post_hhi*10000>=750 & post_hhi*10000<1125)
+(0 real changes made)
+
+. replace HHI_binsf = 3 if (post_hhi*10000>=1125 & post_hhi*10000<1500)
+(0 real changes made)
+
+. replace HHI_binsf = 4 if (post_hhi*10000>=1500 & post_hhi*10000<1750)
+(0 real changes made)
+
+. replace HHI_binsf = 5 if (post_hhi*10000>=1750 & post_hhi*10000<2000)
+(0 real changes made)
+
+. replace HHI_binsf = 6 if (post_hhi*10000>=2000 & post_hhi*10000<2250)
+(0 real changes made)
+
+. replace HHI_binsf = 7 if (post_hhi*10000>=2250 & post_hhi*10000<2500)
+(0 real changes made)
+
+. replace HHI_binsf = 8 if (post_hhi*10000>=2500 & !missing(post_hhi))
+(4,347,255 real changes made)
+
+. 
+. /*Finer DHHI Bins*/
+. gen DHHI_binsf = 0
+
+. replace DHHI_binsf = 1 if (dhhi*10000>=25 & dhhi*10000<50)
+(0 real changes made)
+
+. replace DHHI_binsf = 2 if (dhhi*10000>=50 & dhhi*10000<75)
+(123,362 real changes made)
+
+. replace DHHI_binsf = 3 if (dhhi*10000>=75 & dhhi*10000<100)
+(374,097 real changes made)
+
+. replace DHHI_binsf = 4 if (dhhi*10000>=100 & dhhi*10000<125)
+(1,229,453 real changes made)
+
+. replace DHHI_binsf = 5 if (dhhi*10000>=125 & dhhi*10000<150)
+(1,513,817 real changes made)
+
+. replace DHHI_binsf = 6 if (dhhi*10000>=150 & dhhi*10000<175)
+(760,937 real changes made)
+
+. replace DHHI_binsf = 7 if (dhhi*10000>175 & dhhi*10000<200)
+(174,021 real changes made)
+
+. replace DHHI_binsf = 8 if (dhhi*10000>=200 & !missing(dhhi))
+(165,130 real changes made)
+
+. 
+. /*HHI and DHHI Bins*/
+. gen DHHI_HHI = 0
+
+. replace DHHI_HHI = 1 if (dhhi*10000>=25 & post_hhi*10000>=375)
+(4,340,842 real changes made)
+
+. replace DHHI_HHI = 2 if (dhhi*10000>=50 & post_hhi*10000>=750)
+(4,340,842 real changes made)
+
+. replace DHHI_HHI = 3 if (dhhi*10000>=75 & post_hhi*10000>=1125)
+(4,217,480 real changes made)
+
+. replace DHHI_HHI = 4 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(3,843,383 real changes made)
+
+. replace DHHI_HHI = 5 if (dhhi*10000>=125 & post_hhi*10000>=1750)
+(2,613,930 real changes made)
+
+. replace DHHI_HHI = 6 if (dhhi*10000>=150 & post_hhi*10000>=2000)
+(1,100,113 real changes made)
+
+. replace DHHI_HHI = 7 if (dhhi*10000>=175 & post_hhi*10000>=2250)
+(339,176 real changes made)
+
+. replace DHHI_HHI = 8 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>=2
+> 500 & !missing(post_hhi))
+(165,130 real changes made)
+
+. 
+. /*Nocke & Whinston Bins*/
+. gen DHHI_HHI_NW = 0
+
+. replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+(3,843,383 real changes made)
+
+. replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000
+> >2500 & !missing(post_hhi))
+(165,130 real changes made)
+
+. 
+. /*Months After and Pre Dummies*/
+. gen Months_post = 0
+
+. forv i=1/24{
+  2.         replace Months_post = `i' if month_date >= `cutoff_c' + `i'
+  3. }
+(1,698,431 real changes made)
+(1,625,661 real changes made)
+(1,551,700 real changes made)
+(1,480,091 real changes made)
+(1,408,310 real changes made)
+(1,336,469 real changes made)
+(1,263,989 real changes made)
+(1,192,826 real changes made)
+(1,121,991 real changes made)
+(1,050,456 real changes made)
+(980,464 real changes made)
+(909,413 real changes made)
+(839,712 real changes made)
+(771,294 real changes made)
+(700,181 real changes made)
+(629,521 real changes made)
+(558,874 real changes made)
+(487,271 real changes made)
+(417,345 real changes made)
+(347,319 real changes made)
+(276,633 real changes made)
+(207,727 real changes made)
+(138,326 real changes made)
+(68,308 real changes made)
+
+. 
+. gen Months_pre = 0
+
+. forv i=1/24{
+  2.         replace Months_pre = `i' if month_date <= `cutoff_c' - `i'
+  3. }
+(2,574,963 real changes made)
+(2,502,222 real changes made)
+(2,429,313 real changes made)
+(2,355,506 real changes made)
+(2,282,767 real changes made)
+(2,210,324 real changes made)
+(2,136,640 real changes made)
+(2,063,455 real changes made)
+(1,990,096 real changes made)
+(1,916,539 real changes made)
+(1,846,573 real changes made)
+(1,777,947 real changes made)
+(1,708,052 real changes made)
+(1,639,267 real changes made)
+(1,569,661 real changes made)
+(1,501,120 real changes made)
+(1,432,380 real changes made)
+(1,362,648 real changes made)
+(1,293,380 real changes made)
+(1,223,950 real changes made)
+(1,154,486 real changes made)
+(1,085,117 real changes made)
+(1,019,182 real changes made)
+(954,880 real changes made)
+
+. 
+. 
+. 
+. 
+. 
+. 
+. exit, STATA clear

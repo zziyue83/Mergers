@@ -77,13 +77,15 @@ gen Merging_btw = Merging * between
 gen Non_Merging_btw = Non_Merging * between
 
 /*Untreated*/
-bys dma_code year month: gen mp_shares = sum(shares) if Merging==1
-bys dma_code year month: egen mp_share = max(mp_share)
+bys dma_code: gen mp_shares = sum(shares) if Merging==1
+bys dma_code: egen mp_share = max(mp_share)
 drop mp_shares
-gen Untreated = 1
-replace Untreated = 0 if mp_share >= 0.05
-gen Post_Merging_Treat = (1 - Untreated) * Merging * post_merger
-gen Post_Non_Merging_Treat = (1 - Untreated) * Non_Merging * post_merger
+foreach x in 2 5 10 {
+gen Untreated_`x' = 1
+replace Untreated_`x' = 0 if mp_share >= `x'/100
+gen Post_Merging_Treat_`x' = (1 - Untreated_`x') * Merging * post_merger
+gen Post_Non_Merging_Treat_`x' = (1 - Untreated_`x') * Non_Merging * post_merger
+}
 
 /*Minor post*/
 gen Major = .
@@ -126,18 +128,18 @@ replace DHHI_binsf = 8 if (dhhi*10000>=200 & !missing(dhhi))
 
 /*HHI and DHHI Bins*/
 gen DHHI_HHI = 0
-replace DHHI_HHI = 1 if (dhhi*10000>=25 & dhhi*10000<50 & post_hhi*10000>=375 & post_hhi*10000<750)
-replace DHHI_HHI = 2 if (dhhi*10000>=50 & dhhi*10000<75 & post_hhi*10000>=750 & post_hhi*10000<1125)
-replace DHHI_HHI = 3 if (dhhi*10000>=75 & dhhi*10000<100 & post_hhi*10000>=1125 & post_hhi*10000<1500)
-replace DHHI_HHI = 4 if (dhhi*10000>=100 & dhhi*10000<125 & post_hhi*10000>=1500 & post_hhi*10000<1750)
-replace DHHI_HHI = 5 if (dhhi*10000>=125 & dhhi*10000<150 & post_hhi*10000>=1750 & post_hhi*10000<2000)
-replace DHHI_HHI = 6 if (dhhi*10000>=150 & dhhi*10000<175 & post_hhi*10000>=2000 & post_hhi*10000<2250)
-replace DHHI_HHI = 7 if (dhhi*10000>=175 & dhhi*10000<200 & post_hhi*10000>=2250 & post_hhi*10000<2500)
+replace DHHI_HHI = 1 if (dhhi*10000>=25 & post_hhi*10000>=375)
+replace DHHI_HHI = 2 if (dhhi*10000>=50 & post_hhi*10000>=750)
+replace DHHI_HHI = 3 if (dhhi*10000>=75 & post_hhi*10000>=1125)
+replace DHHI_HHI = 4 if (dhhi*10000>=100 & post_hhi*10000>=1500)
+replace DHHI_HHI = 5 if (dhhi*10000>=125 & post_hhi*10000>=1750)
+replace DHHI_HHI = 6 if (dhhi*10000>=150 & post_hhi*10000>=2000)
+replace DHHI_HHI = 7 if (dhhi*10000>=175 & post_hhi*10000>=2250)
 replace DHHI_HHI = 8 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>=2500 & !missing(post_hhi))
 
 /*Nocke & Whinston Bins*/
 gen DHHI_HHI_NW = 0
-replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & dhhi*10000<200 & post_hhi*10000>=1500 & post_hhi*10000<2500)
+replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & post_hhi*10000>=1500)
 replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>2500 & !missing(post_hhi))
 
 /*Months After and Pre Dummies*/
@@ -168,6 +170,10 @@ reghdfe `var' Merging Post_Merging Post_Non_Merging trend [aw = weights_`x'], ab
 est sto OA_FE_`x'_`var'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Overall FE") append
 
+reghdfe `var' Merging Post_Merging Post_Non_Merging trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
+est sto OA_FE_t_`x'_`var'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Overall t") append
+
 /*Overall Effects Controls*/
 reghdfe `var' Merging Post_Merging Post_Non_Merging log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
 est sto OA_C_`x'_`var'
@@ -177,31 +183,38 @@ reghdfe `var' Merging Post_Merging Post_Non_Merging log_hhinc_per_person_adj dem
 est sto OA_FE_C_`x'_`var'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Overall FE C") append
 
+reghdfe `var' Merging Post_Merging Post_Non_Merging log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
+est sto OA_FE_C_t_`x'_`var'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Overall t C") append
+
+foreach z in 2 5 10 {
 /*Overall Effects Untreated*/
-reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
-est sto UT_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated") append
+reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+est sto UT_`x'_`var'_`z'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated `z'") append
 
-reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code)
-est sto UT_FE_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated FE") append
+reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code)
+est sto UT_FE_`x'_`var'_`z'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated FE `z'") append
 
-reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
-est sto UT_T_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated T") append
+reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
+est sto UT_T_`x'_`var'_`z'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated T `z'") append
 
 /*Overall Effects Untreated Controls*/
-reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
-est sto UT_C_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated C") append
+reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+est sto UT_C_`x'_`var'_`z'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated C `z'") append
 
-reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code)
-est sto UT_FE_C_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated FE C") append
+reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code)
+est sto UT_FE_C_`x'_`var'_`z'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated FE C `z'") append
 
-reghdfe `var' Untreated Merging Post_Merging_Treat Post_Non_Merging_Treat log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
-est sto UT_T_C_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated T C") append
+reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
+est sto UT_T_C_`x'_`var'_`z'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated T C `z'") append
+}
+*
 
 /*Overall Effects Major*/
 reghdfe `var' Major Merging Post_Major Post_Merging Post_Minor trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
@@ -212,6 +225,10 @@ reghdfe `var' Major Merging Post_Major Post_Merging Post_Minor trend [aw = weigh
 est sto Maj_FE_`x'_`var'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Major FE") append
 
+reghdfe `var' Major Merging Post_Major Post_Merging Post_Minor trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
+est sto Maj_FE_t_`x'_`var'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Major t") append
+
 /*Overall Effects Major Controls*/
 reghdfe `var' Major Merging Post_Major Post_Merging Post_Minor log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
 est sto Maj_C_`x'_`var'
@@ -221,6 +238,9 @@ reghdfe `var' Major Merging Post_Major Post_Merging Post_Minor log_hhinc_per_per
 est sto Maj_FE_C_`x'_`var'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Major FE C") append
 
+reghdfe `var' Major Merging Post_Major Post_Merging Post_Minor log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
+est sto Maj_FE_t_C_`x'_`var'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Major t C") append
 
 /*Timing of the Effects on Prices*/
 /*One Year After*/

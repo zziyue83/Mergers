@@ -6,8 +6,10 @@
 #SBATCH -c 1
 #SBATCH -t 600:00:00
 #SBATCH --mail-user=jdsalas@u.northwestern.edu
-#SBATCH --mem=45G
-#SBATCH --nodes=1
+#SBATCH --mem=100G
+#SBATCH -n 12
 cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox
 module load python/anaconda3.6
-python Did_interactions.py
+module load parallel
+
+parallel -j12 "python did_parallel.py {}" ::: ../../../All/*

@@ -4,7 +4,7 @@
 #SBATCH -p buyin
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -c 1
-#SBATCH -t 400:00:00
+#SBATCH -t 600:00:00
 #SBATCH --mail-user=jdsalas@u.northwestern.edu
 #SBATCH --mem=45G
 #SBATCH --nodes=1
