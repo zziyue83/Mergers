@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 from collections import OrderedDict
 import numpy as np
 import time
+import auxiliary as aux
 
 # check if I need to organize directory/path for auxiliary function imports
-import auxiliary as aux
 
 # using test case code
 code = '2823116020_9'
@@ -68,6 +68,9 @@ pivoted = df.pivot_table(index = ['upc','year','month'], columns = 'dma_code', v
 pivoted.fillna(0)
 
 pivoted.to_csv('pivoted_data.csv', index = False, sep = ',', encoding = 'utf-8')
+
+owners = append_owners(code, df, 'month')
+owners.to_csv('owners_try.csv', index = False, sep = ',', encoding = 'utf-8')
 
 # opening the dataframe and using only info needed
 
