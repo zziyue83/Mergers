@@ -85,7 +85,14 @@ gen Untreated_`x' = 1
 replace Untreated_`x' = 0 if mp_share >= `x'/100
 gen Post_Merging_Treat_`x' = (1 - Untreated_`x') * Merging * post_merger
 gen Post_Non_Merging_Treat_`x' = (1 - Untreated_`x') * Non_Merging * post_merger
+
+gen Merging_Treated_`x' = Merging * (1 - Untreated_`x')
+gen Non_Merging_Treated_`x' = (1 - Merging) * (1 - Untreated_`x')
+gen Merging_Treated_Post_`x' = Merging * (1 - Untreated_`x') * post_merger
+gen Non_Merging_Treated_Post_`x' = (1 - Merging) * (1 - Untreated_`x') * post_merger
+
 }
+*
 
 /*Minor post*/
 gen Major = .
@@ -189,28 +196,29 @@ outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Over
 
 foreach z in 2 5 10 {
 /*Overall Effects Untreated*/
-reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging_Treated_Post_`z' Non_Merging_Treated_Post_`z' trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
 est sto UT_`x'_`var'_`z'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated `z'") append
 
-reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code)
-est sto UT_FE_`x'_`var'_`z'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated FE `z'") append
+reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging_Treated_Post_`z' Non_Merging_Treated_Post_`z' trend [aw = weights_`x'], abs(entity_effects time_effects) vce(cluster dma_code)
+est sto UT_`x'_`var'_`z'
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated `z'") append
 
-reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
-est sto UT_T_`x'_`var'_`z'
+reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging_Treated_Post_`z' Non_Merging_Treated_Post_`z' trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
+est sto UT_`x'_`var'_`z'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated T `z'") append
 
+
 /*Overall Effects Untreated Controls*/
-reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging_Treated_Post_`z' Non_Merging_Treated_Post_`z' log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
 est sto UT_C_`x'_`var'_`z'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated C `z'") append
 
-reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code)
+reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging_Treated_Post_`z' Non_Merging_Treated_Post_`z' log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects time_effects) vce(cluster dma_code)
 est sto UT_FE_C_`x'_`var'_`z'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated FE C `z'") append
 
-reghdfe `var' Untreated_`z' Merging Post_Merging_Treat_`z' Post_Non_Merging_Treat_`z' log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
+reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging_Treated_Post_`z' Non_Merging_Treated_Post_`z' log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(dma_code##c.trend entity_effects time_calendar) vce(cluster dma_code)
 est sto UT_T_C_`x'_`var'_`z'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated T C `z'") append
 }
