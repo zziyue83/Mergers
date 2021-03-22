@@ -83,7 +83,12 @@ forv i=0/24{
 	replace Months_post = `i' if month_date == `cutoff_c' + `i'
 }
 *
-
+gen Months_post2 = .
+replace Months_post2 = 0 if inrange(month_date, `cutoff_c' - 24, `cutoff_c')
+forv i=1/24{
+	replace Months_post2 = `i' if month_date == `cutoff_c' + `i'
+}
+*
 
 summarize Months
 local max_month = `r(max)'
@@ -98,18 +103,18 @@ quietly{
 
 
 /*Granular Timing for Post Only*/
-reghdfe lprice i.Merging##ib0.Months_post  [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+reghdfe lprice i.Merging##ib0.Months_post  [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code) basel
 
 forv i=25/`max_month'{
 
 	local j = `i' - 25
-	lincom 1.Merging + `j'.Months + 1.Merging#`j'.Months
-	matrix P[`i',(8*`x'+ 1)] = `r(estimate)'
-	matrix P[`i',(8*`x'+ 2)] = `r(se)'
+	lincom 1.Merging + `j'.Months_post + 1.Merging#`j'.Months_post
+	matrix P[`i',(12*`x'+ 1)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 2)] = `r(se)'
 
-	lincom 0.Merging + `j'.Months + 0.Merging#`j'.Months
-	matrix P[`i',(8*`x'+ 3)] = `r(estimate)'
-	matrix P[`i',(8*`x'+ 4)] = `r(se)'
+	lincom 0.Merging + `j'.Months_post + 0.Merging#`j'.Months_post
+	matrix P[`i',(12*`x'+ 3)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 4)] = `r(se)'
 }
 *
 
@@ -119,15 +124,30 @@ reghdfe lprice i.Merging##ib25.Months trend [aw = weights_`x'], abs(entity_effec
 forv i=`min_month'/`max_month'{
 
 	lincom 1.Merging + `i'.Months + 1.Merging#`i'.Months
-	matrix P[`i',(8*`x'+ 5)] = `r(estimate)'
-	matrix P[`i',(8*`x'+ 6)] = `r(se)'
+	matrix P[`i',(12*`x'+ 5)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 6)] = `r(se)'
 
 	lincom 0.Merging + `i'.Months + 0.Merging#`i'.Months
-	matrix P[`i',(8*`x'+ 7)] = `r(estimate)'
-	matrix P[`i',(8*`x'+ 8)] = `r(se)'
+	matrix P[`i',(12*`x'+ 7)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 8)] = `r(se)'
 }
 *
 
+/*Granular Timing for Post2 Only*/
+reghdfe lprice i.Merging##ib0.Months_post2  [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code) basel
+
+forv i=25/`max_month'{
+
+	local j = `i' - 25
+	lincom 1.Merging + `j'.Months + 1.Merging#`j'.Months_post2
+	matrix P[`i',(12*`x'+ 9)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 10)] = `r(se)'
+
+	lincom 0.Merging + `j'.Months + 0.Merging#`j'.Months_post2
+	matrix P[`i',(12*`x'+ 11)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 12)] = `r(se)'
+}
+*
 
 }
 }

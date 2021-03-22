@@ -1,3 +1,0 @@
-parallel: Error: Output is incomplete. Cannot append to buffer file in /tmp. Is the disk full?
-parallel: Error: Change $TMPDIR with --tmpdir or use --compress.
-slurmstepd: error: Detected 1 oom-kill event(s) in step 7793838.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
