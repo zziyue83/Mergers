@@ -92,14 +92,13 @@ local min_month = `r(min)'
 matrix P = J(`r(max)', 32, .)
 
 /*Main Routine*/
-foreach var of varlist lprice lquant {
 forval x = 0/3 {
 
 quietly{
 
 
 /*Granular Timing for Post Only*/
-reghdfe `var' i.Merging##ib0.Months_post  [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+reghdfe lprice i.Merging##ib0.Months_post  [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
 
 forv i=25/`max_month'{
 
@@ -115,7 +114,7 @@ forv i=25/`max_month'{
 *
 
 /*Granular Timing Pre and Post*/
-reghdfe `var' i.Merging##ib25.Months trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+reghdfe lprice i.Merging##ib25.Months trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code) basel
 
 forv i=`min_month'/`max_month'{
 
@@ -132,13 +131,23 @@ forv i=`min_month'/`max_month'{
 
 }
 }
-}
 *
 
-putexcel set "`2'/Months", modify
+putexcel set "`2'/Months", replace
 putexcel A1=matrix(P)
 mata : st_matrix("Months", mean(st_matrix("P")))
 
+
+
+
+
+exit, STATA clear
+
+
+
+
+
+*
 
 
 
