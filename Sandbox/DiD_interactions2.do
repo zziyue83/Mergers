@@ -204,8 +204,8 @@ est sto OA_FE_C_t_`x'_`var'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Overall t C") append
 
 foreach z in 2 5 10 {
-/*Overall Effects Untreated*/reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging_Treated_Post_`z' Non_Merging_Treated_Post_`z' trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
-
+/*Overall Effects Untreated*/
+reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging_Treated_Post_`z' Non_Merging_Treated_Post_`z' trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
 est sto UT_`x'_`var'_`z'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated `z'") append
 
