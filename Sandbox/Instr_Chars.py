@@ -1,6 +1,8 @@
 import re
 import os
 import pandas as pd
+import sys
+import numpy as np
 
 
 def parse_info(file):
@@ -34,30 +36,33 @@ def get_instr(folders, base_folder):
         merger_folder = base_folder + folder + '/'
         infotxt = merger_folder + 'info.txt'
 
-        progress['merger'].append(folder)
+        if os.path.exists(infotxt):
 
-        info = parse_info(infotxt)
+            info = parse_info(infotxt)
 
-        if 'Instruments' in info:
+            if 'Instruments' in info:
+                if len(info['Instruments']) > 1:
 
-            Instruments = [i.lstrip() for i in info['Instruments'].split(',')]
+                    progress['merger'].append(folder)
 
-            for inst in range(15):
+                    Instruments = [i.lstrip() for i in info['Instruments'].split(',')]
 
-                try:
+                    for inst in range(15):
 
-                    progress['Inst_+'str(inst)].append(Instruments[inst])
+                        try:
 
-                except IndexError:
+                            progress['Inst_' + str(inst)].append(Instruments[inst])
 
-                    progress['Inst_+'str(inst)].append('None')
+                        except IndexError:
+
+                            progress['Inst_' + str(inst)].append('None')
 
     df = pd.DataFrame.from_dict(progress)
     df = df.sort_values(by='merger').reset_index().drop('index', axis=1)
-    df.to_csv('Instr_Chars.csv', sep=',')
+    df.to_csv('output/Instr_Chars.csv', sep=',')
 
 
-base_folder = '../../All/'
+base_folder = '../../../All/'
 
 codes = (['m_1785984020_11', 'm_2664559020_1', 'm_2735179020_1',
           'm_2735179020_4', 'm_2736521020_10', 'm_2033113020_1_OLD',
