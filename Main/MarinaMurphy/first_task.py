@@ -67,8 +67,9 @@ def get_date_range(initial_year_string, final_year_string, pre_months = 24, post
         return date_range
 
 #getting the owners from aux
+
 def append_owners(code, df, month_or_quarter,add_dhhi = False):
-# # Load list of UPCs and brands
+    # Load list of UPCs and brands
     upcs = pd.read_csv('../../../../All/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
     upcs = upcs['brand_code_uc']
     upc_map = upcs.to_dict()
@@ -76,10 +77,10 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 # # Map brands to dataframe (by UPC)
     df['brand_code_uc'] = df['upc'].map(upc_map)
 
-# # Load ownership assignments
+# Load ownership assignments
     brand_to_owner = pd.read_csv('../../../../All/m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
 
-# # Assign min/max year and month when listed as zero in ownership mapping
+# Assign min/max year and month when listed as zero in ownership mapping
     min_year = df['year'].min()
     max_year = df['year'].max()
 
@@ -199,7 +200,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 
 
 
-    def table_1(code):
+def table_1(code):
     
     # must have 4 ../../../.. because i'm inside a folder inside Main
     # opening data_month file
