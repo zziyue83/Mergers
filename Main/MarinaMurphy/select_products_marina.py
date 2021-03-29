@@ -313,7 +313,8 @@ def write_market_coverage(code, agg, upc_set, largest_brand_left_out, month_or_q
 	agg = agg.join(largest_brand_left_out, how = 'left', on = ['dma_code', 'year', month_or_quarter])
 	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', index = False, sep = ',', encoding = 'utf-8')
 
-code = sys.argv[1]
+#code = sys.argv[1]
+
 log_out = open('../../../All/m_' + code + '/output/select_products.log', 'w')
 log_err = open('../../../All/m_' + code + '/output/select_products.err', 'w')
 sys.stdout = log_out
