@@ -278,7 +278,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     area_time_upc = area_time_upc.join(market_sizes.drop('total_volume', axis=1), on = ['dma_code', 'year', month_or_quarter])
     area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
 
-    return area_time_upc
+    return area_time_upc, store_map
 
 code = '2641303020_8'
 info_dict = parse_info(code)
@@ -294,5 +294,14 @@ conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
 area_month_upc.to_csv('area_month.csv')
+
+# creating area_month_upc file
+area_month_upc = area_month_upc[['store_code_uc', 'upc', 'year', 'month', 'sales', 'dma_code', 'volume']]
+
+# loading stores
+store_map.to_csv("store_map")
+
+# inserting store type
+area_month_upc.insert(1, "channel_code", area_month_upc["store_code_uc"].map(stores_map["channel_code"]))
 
 
