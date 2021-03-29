@@ -1,0 +1,413 @@
+
+  ___  ____  ____  ____  ____ (R)
+ /__    /   ____/   /   ____/
+___/   /   /___/   /   /___/   14.2   Copyright 1985-2015 StataCorp LP
+  Statistics/Data Analysis            StataCorp
+                                      4905 Lakeway Drive
+     MP - Parallel Edition            College Station, Texas 77845 USA
+                                      800-STATA-PC        http://www.stata.com
+                                      979-696-4600        stata@stata.com
+                                      979-696-4601 (fax)
+
+25-user 4-core Stata network perpetual license:
+       Serial number:  501406210780
+         Licensed to:  NUIT ART - Research Computing
+                       Anton Verlygo (anton@northwestern.edu)
+
+Notes:
+      1.  Stata is running in batch mode.
+      2.  Unicode is supported; see help unicode_advice.
+      3.  More than 2 billion observations are allowed; see help obs_advice.
+      4.  Maximum number of variables is set to 5000; see help set_maxvar.
+
+. do /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/DiD_Months.do ../..
+> /../All/m_2813860020_1/intermediate ../output/ month 2016 2 2015 10 
+
+. 
+. 
+. clear all
+
+. 
+. set more off
+
+. 
+. est clear
+
+. 
+. /* *args coming from the python script*/
+. /* *args: input_path       = `1' */
+. /* *args: output_path      = `2' */
+. /* *args: month_or_quarter = `3' */
+. /* *args: year_completed   = `4' */
+. /* *args: month_completed  = `5' */
+. /* *args: year_announced   = `6' */
+. /* *args: month_announced  = `7' */
+. 
+. 
+. cd `1'
+/projects/b1048/gillanes/Mergers/All/m_2813860020_1/intermediate
+
+. log using `2'/did_Months, text replace
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /projects/b1048/gillanes/Mergers/All/m_2813860020_1/intermediate/.
+> ./output//did_Months.log
+  log type:  text
+ opened on:   4 Mar 2021, 21:59:36
+
+. 
+. import delimited "stata_did_int_`3'.csv", encoding(ISO-8859-1)
+ 25. }
+
+. *
+. 
+. putexcel set "`2'/Months", modify
+
+. putexcel A1=matrix(P)
+file ../output//Months.xlsx saved
+
+. mata : st_matrix("Months", mean(st_matrix("P")))
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+end of do-file
+(27 vars, 2,277,522 obs)
+
+. 
+. /*Install Packages*/
+. ssc install outreg2
+checking outreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install ftools
+checking ftools consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install reghdfe
+checking reghdfe consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install estout
+checking estout consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. /* Fixed Effects */
+. egen entity_effects = group(upc dma_code)
+
+. egen time_effects = group(year `3')
+
+. egen time_calendar = group(`3')
+
+. 
+. /* WEIGHTING SCHEMES */
+. gen pre_vol = volume * (1 - post_merger)
+
+. gen weights_0 = 1 /*to add weights that won't change things*/
+
+. egen weights_1 = total(pre_vol), by(upc)
+
+. egen weights_2 = total(pre_vol), by(dma_code)
+
+. egen weights_3 = total(pre_vol), by(upc dma_code)
+
+. replace weights_1 = round(weights_1)
+(1,651,967 real changes made)
+
+. replace weights_2 = round(weights_2)
+(1,664,810 real changes made)
+
+. replace weights_3 = round(weights_3)
+(2,184,424 real changes made)
+
+. 
+. /*Post Merger Non Merging*/
+. gen Merging = .
+(2,277,522 missing values generated)
+
+. replace Merging = 1 if merging == "True"
+(235,675 real changes made)
+
+. replace Merging = 0 if merging == "False"
+(2,041,847 real changes made)
+
+. gen Non_Merging = (1 - Merging)
+
+. gen Post_Non_Merging = post_merger * (1 - Merging)
+
+. 
+. /*Controls*/
+. replace demand_instruments0 = demand_instruments0/distance
+(2,277,371 real changes made, 940 to missing)
+
+. 
+. /*Quantity*/
+. gen lquant = log(volume)
+
+. 
+. rename post_merger_merging Post_Merging
+
+. 
+. /*One Year Post*/
+. gen month_date = ym(year, month)
+
+. tabstat month_date if (month==`5' & year==`4'), save
+
+    variable |      mean
+-------------+----------
+  month_date |       673
+------------------------
+
+. matrix cutoff_c=r(StatTotal)
+
+. local cutoff_c=cutoff_c[1,1]
+
+. 
+. /*Minor post*/
+. gen Major = .
+(2,277,522 missing values generated)
+
+. replace Major = 1 if major_competitor == "True"
+(698,796 real changes made)
+
+. replace Major = 0 if major_competitor == "False"
+(1,578,726 real changes made)
+
+. gen Post_Minor = (1 - Major) * Non_Merging * post_merger
+
+. gen Post_Major = Major * Non_Merging * post_merger
+
+. 
+. 
+. /*Months After and Pre Dummies*/
+. gen Months = .
+(2,277,522 missing values generated)
+
+. forv i=-24/24{
+  2.         local j = `i' + 25
+  3.         replace Months = `j' if month_date == `cutoff_c' + `i'
+  4. }
+(39,324 real changes made)
+(40,448 real changes made)
+(41,014 real changes made)
+(41,528 real changes made)
+(41,828 real changes made)
+(41,547 real changes made)
+(41,385 real changes made)
+(41,245 real changes made)
+(41,322 real changes made)
+(41,519 real changes made)
+(41,565 real changes made)
+(41,857 real changes made)
+(46,416 real changes made)
+(47,781 real changes made)
+(47,091 real changes made)
+(45,200 real changes made)
+(43,602 real changes made)
+(43,093 real changes made)
+(43,109 real changes made)
+(42,986 real changes made)
+(43,345 real changes made)
+(43,424 real changes made)
+(43,534 real changes made)
+(45,286 real changes made)
+(47,042 real changes made)
+(47,185 real changes made)
+(46,918 real changes made)
+(45,490 real changes made)
+(45,060 real changes made)
+(44,891 real changes made)
+(44,809 real changes made)
+(44,759 real changes made)
+(44,990 real changes made)
+(45,117 real changes made)
+(45,469 real changes made)
+(42,795 real changes made)
+(43,639 real changes made)
+(43,902 real changes made)
+(43,634 real changes made)
+(42,445 real changes made)
+(42,070 real changes made)
+(42,155 real changes made)
+(41,817 real changes made)
+(41,551 real changes made)
+(40,969 real changes made)
+(40,525 real changes made)
+(40,228 real changes made)
+(43,446 real changes made)
+(42,901 real changes made)
+
+. *
+. gen Months_post = .
+(2,277,522 missing values generated)
+
+. forv i=0/24{
+  2.         replace Months_post = `i' if month_date == `cutoff_c' + `i'
+  3. }
+(47,042 real changes made)
+(47,185 real changes made)
+(46,918 real changes made)
+(45,490 real changes made)
+(45,060 real changes made)
+(44,891 real changes made)
+(44,809 real changes made)
+(44,759 real changes made)
+(44,990 real changes made)
+(45,117 real changes made)
+(45,469 real changes made)
+(42,795 real changes made)
+(43,639 real changes made)
+(43,902 real changes made)
+(43,634 real changes made)
+(42,445 real changes made)
+(42,070 real changes made)
+(42,155 real changes made)
+(41,817 real changes made)
+(41,551 real changes made)
+(40,969 real changes made)
+(40,525 real changes made)
+(40,228 real changes made)
+(43,446 real changes made)
+(42,901 real changes made)
+
+. *
+. 
+. 
+. summarize Months
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      Months |  2,123,256    25.07681    13.91889          1         49
+
+. local max_month = `r(max)'
+
+. local min_month = `r(min)'
+
+. 
+. matrix P = J(`r(max)', 32, .)
+
+. 
+. /*Main Routine*/
+. foreach var of varlist lprice lquant {
+  2. forval x = 0/3 {
+  3. 
+. quietly{
+  4. 
+. 
+. /*Granular Timing for Post Only*/
+. reghdfe `var' i.Merging##ib0.Months_post  [aw = weights_`x'], abs(entity_effe
+> cts) vce(cluster dma_code)
+  5. 
+. forv i=25/`max_month'{
+  6. 
+.         local j = `i' - 25
+  7.         lincom 1.Merging + `j'.Months + 1.Merging#`j'.Months
+  8.         matrix P[`i',(8*`x'+ 1)] = `r(estimate)'
+  9.         matrix P[`i',(8*`x'+ 2)] = `r(se)'
+ 10. 
+.         lincom 0.Merging + `j'.Months + 0.Merging#`j'.Months
+ 11.         matrix P[`i',(8*`x'+ 3)] = `r(estimate)'
+ 12.         matrix P[`i',(8*`x'+ 4)] = `r(se)'
+ 13. }
+ 14. *
+. 
+. /*Granular Timing Pre and Post*/
+. reghdfe `var' i.Merging##ib25.Months trend [aw = weights_`x'], abs(entity_eff
+> ects) vce(cluster dma_code)
+ 15. 
+. forv i=`min_month'/`max_month'{
+ 16. 
+.         lincom 1.Merging + `i'.Months + 1.Merging#`i'.Months
+ 17.         matrix P[`i',(8*`x'+ 5)] = `r(estimate)'
+ 18.         matrix P[`i',(8*`x'+ 6)] = `r(se)'
+ 19. 
+.         lincom 0.Merging + `i'.Months + 0.Merging#`i'.Months
+ 20.         matrix P[`i',(8*`x'+ 7)] = `r(estimate)'
+ 21.         matrix P[`i',(8*`x'+ 8)] = `r(se)'
+ 22. }
+ 23. *
+. 
+. 
+. }
+ 24. }
+ 25. }
+
+. *
+. 
+. putexcel set "`2'/Months", modify
+
+. putexcel A1=matrix(P)
+file ../output//Months.xlsx saved
+
+. mata : st_matrix("Months", mean(st_matrix("P")))
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+end of do-file
+ 25. }
+
+. *
+. 
+. putexcel set "`2'/Months", modify
+
+. putexcel A1=matrix(P)
+file ../output//Months.xlsx saved
+
+. mata : st_matrix("Months", mean(st_matrix("P")))
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+end of do-file
+ 25. }
+
+. *
+. 
+. putexcel set "`2'/Months", modify
+
+. putexcel A1=matrix(P)
+file ../output//Months.xlsx saved
+
+. mata : st_matrix("Months", mean(st_matrix("P")))
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+end of do-file
+ 25. }
+
+. *
+. 
+. putexcel set "`2'/Months", modify
+
+. putexcel A1=matrix(P)
+file ../output//Months.xlsx saved
+
+. mata : st_matrix("Months", mean(st_matrix("P")))
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+end of do-file

@@ -31,16 +31,20 @@ def Model_Coeffs(base_folder):
                     aggregated['price'].append(read_file['="(1)"'][1])
                     aggregated['nest'].append(read_file['="(1)"'][3])
 
-                print(folder)
+                #print(folder)
 
                 df = pd.DataFrame.from_dict(aggregated)
                 df = df.sort_values(by='model').reset_index().drop('index', axis=1)
                 df.to_csv(merger_folder + '/' + 'Model_Coeffs.csv', sep=',')
 
-            df = pd.read_csv(merger_folder + '/' + "Model_Coeffs.csv", sep=",")
-            df.loc[((df['price']<0) & (df['nest']>0) & (df['nest']<1)), 'Theory'] = 1
-            df = df[df['Theory']==1]
-            df.to_csv(merger_folder + '/' + "Model_Coeffs.csv")
+                df = pd.read_csv(merger_folder + '/' + "Model_Coeffs.csv", sep=",")
+                df.loc[((df['price']<0) & (df['nest']>0) & (df['nest']<1)), 'Theory'] = 1
+                df = df[df['Theory']==1]
+                df.to_csv(merger_folder + '/' + "Model_Coeffs.csv")
+
+                if df.shape[0] != 0:
+                    print(folder)
+
 
 log_out = open('output/Model_Coeffs.log', 'w')
 log_err = open('output/Model_Coeffs.err', 'w')

@@ -16,7 +16,7 @@ def did_dma(folder, month_or_quarter='month'):
     merger_folder = folder + '/output'
     path_input = folder + "/intermediate"
 
-    if (os.path.exists(path_input + '/stata_did_int_month.csv')):
+    if (os.path.exists(path_input + '/stata_did_int_month.csv') and not os.path.exists(merger_folder + '/did_int_lprice_2.csv')):
 
         code = folder[15:]
         info_dict = aux.parse_info(code)
@@ -27,7 +27,7 @@ def did_dma(folder, month_or_quarter='month'):
 
         print(code)
 
-        dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/DiD_interactions2.do"
+        dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/DiD_Months.do"
         DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
         path_output = "../output/"
         cmd = ([DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input,
