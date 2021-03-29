@@ -277,9 +277,6 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     # Shares = volume / market size.  Map market sizes back and get shares.
     area_time_upc = area_time_upc.join(market_sizes.drop('total_volume', axis=1), on = ['dma_code', 'year', month_or_quarter])
     area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
-    area_month_upc = pd.DataFrame.from_records(area_month_upc, columns = ['store_code_uc', 'upc', 'units', 'prmult', 'price', 'feature','display', 
-        'year', 'month', 'dma_code', 'sales', 'module', 'upc_ver_uc','brand_code_uc', 'brand_descr', 'multi', 'size1_units', 'size1_amount', 
-        'conversion', 'volume', 'prices', 'total_sales', 'market_size','shares'])
 
     return area_time_upc, store_map
 
@@ -295,6 +292,10 @@ years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
 conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
     
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
+area_month_upc = pd.DataFrame.from_records(area_time_upc, columns = ['store_code_uc', 'upc', 'units', 'prmult', 'price', 'feature','display', 
+    'year', 'month', 'dma_code', 'sales', 'module', 'upc_ver_uc','brand_code_uc', 'brand_descr', 'multi', 'size1_units', 'size1_amount', 
+    'conversion', 'volume', 'prices', 'total_sales', 'market_size','shares'])
+
 print(type(area_month_upc))
 
 #area_month_upc = pd.DataFrame.from_records(area_month_upc)
@@ -307,6 +308,14 @@ print(type(area_month_upc))
 store_map.to_csv("store_map.csv")
 
 # inserting store type
-area_month_upc.insert(1, "channel_code", area_month_upc["store_code_uc"].map(stores_map["channel_code"]))
+area_month_upc.insert(1, "channel_code", area_month_upc["store_code_uc"].map(store_map["channel_code"]))
+area_month_upc.insert(1, "parent_code", area_month_upc["store_code_uc"].map(store_map["parent_code"]))
 
 area_month_upc.to_csv('area_month.csv')
+
+area_month_upc = area_month_upc.groupby(['channel_code','upc','year','month']).agg({'sales': 'sum', 'volume': 'sum'})
+area_month_upc = area_month_upc.pivot_table(index = ['upc','year','month'], columns = 'channel_code', values = ['sales','volume']).reset_index()
+
+area_month_upc.to_csv('area_month_with_channelcodes.csv')
+
+
