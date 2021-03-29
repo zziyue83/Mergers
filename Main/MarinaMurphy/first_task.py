@@ -199,7 +199,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 
 
 
-    def table_1(code):
+def table_1(code):
     
     # must have 4 ../../../.. because i'm inside a folder inside Main
     # opening data_month file
