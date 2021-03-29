@@ -292,13 +292,16 @@ years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
 conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
     
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
+print(type(area_month_upc))
+
+area_month_upc = pd.DataFrame.from_records(area_month_upc)
 
 # creating area_month_upc file
 area_month_upc = area_month_upc[['store_code_uc', 'upc', 'year', 'month', 'sales', 'dma_code', 'volume']]
-print(type(area_mont_upc))
+print(type(area_month_upc))
 
 # loading stores
-store_map.to_csv("store_map")
+store_map.to_csv("store_map.csv")
 
 # inserting store type
 area_month_upc.insert(1, "channel_code", area_month_upc["store_code_uc"].map(stores_map["channel_code"]))
