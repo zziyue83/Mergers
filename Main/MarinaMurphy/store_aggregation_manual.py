@@ -293,10 +293,9 @@ conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
     
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
-area_month_upc.to_csv('area_month.csv')
-
 # creating area_month_upc file
 area_month_upc = area_month_upc[['store_code_uc', 'upc', 'year', 'month', 'sales', 'dma_code', 'volume']]
+print(type(area_mont_upc))
 
 # loading stores
 store_map.to_csv("store_map")
@@ -304,4 +303,4 @@ store_map.to_csv("store_map")
 # inserting store type
 area_month_upc.insert(1, "channel_code", area_month_upc["store_code_uc"].map(stores_map["channel_code"]))
 
-
+area_month_upc.to_csv('area_month.csv')
