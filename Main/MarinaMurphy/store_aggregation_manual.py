@@ -303,10 +303,9 @@ print(type(area_month_upc))
 
 # creating area_month_upc file
 area_month_upc = area_month_upc[['store_code_uc', 'upc', 'year', 'month', 'sales', 'dma_code', 'volume']]
-print(type(area_month_upc))
 
 # loading stores
-store_map.to_csv("store_map.csv")
+#store_map.to_csv("store_map.csv")
 
 # inserting store type
 area_month_upc.insert(1, "channel_code", area_month_upc["store_code_uc"].map(store_map["channel_code"]))
