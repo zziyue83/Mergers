@@ -8,18 +8,18 @@ import pandas as pd
 from clean_data import clean_data
 
 def load_store_table(year):
-	store_path = "../../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
+	store_path = "../../../../Data/nielsen_extracts/RMS/" + year + "/Annual_Files/stores_" + year + ".tsv"
 	store_table = pd.read_csv(store_path, delimiter = "\t", index_col = "store_code_uc")
 	print("Loaded store file of "+ year)
 	return store_table
 
 def get_conversion_map(code, final_unit, method = 'mode'):
 	# Get in the conversion map -- size1_units, multiplication
-	master_conversion = pd.read_csv('../../../All/master/unit_conversion.csv')
+	master_conversion = pd.read_csv('../../../../All/master/unit_conversion.csv')
 	assert master_conversion['final_unit'].str.contains(final_unit).any(), "Cannot find %r as a final_unit" % final_unit
 	master_conversion = master_conversion[master_conversion['final_unit'] == final_unit]
 
-	these_units = pd.read_csv('../../../All/m_' + code + '/properties/units_edited.csv')
+	these_units = pd.read_csv('../../../../All/m_' + code + '/properties/units_edited.csv')
 	these_units['conversion'] = 0
 
 	# Anything that has convert = 1 must be in the master folder
@@ -210,7 +210,7 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
 
 	# Save the output if this is month
 	if month_or_quarter == 'month':
-		market_sizes.to_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
+		market_sizes.to_csv('../../../../All/m_' + code + '/intermediate/market_sizes.csv', sep = ',', encoding = 'utf-8')
 
 	# Shares = volume / market size.  Map market sizes back and get shares.
 	area_time_upc = area_time_upc.join(market_sizes.drop('total_volume', axis=1), on = ['dma_code', 'year', month_or_quarter])
@@ -256,7 +256,7 @@ def write_brands_upc(code, agg, upc_set):
 	years = agg['max_year'].unique()
 	features_list = []
 	for year in years:
-		this_features =  pd.read_csv("../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/products_extra_"+str(year)+".tsv", delimiter = '\t')
+		this_features =  pd.read_csv("../../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/products_extra_"+str(year)+".tsv", delimiter = '\t')
 		features_list.append(this_features)
 	features = pd.concat(features_list)
 	features = features.drop('upc_ver_uc', axis = 1)
@@ -278,7 +278,7 @@ def write_brands_upc(code, agg, upc_set):
 		print(column)
 		print(agg[column].describe())
 
-	base_folder = '../../../All/m_' + code + '/intermediate/'
+	base_folder = '../../../../All/m_' + code + '/intermediate/'
 	agg.drop(['volume'], axis = 1).to_csv(base_folder + 'upcs.csv', index = False, sep = ',', encoding = 'utf-8')
 	print(str(len(agg)) + ' unique upcs')
 
@@ -295,10 +295,10 @@ def write_brands_upc(code, agg, upc_set):
 def write_base_dataset(code, agg, upc_set, month_or_quarter = 'month'):
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'prices', 'shares', 'sales', 'volume']]
 	agg = agg[agg.upc.isin(upc_set)]
-	agg.to_csv('../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', index = False, sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../../All/m_' + code + '/intermediate/data_' + month_or_quarter + '.csv', index = False, sep = ',', encoding = 'utf-8')
 
 def write_market_coverage(code, agg, upc_set, largest_brand_left_out, month_or_quarter = 'month'):
-	ms = pd.read_csv('../../../All/m_' + code + '/intermediate/market_sizes.csv', delimiter = ',', index_col = ['dma_code', 'year', month_or_quarter])
+	ms = pd.read_csv('../../../../All/m_' + code + '/intermediate/market_sizes.csv', delimiter = ',', index_col = ['dma_code', 'year', month_or_quarter])
 
 	agg = agg[['upc', 'dma_code', 'year', month_or_quarter, 'volume']]
 	agg = agg[agg.upc.isin(upc_set)]
@@ -311,12 +311,12 @@ def write_market_coverage(code, agg, upc_set, largest_brand_left_out, month_or_q
 	print(agg.market_coverage.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 
 	agg = agg.join(largest_brand_left_out, how = 'left', on = ['dma_code', 'year', month_or_quarter])
-	agg.to_csv('../../../All/m_' + code + '/intermediate/market_coverage.csv', index = False, sep = ',', encoding = 'utf-8')
+	agg.to_csv('../../../../All/m_' + code + '/intermediate/market_coverage.csv', index = False, sep = ',', encoding = 'utf-8')
 
-#code = sys.argv[1]
+code = sys.argv[1]
 
-log_out = open('../../../All/m_' + code + '/output/select_products.log', 'w')
-log_err = open('../../../All/m_' + code + '/output/select_products.err', 'w')
+log_out = open('../../../../All/m_' + code + '/output/select_products.log', 'w')
+log_err = open('../../../../All/m_' + code + '/output/select_products.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
