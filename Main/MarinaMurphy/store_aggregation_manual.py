@@ -308,6 +308,14 @@ print(type(area_month_upc))
 store_map.to_csv("store_map.csv")
 
 # inserting store type
-area_month_upc.insert(1, "channel_code", area_month_upc["store_code_uc"].map(stores_map["channel_code"]))
+area_month_upc.insert(1, "channel_code", area_month_upc["store_code_uc"].map(store_map["channel_code"]))
+area_month_upc.insert(1, "parent_code", area_month_upc["store_code_uc"].map(store_map["parent_code"]))
 
 area_month_upc.to_csv('area_month.csv')
+
+area_month_upc = area_month_upc.groupby(['channel_code','upc','year','month']).agg({'sales': 'sum', 'volume': 'sum'})
+area_month_upc = area_month_upc.pivot_table(index = ['upc','year','month'], columns = 'channel_code', values = ['sales','volume']).reset_index()
+
+area_month_upc.to_csv('area_month_with_channelcodes.csv')
+
+
