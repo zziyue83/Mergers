@@ -277,6 +277,9 @@ def aggregate_movement(code, years, groups, modules, month_or_quarter, conversio
     # Shares = volume / market size.  Map market sizes back and get shares.
     area_time_upc = area_time_upc.join(market_sizes.drop('total_volume', axis=1), on = ['dma_code', 'year', month_or_quarter])
     area_time_upc['shares'] = area_time_upc['volume'] / area_time_upc['market_size']
+    area_month_upc = pd.DataFrame.from_records(area_month_upc, columns = ['store_code_uc', 'upc', 'units', 'prmult', 'price', 'feature','display', 
+        'year', 'month', 'dma_code', 'sales', 'module', 'upc_ver_uc','brand_code_uc', 'brand_descr', 'multi', 'size1_units', 'size1_amount', 
+        'conversion', 'volume', 'prices', 'total_sales', 'market_size','shares'])
 
     return area_time_upc, store_map
 
@@ -294,7 +297,7 @@ conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 print(type(area_month_upc))
 
-area_month_upc = pd.DataFrame.from_records(area_month_upc)
+#area_month_upc = pd.DataFrame.from_records(area_month_upc)
 
 # creating area_month_upc file
 area_month_upc = area_month_upc[['store_code_uc', 'upc', 'year', 'month', 'sales', 'dma_code', 'volume']]
