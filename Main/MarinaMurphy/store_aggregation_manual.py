@@ -317,12 +317,12 @@ def store_aggregation(code):
     area_month_upc = area_month_upc.pivot_table(index = ['upc','year','month'], columns = 'channel_code', values = ['sales','volume'], fill_value = 0).reset_index()
 
     area_month_upc.to_csv('m_' + code + '/area_month_with_channelcodes.csv')
-    return
+    return area_month_upc
 
 codes = ['1924129020_1', '2641303020_8', '2823116020_9']
 
 for code in codes:
-    store_aggregation(code)
+    area_month_upc = store_aggregation(code)
     pivoted = pd.read_csv('m_' + code + '/pivoted_data.csv')
     final_table = pd.merge(pivoted, area_month_upc, how = "right", on = ['upc', 'year', 'month'])
     final_table.to_csv('m_' + code + '/final_table.csv')
