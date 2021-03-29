@@ -16,7 +16,7 @@ import re
 import itertools
 import shutil
 from tqdm import tqdm
-import clean_data
+from clean_data import clean_data
 
 def parse_info(code):
     file = open('../../../../All/m_' + code + '/info.txt', mode = 'r')
@@ -293,6 +293,6 @@ conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
     
 area_month_upc = aggregate_movement(code, years, groups, modules, "month", conversion_map, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 
-
+area_month_upc.to_csv('area_month.csv')
 
 
