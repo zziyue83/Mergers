@@ -67,8 +67,9 @@ def get_date_range(initial_year_string, final_year_string, pre_months = 24, post
         return date_range
 
 #getting the owners from aux
+
 def append_owners(code, df, month_or_quarter,add_dhhi = False):
-# # Load list of UPCs and brands
+    # Load list of UPCs and brands
     upcs = pd.read_csv('../../../../All/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
     upcs = upcs['brand_code_uc']
     upc_map = upcs.to_dict()
@@ -76,10 +77,10 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 # # Map brands to dataframe (by UPC)
     df['brand_code_uc'] = df['upc'].map(upc_map)
 
-# # Load ownership assignments
+# Load ownership assignments
     brand_to_owner = pd.read_csv('../../../../All/m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
 
-# # Assign min/max year and month when listed as zero in ownership mapping
+# Assign min/max year and month when listed as zero in ownership mapping
     min_year = df['year'].min()
     max_year = df['year'].max()
 
@@ -219,19 +220,23 @@ def table_1(code):
     #total_columns = len(pivoted.columns)
     
     # take upc-year-month-dma combinations now
-    repeated_upcs = (pd.concat([upcs]*len(date_range))).sort_values(ignore_index = True)
+    repeated_upcs = (pd.concat([upcs]*len(date_range))).sort_values() #ignore_index = True
     repeated_upcs.columns = ['upc']
+    repeated_upcs = repeated_upcs.reset_index(drop=True)
 
-    repeated_dates = pd.concat([date_range]*len(upcs), ignore_index = True, names = ['year', 'month'])
+    repeated_dates = pd.concat([date_range]*len(upcs))
     repeated_dates.columns = ['year', 'month']
+    repeated_dates = repeated_dates.reset_index(drop=True)
 
     unique_dma_codes = pd.DataFrame(df['dma_code'].unique())
-    repeated_dmas = pd.concat([unique_dma_codes]*len(upcs)*len(date_range), ignore_index = True, names = ['dma_code'])
+    repeated_dmas = pd.concat([unique_dma_codes]*len(upcs)*len(date_range))
     repeated_dmas.columns = ['dma_code']
+    repeated_dmas = repeated_dmas.reset_index(drop=True)
 
     # creating the empty dataframe with all upc-year-month-dma combinations
     empty_to_merge = pd.concat([pd.concat([repeated_upcs, repeated_dates], axis= 1)]*len(unique_dma_codes))
-    empty_to_merge = empty_to_merge.sort_values(by = ['upc', 'year', 'month'], ignore_index =True)
+    empty_to_merge = empty_to_merge.reset_index(drop=True)
+    empty_to_merge = empty_to_merge.sort_values(by = ['upc', 'year', 'month'])
     empty_to_merge.insert(1, 'dma_code', repeated_dmas)
     empty_to_merge = empty_to_merge.apply(pd.to_numeric)
 
