@@ -10,7 +10,7 @@ import os
 import tqdm 
 
 def parse_info(code):
-	file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
+	file = open('../../../../All/m_' + code + '/info.txt', mode = 'r')
 	info_file = file.read()
 	file.close()
 
