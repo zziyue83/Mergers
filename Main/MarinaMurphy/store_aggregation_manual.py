@@ -16,6 +16,7 @@ import re
 import itertools
 import shutil
 from tqdm import tqdm
+import clean_data
 
 def parse_info(code):
     file = open('../../../../All/m_' + code + '/info.txt', mode = 'r')
