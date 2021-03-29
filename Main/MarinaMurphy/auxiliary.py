@@ -69,20 +69,20 @@ def get_parties(info_str):
 
 def load_chunked_year_module_movement_table(year, group, module, path = ''):
 	if path == '':
-		path = "../../../Data/nielsen_extracts/RMS/" + year + "/Movement_Files/" + group + "_" + year + "/" + module + "_" + year + ".tsv"
+		path = "../../../../Data/nielsen_extracts/RMS/" + year + "/Movement_Files/" + group + "_" + year + "/" + module + "_" + year + ".tsv"
 	assert os.path.exists(path), "File does not exist: %r" % path
 	table = pd.read_csv(path, delimiter = "\t", chunksize = 10000000)
 	return table
 
 def get_upc_ver_uc_map(year):
-	upc_ver_path = "../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/rms_versions_"+str(year)+".tsv"
+	upc_ver_path = "../../../../Data/nielsen_extracts/RMS/"+str(year)+"/Annual_Files/rms_versions_"+str(year)+".tsv"
 	upc_vers = pd.read_csv(upc_ver_path, delimiter = "\t", encoding = "cp1252", header = 0, index_col = "upc")
 	upc_vers = upc_vers['upc_ver_uc']
 	upc_ver_map = upc_vers.to_dict()
 	return upc_ver_map
 
 def get_product_map(groups):
-	products_path = "../../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
+	products_path = "../../../../Data/nielsen_extracts/RMS/Master_Files/Latest/products.tsv"
 	products = pd.read_csv(products_path, delimiter = "\t", encoding = "cp1252", header = 0, index_col = ["upc","upc_ver_uc"])
 	int_groups = [int(i) for i in groups]
 	wanted_products = products[products['product_group_code'].isin(int_groups)]
@@ -110,7 +110,7 @@ def get_product_map(groups):
 
 def append_owners(code, df, month_or_quarter,add_dhhi = False):
 	# Load list of UPCs and brands
-	upcs = pd.read_csv('../../../All/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
+	upcs = pd.read_csv('../../../../All/m_' + code + '/intermediate/upcs.csv', delimiter = ',', index_col = 'upc')
 	upcs = upcs['brand_code_uc']
 	upc_map = upcs.to_dict()
 
@@ -118,7 +118,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 	df['brand_code_uc'] = df['upc'].map(upc_map)
 
 	# Load ownership assignments
-	brand_to_owner = pd.read_csv('../../../All/m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
+	brand_to_owner = pd.read_csv('../../../../All/m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
 
 	# Assign min/max year and month when listed as zero in ownership mapping
 	min_year = df['year'].min()
@@ -229,7 +229,7 @@ def append_owners(code, df, month_or_quarter,add_dhhi = False):
 
 def append_owners_brandlevel(code, df, month_or_quarter,add_dhhi = False):
 	# # Load list of UPCs and brands
-	# brands = pd.read_csv('../../../All/m_' + code + '/intermediate/brands.csv', delimiter = ',', index_col = 'upc')
+	# brands = pd.read_csv('../../../../All/m_' + code + '/intermediate/brands.csv', delimiter = ',', index_col = 'upc')
 	# upcs = upcs['brand_code_uc']
 	# upc_map = upcs.to_dict()
 
@@ -237,7 +237,7 @@ def append_owners_brandlevel(code, df, month_or_quarter,add_dhhi = False):
 	# df['brand_code_uc'] = df['upc'].map(upc_map)
 
 	# Load ownership assignments
-	brand_to_owner = pd.read_csv('../../../All/m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
+	brand_to_owner = pd.read_csv('../../../../All/m_' + code + '/properties/ownership.csv', delimiter = ',', index_col = 'brand_code_uc')
 
 	# Assign min/max year and month when listed as zero in ownership mapping
 	min_year = df['year'].min()
@@ -349,7 +349,7 @@ def append_owners_brandlevel(code, df, month_or_quarter,add_dhhi = False):
 def adjust_inflation(df, all_vars, month_or_quarter, rename_var = True):
 
 	# Import CPIU dataset
-	cpiu = pd.read_excel('../../../All/master/cpiu_2000_2020.xlsx', header = 11)
+	cpiu = pd.read_excel('../../../../All/master/cpiu_2000_2020.xlsx', header = 11)
 	cpiu = cpiu.set_index('Year')
 	month_dictionary = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12}
 	cpiu = cpiu.rename(columns = month_dictionary)
