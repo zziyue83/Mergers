@@ -326,6 +326,8 @@ for code in codes:
     os.mkdir('m_' + code)
     pivoted = first_task.table_1(code)
 
+
+for code in codes:
     area_month_upc = store_aggregation(code)
     final_table = pd.merge(pivoted, area_month_upc, how = "right", on = ['upc', 'year', 'month']).fillna(0)
     
