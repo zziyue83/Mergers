@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 store_aggregation_manual.py:108: SettingWithCopyWarning: 
 A value is trying to be set on a copy of a slice from a DataFrame
 
@@ -38,3 +39,8 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
   new_axis = axis.drop(labels, errors=errors)
 impact performance.
   new_axis = axis.drop(labels, errors=errors)
+=======
+0it [00:00, ?it/s]1it [00:01,  1.01s/it]1it [00:01,  1.01s/it]
+0it [00:00, ?it/s]1it [00:00,  1.06it/s]1it [00:00,  1.06it/s]
+0it [00:00, ?it/s]1it [00:00,  1.29it/s]1it [00:00,  1.29it/s]
+>>>>>>> 24b83d6a5e2c0b140a7b8095d0a71da6a70caa48

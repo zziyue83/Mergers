@@ -467,7 +467,6 @@ def table_1(code):
     # opening data_month file
     df = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
     
-    
     ### Part 1: making df complete with year, months and all dma_codes exhaustive
     ### note - df_own does NOT have all dates, only dates which the upc-year-month sales > 0!!
     
@@ -558,12 +557,14 @@ def table_1(code):
     
     return pivoted
 
-codes = ['1924129020_1', '2641303020_8', '2823116020_9']
+code = sys.argv[1]
 
-for code in codes:
-    os.mkdir('m_' + code)
-    pivoted = table_1(code)
-    area_month_upc = store_aggregation(code)
-    final_table = pd.merge(pivoted, area_month_upc, how = "left", on = ['upc', 'year', 'month']).fillna(0)
-    final_table.to_csv('m_' + code + '/final_table.csv')
+os.mkdir('m_' + code)
+pivoted = table_1(code)
+print(len(pivoted['upc'].unique()))
+
+area_month_upc = store_aggregation(code)
+print(len(area_month_upc['upc'].unique()))
+final_table = pd.merge(pivoted, area_month_upc, how = "left", on = ['upc', 'year', 'month']).fillna(0)
+final_table.to_csv('m_' + code + '/final_table.csv')
 
