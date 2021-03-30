@@ -17,7 +17,7 @@ import itertools
 import shutil
 from tqdm import tqdm
 from clean_data import clean_data
-import first_task
+from first_task import table_1
 
 def parse_info(code):
     file = open('../../../../All/m_' + code + '/info.txt', mode = 'r')
@@ -323,14 +323,10 @@ def store_aggregation(code):
 
 codes = ['1924129020_1', '2641303020_8', '2823116020_9']
 
-#for code in codes:
- #   os.mkdir('m_' + code)
-  #  pivoted = first_task.table_1(code)
-
-
 for code in codes:
+    os.mkdir('m_' + code)
+    pivoted = first_task.table_1(code)
     area_month_upc = store_aggregation(code)
-    #final_table = pd.merge(pivoted, area_month_upc, how = "right", on = ['upc', 'year', 'month']).fillna(0)
-    
-   # final_table.to_csv('m_' + code + '/final_table.csv')
+    final_table = pd.merge(pivoted, area_month_upc, how = "right", on = ['upc', 'year', 'month']).fillna(0)
+    final_table.to_csv('m_' + code + '/final_table.csv')
 
