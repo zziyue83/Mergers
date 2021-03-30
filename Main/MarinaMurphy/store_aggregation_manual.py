@@ -559,7 +559,7 @@ def table_1(code):
 
 #code = sys.argv[1]
 
-code = ['1924129020_25']
+code = '1924129020_25'
 
 os.mkdir('m_' + code)
 pivoted = table_1(code)
