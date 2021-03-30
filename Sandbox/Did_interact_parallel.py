@@ -35,9 +35,9 @@ def check_overlap(merger_folder):
 def did_dma(folder, month_or_quarter='month'):
 
     merger_folder = folder + '/output'
-    path_input = folder + "/intermediate"
+    path_input = folder + '/intermediate'
 
-    if (os.path.exists(path_input + '/demand_month.csv')) and check_overlap(merger_folder):
+    if ((os.path.exists(path_input + '/demand_month.csv')) and check_overlap(merger_folder) and not os.path.exists(path_input + '/stata_did_int_month.csv')):
 
         code = folder[15:]
         info_dict = aux.parse_info(code)
@@ -76,12 +76,12 @@ def did_dma(folder, month_or_quarter='month'):
                   sep=',', encoding='utf-8', index=False)
 
         print(folder)
-        dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/stata_parallel.do"
-        DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
-        path_output = "../output/"
-        cmd = ([DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input,
-               path_output, month_or_quarter, year_c, month_c, year_a, month_a])
-        subprocess.call(cmd)
+        # dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/stata_parallel.do"
+        # DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
+        #path_output = "../output/"
+        #cmd = ([DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input,
+        #       path_output, month_or_quarter, year_c, month_c, year_a, month_a])
+        #subprocess.call(cmd)
 
 
 folder = sys.argv[1]
