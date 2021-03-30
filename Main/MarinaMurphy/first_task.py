@@ -288,7 +288,7 @@ def table_1(code):
     pivoted.loc[(pivoted['merging_party'] == 1) & (pivoted['year'] == year) & (pivoted['month'] >= month), 'post_merger'] = 1
     
     # export to csv
-    pivoted.to_csv('m_' + code +'/pivoted_data.csv', index = False, sep = ',', encoding = 'utf-8')
+    pivoted.to_csv('m_' + code +'/pivoted_data.csv', sep = ',', encoding = 'utf-8')
     
     log_out = open('try_1.log', 'w')
     log_err = open('try_1.err', 'w')
