@@ -564,6 +564,6 @@ for code in codes:
     os.mkdir('m_' + code)
     pivoted = table_1(code)
     area_month_upc = store_aggregation(code)
-    final_table = pd.merge(pivoted, area_month_upc, how = "right", on = ['upc', 'year', 'month']).fillna(0)
+    final_table = pd.merge(pivoted, area_month_upc, how = "left", on = ['upc', 'year', 'month']).fillna(0)
     final_table.to_csv('m_' + code + '/final_table.csv')
 
