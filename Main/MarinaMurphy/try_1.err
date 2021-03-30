@@ -1,0 +1,5 @@
+<ipython-input-1-4d13f537a724>:108: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  these_units.conversion[these_units.convert == 0] = convertible.conversion[where_largest] * base_size / other_size
