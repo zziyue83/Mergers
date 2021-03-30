@@ -18,6 +18,11 @@ import shutil
 from tqdm import tqdm
 from clean_data import clean_data
 
+def int_to_month(value):
+        year = np.floor((value - 1) / 12)
+        month = value - 12 * year
+        return year, month
+
 def parse_info(code):
     file = open('../../../../All/m_' + code + '/info.txt', mode = 'r')
     info_file = file.read()
