@@ -27,6 +27,7 @@ def get_instr(folders, base_folder):
 
     progress = {}
     progress['merger'] = []
+    progress['descr_1'] = []
 
     for inst in range(15):
         progress['Inst_'+str(inst)] = []
@@ -44,6 +45,9 @@ def get_instr(folders, base_folder):
                 if len(info['Instruments']) > 1:
 
                     progress['merger'].append(folder)
+                    print(folder)
+                    print(info['Summary'])
+                    progress['descr_1'].append(info['Summary'])
 
                     Instruments = [i.lstrip() for i in info['Instruments'].split(',')]
 
