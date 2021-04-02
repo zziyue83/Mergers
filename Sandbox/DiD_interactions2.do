@@ -78,9 +78,9 @@ gen Non_Merging_btw = Non_Merging * between
 
 /*Untreated*/
 gen mkt_size = volume/shares
-bys dma_code: gen tot_vols_mp = sum(volume) if Merging==1
+bys dma_code: gen tot_vols_mp = sum(volume) if (Merging==1 & post_merger==0)
 bys dma_code: egen tot_vol_mp = max(tot_vols_mp)
-drop tot_vols
+drop tot_vols_mp
 bys dma_code year month: gen mkt_size_unique = mkt_size if _n==1
 egen tot_mkt_size = sum(mkt_size_unique), by(dma_code)
 gen mp_share = tot_vol_mp/tot_mkt_size
@@ -157,23 +157,29 @@ replace DHHI_HHI_NW = 1 if (dhhi*10000>=100 & post_hhi*10000>=1500)
 replace DHHI_HHI_NW = 2 if (dhhi*10000>=200 & !missing(dhhi) & post_hhi*10000>2500 & !missing(post_hhi))
 
 /*Months After and Pre Dummies*/
-gen Months_post = 0
-forv i=1/24{
-	replace Months_post = `i' if month_date >= `cutoff_c' + `i'
-}
-*
-gen Months_pre = 0
-forv i=1/24{
-	replace Months_pre = `i' if month_date <= `cutoff_c' - `i'
-}
-*
-/*Months Pre-Post Dummies*/
 gen Months = .
 forv i=-24/24{
 	local j = `i' + 25
 	replace Months = `j' if month_date == `cutoff_c' + `i'
 }
 *
+gen Months_post = .
+forv i=0/24{
+	replace Months_post = `i' if month_date == `cutoff_c' + `i'
+}
+*
+gen Months_post2 = .
+replace Months_post2 = 0 if inrange(month_date, `cutoff_c' - 24, `cutoff_c')
+forv i=1/24{
+	replace Months_post2 = `i' if month_date == `cutoff_c' + `i'
+}
+*
+
+summarize Months
+local max_month = `r(max)'
+local min_month = `r(min)'
+
+matrix P = J(`r(max)', 32, .)
 
 
 /*Main Routine*/
@@ -275,24 +281,6 @@ outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': 1y")
 reghdfe `var' Merging Post_Merging Post_Non_Merging Post_Non_Merging_1y Post_Merging_1y trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code)
 est sto After_FE_`x'_`var'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': 1y FE") append
-
-/*Granular Timing for Post Only*/
-reghdfe `var' Merging Post_Merging#i.Months_post Post_Non_Merging#i.Months_post i.Months_post trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
-est sto Tim_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Timing") append
-
-reghdfe `var' Merging Post_Merging#i.Months_post Post_Non_Merging#i.Months_post i.Months_post trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code)
-est sto Tim_FE_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Timing FE") append
-
-/*Granular Timing Pre and Post*/
-reghdfe `var' Merging Merging#i.Months_pre Non_Merging#i.Months_pre Post_Merging#i.Months_post Post_Non_Merging#i.Months_post i.Months_pre i.Months_post trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
-est sto Timing_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Timing Pre Post") append
-
-reghdfe `var' Merging Merging#i.Months_pre Non_Merging#i.Months_pre Post_Merging#i.Months_post Post_Non_Merging#i.Months_post i.Months_pre i.Months_post trend [aw = weights_`x'], abs(entity_effects time_calendar) vce(cluster dma_code)
-est sto Timing_FE_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Timing Pre Post FE") append
 
 /*Between Period*/
 reghdfe `var' Merging Merging_btw Non_Merging_btw Post_Merging Post_Non_Merging trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
@@ -409,6 +397,69 @@ est clear
 }
 
 est clear
+
+
+/*Main Routine for Timing*/
+forval x = 0/3 {
+
+quietly{
+
+
+/*Granular Timing for Post Only*/
+reghdfe lprice i.Merging##ib0.Months_post  [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code) basel
+
+forv i=25/`max_month'{
+
+	local j = `i' - 25
+	lincom 1.Merging + `j'.Months_post + 1.Merging#`j'.Months_post
+	matrix P[`i',(12*`x'+ 1)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 2)] = `r(se)'
+
+	lincom 0.Merging + `j'.Months_post + 0.Merging#`j'.Months_post
+	matrix P[`i',(12*`x'+ 3)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 4)] = `r(se)'
+}
+*
+
+/*Granular Timing Pre and Post*/
+reghdfe lprice i.Merging##ib25.Months trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code) basel
+
+forv i=`min_month'/`max_month'{
+
+	lincom 1.Merging + `i'.Months + 1.Merging#`i'.Months
+	matrix P[`i',(12*`x'+ 5)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 6)] = `r(se)'
+
+	lincom 0.Merging + `i'.Months + 0.Merging#`i'.Months
+	matrix P[`i',(12*`x'+ 7)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 8)] = `r(se)'
+}
+*
+
+/*Granular Timing for Post2 Only*/
+reghdfe lprice i.Merging##ib0.Months_post2  [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code) basel
+
+forv i=25/`max_month'{
+
+	local j = `i' - 25
+	lincom 1.Merging + `j'.Months_post2 + 1.Merging#`j'.Months_post2
+	matrix P[`i',(12*`x'+ 9)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 10)] = `r(se)'
+
+	lincom 0.Merging + `j'.Months_post2 + 0.Merging#`j'.Months_post2
+	matrix P[`i',(12*`x'+ 11)] = `r(estimate)'
+	matrix P[`i',(12*`x'+ 12)] = `r(se)'
+}
+*
+
+}
+}
+*
+
+putexcel set "`2'/Months", replace
+putexcel A1=matrix(P)
+mata : st_matrix("Months", mean(st_matrix("P")))
+
 
 
 
