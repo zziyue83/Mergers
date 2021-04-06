@@ -37,7 +37,7 @@ def did_dma(folder, month_or_quarter='month'):
     merger_folder = folder + '/output'
     path_input = folder + '/intermediate'
 
-    if ((os.path.exists(path_input + '/demand_month.csv')) and check_overlap(merger_folder) and not os.path.exists(path_input + '/stata_did_int_month.csv')):
+    if ((os.path.exists(path_input + '/demand_month.csv')) and check_overlap(merger_folder)):
 
         code = folder[15:]
         info_dict = aux.parse_info(code)

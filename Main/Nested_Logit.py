@@ -35,7 +35,7 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 		# First get the distances and merge with df
 		distances = pd.read_csv('../../../All/m_' + code + '/intermediate/distances.csv', delimiter = ',', index_col = ['brand_code_uc', 'owner', 'dma_code','year',month_or_quarter])
 		df = df.join(distances, on = ['brand_code_uc', 'owner', 'dma_code','year',month_or_quarter], how = 'left')
-		print(df)
+		print(df['distance'].isnull().sum())
 
 		# Next, get the diesel prices and merge with df
 		diesel_data = pd.read_csv('../../../All/instruments/diesel.csv', delimiter = ',')
@@ -51,10 +51,13 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 
 		df = df.join(diesel_data_period, on = [month_or_quarter, 'year'], how = 'left')
 		df.rename(columns={'value': 'diesel'}, inplace=True)
+		print(df['distance'].isnull().sum())
+
 
 		# Then get diesel prices to multiply
 		df['demand_instruments0'] = df['distance'] * df['diesel']
 		df = df.drop(['diesel'], axis=1)
+		print(df['distance'].isnull().sum())
 
 		instrument_names.remove('distance-diesel')
 		i = 1
@@ -78,6 +81,8 @@ def add_instruments(code, df, instrument_names, month_or_quarter):
 		inst_data_period = inst_data.groupby([month_or_quarter, 'year'])['value'].agg('mean')
 
 		df = df.join(inst_data_period, on = [month_or_quarter, 'year'], how = 'left')
+		print(df['distance'].isnull().sum())
+
 		df.rename(columns={'value': 'demand_instruments' + str(i)}, inplace=True)
 		i += 1
 

@@ -12,4 +12,4 @@ cd /projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox
 module load python/anaconda3.6
 module load parallel
 
-parallel -j12 "python did_parallel.py {}" ::: ../../../All/*
+parallel -j12 "python Did_interact_parallel.py {}" ::: ../../../All/*
