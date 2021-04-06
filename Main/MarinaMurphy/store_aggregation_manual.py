@@ -544,8 +544,8 @@ def table_1(code):
     # setting = 1 if month and year are greater than date completed for the merging parties
     pivoted.loc[(pivoted['merging_party'] == 1) & (pivoted['year'] >= year) & (pivoted['month'] >= month), 'post_merger'] = 1
     
-    pivoted.loc[(pivoted['merging_party'] == 1) & (pivoted['year'] > year), 'post_merger'] = 1
-    pivoted.loc[(pivoted['merging_party'] == 1) & (pivoted['year'] == year) & (pivoted['month'] >= month), 'post_merger'] = 1
+    pivoted.loc[(pivoted['year'] > year), 'post_merger'] = 1
+    pivoted.loc[(pivoted['year'] == year) & (pivoted['month'] >= month), 'post_merger'] = 1
     
     # export to csv
     pivoted.to_csv('m_' + code +'/pivoted_data.csv', sep = ',', encoding = 'utf-8')
