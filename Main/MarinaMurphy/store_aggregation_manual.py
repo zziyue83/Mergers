@@ -466,6 +466,8 @@ def table_1(code):
     # must have 4 ../../../.. because i'm inside a folder inside Main
     # opening data_month file
     df = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
+
+    df.to_csv('m_' + code + '/data_month.csv')
     
     ### Part 1: making df complete with year, months and all dma_codes exhaustive
     ### note - df_own does NOT have all dates, only dates which the upc-year-month sales > 0!!

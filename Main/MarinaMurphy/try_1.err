@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 store_aggregation_manual.py:108: SettingWithCopyWarning: 
 A value is trying to be set on a copy of a slice from a DataFrame
 
@@ -36,3 +37,5 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 1it [00:01,  1.04s/it]1it [00:01,  1.04s/it]
 /home/mas4972/.local/lib/python3.6/site-packages/pandas/core/generic.py:3946: PerformanceWarning: dropping on a non-lexsorted multi-index without a level parameter may impact performance.
   new_axis = axis.drop(labels, errors=errors)
+=======
+>>>>>>> 65a336d3ecf9e3f91217b7c973777682dad9d6b8
