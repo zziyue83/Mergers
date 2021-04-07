@@ -466,8 +466,6 @@ def table_1(code):
     # must have 4 ../../../.. because i'm inside a folder inside Main
     # opening data_month file
     df = (pd.read_csv('../../../../All/m_' + code + '/intermediate/data_month.csv'))
-
-    df.to_csv('m_' + code + '/data_month.csv')
     
     ### Part 1: making df complete with year, months and all dma_codes exhaustive
     ### note - df_own does NOT have all dates, only dates which the upc-year-month sales > 0!!
@@ -508,9 +506,32 @@ def table_1(code):
 
     empty_to_merge_dma_full = empty_to_merge_dma_full.apply(pd.to_numeric)
 
-    
+    # extract merging parties
+    merging_parties = get_parties(info_dict["MergingParties"])
+
+    # extracting year and month of date completed
+    year = int((info_dict['DateCompleted'])[:4])
+    month = int((info_dict['DateCompleted'])[5:7])
+
     ### Part 2: extracting ownership using full df with all upc-year-month-dma combinations
     df_own = append_owners(code, empty_to_merge_dma_full, 'month')
+
+    df_own['sold_in_usa'] = 0
+    df_own.loc[df_own.sales != 0, 'sold_in_usa'] = 1
+
+    df_own['merging_party'] = 0
+    df_own['post_merger'] = 0
+    
+    #assign 1's if owner = merging parties
+    df_own.loc[df_own['owner'].isin(merging_parties), 'merging_party'] = 1
+    
+    # setting = 1 if month and year are greater than date completed for the merging parties
+    df_own.loc[(df_own['merging_party'] == 1) & (df_own['year'] >= year) & (df_own['month'] >= month), 'post_merger'] = 1
+    
+    df_own.loc[(df_own['year'] > year), 'post_merger'] = 1
+    df_own.loc[(df_own['year'] == year) & (df_own['month'] >= month), 'post_merger'] = 1
+
+    df_own.to_csv('m_' + code + '/data_month_full.csv')
 
     # pivoting the dmas and having sales and volume for each upc year month
     pivoted = df_own.pivot_table(index = ['upc','year','month','owner'], columns = 'dma_code', values = ['volume','sales']).reset_index()
@@ -532,16 +553,10 @@ def table_1(code):
     # create column of zeroes
     pivoted['merging_party'] = 0
     pivoted['post_merger'] = 0
-
-    # extract merging parties
-    merging_parties = get_parties(info_dict["MergingParties"])
     
     #assign 1's if owner = merging parties
     pivoted.loc[pivoted['owner'].isin(merging_parties), 'merging_party'] = 1
     
-    # extracting year and month of date completed
-    year = int((info_dict['DateCompleted'])[:4])
-    month = int((info_dict['DateCompleted'])[5:7])
     
     # setting = 1 if month and year are greater than date completed for the merging parties
     pivoted.loc[(pivoted['merging_party'] == 1) & (pivoted['year'] >= year) & (pivoted['month'] >= month), 'post_merger'] = 1
