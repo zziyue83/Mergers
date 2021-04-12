@@ -352,7 +352,9 @@ def compute_distances(code, netid, month_or_quarter='month', port_cutoff=10):
     distance.drop('brand_dma',inplace = True, axis=1)
     distance.to_csv('../../../All/m_' + code + '/intermediate/distances.csv', sep = ',', encoding = 'utf-8', index = False)
 
-code = sys.argv[1]
+
+folder = sys.argv[1]
+code = folder[15:]
 netid = 'jds7480'
 
 log_out = open('output/compute_distances.log', 'a')
@@ -360,9 +362,9 @@ log_err = open('output/compute_distances.err', 'a')
 sys.stdout = log_out
 sys.stderr = log_err
 
-if os.path.exists('../../../All/m_' + code + '/properties/locations.csv'):
+if os.path.exists(folder + '/properties/locations.csv'):
     print(code)
     compute_distances(code, netid)
 
 else:
-    print(code)
+    print('No Locations File' + str(code))
