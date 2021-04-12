@@ -7,6 +7,7 @@ import sys
 import auxiliary as aux
 from datetime import datetime
 import re
+import os
 
 def geocoding_dmas():
     major_cities = [
@@ -354,8 +355,8 @@ def compute_distances(code, netid, month_or_quarter='month', port_cutoff=10):
 code = sys.argv[1]
 netid = 'jds7480'
 
-log_out = open('/output/compute_distances.log', 'a')
-log_err = open('/output/compute_distances.err', 'a')
+log_out = open('output/compute_distances.log', 'a')
+log_err = open('output/compute_distances.err', 'a')
 sys.stdout = log_out
 sys.stderr = log_err
 
@@ -363,5 +364,5 @@ if os.path.exists('../../../All/m_' + code + '/properties/locations.csv'):
     print(code)
     compute_distances(code, netid)
 
-elif:
+else:
     print(code)
