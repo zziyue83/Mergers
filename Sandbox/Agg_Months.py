@@ -34,6 +34,11 @@ def get_betas(folders, base_folder):
             aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(i)] = []
             aggregated['se_NM_'+str(month) + '.Months_post_'+str(i)] = []
 
+            aggregated['Merging_'+str(month) + '.Months_post_2_'+str(i)] = []
+            aggregated['se_M_'+str(month) + '.Months_post_2_'+str(i)] = []
+            aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(i)] = []
+            aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(i)] = []
+
 
 
     for folder in folders:
@@ -87,32 +92,32 @@ def get_betas(folders, base_folder):
 
                 # Weights==1
                 try:
-                    if not np.isnan(df[12][Month]):
-                        aggregated['Merging_'+str(month) + '.Months_'+str(1)].append(df[12][Month])
+                    if not np.isnan(df[16][Month]):
+                        aggregated['Merging_'+str(month) + '.Months_'+str(1)].append(df[16][Month])
                     else:
                         aggregated['Merging_'+str(month) + '.Months_'+str(1)].append(np.nan)
                 except KeyError:
                     aggregated['Merging_'+str(month) + '.Months_'+str(1)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[13][Month]):
-                        aggregated['se_M_'+str(month) + '.Months_'+str(1)].append(df[13][Month])
+                    if not np.isnan(df[17][Month]):
+                        aggregated['se_M_'+str(month) + '.Months_'+str(1)].append(df[17][Month])
                     else:
                         aggregated['se_M_'+str(month) + '.Months_'+str(1)].append(np.nan)
                 except KeyError:
                     aggregated['se_M_'+str(month) + '.Months_'+str(1)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[14][Month]):
-                        aggregated['Non_Merging_'+str(month) + '.Months_'+str(1)].append(df[14][Month])
+                    if not np.isnan(df[18][Month]):
+                        aggregated['Non_Merging_'+str(month) + '.Months_'+str(1)].append(df[18][Month])
                     else:
                         aggregated['Non_Merging_'+str(month) + '.Months_'+str(1)].append(np.nan)
                 except KeyError:
                     aggregated['Non_Merging_'+str(month) + '.Months_'+str(1)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[15][Month]):
-                        aggregated['se_NM_'+str(month) + '.Months_'+str(1)].append(df[15][Month])
+                    if not np.isnan(df[19][Month]):
+                        aggregated['se_NM_'+str(month) + '.Months_'+str(1)].append(df[19][Month])
                     else:
                         aggregated['se_NM_'+str(month) + '.Months_'+str(1)].append(np.nan)
                 except KeyError:
@@ -120,32 +125,32 @@ def get_betas(folders, base_folder):
 
                 # Weights==2
                 try:
-                    if not np.isnan(df[20][Month]):
-                        aggregated['Merging_'+str(month) + '.Months_'+str(2)].append(df[20][Month])
+                    if not np.isnan(df[28][Month]):
+                        aggregated['Merging_'+str(month) + '.Months_'+str(2)].append(df[28][Month])
                     else:
                         aggregated['Merging_'+str(month) + '.Months_'+str(2)].append(np.nan)
                 except KeyError:
                     aggregated['Merging_'+str(month) + '.Months_'+str(2)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[21][Month]):
-                        aggregated['se_M_'+str(month) + '.Months_'+str(2)].append(df[21][Month])
+                    if not np.isnan(df[29][Month]):
+                        aggregated['se_M_'+str(month) + '.Months_'+str(2)].append(df[29][Month])
                     else:
                         aggregated['se_M_'+str(month) + '.Months_'+str(2)].append(np.nan)
                 except KeyError:
                     aggregated['se_M_'+str(month) + '.Months_'+str(2)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[22][Month]):
-                        aggregated['Non_Merging_'+str(month) + '.Months_'+str(2)].append(df[22][Month])
+                    if not np.isnan(df[30][Month]):
+                        aggregated['Non_Merging_'+str(month) + '.Months_'+str(2)].append(df[30][Month])
                     else:
                         aggregated['Non_Merging_'+str(month) + '.Months_'+str(2)].append(np.nan)
                 except KeyError:
                     aggregated['Non_Merging_'+str(month) + '.Months_'+str(2)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[23][Month]):
-                        aggregated['se_NM_'+str(month) + '.Months_'+str(2)].append(df[23][Month])
+                    if not np.isnan(df[31][Month]):
+                        aggregated['se_NM_'+str(month) + '.Months_'+str(2)].append(df[31][Month])
                     else:
                         aggregated['se_NM_'+str(month) + '.Months_'+str(2)].append(np.nan)
                 except KeyError:
@@ -153,32 +158,32 @@ def get_betas(folders, base_folder):
 
                 # Weights==3
                 try:
-                    if not np.isnan(df[28][Month]):
-                        aggregated['Merging_'+str(month) + '.Months_'+str(3)].append(df[28][Month])
+                    if not np.isnan(df[40][Month]):
+                        aggregated['Merging_'+str(month) + '.Months_'+str(3)].append(df[40][Month])
                     else:
                         aggregated['Merging_'+str(month) + '.Months_'+str(3)].append(np.nan)
                 except KeyError:
                     aggregated['Merging_'+str(month) + '.Months_'+str(3)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[29][Month]):
-                        aggregated['se_M_'+str(month) + '.Months_'+str(3)].append(df[29][Month])
+                    if not np.isnan(df[41][Month]):
+                        aggregated['se_M_'+str(month) + '.Months_'+str(3)].append(df[41][Month])
                     else:
                         aggregated['se_M_'+str(month) + '.Months_'+str(3)].append(np.nan)
                 except KeyError:
                     aggregated['se_M_'+str(month) + '.Months_'+str(3)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[30][Month]):
-                        aggregated['Non_Merging_'+str(month) + '.Months_'+str(3)].append(df[30][Month])
+                    if not np.isnan(df[42][Month]):
+                        aggregated['Non_Merging_'+str(month) + '.Months_'+str(3)].append(df[42][Month])
                     else:
                         aggregated['Non_Merging_'+str(month) + '.Months_'+str(3)].append(np.nan)
                 except KeyError:
                     aggregated['Non_Merging_'+str(month) + '.Months_'+str(3)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[31][Month]):
-                        aggregated['se_NM_'+str(month) + '.Months_'+str(3)].append(df[31][Month])
+                    if not np.isnan(df[43][Month]):
+                        aggregated['se_NM_'+str(month) + '.Months_'+str(3)].append(df[43][Month])
                     else:
                         aggregated['se_NM_'+str(month) + '.Months_'+str(3)].append(np.nan)
                 except KeyError:
@@ -223,32 +228,32 @@ def get_betas(folders, base_folder):
 
                 # Weights==1
                 try:
-                    if not np.isnan(df[8][Month]):
-                        aggregated['Merging_'+str(month) + '.Months_post_'+str(1)].append(df[8][Month])
+                    if not np.isnan(df[12][Month]):
+                        aggregated['Merging_'+str(month) + '.Months_post_'+str(1)].append(df[12][Month])
                     else:
                         aggregated['Merging_'+str(month) + '.Months_post_'+str(1)].append(np.nan)
                 except KeyError:
                     aggregated['Merging_'+str(month) + '.Months_post_'+str(1)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[9][Month]):
-                        aggregated['se_M_'+str(month) + '.Months_post_'+str(1)].append(df[9][Month])
+                    if not np.isnan(df[13][Month]):
+                        aggregated['se_M_'+str(month) + '.Months_post_'+str(1)].append(df[13][Month])
                     else:
                         aggregated['se_M_'+str(month) + '.Months_post_'+str(1)].append(np.nan)
                 except KeyError:
                     aggregated['se_M_'+str(month) + '.Months_post_'+str(1)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[10][Month]):
-                        aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(1)].append(df[10][Month])
+                    if not np.isnan(df[14][Month]):
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(1)].append(df[14][Month])
                     else:
                         aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(1)].append(np.nan)
                 except KeyError:
                     aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(1)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[11][Month]):
-                        aggregated['se_NM_'+str(month) + '.Months_post_'+str(1)].append(df[11][Month])
+                    if not np.isnan(df[15][Month]):
+                        aggregated['se_NM_'+str(month) + '.Months_post_'+str(1)].append(df[5][Month])
                     else:
                         aggregated['se_NM_'+str(month) + '.Months_post_'+str(1)].append(np.nan)
                 except KeyError:
@@ -256,32 +261,32 @@ def get_betas(folders, base_folder):
 
                 # Weights==2
                 try:
-                    if not np.isnan(df[16][Month]):
-                        aggregated['Merging_'+str(month) + '.Months_post_'+str(2)].append(df[16][Month])
+                    if not np.isnan(df[24][Month]):
+                        aggregated['Merging_'+str(month) + '.Months_post_'+str(2)].append(df[24][Month])
                     else:
                         aggregated['Merging_'+str(month) + '.Months_post_'+str(2)].append(np.nan)
                 except KeyError:
                     aggregated['Merging_'+str(month) + '.Months_post_'+str(2)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[17][Month]):
-                        aggregated['se_M_'+str(month) + '.Months_post_'+str(2)].append(df[17][Month])
+                    if not np.isnan(df[25][Month]):
+                        aggregated['se_M_'+str(month) + '.Months_post_'+str(2)].append(df[25][Month])
                     else:
                         aggregated['se_M_'+str(month) + '.Months_post_'+str(2)].append(np.nan)
                 except KeyError:
                     aggregated['se_M_'+str(month) + '.Months_post_'+str(2)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[18][Month]):
-                        aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(2)].append(df[18][Month])
+                    if not np.isnan(df[26][Month]):
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(2)].append(df[26][Month])
                     else:
                         aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(2)].append(np.nan)
                 except KeyError:
                     aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(2)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[19][Month]):
-                        aggregated['se_NM_'+str(month) + '.Months_post_'+str(2)].append(df[19][Month])
+                    if not np.isnan(df[27][Month]):
+                        aggregated['se_NM_'+str(month) + '.Months_post_'+str(2)].append(df[27][Month])
                     else:
                         aggregated['se_NM_'+str(month) + '.Months_post_'+str(2)].append(np.nan)
                 except KeyError:
@@ -289,36 +294,172 @@ def get_betas(folders, base_folder):
 
                 # Weights==3
                 try:
-                    if not np.isnan(df[24][Month]):
-                        aggregated['Merging_'+str(month) + '.Months_post_'+str(3)].append(df[24][Month])
+                    if not np.isnan(df[36][Month]):
+                        aggregated['Merging_'+str(month) + '.Months_post_'+str(3)].append(df[36][Month])
                     else:
                         aggregated['Merging_'+str(month) + '.Months_post_'+str(3)].append(np.nan)
                 except KeyError:
                     aggregated['Merging_'+str(month) + '.Months_post_'+str(3)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[25][Month]):
-                        aggregated['se_M_'+str(month) + '.Months_post_'+str(3)].append(df[25][Month])
+                    if not np.isnan(df[37][Month]):
+                        aggregated['se_M_'+str(month) + '.Months_post_'+str(3)].append(df[37][Month])
                     else:
                         aggregated['se_M_'+str(month) + '.Months_post_'+str(3)].append(np.nan)
                 except KeyError:
                     aggregated['se_M_'+str(month) + '.Months_post_'+str(3)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[26][Month]):
-                        aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(3)].append(df[26][Month])
+                    if not np.isnan(df[38][Month]):
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(3)].append(df[38][Month])
                     else:
                         aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(3)].append(np.nan)
                 except KeyError:
                     aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(3)].append(np.nan)
 
                 try:
-                    if not np.isnan(df[27][Month]):
-                        aggregated['se_NM_'+str(month) + '.Months_post_'+str(3)].append(df[27][Month])
+                    if not np.isnan(df[39][Month]):
+                        aggregated['se_NM_'+str(month) + '.Months_post_'+str(3)].append(df[39][Month])
                     else:
                         aggregated['se_NM_'+str(month) + '.Months_post_'+str(3)].append(np.nan)
                 except KeyError:
                     aggregated['se_NM_'+str(month) + '.Months_post_'+str(3)].append(np.nan)
+
+            # Months Post 2
+            for Month in range(25):
+                Month = Month + 24
+                month = Month - 24
+                # Weights==0
+                try:
+                    if not np.isnan(df[8][Month]):
+                        aggregated['Merging_'+str(month) + '.Months_post_2_'+str(0)].append(df[8][Month])
+                    else:
+                        aggregated['Merging_'+str(month) + '.Months_post_2_'+str(0)].append(np.nan)
+                except KeyError:
+                    aggregated['Merging_'+str(month) + '.Months_post_2_'+str(0)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[9][Month]):
+                        aggregated['se_M_'+str(month) + '.Months_post_2_'+str(0)].append(df[9][Month])
+                    else:
+                        aggregated['se_M_'+str(month) + '.Months_post_2_'+str(0)].append(np.nan)
+                except KeyError:
+                    aggregated['se_M_'+str(month) + '.Months_post_2_'+str(0)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[10][Month]):
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(0)].append(df[10][Month])
+                    else:
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(0)].append(np.nan)
+                except KeyError:
+                    aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(0)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[11][Month]):
+                        aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(0)].append(df[11][Month])
+                    else:
+                        aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(0)].append(np.nan)
+                except KeyError:
+                    aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(0)].append(np.nan)
+
+                # Weights==1
+                try:
+                    if not np.isnan(df[20][Month]):
+                        aggregated['Merging_'+str(month) + '.Months_post_2_'+str(1)].append(df[20][Month])
+                    else:
+                        aggregated['Merging_'+str(month) + '.Months_post_2_'+str(1)].append(np.nan)
+                except KeyError:
+                    aggregated['Merging_'+str(month) + '.Months_post_2_'+str(1)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[21][Month]):
+                        aggregated['se_M_'+str(month) + '.Months_post_2_'+str(1)].append(df[21][Month])
+                    else:
+                        aggregated['se_M_'+str(month) + '.Months_post_2_'+str(1)].append(np.nan)
+                except KeyError:
+                    aggregated['se_M_'+str(month) + '.Months_post_2_'+str(1)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[22][Month]):
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(1)].append(df[22][Month])
+                    else:
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(1)].append(np.nan)
+                except KeyError:
+                    aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(1)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[23][Month]):
+                        aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(1)].append(df[23][Month])
+                    else:
+                        aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(1)].append(np.nan)
+                except KeyError:
+                    aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(1)].append(np.nan)
+
+                # Weights==2
+                try:
+                    if not np.isnan(df[32][Month]):
+                        aggregated['Merging_'+str(month) + '.Months_post_2_'+str(2)].append(df[32][Month])
+                    else:
+                        aggregated['Merging_'+str(month) + '.Months_post_2_'+str(2)].append(np.nan)
+                except KeyError:
+                    aggregated['Merging_'+str(month) + '.Months_post_2_'+str(2)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[33][Month]):
+                        aggregated['se_M_'+str(month) + '.Months_post_2_'+str(2)].append(df[33][Month])
+                    else:
+                        aggregated['se_M_'+str(month) + '.Months_post_2_'+str(2)].append(np.nan)
+                except KeyError:
+                    aggregated['se_M_'+str(month) + '.Months_post_2_'+str(2)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[34][Month]):
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(2)].append(df[34][Month])
+                    else:
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(2)].append(np.nan)
+                except KeyError:
+                    aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(2)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[35][Month]):
+                        aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(2)].append(df[35][Month])
+                    else:
+                        aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(2)].append(np.nan)
+                except KeyError:
+                    aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(2)].append(np.nan)
+
+                # Weights==3
+                try:
+                    if not np.isnan(df[44][Month]):
+                        aggregated['Merging_'+str(month) + '.Months_post_2_'+str(3)].append(df[44][Month])
+                    else:
+                        aggregated['Merging_'+str(month) + '.Months_post_2_'+str(3)].append(np.nan)
+                except KeyError:
+                    aggregated['Merging_'+str(month) + '.Months_post_2_'+str(3)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[45][Month]):
+                        aggregated['se_M_'+str(month) + '.Months_post_2_'+str(3)].append(df[45][Month])
+                    else:
+                        aggregated['se_M_'+str(month) + '.Months_post_2_'+str(3)].append(np.nan)
+                except KeyError:
+                    aggregated['se_M_'+str(month) + '.Months_post_2_'+str(3)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[46][Month]):
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(3)].append(df[46][Month])
+                    else:
+                        aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(3)].append(np.nan)
+                except KeyError:
+                    aggregated['Non_Merging_'+str(month) + '.Months_post_2_'+str(3)].append(np.nan)
+
+                try:
+                    if not np.isnan(df[47][Month]):
+                        aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(3)].append(df[48][Month])
+                    else:
+                        aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(3)].append(np.nan)
+                except KeyError:
+                    aggregated['se_NM_'+str(month) + '.Months_post_2_'+str(3)].append(np.nan)
 
 
 

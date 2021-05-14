@@ -26,12 +26,13 @@ ssc install ftools
 ssc install reghdfe
 ssc install estout
 
-/* Fixed Effects */
+quietly{
+/*Fixed Effects*/
 egen entity_effects = group(upc dma_code)
 egen time_effects = group(year `3')
 egen time_calendar = group(`3')
 
-/* WEIGHTING SCHEMES */
+/*Weighting Schemes*/
 gen pre_vol = volume * (1 - post_merger)
 gen weights_0 = 1 /*to add weights that won't change things*/
 egen weights_1 = total(pre_vol), by(upc)
@@ -56,7 +57,7 @@ gen lquant = log(volume)
 
 rename post_merger_merging Post_Merging
 
-/*One Year Post*/
+/*One Year Post Completed*/
 gen month_date = ym(year, month)
 tabstat month_date if (month==`5' & year==`4'), save
 matrix cutoff_c=r(StatTotal)
@@ -67,7 +68,7 @@ gen Post_Merger_1y = post_merger * after
 gen Post_Merging_1y = Post_Merging * after
 gen Post_Non_Merging_1y = Post_Non_Merging * after
 
-/*Announced vs Completed*/
+/*Announced vs Completed Dummies*/
 tabstat month_date if (month==`7' & year==`6'), save
 matrix cutoff_a=r(StatTotal)
 local cutoff_a=cutoff_a[1,1]
@@ -76,7 +77,7 @@ replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
 gen Merging_btw = Merging * between
 gen Non_Merging_btw = Non_Merging * between
 
-/*Untreated*/
+/*Untreated DMAs*/
 gen mkt_size = volume/shares
 bys dma_code: gen tot_vols_mp = sum(volume) if (Merging==1 & post_merger==0)
 bys dma_code: egen tot_vol_mp = max(tot_vols_mp)
@@ -179,11 +180,11 @@ summarize Months
 local max_month = `r(max)'
 local min_month = `r(min)'
 
-matrix P = J(`r(max)', 32, .)
-
+matrix P = J(`r(max)', 24, .)
+}
 
 /*Main Routine*/
-foreach var of varlist lprice lquant {
+foreach var of varlist lprice {
 forval x = 0/3 {
 quietly{
 /*Overall Price Effects*/
@@ -234,12 +235,12 @@ est sto UT_FE_C_`x'_`var'_`z'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated FE C `z'") append
 
 /*Untreated as Controls*/
-reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging#ib25.Months Merging#ib25.Months Non_Merging#ib25.Months trend [aw = weights_`x'], abs(entity_effects time_effects) vce(cluster dma_code)
+reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging#ib25.Months Non_Merging#ib25.Months trend [aw = weights_`x'], abs(entity_effects time_effects) vce(cluster dma_code)
 est sto UT_M_`x'_`var'_`z'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated Months `z'") append
 
 /*Untreated as Controls with Controls*/
-reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging#ib25.Months Merging#ib25.Months Non_Merging#ib25.Months log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects time_effects) vce(cluster dma_code)
+reghdfe `var' Merging_Treated_`z' Non_Merging_Treated_`z' Merging#ib25.Months Non_Merging#ib25.Months log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects time_effects) vce(cluster dma_code)
 est sto UT_M_C_`x'_`var'_`z'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': Untreated Months C `z'") append
 
@@ -356,13 +357,13 @@ outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': sum 
 
 /*Treated*/
 foreach z in 2 5 10 {
-reghdfe `var' Treated_`x' Treated_Post_`x' trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+reghdfe `var' Treated_`z' Treated_Post_`z' trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
 est sto sum_Treat_`z'_`x'_`var'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': sum treated `z'")
 
-reghdfe `var' Treated_`x' Treated_Post_`x' trend [aw = weights_`x'], abs(entity_effects time_effects) vce(cluster dma_code)
+reghdfe `var' Treated_`z' Treated_Post_`z' trend [aw = weights_`x'], abs(entity_effects time_effects) vce(cluster dma_code)
 est sto sum_Treat_tFE_`z'_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': sum treated `z'") 
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': sum treated `z'")
 }
 *
 
@@ -381,13 +382,13 @@ outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': sum 
 
 /*Treated*/
 foreach z in 2 5 10 {
-reghdfe `var' Treated_`x' Treated_Post_`x'  log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
+reghdfe `var' Treated_`z' Treated_Post_`z'  log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects) vce(cluster dma_code)
 est sto sum_Treat_c_`z'_`x'_`var'
 outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': sum treated `z'")
 
-reghdfe `var' Treated_`x' Treated_Post_`x'  log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects time_effects) vce(cluster dma_code)
+reghdfe `var' Treated_`z' Treated_Post_`z'  log_hhinc_per_person_adj demand* trend [aw = weights_`x'], abs(entity_effects time_effects) vce(cluster dma_code)
 est sto sum_Treat_tFE_c_`z'_`x'_`var'
-outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': sum treated `z'") 
+outreg2 using `2'/did_int_`var'_`x'.txt, stats(coef se pval) ctitle("`var': sum treated `z'")
 }
 *
 

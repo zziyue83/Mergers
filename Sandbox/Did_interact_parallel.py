@@ -34,59 +34,70 @@ def check_overlap(merger_folder):
 
 def did_dma(folder, month_or_quarter='month'):
 
-    merger_folder = folder + '/output'
-    path_input = folder + '/intermediate'
+    code = folder[15:]
+    base_folder = "../../../All/"
+    merger_folder = base_folder + "m_" + code + "/output"
+    path_input = base_folder + "m_" + code + "/intermediate"
 
-    if ((os.path.exists(path_input + '/demand_month.csv')) and check_overlap(merger_folder)):
+    #print('before if: ' + merger_folder)
+    #if ((os.path.exists(path_input + '/demand_month.csv')) and check_overlap(merger_folder)):
 
-        code = folder[15:]
-        info_dict = aux.parse_info(code)
-        year_c = info_dict['DateCompleted'][0:4]
-        month_c = str(int(info_dict['DateCompleted'][5:7]))
-        year_a = info_dict['DateAnnounced'][0:4]
-        month_a = str(int(info_dict['DateAnnounced'][5:7]))
+    #code = folder.lstrip('m_')
+    info_dict = aux.parse_info(code)
+    year_c = info_dict['DateCompleted'][0:4]
+    month_c = str(int(info_dict['DateCompleted'][5:7]))
+    year_a = info_dict['DateAnnounced'][0:4]
+    month_a = str(int(info_dict['DateAnnounced'][5:7]))
 
-        print(code)
-        # open the data, and get distances
-        df = pd.read_csv(path_input + "/stata_did_month.csv",
-                         sep=",", index_col=['brand_code_uc', 'dma_code', 'owner'])
-        inst = pd.read_csv(path_input + "/demand_month.csv",
-                           delimiter=',', index_col=['upc', 'dma_code', 'year', 'month'])
-        dist = pd.read_csv(path_input + "/distances.csv",
-                           delimiter=',', index_col=['brand_code_uc', 'dma_code', 'owner'])
+    print('before data crunching: ' + code)
+        # open the did data
+        #df = pd.read_csv(path_input + "/stata_did_month.csv",
+                         #sep=",", index_col=['brand_code_uc', 'owner', 'dma_code', 'year', 'month'])
 
-        df = df.merge(dist, on=['brand_code_uc', 'dma_code'],
-                      how='left')
+        # open demand data to get instruments
+        #inst = pd.read_csv(path_input + "/demand_month.csv",
+                           #delimiter=',', index_col=['upc', 'dma_code', 'year', 'month'])
+        #demand_cols = [col for col in inst if col.startswith('demand')]
+        #inst = inst[demand_cols]
 
-        df = df.reset_index()
-        try:
-            df = df.set_index(['upc', 'dma_code', 'year', 'month'])
-        except KeyError:
-            df = df.rename(columns={'year_x': 'year', 'month_x': 'month'})
-            df = df.set_index(['upc', 'dma_code', 'year', 'month'])
+        # open distance data
+        #dist = pd.read_csv(path_input + "/distances.csv",
+                           #delimiter=',', index_col=['brand_code_uc', 'owner', 'dma_code', 'year', 'month'])
 
-        # recover instrument columns
-        demand_cols = [col for col in inst if col.startswith('demand')]
-        inst = inst[demand_cols]
-        df = pd.merge(df, inst, on=['upc', 'dma_code', 'year', 'month'],
-                      how='left')
+        # merge did data with distances
+        #df = df.merge(dist, on=['brand_code_uc', 'owner', 'dma_code', 'year', 'month'],
+                      #how='left')
 
-        df = df.reset_index()
-        df.to_csv(path_input + '/stata_did_int_month.csv',
-                  sep=',', encoding='utf-8', index=False)
+        # merge did data with instruments
+        #df = df.reset_index()
+        #df = df.set_index(['upc', 'dma_code', 'year', 'month'])
+        #df = pd.merge(df, inst, on=['upc', 'dma_code', 'year', 'month'],
+                      #how='left')
 
-        print(folder)
-        # dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/stata_parallel.do"
-        # DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
-        #path_output = "../output/"
-        #cmd = ([DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input,
-        #       path_output, month_or_quarter, year_c, month_c, year_a, month_a])
-        #subprocess.call(cmd)
+        #df = df.reset_index()
+        #df.to_csv(path_input + '/stata_did_int_month.csv',
+                  #sep=',', encoding='utf-8', index=False)
+
+        #print(folder)
+    dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/DiD_interactions2.do"
+    DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
+    path_output = "../output/"
+    cmd = ([DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input,
+            path_output, month_or_quarter, year_c, month_c, year_a, month_a])
+    subprocess.call(cmd)
 
 
 folder = sys.argv[1]
-log_out = open('output/did_parallel.log', 'a')
-log_err = open('output/did_parallel.err', 'a')
+log_out = open('output/DiD_par.log', 'a')
+log_err = open('output/DiD_par.err', 'a')
 sys.stdout = log_out
 sys.stderr = log_err
-did_dma(folder)
+#print('before function: '+ folder)
+#base_folder = '../../../All/'
+#folders = [folder for folder in os.listdir(base_folder)]
+print(folder)
+#for folder in folders:
+if os.path.exists(folder + '/intermediate/stata_did_int_month.csv'):
+    print('for loop :' + folder)
+    did_dma(folder)
+#did_dma(folder)
