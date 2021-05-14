@@ -114,29 +114,22 @@ def get_betas(folders, base_folder):
             aggregated['se_pnm'+binc+'.DHHI_HHI_'+str(j)] = []
             aggregated['pv_pnm'+binc+'.DHHI_HHI_'+str(j)] = []
 
-        for month in range(24):
+        for month in range(49):
             month = month + 1
-            aggregated['Merging_'+str(month) + '.Months_pre_'+str(j)] = []
-            aggregated['se_M_'+str(month) + '.Months_pre_'+str(j)] = []
-            aggregated['pv_M_'+str(month) + '.Months_pre_'+str(j)] = []
+            aggregated['Merging_'+str(month) + '.Months_'+str(j)] = []
+            aggregated['se_M_'+str(month) + '.Months_'+str(j)] = []
+            aggregated['pv_M_'+str(month) + '.Months_'+str(j)] = []
 
-            aggregated['Non_Merging_'+str(month) + '.Months_pre_'+str(j)] = []
-            aggregated['se_NM_'+str(month) + '.Months_pre_'+str(j)] = []
-            aggregated['pv_NM_'+str(month) + '.Months_pre_'+str(j)] = []
+            aggregated['Non_Merging_'+str(month) + '.Months_'+str(j)] = []
+            aggregated['se_NM_'+str(month) + '.Months_'+str(j)] = []
+            aggregated['pv_NM_'+str(month) + '.Months_'+str(j)] = []
 
-            aggregated['Merging_'+str(month) + '.Months_post_'+str(j)] = []
-            aggregated['se_M_'+str(month) + '.Months_post_'+str(j)] = []
-            aggregated['pv_M_'+str(month) + '.Months_post_'+str(j)] = []
 
-            aggregated['Non_Merging_'+str(month) + '.Months_post_'+str(j)] = []
-            aggregated['se_NM_'+str(month) + '.Months_post_'+str(j)] = []
-            aggregated['pv_NM_'+str(month) + '.Months_post_'+str(j)] = []
-
-        coefficients = ['Post_Merging_Treat_2', 'Post_Merging_Treat_5', 'Post_Merging_Treat_10',
-                                'Post_Non_Merging_Treat_2', 'Post_Non_Merging_Treat_5', 'Post_Non_Merging_Treat_10',
-                                'Post_Merging', 'Post_Non_Merging', 'Major', 'Post_Major', 'Post_Minor',
-                                'Post_Merging_1y', 'Post_Non_Merging_1y', 'Merging_btw', 'Non_Merging_btw',
-                                'post_merger']
+        coefficients = ['Merging_Treated_2', 'Merging_Treated_5', 'Merging_Treated_10', 'Non_Merging_Treated_2',
+                        'Non_Merging_Treated_5', 'Non_Merging_Treated_10', 'Merging_Treated_Post_2', 'Merging_Treated_Post_5',
+                        'Merging_Treated_Post_10', 'Non_Merging_Treated_Post_2', 'Non_Merging_Treated_Post_5', 'Non_Merging_Treated_Post_10',
+                        'Merging', 'Post_Merging', 'Post_Non_Merging', 'Major', 'Post_Major', 'Post_Minor', 'Post_Merging_1y', 'Post_Non_Merging_1y',
+                        'Post_Merging', 'post_merger', 'Treated_2', 'Treated_5', 'Treated_10', 'Treated_Post_2', 'Treated_Post_5', 'Treated_Post_10']
 
         for coef in coefficients:
             aggregated[coef+'_'+str(j)] = []
@@ -461,49 +454,49 @@ def get_betas(folders, base_folder):
                         aggregated['se_pmm'+binc+'.DHHI_HHI_NW_' + col2].append(np.nan)
                         aggregated['pv_pmm'+binc+'.DHHI_HHI_NW_' + col2].append(np.nan)
 
-                for month in range(24):
+                for month in range(49):
                     month = str(month + 1)
 
                     # Merging # Months Post
-                    if ('1.Post_Merging#'+str(month)+'b.Months_post' in did_merger.index) or ('1.Post_Merging#'+str(month)+'.Months_post' in did_merger.index):
+                    if ('1.Merging#'+str(month)+'b.Months' in did_merger.index) or ('1.Merging#'+str(month)+'.Months' in did_merger.index):
 
-                        if ('1.Post_Merging#'+month+'b.Months_post' in did_merger.index):
+                        if ('1.Merging#'+month+'b.Months' in did_merger.index):
 
-                            aggregated['Merging_'+str(month) + '.Months_post_' + col2].append(did_merger[col]['1.Post_Merging#'+month+'b.Months_post'])
-                            aggregated['se_M_'+str(month) + '.Months_post_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Post_Merging#'+month+'b.Months_post')+1)])
-                            aggregated['pv_M_'+str(month) + '.Months_post_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Post_Merging#'+month+'b.Months_post')+2)])
+                            aggregated['Merging_'+str(month) + '.Months_' + col2].append(did_merger[col]['1.erging#'+month+'b.Months'])
+                            aggregated['se_M_'+str(month) + '.Months_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Merging#'+month+'b.Months')+1)])
+                            aggregated['pv_M_'+str(month) + '.Months_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Merging#'+month+'b.Months')+2)])
 
-                        elif ('1.Post_Merging#'+month+'.Months_post' in did_merger.index):
+                        elif ('1.Merging#'+month+'.Months' in did_merger.index):
 
-                            aggregated['Merging_'+str(month) + '.Months_post_' + col2].append(did_merger[col]['1.Post_Merging#'+month+'.Months_post'])
-                            aggregated['se_M_'+str(month) + '.Months_post_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Post_Merging#'+month+'.Months_post')+1)])
-                            aggregated['pv_M_'+str(month) + '.Months_post_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Post_Merging#'+month+'.Months_post')+2)])
-
-                    else:
-
-                        aggregated['Merging_'+str(month) + '.Months_post_' + col2].append(np.nan)
-                        aggregated['se_M_'+str(month) + '.Months_post_' + col2].append(np.nan)
-                        aggregated['pv_M_'+str(month) + '.Months_post_' + col2].append(np.nan)
-
-                    if ('1.Post_Non_Merging#'+str(month)+'b.Months_post' in did_merger.index) or ('1.Post_Non_Merging#'+str(month)+'.Months_post' in did_merger.index):
-
-                        if ('1.Post_Non_Merging#'+month+'b.Months_post' in did_merger.index):
-
-                            aggregated['Non_Merging_'+str(month) + '.Months_post_' + col2].append(did_merger[col]['1.Post_Non_Merging#'+month+'b.Months_post'])
-                            aggregated['se_NM_'+str(month) + '.Months_post_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Post_Non_Merging#'+month+'b.Months_post')+1)])
-                            aggregated['pv_NM_'+str(month) + '.Months_post_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Post_Non_Merging#'+month+'b.Months_post')+2)])
-
-                        elif ('1.Post_Non_Merging#'+month+'.Months_post' in did_merger.index):
-
-                            aggregated['Non_Merging_'+str(month) + '.Months_post_' + col2].append(did_merger[col]['1.Post_Non_Merging#'+month+'.Months_post'])
-                            aggregated['se_NM_'+str(month) + '.Months_post_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Post_Non_Merging#'+month+'.Months_post')+1)])
-                            aggregated['pv_NM_'+str(month) + '.Months_post_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Post_Non_Merging#'+month+'.Months_post')+2)])
+                            aggregated['Merging_'+str(month) + '.Months_' + col2].append(did_merger[col]['1.Merging#'+month+'.Months'])
+                            aggregated['se_M_'+str(month) + '.Months_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Merging#'+month+'.Months')+1)])
+                            aggregated['pv_M_'+str(month) + '.Months_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Merging#'+month+'.Months')+2)])
 
                     else:
 
-                        aggregated['Non_Merging_'+str(month) + '.Months_post_' + col2].append(np.nan)
-                        aggregated['se_NM_'+str(month) + '.Months_post_' + col2].append(np.nan)
-                        aggregated['pv_NM_'+str(month) + '.Months_post_' + col2].append(np.nan)
+                        aggregated['Merging_'+str(month) + '.Months_' + col2].append(np.nan)
+                        aggregated['se_M_'+str(month) + '.Months_' + col2].append(np.nan)
+                        aggregated['pv_M_'+str(month) + '.Months_' + col2].append(np.nan)
+
+                    if ('1.Non_Merging#'+str(month)+'b.Months' in did_merger.index) or ('1.Non_Merging#'+str(month)+'.Months' in did_merger.index):
+
+                        if ('1.Non_Merging#'+month+'b.Months' in did_merger.index):
+
+                            aggregated['Non_Merging_'+str(month) + '.Months_' + col2].append(did_merger[col]['1.Non_Merging#'+month+'b.Months'])
+                            aggregated['se_NM_'+str(month) + '.Months_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Non_Merging#'+month+'b.Months')+1)])
+                            aggregated['pv_NM_'+str(month) + '.Months_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Non_Merging#'+month+'b.Months')+2)])
+
+                        elif ('1.Post_Non_Merging#'+month+'.Months' in did_merger.index):
+
+                            aggregated['Non_Merging_'+str(month) + '.Months_' + col2].append(did_merger[col]['1.Non_Merging#'+month+'.Months_post'])
+                            aggregated['se_NM_'+str(month) + '.Months_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Non_Merging#'+month+'.Months')+1)])
+                            aggregated['pv_NM_'+str(month) + '.Months_' + col2].append(did_merger[col][(did_merger.index.get_loc('1.Non_Merging#'+month+'.Months')+2)])
+
+                    else:
+
+                        aggregated['Non_Merging_'+str(month) + '.Months_' + col2].append(np.nan)
+                        aggregated['se_NM_'+str(month) + '.Months_' + col2].append(np.nan)
+                        aggregated['pv_NM_'+str(month) + '.Months_' + col2].append(np.nan)
 
                 for month in range(24):
                     month = str(month + 1)
@@ -550,11 +543,11 @@ def get_betas(folders, base_folder):
                         aggregated['se_NM_'+str(month) + '.Months_pre_' + col2].append(np.nan)
                         aggregated['pv_NM_'+str(month) + '.Months_pre_' + col2].append(np.nan)
 
-                coefficients = ['Post_Merging_Treat_2', 'Post_Merging_Treat_5', 'Post_Merging_Treat_10',
-                                'Post_Non_Merging_Treat_2', 'Post_Non_Merging_Treat_5', 'Post_Non_Merging_Treat_10',
-                                'Post_Merging', 'Post_Non_Merging', 'Major', 'Post_Major', 'Post_Minor',
-                                'Post_Merging_1y', 'Post_Non_Merging_1y', 'Merging_btw', 'Non_Merging_btw',
-                                'post_merger']
+                coefficients = ['Merging_Treated_2', 'Merging_Treated_5', 'Merging_Treated_10', 'Non_Merging_Treated_2',
+                                'Non_Merging_Treated_5', 'Non_Merging_Treated_10', 'Merging_Treated_Post_2', 'Merging_Treated_Post_5',
+                                'Merging_Treated_Post_10', 'Non_Merging_Treated_Post_2', 'Non_Merging_Treated_Post_5', 'Non_Merging_Treated_Post_10',
+                                'Merging', 'Post_Merging', 'Post_Non_Merging', 'Major', 'Post_Major', 'Post_Minor', 'Post_Merging_1y', 'Post_Non_Merging_1y',
+                                'Post_Merging', 'post_merger', 'Treated_2', 'Treated_5', 'Treated_10', 'Treated_Post_2', 'Treated_Post_5', 'Treated_Post_10']
 
                 for coef in coefficients:
 
