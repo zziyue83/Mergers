@@ -31,6 +31,7 @@ def get_instr(folders, base_folder):
 
     for inst in range(15):
         progress['Inst_'+str(inst)] = []
+        progress['Char_'+str(inst)] = []
 
     for folder in folders:
 
@@ -50,6 +51,7 @@ def get_instr(folders, base_folder):
                     progress['descr_1'].append(info['Summary'])
 
                     Instruments = [i.lstrip() for i in info['Instruments'].split(',')]
+                    Characteristics = [i.lstrip() for i in info['Characteristics'].split(',')]
 
                     for inst in range(15):
 
@@ -60,6 +62,15 @@ def get_instr(folders, base_folder):
                         except IndexError:
 
                             progress['Inst_' + str(inst)].append('None')
+
+                    for inst in range(15):
+
+                        try:
+                            progress['Char_' + str(inst)].append(Characteristics[inst])
+
+                        except IndexError:
+                            progress['Char_' + str(inst)].append('None')
+
 
     df = pd.DataFrame.from_dict(progress)
     df = df.sort_values(by='merger').reset_index().drop('index', axis=1)
