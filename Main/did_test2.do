@@ -16,10 +16,10 @@ import delimited "stata_did_`3'.csv", encoding(ISO-8859-1)
 
 /*Install Packages*/
 
-ssc install outreg2
-ssc install ftools
-ssc install reghdfe
-ssc install estout
+ssc install outreg2, replace
+ssc install ftools, replace
+ssc install reghdfe, replace
+ssc install estout, replace
 
 /* Fixed Effects */
 egen entity_effects = group(upc dma_code)
