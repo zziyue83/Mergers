@@ -255,16 +255,16 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				subprocess.call(cmd)
 
 				#recover alpha and rho
-				file = open('../../../All/m_' + code + '/output/demand_results_' + month_or_quarter + '.txt', mode = 'r')
-				stata_output = file.read()
-				file.close()
-				print(stata_output)
-				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
-				print("Own price coefficient: " +str(prices_param))
-				print("Nesting parameter: " +str(log_within_nest_shares_param))
-				print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
+				#file = open('../../../All/m_' + code + '/output/demand_results_' + month_or_quarter + '.txt', mode = 'r')
+				#stata_output = file.read()
+				#file.close()
+				#print(stata_output)
+				#prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				#log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				#own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+				#print("Own price coefficient: " +str(prices_param))
+				#print("Nesting parameter: " +str(log_within_nest_shares_param))
+				#print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 
 
 			#logit
@@ -284,15 +284,15 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				subprocess.call(cmd)
 
 				#recover alpha and rho
-				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
-				stata_output = file.read()
-				file.close()
-				print(stata_output)
-				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
-				print("Own price coefficient: " +str(prices_param))
-#				print(log_within_nest_shares_param)
-				print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
+				#file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
+				#stata_output = file.read()
+				#file.close()
+				#print(stata_output)
+				#prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				#own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
+				#print("Own price coefficient: " +str(prices_param))
+				#print(log_within_nest_shares_param)
+				#print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 
 
 		#characteristics specs
@@ -323,16 +323,16 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				subprocess.call(cmd)
 
 				#recover alpha and rho
-				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
-				stata_output = file.read()
-				file.close()
-				print(stata_output)
-				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
-				print("Own price coefficient: " +str(prices_param))
-				print("Nesting parameter: " +str(log_within_nest_shares_param))
-				print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
+				#file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
+				#stata_output = file.read()
+				#file.close()
+				#print(stata_output)
+				#prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				#log_within_nest_shares_param = float(re.findall('log_within_nest_shares\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				#own_price_elasticity = -(prices_param * df['prices'])*(1/(1-log_within_nest_shares_param)-(log_within_nest_shares_param/(1-log_within_nest_shares_param) * df['within_nest_shares'])-df['shares'])
+				#print("Own price coefficient: " +str(prices_param))
+				#print("Nesting parameter: " +str(log_within_nest_shares_param))
+				#print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 
 
 			#logit
@@ -352,15 +352,15 @@ def estimate_demand(code, df, chars = None, nests = None, month_or_quarter = 'mo
 				subprocess.call(cmd)
 
 				#recover alpha and rho
-				file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
-				stata_output = file.read()
-				file.close()
-				print(stata_output)
-				prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
-				own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
-				print("Own price coefficient: " +str(prices_param))
-#				print(log_within_nest_shares_param)
-				print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
+				#file = open('../../../All/m_' + code + '/info.txt', mode = 'r')
+				#stata_output = file.read()
+				#file.close()
+				#print(stata_output)
+				#prices_param = float(re.findall('prices\\\t(.*?)\*\*\*', stata_output, re.DOTALL)[0])
+				#own_price_elasticity = -(prices_param * df['prices'])*(1-df['shares'])
+				#print("Own price coefficient: " +str(prices_param))
+				#print(log_within_nest_shares_param)
+				#print(own_price_elasticity.describe(percentiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]))
 
 
 	elif estimate_type == 'blp':
