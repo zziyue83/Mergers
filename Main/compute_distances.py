@@ -265,6 +265,7 @@ def geocoding_locations(code, locations, netid):
         this_dict = {'location' : this_location, 'lat' : latitude, 'lon' : longitude}
         dict_list.append(this_dict)
     geocoded_locations = pd.DataFrame(dict_list).set_index('location')
+    geocoded_locations = geocoded_locations.drop_duplicates()
     geocoded_locations.to_csv('../../../All/m_' + code + '/intermediate/geocoded_locations.csv', sep = ',', encoding = 'utf-8')
     locations['lat'] = locations['location'].map(geocoded_locations['lat'])
     locations['lon'] = locations['location'].map(geocoded_locations['lon'])
@@ -360,12 +361,12 @@ def compute_distances(code, netid, month_or_quarter = 'month', port_cutoff = 10)
 
 code = sys.argv[1]
 netid = sys.argv[2]
-info_dict = aux.parse_info(code)
-merging_parties = aux.get_parties(info_dict["MergingParties"])
-match = re.search(r'\d{4}-\d{2}-\d{2}', info_dict["DateCompleted"])
-date = datetime.strptime(match.group(), '%Y-%m-%d').date()
-merging_year = date.year
-merging_month = date.month
+#info_dict = aux.parse_info(code)
+#merging_parties = aux.get_parties(info_dict["MergingParties"])
+#match = re.search(r'\d{4}-\d{2}-\d{2}', info_dict["DateCompleted"])
+#date = datetime.strptime(match.group(), '%Y-%m-%d').date()
+#merging_year = date.year
+#merging_month = date.month
 
 
 log_out = open('../../../All/m_' + code + '/output/compute_distances.log', 'w')
