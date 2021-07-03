@@ -60,6 +60,10 @@ def clean_data(code, df):
 		# These should be counts of cigarettes
 		df.loc[(df.multi * df.size1_amount == 2500) & (df.size1_units == 'CT'), 'size1_units'] = 'ML'
 
+	elif code == '2972389020_26':
+		# These are lip balm (should be 0.15 OZ instead of 150 OZ)
+		df.loc[(df.multi * df.size1_amount == 150) & (df.size1_units == 'OZ'), 'size1_amount'] = .15
+
 	return df
 
 
