@@ -48,6 +48,9 @@ drop if shares < 0.001
 egen period = group(year month)
 egen calendar = group(month)
 
+*rescale prices
+replace price = price * multi * size1_amount * conversion
+
 *generate nesting schemes
 gen nesting_ids_1 = 1
 egen nesting_ids_2 = group(brand_code)
