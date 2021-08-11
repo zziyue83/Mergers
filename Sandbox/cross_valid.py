@@ -56,35 +56,41 @@ def CV(folder, month_or_quarter='month'):
     month = str(int(info_dict['DateCompleted'][5:7]))
     path_input = folder + "/intermediate"
 
-    #df2 = pd.read_csv(path_products + "products.tsv", sep="\t", engine = 'python', quotechar='"', error_bad_lines=False)
-    #df = pd.merge(df, df2, on='upc')
-    #df = df.drop(['upc_ver_uc', 'upc_descr', 'product_module_code', 'product_module_descr',
-                     #'product_group_code', 'product_group_descr', 'department_code',
-                     #'department_descr', 'brand_descr', 'dataset_found_uc', 'brand_code_uc_y',
-                     #'size1_change_flag_uc'], axis=1)
+    '''
+    Silenced lines from when we needed to add variables to the
+    demand_month.csv datasets.
 
-    #df.to_csv(path_input + '/demand_month.csv',
-    #              sep=',', encoding='utf-8', index=False)
+    df2 = pd.read_csv(path_products + "products.tsv", sep="\t", engine = 'python', quotechar='"', error_bad_lines=False)
+    df = pd.merge(df, df2, on='upc')
+    df = df.drop(['upc_ver_uc', 'upc_descr', 'product_module_code', 'product_module_descr',
+                     'product_group_code', 'product_group_descr', 'department_code',
+                     'department_descr', 'brand_descr', 'dataset_found_uc', 'brand_code_uc_y',
+                     'size1_change_flag_uc'], axis=1)
 
-    #conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
+    df.to_csv(path_input + '/demand_month.csv',
+                  sep=',', encoding='utf-8', index=False)
+
+    conversion_map = get_conversion_map(code, info_dict["FinalUnits"])
     df = pd.read_csv(path_input + "/demand_month.csv", sep=",")
-    #df['conversion'] = df['size1_units'].map(conversion_map['conversion'])
-    #df.to_csv(path_input + '/demand_month.csv',
-    #              sep=',', encoding='utf-8', index=False)
+    df['conversion'] = df['size1_units'].map(conversion_map['conversion'])
+    df.to_csv(path_input + '/demand_month.csv',
+                  sep=',', encoding='utf-8', index=False)
+
+    '''
 
     if not os.path.isdir(folder + '/output/tables'):
         os.makedirs(folder + '/output/tables')
 
-    dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/cross_valid.do"
+    # change dofile path between cross_valid.do and cross_valid_stats.do
+    dofile = "/projects/b1048/gillanes/Mergers/Codes/Mergers/Sandbox/cross_valid_stats.do"
     DEFAULT_STATA_EXECUTABLE = "/software/Stata/stata14/stata-mp"
     path_products = folder + "/../../Data/nielsen_extracts/RMS/Master_Files/Latest/"
 
 
     path_output = "../output"
-    if 'multi' and 'conversion' in df.columns:
-        print(folder)
-        cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, year, month]
-        subprocess.call(cmd)
+    print(folder)
+    cmd = [DEFAULT_STATA_EXECUTABLE, "-b", "do", dofile, path_input, path_output, year, month]
+    subprocess.call(cmd)
 
 
 
