@@ -90,6 +90,12 @@ def generate_units_table(code, years, groups, modules, merger_date, pre_months =
 		min_month = 1
 		years = years[1:]
 
+		#manual fix for RBC BREAD
+	if ((code=='2495767020_14') & (int(years[0]) < 2012)):
+		min_year = 2012
+		min_month = 1
+		years = years[1:]
+
 	product_map = aux.get_product_map(list(set(groups)))
 	add_from_map = ['size1_units', 'size1_amount', 'multi']
 
