@@ -44,8 +44,17 @@ def load_movement_table(year, group, module, path = ''):
 def upc_list(code):
 
 	path_input = "../../../All/" + code + "/intermediate"
-	data = pd.read_csv(path_input + "/stata_did_int_month.csv",
-                       delimiter=',', index_col=['upc', 'dma_code', 'year', 'month'])
+	data = pd.read_csv(path_input + "/stata_did_int_month.csv")
+
+	if 'owner_x' in data.columns and 'owner' not in data.columns:
+		print('owner_x in data columns')
+		data.rename(columns = {'owner_x': 'owner'}, inplace = True)
+
+	elif 'owner' not in data.columns:
+		print('owner not in data columns')
+		stata_data = pd.read_csv(path_input + "/stata_did_month.csv")
+		stata_data = stata_data[['year', 'upc', 'dma_code', 'month']]
+		data = pd.merge(data, stata_data, on=['year', 'upc', 'dma_code', 'month'], how='left')
 
 	labels = ["multiple owners", "multiple", "Several owners", "Several Owners",
 			  "several owners", "SEVERAL OWNERS", "Many owners", "MANY OWNERS",
@@ -53,7 +62,7 @@ def upc_list(code):
 			  "Ctl Br", "CTL BR", "Control Brands"]
 
 	for label in labels:
-		data.loc[data['owner']==label, "owner"] = "several owers"
+		data.loc[data['owner']==label, "owner"] = "several owners"
 
 	data.loc[data['brand_code_uc']==536746, "owner"] = "several owners"
 
@@ -82,23 +91,32 @@ def store_list(code, years, groups, modules):
 			for group, module in zip(groups, modules):
 				print(group, module, year)
 				movement_table = load_movement_table(year, group, module)
+				movement_table['year'] = year
+				movement_table['sales'] = movement_table['price'] * movement_table['units'] / movement_table['prmult']
 
-				# df1 has 'upc', 'store_code_uc'
-				df1 = df1.append(movement_table.groupby(['upc', 'store_code_uc'])['price'].agg(['mean']).reset_index())
+				# df1 has 'upc', 'store_code_uc', year, and sales
+				df1 = df1.append(movement_table.groupby(['upc', 'store_code_uc', 'year'])['sales'].agg(['sum']).reset_index())
 
-		# all store upcs and their store_code_uc
-		print(df1.columns)
-		print(store_upcs.columns)
+		# all store upcs and their store_code_uc, year, and sales
 		df1 = pd.merge(store_upcs, df1, on='upc', how='inner').reset_index()
+		df1['year'] = df1['year'].astype(int)
+		df1.rename(columns = {'sum': 'sales'}, inplace = True)
+		print(df1.columns)
 
-		# all store_code_uc, parent_code, and dma_code
+		# all unique combinations of store_code_uc, parent_code, dma_code, and year
+		df2 = df2.groupby(['store_code_uc', 'parent_code', 'dma_code', 'year'])['year'].agg(['mean']).reset_index()
+		df2['year'] = df2['year'].astype(int)
 		print(df2.columns)
-		df2 = df2.groupby(['store_code_uc', 'parent_code', 'dma_code'])['year'].agg(['mean']).reset_index()
 
 		# merge upc (store brands) and 'store_code_uc' with 'parent_code' and 'dma_code' data
-		df1 = pd.merge(df1, df2, on='store_code_uc', how='inner')
-		df1 = df1.drop(['Unnamed: 0', 'index', 'mean_x', 'mean_y', 'mean'], axis=1)
-		df1 = df1.drop_duplicates(['upc', 'parent_code', 'dma_code'])
+		df1 = pd.merge(df1, df2, on=['store_code_uc', 'year'], how='inner')
+		df1 = df1.drop(['index', 'mean_x', 'mean_y'], axis=1)
+		#df1['tot_sales'] = df1.groupby(['parent_code', 'dma_code', 'year', 'upc'])['sales'].transform('sum')
+		df1 = df1.drop_duplicates(['upc', 'parent_code', 'dma_code', 'year'])
+
+		#now we keep the parent_code with largest sales for the year
+		df1['largest_sales'] = df1.groupby(['upc', 'dma_code', 'year'])['sales'].transform('max')
+		df1 = df1[df1['largest_sales']==df1['sales']]
 
 		# save to csv
 		df1.to_csv('../../../All/' + code + '/properties/store_codes.csv', sep = ',', encoding = 'utf-8')
@@ -106,20 +124,34 @@ def store_list(code, years, groups, modules):
 
 def merge(code):
 
-	store_codes = pd.read_csv('../../../All/' + code + '/properties/store_codes.csv')
-	did_data = pd.read_csv('../../../All/' + code + '/intermediate/stata_did_int_month.csv')
+	store_upcs = pd.read_csv('../../../All/' + code + '/properties/store_upcs.csv')
 
-code = sys.argv[1]
+	if len(store_upcs)!=0:
+
+		store_codes = pd.read_csv('../../../All/' + code + '/properties/store_codes.csv')
+		did_data = pd.read_csv('../../../All/' + code + '/intermediate/stata_did_int_month.csv')
+		did_data = pd.merge(did_data, store_codes, on=['year', 'upc', 'dma_code'], how='left')
+		did_data.to_csv('../../../All/' + code + '/intermediate/stata_did_int_month.csv')
+
+
+#folder = sys.argv[1]
+#code = 'm_' + folder[15:]
 log_out = open('output/store_brands.log', 'w')
 log_err = open('output/store_brands.err', 'w')
 sys.stdout = log_out
 sys.stderr = log_err
 
-info_dict = parse_info(code)
+base_folder = '../../../All/'
+folders = [folder for folder in os.listdir(base_folder)]
 
-groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
-years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
-
-upc_list(code)
-store_list(code, years, groups, modules)
+for folder in folders:
+	print(folder)
+	if os.path.exists(base_folder + folder + '/intermediate/stata_did_int_month.csv'):
+		print('for loop :' + folder)
+		info_dict = parse_info(folder)
+		groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
+		years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
+		upc_list(folder)
+		store_list(folder, years, groups, modules)
+		merge(folder)
 
