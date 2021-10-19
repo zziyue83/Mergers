@@ -53,7 +53,7 @@ def upc_list(code):
 	elif 'owner' not in data.columns:
 		print('owner not in data columns')
 		stata_data = pd.read_csv(path_input + "/stata_did_month.csv")
-		stata_data = stata_data[['year', 'upc', 'dma_code', 'month']]
+		stata_data = stata_data[['year', 'upc', 'dma_code', 'month', 'owner']]
 		data = pd.merge(data, stata_data, on=['year', 'upc', 'dma_code', 'month'], how='left')
 
 	labels = ["multiple owners", "multiple", "Several owners", "Several Owners",
@@ -73,10 +73,115 @@ def upc_list(code):
 	data.to_csv('../../../All/' + code + '/properties/store_upcs.csv', sep = ',', encoding = 'utf-8')
 
 
-def store_list(code, years, groups, modules):
+def store_list(code, years, groups, modules, merger_start_date, merger_stop_date):
 
 	# upc list has 'upc', 'owner'
 	store_upcs = pd.read_csv('../../../All/' + code + '/properties/store_upcs.csv', sep = ',', encoding = 'utf-8')
+
+	info_dict = parse_info(folder)
+
+	stop_dt = datetime.strptime(merger_stop_date, '%Y-%m-%d')
+	start_dt = datetime.strptime(merger_start_date, '%Y-%m-%d')
+	stop_month_int = stop_dt.year * 12 + stop_dt.month
+	start_month_int = start_dt.year * 12 + start_dt.month
+
+	pre_months = 24
+	post_months = 24
+	min_year, min_month = aux.int_to_month(start_month_int - pre_months)
+	max_year, max_month = aux.int_to_month(stop_month_int + post_months)
+
+	if ((code=='m_1817013020_3') & (max_year > 2008)):
+		max_year = 2008
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2008, years))
+
+	#manual fix for bread
+	if ((code=='m_2203820020_1') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+	#manual fix for buns
+	if ((code=='m_2203820020_2') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+	#manual fix for rolls
+	if ((code=='m_2203820020_3') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+	#manual fix for pies
+	if ((code=='m_2203820020_8') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+	#manual fix for bakery remaining
+	if ((code=='m_2203820020_10') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+	#manual fix for cheesecake
+	if ((code=='m_2203820020_11') & (max_year > 2012)):
+		print('it entered the  if')
+		max_year = 2012
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2012, years))
+		print(years)
+
+	#manual fix for biscuits
+	if ((code=='m_2203820020_12') & (max_year > 2012)):
+		max_year = 2012
+		max_month = 12
+		max_quarter = 4
+		years = list(filter(lambda x: int(x) <= 2012, years))
+
+		#manual fix for RBC_Bread
+	if ((code=='m_2033113020_2') & (min_year < 2007)):
+		min_year = 2007
+		min_month = 1
+		min_quarter = 1
+		years = list(filter(lambda x: int(x) >= 2007, years))
+
+		#manual fix for RBC_Cake
+	if ((code=='2033113020_3') & (min_year < 2007)):
+		min_year = 2007
+		min_month = 1
+		min_quarter = 1
+		years = list(filter(lambda x: int(x) >= 2007, years))
+
+		#manual fix for Headache pills
+	if ((code=='2373087020_1') & (min_year < 2010)):
+		min_year = 2010
+		min_month = 1
+		min_quarter = 1
+		years = list(filter(lambda x: int(x) >= 2010, years))
+
+		#manual fix for School and Office Supplies
+	if ((code=='m_2363232020_4') & (min_year < 2010)):
+		min_year = 2010
+		min_month = 1
+		min_quarter = 1
+		years = list(filter(lambda x: int(x) >= 2010, years))
+
+		#manual fix for RBC BREAD
+	if ((code=='m_2495767020_14') & (min_year < 2012)):
+		min_year = 2012
+		min_month = 1
+		min_quarter
+		years = list(filter(lambda x: int(x) >= 2012, years))
+
 
 	if len(store_upcs)!=0:
 		df1 = pd.DataFrame()
@@ -150,8 +255,9 @@ for folder in folders:
 		print('for loop :' + folder)
 		info_dict = parse_info(folder)
 		groups, modules = aux.get_groups_and_modules(info_dict["MarketDefinition"])
+		groups = [str(0) + str(group) if len(str(group)) == 3 else group for group in groups]
 		years = aux.get_years(info_dict["DateAnnounced"], info_dict["DateCompleted"])
 		upc_list(folder)
-		store_list(folder, years, groups, modules)
+		store_list(folder, years, groups, modules, info_dict["DateAnnounced"], info_dict["DateCompleted"])
 		merge(folder)
 
