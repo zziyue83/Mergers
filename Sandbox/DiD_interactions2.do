@@ -26,6 +26,38 @@ ssc install ftools
 ssc install reghdfe
 ssc install estout
 
+
+capture confirm variable owner
+
+	if _rc!=0 {
+
+		capture rename variable owner_x
+
+		if _rc!=0{
+
+			di `1'
+
+	}
+}
+*
+
+capture confirm variable parent_code
+
+	if _rc!=0 {
+
+		capture rename variable parent_code_x
+
+		if _rc!=0{
+
+			di `1'
+
+	}
+}
+*
+
+tostring(parent_code), replace
+replace owner = owner + parent_code if parent_code!="."
+
 quietly{
 /*Fixed Effects*/
 egen entity_effects = group(upc dma_code)
@@ -77,12 +109,14 @@ replace between = 1 if (month_date >= `cutoff_a' & month_date <= `cutoff_c')
 gen Merging_btw = Merging * between
 gen Non_Merging_btw = Non_Merging * between
 
+
+***CHECK THIS CALCULATIONS***
 /*Untreated DMAs*/
 gen mkt_size = volume/shares
 bys dma_code: gen tot_vols_mp = sum(volume) if (Merging==1 & post_merger==0)
 bys dma_code: egen tot_vol_mp = max(tot_vols_mp)
 drop tot_vols_mp
-bys dma_code year month: gen mkt_size_unique = mkt_size if _n==1
+bys dma_code year month: gen mkt_size_unique = mkt_size if (_n==1 & post_merger==0)
 egen tot_mkt_size = sum(mkt_size_unique), by(dma_code)
 gen mp_share = tot_vol_mp/tot_mkt_size
 
@@ -108,6 +142,21 @@ replace Major = 1 if major_competitor == "True"
 replace Major = 0 if major_competitor == "False"
 gen Post_Minor = (1 - Major) * Non_Merging * post_merger
 gen Post_Major = Major * Non_Merging * post_merger
+
+*HHI AND DHHI*
+bys dma_code owner: egen shares_own = total(shares)
+*pre hhi
+gen shares2_pre = shares_own*shares_own if month_date < `cutoff_c'
+by dma_code: egen hhi_pre = sum(shares2_pre)
+
+*post hhi
+gen shares2_post = shares_own*shares_own if month_date >= `cutoff_c'
+by dma_code: egen hhi_post = sum(shares2_post)
+
+*dhhi
+gen dhhi = hhi_post - hhi_pre
+
+****END OF HHI EDITS****
 
 /*Coarse HHI Bins*/
 gen HHI_bins = 0
@@ -184,7 +233,7 @@ matrix P = J(`r(max)', 24, .)
 }
 
 /*Main Routine*/
-foreach var of varlist lprice {
+foreach var of varlist lprice lquant {
 forval x = 0/3 {
 quietly{
 /*Overall Price Effects*/
