@@ -26,35 +26,6 @@ ssc install ftools
 ssc install reghdfe
 ssc install estout
 
-
-capture confirm variable owner
-
-	if _rc!=0 {
-
-		capture rename variable owner_x
-
-		if _rc!=0{
-
-			di `1'
-
-	}
-}
-*
-
-capture confirm variable parent_code
-
-	if _rc!=0 {
-
-		capture rename variable parent_code_x
-
-		if _rc!=0{
-
-			di `1'
-
-	}
-}
-*
-
 tostring(parent_code), replace
 replace owner = owner + parent_code if parent_code!="."
 
@@ -110,7 +81,6 @@ gen Merging_btw = Merging * between
 gen Non_Merging_btw = Non_Merging * between
 
 
-***CHECK THIS CALCULATIONS***
 /*Untreated DMAs*/
 gen mkt_size = volume/shares
 bys dma_code: gen tot_vols_mp = sum(volume) if (Merging==1 & post_merger==0)
@@ -144,17 +114,18 @@ gen Post_Minor = (1 - Major) * Non_Merging * post_merger
 gen Post_Major = Major * Non_Merging * post_merger
 
 *HHI AND DHHI*
+drop dhhi pre_hhi post_hhi
 bys dma_code owner: egen shares_own = total(shares)
 *pre hhi
 gen shares2_pre = shares_own*shares_own if month_date < `cutoff_c'
-by dma_code: egen hhi_pre = sum(shares2_pre)
+by dma_code: egen pre_hhi = sum(shares2_pre)
 
 *post hhi
 gen shares2_post = shares_own*shares_own if month_date >= `cutoff_c'
-by dma_code: egen hhi_post = sum(shares2_post)
+by dma_code: egen post_hhi = sum(shares2_post)
 
 *dhhi
-gen dhhi = hhi_post - hhi_pre
+gen dhhi = post_hhi - pre_hhi
 
 ****END OF HHI EDITS****
 
@@ -229,7 +200,7 @@ summarize Months
 local max_month = `r(max)'
 local min_month = `r(min)'
 
-matrix P = J(`r(max)', 24, .)
+matrix P = J(`r(max)', 48, .)
 }
 
 /*Main Routine*/
