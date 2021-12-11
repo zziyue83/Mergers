@@ -26,7 +26,7 @@ ssc install ftools
 ssc install reghdfe
 ssc install estout
 
-*drop dups
+*drop duplicates
 bys upc dma_code month year owner: gen numb=_n
 keep if numb==1
 drop numb
