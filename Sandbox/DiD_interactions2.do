@@ -26,8 +26,10 @@ ssc install ftools
 ssc install reghdfe
 ssc install estout
 
-tostring(parent_code), replace
-replace owner = owner + parent_code if parent_code!="."
+*drop dups
+bys upc dma_code month year owner: gen numb=_n
+keep if numb==1
+drop numb
 
 quietly{
 /*Fixed Effects*/
@@ -114,15 +116,33 @@ gen Post_Minor = (1 - Major) * Non_Merging * post_merger
 gen Post_Major = Major * Non_Merging * post_merger
 
 *HHI AND DHHI*
+*update owners for store ownership
+tostring(parent_code), replace
+replace owner = owner + parent_code if parent_code!="."
 drop dhhi pre_hhi post_hhi
-bys dma_code owner: egen shares_own = total(shares)
-*pre hhi
-gen shares2_pre = shares_own*shares_own if month_date < `cutoff_c'
-by dma_code: egen pre_hhi = sum(shares2_pre)
 
-*post hhi
-gen shares2_post = shares_own*shares_own if month_date >= `cutoff_c'
-by dma_code: egen post_hhi = sum(shares2_post)
+*tot vol owners post_merger
+bys owner_post dma_code: egen tot_vol_owner_p = sum(volume*(1-post_merger))
+bys owner_post dma_code: gen tot_vol_own_unique_p = tot_vol_owner_p if _n==1
+
+*tot vol owners pre_merger
+bys owner dma_code: egen tot_vol_owner = sum(volume*(1-post_merger))
+bys owner dma_code: gen tot_vol_own_unique = tot_vol_owner if _n==1
+
+*tot vol at dma_code level
+bys dma_code: egen tot_volume = sum(volume*(1-post_merger))
+
+*shares pre and post merger
+g share_owner_p = tot_vol_own_unique_p/tot_volume
+gen share_owner2_p = share_owner_p*share_owner_p
+g share_owner = tot_vol_own_unique/tot_volume
+gen share_owner2 = share_owner*share_owner
+
+*pre and post hhi updated
+bys dma_code: egen post_hhi = sum(share_owner2_p)
+bys dma_code: egen pre_hhi = sum(share_owner2)
+
+drop share_* tot_vol*
 
 *dhhi
 gen dhhi = post_hhi - pre_hhi
